@@ -1,9 +1,9 @@
 #!/usr/bin/expect -f
 # Expect script to test kernel via shell.
 
-proc error_msg {} {
+proc error_msg {op act} {
   global expect_out
-  puts "FAILURE: $expect_out(buffer)"
+  puts "FAILURE: while performing '$op' on '$act': $expect_out(buffer)"
   exit
 }
 
@@ -42,7 +42,7 @@ set proc_table [open "proc_table.dat" "w"]
 puts $proc_table ""
 close $proc_table
 
-log_user 1
+log_user 0
 spawn ../shell
 expect ">"
 
@@ -56,15 +56,33 @@ expect {
 expect ">"
 
 foreach act $actions {
+  # Look for act to be ready.
+  send "actions\n"
+  expect {
+    -re "$act.*(ready)" {}
+    ">" {
+      error_msg actions $act
+    }
+  }
+
+  # Perform act.
   send "do 0 $act\n"
   shell_expect
   expect ">"
+
+  # Look for act to be active.
   send "actions\n"
+  expect {
+    -re "$act.*(active)" {}
+    ">" {
+      error_msg actions $act
+    }
+  }
   expect ">"
+
+  # Finish act.
   send "done 0 $act\n"
   shell_expect
-  expect ">"
-  send "actions\n"
   expect ">"
 }
 

@@ -1,8 +1,8 @@
 /* -*-C-*-
 *****************************************************************************
 *
-* File:         $RCSFile: shell.c$
-* Version:      $Id: shell.c,v 1.7 2003/08/28 20:32:54 jshah1 Exp $ ($Name:  $)
+* File:         $RCSfile: shell.c,v $
+* Version:      $Id: shell.c,v 1.8 2003/08/31 18:38:48 jnoll Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003

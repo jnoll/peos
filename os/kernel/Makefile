@@ -65,3 +65,4 @@ depend: .depend
 
 .depend: $(SOURCES)
 	$(CC) $(CFLAGS) -MM $^ > $@
+.PHONY: test

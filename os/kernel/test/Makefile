@@ -29,7 +29,8 @@ FUNC_TESTS = $(wildcard *.tc)
 
 all: test 
 
-test: unit_tests func_tests
+# 
+test: unit_tests #func_tests
 
 unit_tests:  $(TESTS) test_assertions
 	-for i in $^ ; do $$i -f; done
