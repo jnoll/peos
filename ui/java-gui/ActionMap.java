@@ -50,6 +50,78 @@ public class ActionMap{
 		
 		return count;
 	}
+        public String buildActionList()
+        {
+            String stateValue;
+            String output="<TABLE border=1><TR align=center><TD>State</TD><TD>Action</TD></TR>";
+            String[] available = new String[50];
+            String[] ready = new String[50];
+            String[] run = new String[50];
+            int availCount=0;
+            int readyCount=0;
+            int runCount=0;
+            
+            for (int i=0; i< 11; i++)
+            {
+                if (this.isProcActive(i))
+                {            
+                    LinkNode curr=this.getCurrentLink(i);
+                    this.reset(i);
+                    LinkNode probe = this.getCurrentLink(i);
+                
+                    while (probe != null)
+                    {
+                        Element payload = probe.getElement();                    
+                        if ( payload.getAttribute("state") != null )
+                        {
+                            stateValue=payload.getAttribute("state");
+                            if (stateValue.equals("AVAILABLE"))
+                            {
+                                available[availCount]="<tr><td>Available</td>"
+                                    +"<td>" +payload.getAttribute("name")+"</td></tr>";
+                                availCount++;
+                            }
+                                
+                            if (stateValue.equals("READY"))
+                            {
+                                ready[readyCount]="<tr><td>Ready</td>"
+                                    +"<td>" +payload.getAttribute("name")+"</td></tr>";
+                                readyCount++;
+                            }
+                                
+                            if (stateValue.equals("RUN"))
+                            {
+                                run[runCount]="<tr><td>Run</td>"
+                                    +"<td>" +payload.getAttribute("name")+"</td></tr>";
+                                runCount++;
+                            }
+                            
+                        }
+                        
+                        probe = probe.getNext();
+                    }
+                    this.setCurrent(i,curr);
+                }
+                
+            }
+            for (int i=0; i<availCount; i++)
+            {
+                output+=available[i];
+            }
+            for (int i=0; i<readyCount; i++)
+            {
+                output+=ready[i];
+            }
+            for (int i=0; i<runCount; i++)
+            {
+                output+=run[i];
+            }
+            
+            output+="</TABLE>";
+
+            return output;
+        }
+        
         public DefaultMutableTreeNode getReadyActionList()
         {
             String stateValue;

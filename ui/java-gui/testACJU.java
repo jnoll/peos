@@ -73,6 +73,12 @@ public class testACJU extends TestCase{
             assertEquals(map.getCurrentAction(1).getAttribute("name"),"overview");
         
         }
+        
+        public void testBuildActionList()
+        {
+            assertEquals("<TABLE border=1><TR align=center><TD>State</TD><TD>Action</TD></TR><tr><td>"
+                +"Ready</td><td>overview</td></tr></TABLE>",map.buildActionList());
+        }
 	protected void setUp()
 	{
 

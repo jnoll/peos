@@ -15,31 +15,16 @@ public class testSFASJU extends TestCase{
 	{
 		Element testElem=testAM.getActionByName(0,"Fill_name");
 		assertTrue(test.doesFinishNeedValue(testElem)==0);
-		////if (test.doesFinishNeedValue(testElem)==0)
-		//	return true;
-		//return false;
+		
 	}
 
 	public void testDSNV()
 	{
 		Element testElem=testAM.getActionByName(0,"Fill_name");
 		assertTrue(test.doesStartNeedValue(testElem)==1);
-		//if (test.doesStartNeedValue(testElem)==1)
-		//	return true;
-		//return false;
 	}
 
-/*	public void testStartSet()
-	{
-		Element testElem=testAM.getActionByName(0,"Turn_it_in");
-		test.startSetValue(testElem, "whatever",0);
-		test.start(testElem,0);
-		testElem=testAM.getActionByName(0,"Turn_it_in");
-		assertTrue(test.doesStartNeedValue(testElem)==0);
-		//if (test.doesStartNeedValue(testElem)==0)
-		//	return true;
-		//return false;
-	}*/
+
         public void testBindResources()
         {
             Element testElem=testAM.getActionByName(0,"Turn_it_in");         
@@ -52,29 +37,19 @@ public class testSFASJU extends TestCase{
 	public void testStart()
 	{
 		Element testElem=testAM.getActionByName(0,"Fill_name");
-							                         						assertTrue(testElem.getAttribute("state").equals("BLOCKED"));
-		//if (!testElem.getAttribute("state").equals("BLOCKED"))
-			//return false;
+                assertTrue(testElem.getAttribute("state").equals("BLOCKED"));                                                                                                                                
 		test.start(testElem,0);
 		testElem=testAM.getActionByName(0,"Fill_name");
 		assertTrue(testElem.getAttribute("state").equals("RUN"));
-		//if (!testElem.getAttribute("state").equals("RUN"))
-		//	return false;
-		//return true;
 	}
 
 	public void testFinish()
 	{
 		Element testElem=testAM.getActionByName(0,"Fill_name");
 		assertTrue(testElem.getAttribute("state").equals("RUN"));
-		//if (!testElem.getAttribute("state").equals("RUN"))
-		//	return false;
 		test.finish(testElem,0);
 		testElem=testAM.getActionByName(0,"Fill_name");
 		assertTrue(testElem.getAttribute("state").equals("DONE"));
-		//if (!testElem.getAttribute("state").equals("DONE"))
-		//	return false;
-		//return true;
 	}
 
 	public void testAbort()
@@ -83,14 +58,9 @@ public class testSFASJU extends TestCase{
 		test.start(testElem,0);
 		testElem = testAM.getActionByName(0,"Fill_hours");
 		assertTrue(testElem.getAttribute("state").equals("RUN"));
-		//if (!testElem.getAttribute("state").equals("RUN"))
-		//	return false;
 		test.abort(testElem,0);
                 testElem = testAM.getActionByName(0,"Fill_hours");
 		assertTrue(testElem.getAttribute("state").equals("NONE"));
-		//if (!testElem.getAttribute("state").equals("NONE"))
-		//	return false;
-		//return true;
 	}
 
 	public void testSuspend()
@@ -99,14 +69,9 @@ public class testSFASJU extends TestCase{
 		test.start(testElem,0);
 		testElem=testAM.getActionByName(0,"Fill_hours");
 		assertTrue(testElem.getAttribute("state").equals("RUN"));
-		//if (!testElem.getAttribute("state").equals("RUN"))
-		//	return false;
 		test.suspend(testElem,0);
 		testElem=testAM.getActionByName(0,"Fill_hours");
 		assertTrue(testElem.getAttribute("state").equals("SUSPEND"));
-		//if (!testElem.getAttribute("state").equals("SUSPEND"))
-		//	return false;
-		//return true;
 	}
 
 	protected void setUp()

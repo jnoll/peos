@@ -50,15 +50,15 @@ public class ActionViewer extends JSplitPane implements TreeSelectionListener, A
                 pidNum=parsePidNumber(actionName);
                 actionName=parseActionName(actionName);
                 
-                System.out.println(actionName);
-                System.out.println(pidNum +"\n!!!\n!!!");
+//                System.out.println(actionName);
+//                System.out.println(pidNum +"\n!!!\n!!!");
                 map.getActionByName(pidNum, actionName);
                 LinkNode n=map.getCurrentLink(pidNum);
                 		
                 
 		tabName = n.getElement().getAttribute("name");
 		
-                System.out.println("Tabname is flipping me out:" +tabName);
+//                System.out.println("Tabname is flipping me out:" +tabName);
                                     
 		//Create tree that allows one selection at a time
 		tree = new JTree(info);
@@ -68,7 +68,7 @@ public class ActionViewer extends JSplitPane implements TreeSelectionListener, A
                 expandAll(tree);
                 
 		String currentPage = n.getElement().getAttribute("name");
-		System.out.println("currpage!!!!!!!" +currentPage);
+
 		
 		//Create text viewing pane
 		editorPane = new JEditorPane();
@@ -529,18 +529,15 @@ public class ActionViewer extends JSplitPane implements TreeSelectionListener, A
          
          if (pathName(currentPage).equals("No Available Actions")==true)
          {
-             System.out.println("Yoyoyoyo\n\nyo");
              return;
          }
          String[] pidSplitter = pathname.split("\\(");
         
          
          //pidNum=Integer.parseInt(pidSplitter[1].substring(0,pidSplitter[1].indexOf(')')));
-         System.out.println(node.toString());
          pidNum=parsePidNumber(node.toString());
-         System.out.println("YoYoYo!!!" +pidNum);
          String actionName=parseActionName(pathName(currentPage));
-         System.out.println("Kim says the answer is:" +actionName);
+
          createTextPane(map.getLNodeByName(pidNum,actionName),actionName);
          
          /*              if (map.isNextOk(pidNum) == true)
