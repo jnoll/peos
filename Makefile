@@ -3,10 +3,11 @@
 # i.e. $(HOME)/public_html or /web/username/.
 
 INSTALL_DIR=$(HTML_DIR)/PEOS
+TCLF_DIR=peos/src/os/kernel
 
 SUBDIRS = pml os/kernel ui/GUI ui/java-gui ui/web2 
 
-all: build install
+all:  build install
 
 build: dummy
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i; done

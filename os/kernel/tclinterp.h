@@ -39,6 +39,7 @@ extern int peos_tcl_link_var(peos_tcl* ptcl, char* var_name, char* var_addr, int
 //peos_tcl ptcl01;
 extern int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_str );
 //peos_tcl* p;
+extern char* peos_tcl_get_tclf_dir(peos_tcl* ptcl,char* file_name);
 #endif
 
 /**eof**/

@@ -197,20 +197,6 @@ START_TEST(test_is_provides_true_2)
 END_TEST
 
 
-/*
-int pe_file_exists(char* filename)
-
-int pe_byname(char* func_name, char* argument)
-
-int pe_isdirempty(char* path)
-
-int pe_timestamp(char* file1, char*file2)
-
-int pe_spellcheck(char* filename)
-
-int pe_file_size(char* filename)
-*/
-
 START_TEST(test_pe_file_exists)
 {
     fail_unless(pe_file_exists("file_that_doesnt_exist")==0
@@ -227,12 +213,10 @@ END_TEST
 
 START_TEST(test_pe_byname)
 {
-    system("rm -rf mytempdir");
-    system("mkdir mytempdir");
-    system("touch mytempdir/one");
-    fail_unless(pe_byname("filecount", "mytempdir")==1, "pe_byname failed");
-    system("rm mytempdir/one");
-    system("rm -rf mytempdir");
+    system("rm -rf /tmp/temp");
+    system("mkdir /tmp/temp");
+    system("touch /tmp/temp/one");
+    fail_unless(pe_byname("filecount", "/tmp/temp")==1, "pe_byname failed");
 #ifdef TEST_PREDICATE_VERBOSE
     fprintf(stderr,"\t*** Leaving test_pe_byname\n");
 #endif
@@ -241,9 +225,9 @@ END_TEST
 
 START_TEST(test_pe_isdirempty)
 {
-    system("rm -rf `pwd`/mytempdir");
-    system("mkdir `pwd`/mytempdir");
-    fail_unless(pe_isdirempty("mytempdir")==1, "pe_isdirempty failed");
+    system("rm -rf /tmp/mydir");
+    system("mkdir /tmp/mydir");
+    fail_unless(pe_isdirempty("/tmp/mydir")==1, "pe_isdirempty failed");
 #ifdef TEST_PREDICATE_VERBOSE
     fprintf(stderr,"\t*** Leaving test_pe_isdirempty\n");
 #endif
@@ -307,7 +291,7 @@ main(int argc, char *argv[])
     SRunner *sr;
     Suite *s = suite_create("predicate_evaluator");
     TCase *tc;
-    system("cp -f ../tclf_*tcl `pwd`");
+    //system("cp -f ../tclf_*tcl `pwd`");
     parse_args(argc, argv);
     tc = tcase_create("is_provides_true");
     suite_add_tcase(s,tc);

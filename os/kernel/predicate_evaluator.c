@@ -97,7 +97,45 @@ int pe_file_exists(char* filename)
 	
 	return return_val;
 }
+int pe_byname(char* func_name, char* argument)
+{
+	peos_tcl* interpreter;
+	char* args=NULL;
+	int return_val=0;
+	char* file_name = (char*)malloc(sizeof(char)*255);
 
+	FILE * pe = fopen ("pe", "a");
+
+	if(!file_name) return 0;
+	strcpy(file_name,"tclf_");
+	strcat(file_name,func_name);
+	strcat(file_name, ".tcl");
+	fprintf(pe, "file_name: %s", file_name);
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(pe,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return 0;
+	}	
+
+	fprintf(pe,"CALL pe_byname (func_name:%s,argument:%s) \n\tfilename:%s\n", func_name, argument, file_name);
+
+
+	if(!strcmp(func_name,"$$")) return 0;
+	if(!args){
+		args = (char*)malloc(sizeof(char)*(255));
+	}
+	sprintf(args, "tclf_%s %s", func_name, argument);;
+	fprintf(pe,"\tIs this what i want? %s\n", args);
+	peos_tcl_script(interpreter, file_name);
+	Tcl_Eval(interpreter->interp, args);
+	fprintf(pe,"\tResult for pe_byname\n\t(file: %s args: %s result: %s)\n", file_name, args, interpreter->interp->result);
+        if(args) free (args);
+	sscanf(interpreter->interp->result,"%d", &return_val);
+	peos_tcl_delete(interpreter);
+	fprintf(pe,"RETURN pe_byname %d\n", return_val);
+	return return_val;
+	
+}
+/*
 int pe_byname(char* func_name, char* argument)
 {
 	peos_tcl* interpreter;
@@ -145,7 +183,7 @@ int pe_byname(char* func_name, char* argument)
 #endif
 	return return_val;
 	
-}
+}*/
 int pe_isdirempty(char* path)
 {
 
@@ -701,8 +739,8 @@ int is_requires_true(int pid, char *act_name)
 {
        int i;
 #ifdef PE_LOG
-       pe_log = NULL;
-       //pe_log = fopen ("pelog", "a");
+       //pe_log = NULL;
+       pe_log = fopen ("pelog", "a");
 #endif
 	i = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_REQUIRES);
 #ifdef PE_LOG
@@ -717,8 +755,8 @@ int is_provides_true(int pid, char *act_name)
 {
 	int i;
 #ifdef PE_LOG
-       pe_log = NULL;
-       //pe_log = fopen ("pelog", "a");
+       //pe_log = NULL;
+       pe_log = fopen ("pelog", "a");
 #endif 
 
        i = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_PROVIDES);
