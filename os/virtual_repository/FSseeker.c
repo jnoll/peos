@@ -91,7 +91,7 @@ queryList* FSqueryTool( queryList *listpointer )
 				dateResults = NULL;
 				getFSQueryDate( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
 				fileQueryTime = parsedate( tempQueries -> oneQuery -> myClauses[numClauses].value, NULL) ;	
-				strcpy( operatorType, tempQueries -> oneQuery -> myClauses[numClauses].operator ) ;			
+				strcpy( operatorType, tempQueries -> oneQuery -> myClauses[numClauses].operator ) ;
 				attributeDATE( ) ;
 				if( numClauses == 0 )
 					tempResults = dateResults ;
@@ -109,8 +109,7 @@ queryList* FSqueryTool( queryList *listpointer )
 					}
 				}
 			}
-	
-			
+
 			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "NAME" ) == 0 )
 			{
 				_debug( __FILE__, __LINE__, 5, "attribute is NAME") ;
@@ -202,11 +201,13 @@ resultList* attributeID( query *oneQuery, int numClauses )
 void attributeDATE( )
 {
 	int getDate( const char *filename, const struct stat *statptr, int flag ) ;
+	void getSearchPath( char * ) ;
 	
-	char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configuration file
+	char searchPath[BUFFER_SIZE] = { '\0' } ;	// the value of SEARCHDIR in the configuration file
 	getSearchPath( searchPath ) ;	
 	
 	_debug( __FILE__, __LINE__, 5, "queryDate is %s", queryDate ) ;
+	_debug( __FILE__, __LINE__, 5, "searchPath is %s", searchPath ) ;
 	ftw( searchPath, getDate, 5 ) ;
 }
 
@@ -218,7 +219,8 @@ void attributeDATE( )
 
 void attributeNAME( ) 
 {
-	int getFile( const char *filename, const struct stat *statptr, int flag );
+	int getFile( const char *filename, const struct stat *statptr, int flag ) ;
+	void getSearchPath( char * ) ;
 	
 	char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configuration file
 	getSearchPath( searchPath ) ;	
@@ -526,8 +528,6 @@ void getSearchPath( char *searchPath )
 	
    	if( !strlen( searchPath ) )
    	{
-      		
-      		
       		if( ( configFile = fopen( "vr.rc", "r" ) ) != NULL ||  (configFile = fopen(strcat(getenv("HOME"),"/vr.rc"),"r")) != NULL)
    		{
    			
@@ -542,6 +542,7 @@ void getSearchPath( char *searchPath )
        						word = strtok( NULL, "\n" ) ;
 		       				_assert( __FILE__, __LINE__, word ) ;
    						strcpy( searchPath, word ) ;
+   						_debug( __FILE__, __LINE__, 5, "in getSearchPath( ), searchPath is %s", searchPath ) ;
 						doneSearchPath = 1 ;
 					}
 				}
@@ -563,7 +564,7 @@ void getDirectoryPath( )
   	{
   		if ( getcwd( directoryPath, BUFFER_SIZE ) == NULL )
 		{
-			_debug( __FILE__, __LINE__, 0, "error getting directory path" ) ;
+			_debug( __FILE__, __LINE__, 5, "error getting directory path" ) ;
 			exit( 0 ) ;
 		}
 		else

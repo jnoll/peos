@@ -81,7 +81,7 @@ void selectLoop( )
 	{
 		_debug( __FILE__, __LINE__, 5, "timed out...." ) ;
 		poll_vr( ) ;
-		if(myQueries != NULL)
+		if(myQueries != NULL && debug_level)
 		{
 			
 			_debug(__FILE__,__LINE__,0, "Pending Queries : " ) ;

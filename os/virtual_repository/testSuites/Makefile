@@ -1,6 +1,6 @@
 CC = gcc
-LDFLAGS = -g -L..
-LIBS = -lvr /home/jnoll/lib/libinn.a
+LDFLAGS = -g -L.. -L/home/jnoll/lib/
+LIBS = -lvr -linn
 CFLAGS = -g -c -I..
 LIB = ../libvr.a
 

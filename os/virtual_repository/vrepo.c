@@ -181,12 +181,18 @@ void poll_vr( )
 		{
 			if( tempQueries -> oneQuery -> numFound )
 			{
-				tag = 1;
+				tag = 1 ;
 				tempQueries -> oneQuery -> callback( tempQueries -> oneQuery -> numFound,
 							             tempQueries -> oneQuery -> results,
 							             tempQueries -> oneQuery -> data ) ;
 				tempQueries -> oneQuery -> removeTag = 1 ;
 			}
+			
+			else if( tempQueries -> oneQuery -> removeTag )
+			{
+				tag = 1 ;
+			}
+			
 			tempQueries = ( queryList* ) tempQueries -> link ;
 		}
 	
