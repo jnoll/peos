@@ -5,6 +5,11 @@
 
 
 //	Resource: tFRM 1000
+
+#ifndef _APPRESOURCES_H
+#define _APPRESOURCES_H
+
+
 #define MainForm                                  1000	//(Left Origin = 0, Top Origin = 0, Width = 160, Height = 160, Usable = 1, Modal = 0, Save Behind = 0, Help ID = 0, Menu Bar ID = 1000, Default Button ID = 0)
 #define MainFormMenuBar                           1000
 
@@ -12,12 +17,19 @@
 
 
 
-#define AvailableProcessesForm			1200							
-#define AvailableProcessesFormList		1001
+#define AvailableProcessesForm						1200							
+#define AvailableProcessesList						1001
 
 
 
-#define StartedProcessesForm			1300
+#define StartedProcessesForm						1500
+#define StartedProcessesList						1503
+
+#define CurrentProcessForm							1400
+#define ActionsList									1403
+#define ActionButton							1401
+#define PreviousActionButton						1402
+#define CurrentProcessLabel							1404
 
 //	Resource: tFRM 1100
 #define AboutForm                                 1100	//(Left Origin = 2, Top Origin = 2, Width = 156, Height = 156, Usable = 1, Modal = 1, Save Behind = 1, Help ID = 0, Menu Bar ID = 0, Default Button ID = 0)
@@ -29,7 +41,7 @@
 
 
 
-
+#define	CheckSelection							1020
 
 //	Resource: Talt 1001
 #define RomIncompatibleAlert                      1001
@@ -65,3 +77,4 @@
 
 
 
+#endif

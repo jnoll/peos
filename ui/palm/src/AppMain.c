@@ -6,26 +6,15 @@
  *
  *****************************************************************************/
 
-#include <PalmOS.h>
-
+//#include <PalmOS.h>
+//#include <stdlib.h>
+//#include <string.h>
 #include "../rsc/AppResources.h"
-//#include ">peos/src/os/kernel/peos.c"
-//#include "http://linux60501.dc.engr.scu.edu:/home/jnoll/.peos/peosrep/peos/src/os/kernel/peos.c"
+#include "StartedProcesses.h"
+#include "AvailProcesses.h"
 
 
-/***********************************************************************
- *
- *	Entry Points
- *
- ***********************************************************************/
-
-
-/***********************************************************************
- *
- *	Internal Constants
- *
- ***********************************************************************/
-#define appFileCreator			'STRT'	// register your own at http://www.palmos.com/dev/creatorid/
+#define appFileCreator			'STRT'
 #define appVersionNum			0x01
 #define appPrefID				0x00
 #define appPrefVersionNum		0x01
@@ -36,18 +25,10 @@
  *	Internal Functions
  *
  ***********************************************************************/
-char listElements [10][10]={{"A"}, {"B"}, {"C"}};
-
-static void AvailProcessListDraw (UInt16 itemNum, RectangleType *bounds, char ** itemsText)
-{
-	WinDrawChars (listElements[itemNum], 
-				StrLen (listElements[itemNum]), 
-				bounds->extent.x, bounds->topLeft.y);
-}
 
 /***********************************************************************
  *
- * FUNCTION:    MainFormDoCommand
+ 
  *
  * DESCRIPTION: This routine performs the menu command specified.
  *
@@ -75,27 +56,21 @@ static Boolean MainMenuHandleEvent (UInt16 command)
 			break;
 		//available processes form
 		case 1001:
-			pForm = FrmInitForm(1200);			
-			FrmGotoForm (1200);
+			pForm = FrmInitForm(AvailableProcessesForm);			
+			FrmGotoForm (AvailableProcessesForm);
 			FrmDeleteForm(pForm);
 			handled = true;
 			break;
-		//started process form
+		//started processes form
 		case 1002:
-			//alertReturn = FrmCustomAlert (1000, NULL, NULL, NULL);
-			pForm = FrmInitForm(1300);	
-			//FrmGotoForm (1300);
-			FrmPopupForm (1300);
-			
+			pForm = FrmInitForm(1500);	
+			FrmGotoForm (1500);
 			FrmDeleteForm(pForm);
 			handled = true;
 			break;
-
-	}
-	
+	}	
 	return handled;
 }
-
 
 /***********************************************************************
  *
@@ -135,71 +110,8 @@ static Boolean MainFormHandler(EventType* pEvent)
 	return handled;
 }
 
-static Boolean AvailableProcessesHandler (EventType* pEvent)
-{
-	Boolean 	handled = false;
-	FormType* 	pForm;
-	ListType*   list;
-	int numChoices=0;
-	
-	
-		switch (pEvent->eType) {
-		//case lstEnterEvent:
-		//	break;
-		//caused by lstEnterEvent:
-		case lstSelectEvent:
-			//switch (LstGetSelectionText (
-			break;
-		
 
-		case frmOpenEvent:	
-			pForm = FrmGetActiveForm();
-			list = FrmGetObjectPtr (pForm, 1001);
-			//LstSetDrawFunction (list, AvailProcessListDraw);
-			//numChoices = sizeof (listElements); /// sizeof (listElements[0]);
-			//LstSetListChoices (list, NULL, numChoices);
-			
-			FrmDrawForm(pForm);
-			handled = true;
-			break;
-		
-		default:
-			break;
-	}
-	
-	return handled;
-	
-}
 
-static Boolean StartedProcessHandler (EventType * pEvent)
-{
-	Boolean 	handled = false;
-	FormType* 	pForm;
-	
-		switch (pEvent->eType) {
-		case frmOpenEvent:
-			pForm = FrmGetActiveForm();
-			FrmDrawForm(pForm);
-			handled = true;
-			break;
-	
-		//control button
-		case ctlSelectEvent:
-			switch (pEvent->data.ctlSelect.controlID)
-			{
-			case 1000:
-				FrmReturnToForm (1000);
-				handled = true;
-				break;
-			default:
-				break;	
-			}
-		default:
-			break;
-	}
-	
-	return handled;
-}
 
 /***********************************************************************
  *
@@ -234,17 +146,21 @@ static Boolean AppHandleEvent(EventType* pEvent)
 		// active form is called by FrmHandleEvent each time is receives an
 		// event.
 		switch (formId) {
+			//moving this case statement to the top of the switch statement
+			//helped resolve the bus error problem....why??? i dont know!
+			case StartedProcessesForm:
+				FrmSetEventHandler (pForm, StartedProcessHandler);
+			
 			case MainForm:
 				FrmSetEventHandler(pForm, MainFormHandler);
 				break;
-			
+		
 			case AvailableProcessesForm:
 				FrmSetEventHandler (pForm, AvailableProcessesHandler);
-				break;
-			
-			case StartedProcessesForm:
-				FrmSetEventHandler (pForm, StartedProcessHandler);
+				break;	
 				
+			case CurrentProcessForm:
+				FrmSetEventHandler (pForm, CurrentProcessHandler);
 			default:
 				break;
 		}
@@ -367,5 +283,3 @@ UInt32 PilotMain(UInt16 cmd, MemPtr cmdPBP, UInt16 launchFlags)
 	
 	return error;
 }
-
-

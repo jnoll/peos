@@ -7,7 +7,7 @@ PRC = build-prc
 INCLUDE = -I"C:/Program Files/PalmSource/Palm OS Developer Suite/PalmOSTools/include/stlport"
 
 all:
-	$(CC) -O0 -g -fexceptions -UNDEBUG  $(INCLUDE) -Wall -palmos5r4 -o palmpeos.o  ../src/AppMain.c
+	$(CC) -O0 -g -fexceptions -UNDEBUG  $(INCLUDE) -Wall -palmos5r4 -o palmpeos.o  ../src/AppMain.c ../src/AvailProcesses.c ../src/StartedProcesses.c
 
 #	$(CC) -c -D__PALMOS__=0x05000000 $(INCLUDE) -O0 -g -fexceptions -UNDEBUG -Wall -palmos5r4 -o palmpeos  *.o
 
