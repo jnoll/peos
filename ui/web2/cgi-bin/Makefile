@@ -22,20 +22,19 @@ KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
 OBJECTS = html.o \
 	  getcgi.o
 
-TESTS = test_login.sh \
+TESTS = test_process_listing.sh \
 	test_action_list.sh \
 	test_action_page.sh \
-	test_create_process.sh \
-	test_process_listing.sh \
-	
+        test_multiple_dones.sh \
+        test_handle_run.sh \
 
 CGI = login.cgi action_list.cgi action_page.cgi create_process.cgi process_listing.cgi action_event.cgi handle_run.cgi bind_resources.cgi multiple_dones.cgi multiple_done_bindings.cgi error_page.cgi
 SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)
 
 PML = test_action.pml readme.pml
 
-all: $(CGI)
-#all: test
+#all: $(CGI)
+all: test
 
 test: $(CGI) create_testtable
 	@for t in $(TESTS) ; do $$t ; done
