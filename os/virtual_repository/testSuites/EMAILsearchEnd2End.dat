@@ -9,3 +9,10 @@ ID EQ email:///message5.test.case@aol.com.br OR DATE EQ 12/05/2002
 DATE EQ 12/05/2002 OR ID EQ email:///message5.test.case@aol.com.br
 NAME ~ Reminder OR DATE EQ 04/07/2003
 ID EQ email:///message5.test.case@aol.com.br AND DATE EQ 04/07/2003 OR NAME ~ Returned
+ID EQ email://message1@dc.engr.scu.edu
+ID EQ email://message3.test.case.12345@server.engr.scu.edu
+ID EQ email://message5.test.case@aol.com.br
+ID EQ email:///200210081925.MAA28947@hpux31.dc.engr.scu.edu
+ID EQ email:///message1@dc.engr.scu.edu
+ID EQ email:///message3.test.case.12345@server.engr.scu.edu
+ID EQ email:///message5.test.case@aol.com.br

@@ -157,6 +157,50 @@ void setExpectedResult ( )
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
 
+		
+		/* testing the IDs */
+		
+			/* Double slashes email://MessageID */
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message3.test.case.12345@server.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+	
+	
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		/***************************************************/
+			/* Triple Slashes email:///MessageID */
+	
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/200210081925.MAA28947@hpux31.dc.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message3.test.case.12345@server.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
 		fclose( expectedResultFile ) ;	
 	}
 }
