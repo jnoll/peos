@@ -1,0 +1,52 @@
+/********************* DOCUMENTATION FOR test1****************/
+/********************** authentication documentation***********/
+/**********************Summer 2000 test documentation***********/
+/* team : tewai, kenny, rose, kirill, kiran*********************/
+/****************************************************************/
+This documentation is for "test1".
+Please read the "Readme" file.
+There are three types of users who can authenticate:
+
+user 1 is the power user.
+user 2 is the system administrator.
+user 3 is the general user.
+
+Any other user is invalid.
+
+LOGGING ON AT THE BROWSER:
+    To log on to use the Web UI, enter any name in the username field and
+    a password that is the same as the username with the number 1, 2, or 3
+    appended to it. These numbers are used to simulate different kind of 
+    users with different kind of allowable operations.
+  (Example: A power user should type ---: username : user,password: user1) 
+
+TESTING THE AUTHENTICATION SCRIPT:
+
+      The "test1" file has a script to test the login.cgi for accurate 
+      authentication.
+      
+Test script status: 
+
+working.
+
+Description of using the test cases.
+     
+      The script is successful in checking the 3 types of users and
+       returns back the part of html documantation, which is pipped into a
+      file called "test.tmp"  which gives the following output:
+
+    USER1 AUTHENTICATION SUCCESSFUL  ---when user1 has been authenticated.
+    USER2 AUTHENTICATION SUCCESSFUL  ---when user2 has been authenticated.
+    USER3 AUTHENTICATION SUCCESSFUL  ---when user3 has been authenticated.
+   
+      Invalid authentication includes users other than the 3 users
+      described above.      
+      In case of invalid authentication, it returns back the part of 
+      html documentation which includes:
+ 
+               INVALID AUTHENTICATION
+      "The user name and password failed to authenticate" 
+
+
+   
+

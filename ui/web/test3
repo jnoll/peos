@@ -1,0 +1,24 @@
+#!/bin/sh
+#  Test script for testing the kernel
+ 
+echo "_____________________ KERNEL TEST____________________________"
+echo " "
+
+
+(echo login user password user1
+sleep 2
+echo list
+sleep 2 
+echo create sample
+sleep 2
+echo available
+sleep 2
+echo run sample.002 100
+sleep 2
+echo running
+sleep 2
+echo done sample.002 100
+sleep 2 
+echo logout )| telnet milton 14523
+
+

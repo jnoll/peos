@@ -1,0 +1,8 @@
+#!/bin/csh -f
+#  Test script for the webui.cgi
+
+
+setenv REQUEST_METHOD GET
+setenv QUERY_STRING 'username=user&password=user1&command=create&action=branch'
+webui.cgi 
+

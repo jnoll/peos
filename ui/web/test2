@@ -1,0 +1,9 @@
+#!/bin/csh -f
+#  Test script for the webui.cgi
+
+
+setenv REQUEST_METHOD GET
+#set CGI = ~/peos/src/ui/web
+setenv QUERY_STRING 'username=user&password=user1&command=create&action=martini'
+webui.cgi 
+

@@ -1,0 +1,55 @@
+ 
+ 
+ 
+******************************************************************************
+******************************Readme******************************************
+/* team : tewai, kenny, rose, kirill, kiran*********************/
+******************************WebuiTeam********************************
+
+All the test cases parse the .cgi files located at /peos/src/ui/web
+directory.
+
+There are total of 9 test cases.
+Each test cases outputs a set of html pages which is an output from the
+cgi files.
+
+ TEST NAME         USAGE              DESCIPTION
+
+  test1          authentcation   -- authenticates 3 types of users, namely
+                                    user1, user2, user3.
+                                --  see test_doc for details.  
+                                
+                                -- Any other user is invalidated.
+
+                 create models   --models are:                                  
+ test4                                 -big_test
+ test5                                 -branch
+ test6                                  -integ
+ test2                                 -martini
+ test7                                 -sample
+ test8                                 -sample_selection
+ test10                                  -selection
+ test9                                 -seq-mart      
+  
+ test3           list models        invoked from the kernel                            
+                                    lists model.
+
+
+All the test cases work only when the correct parameters are given.
+
+For eg:  "create  models" work only for the models listed above,
+         if another model is given, the test cases would not pass.
+
+
+
+      
+Successes:
+ The test cases validate a user,list the models,create models.
+  
+Failures:
+ It fails to run the processes and  list running processes.
+
+The tests are executed by
+% run
+
+
