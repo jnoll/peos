@@ -67,6 +67,12 @@ public class testACJU extends TestCase{
 		assertTrue(map.getPrevActionDetails(1) == null);
 	}
 
+        public void testSetToFirst()
+        {
+            map.setToFirstAction(1);
+            assertEquals(map.getCurrentAction(1).getAttribute("name"),"overview");
+        
+        }
 	protected void setUp()
 	{
 

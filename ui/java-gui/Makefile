@@ -22,6 +22,7 @@ jtest: testLoadJU.class LoadProcess.class testACJU.class testSFASJU.class \
 	rm -f proc_table.dat.xml
 	java ${java} testLoadJU
 	java ${java} testSFASJU
+	java ${java} testACJU
 	java ${java} testCRJU
 
 setup: SetupPath.class

@@ -1,7 +1,6 @@
 process timesheet {
 
      action Fill_name {
-        requires {time_sheet}
         script {"Fill in your name and other details in the $time_sheet"}
      }
       action Fill_hours {

@@ -97,6 +97,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		splitPane.setDividerSize(5);
 		
 		TreeModel model = tree.getModel();
+                map.setToFirstAction(pidNum);
 		createTextPane(n,currentPage);
 	
    	}
@@ -298,8 +299,9 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   	public void startAction()
   	{
 		int status;
+                map.getActionByName(pidNum,currActionName);
 		status = outline.doesStartNeedValue(map.getCurrentAction(pidNum));
-
+                System.out.println(map.getCurrentAction(pidNum).getAttribute("name"));
 		if(status == 1)
 		{
 			Object[] options = {"OK", "Cancel"};
@@ -334,7 +336,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   	public void finishAction()
   	{		
 		int status;
-
+                map.getActionByName(pidNum,currActionName);
                 status = outline.doesFinishNeedValue(map.getCurrentAction(pidNum));
                 System.out.println(map.getCurrentAction(pidNum).getAttribute("name"));
                 System.out.println("status = " + status);
@@ -607,8 +609,9 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 			}
 			map.nextAction2(pidNum);		
 			n = map.getCurrentLink(pidNum);
+                     
 		}
-		return root;
+              return root;
 	}
 
 	public ActionMap getActMap()
