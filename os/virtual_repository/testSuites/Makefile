@@ -21,8 +21,8 @@ testFSsearchInvalid \
 testFSsearchEmpty \
 testUNITandResult \
 testUNITorResult \
+testUNITsortResult \
 testUNITquerywait \
-testUNITcompactString \
 testUpdateTestSite \
 testEMAILsearchEnd2End \
 testEMAILsearchInvalid \
@@ -37,8 +37,8 @@ FSsearchInvalidActualResult.txt \
 FSsearchEmptyActualResult.txt\
 UNITandResultActualResult.txt \
 UNITorResultActualResult.txt \
+UNITsortResultActualResult.txt \
 UNITquerywaitActualResult.txt \
-UNITcompactStringActualResult.txt \
 UNITgetPathActualResult.txt  \
 EMAILsearchEnd2EndActualResult.txt \
 EMAILsearchInvalidActualResult.txt
@@ -50,8 +50,8 @@ FSsearchInvalidExpectedResult.txt \
 FSsearchEmptyExpectedResult.txt\
 UNITandResultExpectedResult.txt \
 UNITorResultExpectedResult.txt \
+UNITsortResultExpectedResult.txt \
 UNITquerywaitExpectedResult.txt \
-UNITcompactStringExpectedResult.txt \
 EMAILsearchEnd2EndExpectedResult.txt \
 EMAILsearchInvalidExpectedResult.txt 
 	 
@@ -88,23 +88,23 @@ test:	$(TESTS)
 	testFSsearchEmpty > FSsearchEmptyActualResult.txt
 	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResult.txt
 	
+	testEMAILsearchEnd2End > EMAILsearchEnd2EndActualResult.txt
+	diff EMAILsearchEnd2EndExpectedResult.txt EMAILsearchEnd2EndActualResult.txt
+	
+	testEMAILsearchInvalid > EMAILsearchInvalidActualResult.txt
+	diff EMAILsearchInvalidExpectedResult.txt EMAILsearchInvalidActualResult.txt
+	
 	testUNITandResult > UNITandResultActualResult.txt
 	diff UNITandResultExpectedResult.txt UNITandResultActualResult.txt
 	
 	testUNITorResult > UNITorResultActualResult.txt
 	diff UNITorResultExpectedResult.txt UNITorResultActualResult.txt
 	
-	testEMAILsearchEnd2End > EMAILsearchEnd2EndActualResult.txt
-	diff EMAILsearchEnd2EndExpectedResult.txt EMAILsearchEnd2EndActualResult.txt
+	testUNITsortResult > UNITsortResultActualResult.txt
+	diff UNITsortResultExpectedResult.txt UNITsortResultActualResult.txt
 	
-	testEMAILsearchInvalid > EMAILsearchInvalidActualResult.txt
-	diff EMAILsearchInvalidExpectedResult.txt EMAILsearchInvalidActualResult.txt
-
 	testUNITquerywait > UNITquerywaitActualResult.txt
 	diff UNITquerywaitExpectedResult.txt UNITquerywaitActualResult.txt
-	
-	testUNITcompactString > UNITcompactStringActualResult.txt
-	diff UNITcompactStringExpectedResult.txt UNITcompactStringActualResult.txt
 		
 	cp testvr.rc vr.rc
 	testUNITgetPath > UNITgetPathActualResult.txt

@@ -66,7 +66,9 @@ int main( void )
 
 void callback( int size, resultList *listpointer, int *data )
 {	
-	printResultList( listpointer ) ;	
+	resultList *sortedResultList = NULL ;
+	sortedResultList = ( resultList * ) sortResult( listpointer ) ;
+	printResultList( sortedResultList ) ;	
 }
 
 void setExpectedResult ( ) 
@@ -140,6 +142,15 @@ void setExpectedResult ( )
 		
 		// test for NAME - ~
 	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE3.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
 		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		
@@ -148,27 +159,101 @@ void setExpectedResult ( )
 		
 		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID3.c\n" ) ;
 		strcat( expectedString, oneResult ) ;
-		
+				
 		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		
 		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME2.c\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME3.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME3.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;		
 		
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		// test for NAME - ~ AND DATE - LT
+	
 		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		
 		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE2.c\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE3.c\n\n" ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+				
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME2.c\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;	
+		expectedString[0] = '\0' ;
+		
+		// test for NAME - ~ AND DATE - EQ
+	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+				
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME2.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;		
+		
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		// test for NAME - ~ AND DATE - LT
+	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE3.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID3.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+				
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME3.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;		
+		
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+
+		// test for NAME - ~ AND DATE - GT
+	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE3.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID3.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+				
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME3.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;		
+		
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
 		
 		fclose( expectedResultFile ) ;	
 	}

@@ -20,25 +20,22 @@
 #include "queryLinkedList.h"
 #include "seekerTools.h"
 
+#define BUFFER_SIZE 1000
+
 int main( void )
 {	
-	FILE *configFile,*expectedResultFile ;		
-	char oneLine[1000] ;		
-	char *word;			
-	char searchBox[1000] = { '\0' } ;
-	char home[1000] = { '\0' } ;
-	char actualPath[1000] = { '\0' } ;
-	char expectedPath[1000] = { '\0' } ;
-	char myPath[1000] = { '\0' } ;
-	char myPath2[1000] = { '\0' } ;
 	
-	strcpy(home,getenv("HOME"));
+	FILE *expectedResultFile ;
+	char myPath[BUFFER_SIZE] = { '\0' } ;
+	char myPath2[BUFFER_SIZE] = { '\0' } ;
+	char home[BUFFER_SIZE] = { '\0' } ;
 	
-	getPath(myPath,"SEARCHDIR");
-	printf("%s\n",myPath);
-	getPath(myPath2,"MAILBOX");
-	printf("%s\n",myPath2);
+	strcpy( home,getenv( "HOME" ) ) ;
 	
+	getPath( myPath, "SEARCHDIR" ) ;
+	printf( "%s\n", myPath ) ;
+	getPath( myPath2, "MAILBOX" ) ;
+	printf( "%s\n", myPath2 ) ;	
 	
 	return 0 ;
 }

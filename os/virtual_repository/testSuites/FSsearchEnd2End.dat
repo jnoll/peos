@@ -8,3 +8,7 @@ ID EQ file:///testDir/testNAME3.c AND NAME ~ testNAME3.c
 ID EQ file:///testDir/testID1.c OR ID EQ file:///testDir/testID2.c OR ID EQ file:///testDir/testID3.c
 NAME EQ testNAME1.c
 NAME ~ test
+NAME ~ test AND DATE LT 01/01/2003
+NAME ~ test AND DATE EQ 01/01/2002
+NAME ~ test AND DATE GT 01/01/2000
+NAME ~ test AND DATE GT 01/01/2003
