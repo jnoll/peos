@@ -19,6 +19,8 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#define BUFFER 1000
+
 int main( void )
 {	
 	void callback( int size, resultList *listPointer , int *data ) ;
@@ -89,7 +91,7 @@ void callback( int size, resultList *listpointer, int *data )
 
 void setSeekResult( char *queryValue, FILE *expectedResultSeekFile )
 {
-	char seekString[100] = "queries seeks " ;
+	char seekString[BUFFER] = "queries seeks " ;
 	
 	strcat( seekString, queryValue ) ;
 	strcat( seekString, "\n" ) ;
@@ -99,15 +101,15 @@ void setSeekResult( char *queryValue, FILE *expectedResultSeekFile )
 void setTestData ( char *queryString, FILE *testQuery ) 
 {
  	char *token, *value, *pQuery ;
-	char cwd[100] = { '\0' } ;
-	char tempQuery[100] = { '\0' } ;
-	char testString[100] = { '\0' } ;
+	char cwd[BUFFER] = { '\0' } ;
+	char tempQuery[BUFFER] = { '\0' } ;
+	char testString[BUFFER] = { '\0' } ;
 	
 	strcpy( tempQuery, queryString ) ;	
 		
 	if ( strstr( queryString, "///" ) != NULL ) 
 	{
-		if( getcwd ( cwd , 100 ) == NULL )
+		if( getcwd ( cwd , BUFFER ) == NULL )
 		{
 			puts( "error" ) ;
 		}
