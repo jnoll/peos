@@ -59,6 +59,15 @@ public class ResourceMap{
             return i;
         
         }
+        
+        /**
+        * Searches for and finds a DOM element within the list.
+        */    
+        public Element getResource(String resourceName, int pidNum)        
+        {                        
+            return ResourceList[pidNum].find2(resourceName);            
+        }
+        
         private boolean isResourceChangeable(Element root)
         {
             if (root.getAttribute("value").equals("$$"))

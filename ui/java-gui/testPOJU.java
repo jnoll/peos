@@ -120,8 +120,9 @@ public class testPOJU extends TestCase{
 	{
 		try{
 			ActionMap map = test1.getActions();
-			map.setToFirstAction(0);
-			test1.startSetValue(map.getCurrentAction(0), "whatever", 0);
+			map.setToFirstAction(0);			                       
+                        test1.bindResource("time_sheet","whatever",0);
+                        test1.start(map.getCurrentAction(0),0);
 			String output="Fill in your name and other details in the <a href=\"kfmclient exec whatever\">time_sheet</a>. Make sure you have good_times";
 				assertTrue(output.equals(test1.getScript(map.getActionByName(0,"Fill_name"),0)));                                                                  }
 		catch(Exception e)

@@ -15,14 +15,14 @@ java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JUNIT_INCLUDE}:${JAVAGUI_JAR}:.
 
 all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class \
 	DisabledPreferencesFactory.class Help.class ActionMap.class LinkedList.class LinkNode.class \
-	SetupPath.class MyFileFilter.class ResourceMap.class	
+	SetupPath.class MyFileFilter.class ResourceMap.class SpecLoader.class
 	jar cf java-gui.jar *.class
 	mv java-gui.jar ./include
 disp:
 	java ${java} displayPO
 
 jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.class testSFASJU.class \
-	testPOJU.class testCRJU.class
+	testPOJU.class testCRJU.class testSpec.class
 
 	rm -f proc_table.dat
 	rm -f proc_table.dat.xml
@@ -35,6 +35,7 @@ jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.c
 	java ${java} -Dpeos.path=${path} testCRJU
 	java ${java} -Dpeos.path=${path} testActionMapJU
 	java ${java} -Dpeos.path=${path} testResourceMapJU
+	java ${java} -Dpeos.path=${path} testSpec
 
 setup: SetupPath.class
 	java ${java} SetupPath

@@ -50,7 +50,7 @@ public class LinkedList
 		LinkNode temp = curr;
 		curr = head;
 		while (curr !=null)
-		{
+		{                    
 			if (curr.getElement().getAttribute("name").equals(name))
 			{
 				Element found = curr.getElement();
