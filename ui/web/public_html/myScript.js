@@ -32,11 +32,11 @@ function writeMenu(userType){
 
     //for commands requiring parameters we take them to a different page
     //for commands NOT requiring parameters we invoke a cgi program that can generate the page
-    document.writeln("<p><A href=\"javascript:invokeAction('create')\">List models<a>");
+    document.writeln("<p><A href=\"javascript:invokeAction('create', '')\">List models<a>");
     document.writeln("<p><A href=\"create.html\">Create models<a>");
-    document.writeln("<p><p><A href=\"javascript:invokeAction('status')\">List available actions<a>");
+    document.writeln("<p><p><A href=\"javascript:invokeAction('status', '')\">List available actions<a>");
     document.writeln("<p><A href=\"run.html\">Run processes<a>");
-    document.writeln("<p><p><A href=\"javascript:invokeAction('running')\">List running processes<a>");
+    document.writeln("<p><p><A href=\"javascript:invokeAction('running', '')\">List running processes<a>");
     document.writeln("<p><A href=\"done.html\">Terminate processes<a>");
 
     document.writeln("<p><A href=\"logout.html\">Log out</a>");
