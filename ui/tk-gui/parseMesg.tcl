@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: parseMesg.tcl,v 1.1 1999/05/06 04:24:54 jneuder Exp $
+## File Information: $Id: parseMesg.tcl,v 1.2 1999/05/06 16:37:32 jneuder Exp $
 #######################################################################
 
 ##################################################################
@@ -38,8 +38,15 @@ proc ::parser::parseMesg { message }  {
    set mesg_type [string toupper $mesg_type]
 
    # User name & Process name are available in all messages
-   #set ::uiValues::userName    [readMesgField $message "USERNAME"]
-   #set ::uiValues::processName [readMesgField $message "PROCESSNAME"]
+   set tempUserName  [readMesgField $message "USERNAME"]
+   if {$tempUserName != ""} then {
+      set ::uiValues::userName $tempUserName
+   }
+
+   set tempProcessName  [readMesgField $message "PROCESSNAME"]
+   if {$tempProcessName != ""} then {
+      set ::uiValues::processName [readMesgField $message "PROCESSNAME"]
+   }
 
    # Now create different message types
    switch $mesg_type  {
