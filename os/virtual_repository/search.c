@@ -31,12 +31,11 @@ int main(int argc, char *argv[])
 	
 	repos_ctr = 0;
 	myQueries = NULL;
-
-	if (argv[1] != NULL)
-		debug_level = atoi(argv[1]);
+	
+	set_debug(argv[1]);
 
 	setup_fs( ) ;	
-	setup_mail( ) ;
+	
 	while( 1 )
 		selectLoop( ) ;
 	
@@ -74,14 +73,14 @@ void selectLoop( )
 
 	if ( FD_ISSET( STDIN, &readfds ) )
 	{
-		_debug(__FILE__,__LINE__, "receiving..." ) ;		
+		_debug(__FILE__,__LINE__,1, "receiving..." ) ;		
 		fgets( queryString, sizeof( queryString), stdin ) ;
 		query_wait( queryString, call, d ) ;
 		queryString[0] = '\0' ;	
 	}
 	else
 	{
-		_debug(__FILE__,__LINE__, "timed out...." ) ;
+		_debug(__FILE__,__LINE__,2, "timed out...." ) ;
 		poll_vr( ) ;
 		tempQueries = myQueries ;
 		while( tempQueries != NULL )
@@ -103,7 +102,7 @@ void selectLoop( )
 
 void callback( int size, resultList *listpointer, int *data )
 {	
-	_debug(__FILE__,__LINE__,"calling back..." ) ;
+	_debug(__FILE__,__LINE__,1,"calling back..." ) ;
 	printf( "%d record(s) found!\n", size ) ;
 	printResultList( listpointer ) ;
 }

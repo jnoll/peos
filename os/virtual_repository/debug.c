@@ -8,7 +8,10 @@
 # include <stdarg.h>
 # include "debug.h"
 
-debug_level = 0 ;
+debug_level = 0 ; 	// 0 = silent-mode
+			// 1 = tracing-mode
+			// 2 = debug-mode
+			// 3 = print-mode
 
 /************************************************************************
  * Function:	_debug							*
@@ -17,12 +20,12 @@ debug_level = 0 ;
  *		level requested						*
  ************************************************************************/
  
-void _debug(char *file, int line,char *fmt, ...)
+void _debug(char *file, int line,int level,char *fmt, ...)
 {
 	va_list argp;
 	
 	va_start(argp, fmt);
-	if (debug_level > 0)
+	if (debug_level > level)
 	{
 		fprintf(stderr, "\n\n");
 		fprintf(stderr, "%s %d:  ",file,line);
@@ -31,4 +34,12 @@ void _debug(char *file, int line,char *fmt, ...)
 	}
 	va_end(argp);
 }
+
+void set_debug(char *mylevel)
+{
+	if (mylevel != NULL)
+		debug_level = atoi(mylevel);
+}
+
+
 
