@@ -43,6 +43,8 @@ char **peos_list_instances();
 peos_action_t *peos_list_actions(int pid, int *num_actions);
 
 
+void peos_set_process_table_file(char *file_name);
+
 int set_resource_binding(int pid, char *resource_name, char *resource_value);
 
 char *get_resource_binding(int pid, char *resource_name);
