@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../../../os/kernel/vm.h"
-#include "../../../os/kernel/process_table.h"
-#include "../../../os/kernel/events.h"
+#include "kernel/action.h"
+#include "kernel/process_table.h"
+#include "kernel/events.h"
 
 
 int main()
