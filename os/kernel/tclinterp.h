@@ -22,8 +22,8 @@ extern int peos_tcl_start(peos_tcl** ptcl);
 // Execute a TCL command contained in a string
 extern int peos_tcl_exec_cmd TCL_VARARGS_DEF(Tcl_Interp*, arg1);
 //int peos_tcl_exec_cmd_from_string(peos_tcl* ptcl, char* cmd);
-// Terminate the TCL interpreter
-//extern void peos_tcl_finish(peos_tcl* ptcl);
+//Terminate the TCL interpreter
+extern int peos_tcl_delete(peos_tcl* ptcl);
 // Release the TCL objects buffer
 //extern int peos_tcl_release(peos_tcl* ptcl);
 // Get a string value of a TCL variable

@@ -119,9 +119,9 @@ peos_tcl* interpreter;
 	    }
 	}
 	if(result_str) free(result_str);
+	peos_tcl_delete(interpreter);
         return act_resources;
-    }    
-    else {
+    }else{
         fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
 	if(result_str) free(result_str);
         return NULL;
@@ -171,10 +171,12 @@ peos_tcl* interpreter;
             }
         }
 	if(result_str) free(result_str);
+	peos_tcl_delete(interpreter);
         return act_resources;
-    }
-    else
+    }else{
+        if(result_str) free(result_str);
         return NULL;
+    }
 }
 
 
@@ -190,7 +192,7 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
     peos_resource_t *proc_resources = context -> resources;
     int num_proc_resources = context -> num_resources;
     peos_resource_t *act_resources;
-peos_tcl* interpreter;
+    peos_tcl* interpreter;
     if(peos_tcl_start(&(interpreter))==TCL_ERROR){
        fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
        return NULL;
@@ -220,11 +222,14 @@ peos_tcl* interpreter;
 		}
 	    }
 	}
-
+	if(result_str) free(result_str);
+	peos_tcl_delete(interpreter);
         return act_resources;
     }
-    else 
+    else{
+        if(result_str) free(result_str);
         return NULL;
+    }
 }
 
 /*  

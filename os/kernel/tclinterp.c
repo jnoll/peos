@@ -15,7 +15,13 @@ int peos_tcl_start(peos_tcl** ptcl)
     }
     return TCL_OK;
 }
-
+int peos_tcl_delete(peos_tcl* ptcl)
+{
+   if(!Tcl_InterpDeleted(ptcl->interp)){ //printf("deletinggggggggggg\n");
+   	Tcl_DeleteInterp(ptcl->interp);
+   }
+   return Tcl_InterpDeleted(ptcl->interp) ? TCL_OK : TCL_ERROR;
+}
 int peos_tcl_exec_cmd TCL_VARARGS_DEF(Tcl_Interp*, arg1)
 {
    va_list arg_list;
