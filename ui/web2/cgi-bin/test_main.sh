@@ -1,5 +1,6 @@
 #!/bin/sh
 echo -n "."
+echo TEST_MAIN.SH
 rm proc_table.dat
 export QUERY_STRING="name=proc_table&pw=test"
 create_testtable
@@ -49,3 +50,4 @@ then
 fi
 
 rm output
+rm proc_table.dat

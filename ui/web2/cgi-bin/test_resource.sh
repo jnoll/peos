@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm proc_table.dat
+echo TEST_RESOURCE.SH
 create_testtable
 export QUERY_STRING="model_list=test_action"
 resource.cgi > output
@@ -18,3 +18,5 @@ echo Require resource failed.
 echo
 fi
 
+rm output
+rm proc_table.dat

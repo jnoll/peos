@@ -15,8 +15,6 @@ int main()
 
   input = getenv("QUERY_STRING");
 
-  //model=eggs&oil=test1&pan=test2&egg=test3&fork=test4&plate=test5
-
   temp = strchr(input, '=');
   temp = strtok(temp, "&");
 
@@ -43,18 +41,27 @@ int main()
     temp = strtok(NULL, "&");
     temp = strchr(temp, '=');
       temp++;
-      if(strlen(temp) < 257)
-        sprintf(resources[i].value, "%s", temp);
+      if(temp[0] != '\0'){
+        if(strlen(temp) < 256){
+          sprintf(resources[i].value, "%s", temp);
+        }
+        else
+          printf("Error: Resource value must be less than 256 characters.\n");
+      }
       else
-        printf("Error: Resource value must be less than 257 characters.\n");
+	sprintf(resources[i].value, "%s", "default_value");
   }
   temp = strtok(NULL, "");
   temp = strchr(temp, '=');
   temp++;
-  if(strlen(temp) < 257)
-    sprintf(resources[i].value, "%s", temp);
+  if(temp[0] != '\0'){
+    if(strlen(temp) < 256)
+      sprintf(resources[i].value, "%s", temp);
+    else
+      printf("Error: Resource value must be less than 256 characters.\n");
+  }
   else
-    printf("Error: Resource value must be less than 257 characters.\n");
+    sprintf(resources[i].value, "%s", "default_value");
 
   load_proc_table("proc_table.dat");
   if((pid = peos_run(model_name, resources, num_resources)) < 0) {

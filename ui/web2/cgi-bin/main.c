@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "../../../os/kernel/events.h"
 #include "../../../os/kernel/vm.h"
 #include "../../../os/kernel/process_table.h"
@@ -11,10 +12,31 @@ void print_resource(peos_action_t *action);
 
 int main()
 {
-  int i;
+  int i, action_count=0;
   peos_action_t **alist, **total_list;
   peos_resource_t *resource;
   int resource_num;
+
+  load_proc_table("proc_table.dat");
+  alist = peos_list_actions(ACT_RUN);
+  if(alist && alist[0]){
+    for(i=0; alist[i]; i++){
+      action_count++;
+    }
+  }
+  alist = peos_list_actions(ACT_SUSPEND);
+  if(alist && alist[0]){
+    for(i=0; alist[i]; i++){
+      action_count++;
+    }
+  }
+  alist = peos_list_actions(ACT_READY);
+  if(alist && alist[0]){
+    for(i=0; alist[i]; i++){
+      action_count++;
+    }
+  }
+  save_proc_table("proc_table.dat");
 
   printf("%s%c%c\n","Content-Type:text/html;charset=iso-8859-1",13,10);
 
@@ -31,116 +53,84 @@ int main()
   printf("</head>\n");
   printf("<body class=\"myTable\" text=\"FFFFFF\" link=\"#FFCC66\" vlink=\"#FFCC66\" alink=\"#FFCC66\">\n");
   printf("<br><br><br><br><br>\n");
-  printf("<table width=\"950px\">\n");
+  printf("<table width=\"900px\">\n");
   printf("<tr>\n");
-  printf("<td width=\"100\" rowspan=\"3\">\n");
-  printf("</td>\n");
-  printf("<td width=\"110\">\n");
+  printf("<td width=\"100\" rowspan=\"%d\">\n", action_count+2);
+  printf("<td width=\"100\">\n");
   printf("<font size=\"5\"<b><u>Status</u></b></font>\n"); 
   printf("</td>\n");
-  printf("<td width=\"110\">\n");
+  printf("<td width=\"100\">\n");
   printf("<font size=\"5\"<b><u>Task</u></b>\n"); 
   printf("</td>\n");
-  printf("<td width=\"310\">\n");
+  printf("<td width=\"300\">\n");
   printf("<font size=\"5\"><b><u>Resource(s)</u></b>\n"); 
   printf("</td>\n");
-  printf("<td width=\"320\">\n");
+  printf("<td width=\"300\">\n");
   printf("<font size=\"5\"><b><u>Description</u></b>\n"); 
   printf("</td>\n");
   printf("</tr>\n");
-  printf("<tr>\n");
-  printf("<td width=\"110px\">\n");  //Status column
   load_proc_table("proc_table.dat");
   alist = peos_list_actions(ACT_RUN);
   if(alist && alist[0]){
     for(i=0; alist[i]; i++){
-      printf("active<br>\n");
+      printf("<tr>\n");
+      printf("<td width=\"100px\" valign=\"top\">\n"); 
+      printf("active\n");
+      printf("</td>\n");
+      printf("<td width=\"100\" valign=\"top\">\n");
+      print_action(alist[i], "active");
+      printf("</td>\n");
+      printf("<td width=\"300\" valign=\"top\">\n");
+      print_resource(alist[i]);
+      printf("</td>\n");
+      printf("<td width=\"300\" valign=\"top\">\n");
+      get_script(alist[i]);
+      printf("</td>\n");
+      printf("</tr>\n");
     }
   }  
   alist = peos_list_actions(ACT_SUSPEND);
   if(alist && alist[0]){
     for(i=0; alist[i]; i++){
-      printf("suspended<br>\n"); 
+      printf("<tr>\n");
+      printf("<td width=\"100px\" valign=\"top\">\n"); 
+      printf("suspended\n"); 
+      printf("</td>\n");
+      printf("<td width=\"100\" valign=\"top\">\n");
+      print_action(alist[i], "suspend");
+      printf("</td>\n");
+      printf("<td width=\"300\" valign=\"top\">\n");
+      print_resource(alist[i]);
+      printf("</td>\n");
+      printf("<td width=\"300\" valign=\"top\">\n");
+      get_script(alist[i]);
+      printf("</td>\n");
+      printf("</tr>\n");
     }
   }
   alist = peos_list_actions(ACT_READY);
   if(alist && alist[0]){
     for(i=0; alist[i]; i++){
-      printf("ready<br>\n"); 
+      printf("<tr>\n");
+      printf("<td width=\"100px\" valign=\"top\">\n"); 
+      printf("ready\n"); 
+      printf("</td>\n");
+      printf("<td width=\"100\" valign=\"top\">\n");
+      print_action(alist[i], "ready");
+      printf("</td>\n");
+      printf("<td width=\"300\" valign=\"top\">\n");
+      print_resource(alist[i]);
+      printf("</td>\n");
+      printf("<td width=\"300\" valign=\"top\">\n");
+      get_script(alist[i]);
+      printf("</td>\n");
+      printf("</tr>\n");
     }
   }
   save_proc_table("proc_table.dat");
-  printf("</td>\n");
-  printf("<td width=\"110\">\n");  //Task column
-  load_proc_table("proc_table.dat");
-  alist = peos_list_actions(ACT_RUN);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      print_action(alist[i], "active");
-    }
-  }  
-  alist = peos_list_actions(ACT_SUSPEND);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      print_action(alist[i], "suspend");
-    }
-  }  
-  alist = peos_list_actions(ACT_READY);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      print_action(alist[i], "ready");
-    }
-  }  
-  save_proc_table("proc_table.dat");    
-  printf("</td>\n");
-  printf("<td width=\"310\">\n");  //Resources column
-  load_proc_table("proc_table.dat");
-  alist = peos_list_actions(ACT_RUN);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      print_resource(alist[i]);
-    }
-  }  
-  alist = peos_list_actions(ACT_SUSPEND);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      print_resource(alist[i]);
-    }
-  }  
-  alist = peos_list_actions(ACT_READY);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      print_resource(alist[i]);
-    }
-  }  
-  save_proc_table("proc_table.dat");    
-  printf("</td>\n");
-  printf("<td width=\"320\">\n");
-  load_proc_table("proc_table.dat");  //Script column
-  alist = peos_list_actions(ACT_RUN);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      get_script(alist[i]);
-    }
-  }  
-  alist = peos_list_actions(ACT_SUSPEND);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      get_script(alist[i]);
-    }
-  }  
-  alist = peos_list_actions(ACT_READY);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      get_script(alist[i]);
-    }
-  }  
-  save_proc_table("proc_table.dat");    
-  printf("</td>\n");
-  printf("</tr>\n");
   printf("<tr>\n");
-  printf("<td>\n");
-  printf("<br><br><br><br><br>\n");
+  printf("<td height=\"80\" width=\"800\" valign=\"bottom\" colspan=\"4\">\n");
+  printf("<br><br><br><br><br><br>\n");
   printf("<a href=\"create.cgi\">\n"); 
   printf("<img src=\"../images/newprocess_button.jpg\" width=\"120\" height=\"30\" border=\"0\">\n");
   printf("</a>\n");
@@ -156,7 +146,7 @@ int main()
 
 void print_action(peos_action_t *action, char *state)
 {
-  printf("<a href=\"action_page.cgi?%d+%s=%s\"> %s<br>\n", action->pid, action->name, state, action->name);
+  printf("<a href=\"action_page.cgi?%d+%s=%s\"> %s\n", action->pid, action->name, state, action->name);
   printf("</a>\n");
 }
 
@@ -169,36 +159,44 @@ void get_script(peos_action_t *action)
   script = (char *) get_field(action->pid, action->name, ACT_SCRIPT);
   save_proc_table("proc_table.dat");
   if(script) {
-    for(i=0; i<30; i++){
+    for(i=0; i<50; i++){
       if(script[i] == '\0' || script[i] == '\n')
       break;
-      if (script[i] == '\"') continue; /* Don't display quotes. */
+      if(script[i] == '\"') continue; /* Don't display quotes. */
       printf("%c",script[i]);
     }
-    printf("<br>\n");
   }
   else {
-    printf("No Script<br>\n");
+    printf("No Script\n");
   }
 }
 
 void print_resource(peos_action_t *action)
 {
-  int i, j, num_resources;
+  int i, j, k=0, num_resources;
+  char temp[256];
   peos_resource_t *resources;
 
   resources = (peos_resource_t *) get_resource_list_action(action->pid, action->name, &num_resources);
   if(resources){
     for(i=0; i<num_resources; i++){
-      for(j=0; j<30; j++){
+      k = 0;
+      for(j=0; ; j++){
         if(resources[i].name[j] == '\0' || resources[i].name[j] == '\n')
           break;
-        if (resources[i].name[j] == '\"') continue; /* Don't display quotes. */
-	  printf("<a href=\"%s\">%c", resources[i].value, resources[i].name[j]);
+        if(resources[i].name[j] == '\"') continue; /* Don't display quotes. */
+        temp[k] = resources[i].name[j];	
+	k++;
+      }
+      temp[k] = '\0';
+      if(strcmp(resources[i].value, "default_value") == 0){
+	printf("%s", temp);
+      }
+      else{
+	printf("<a href=\"%s\">%s</a>\n", resources[i].value, temp);
       }
       if(i != num_resources-1)
         printf(", ");
     }
   }
-  printf("<br>\n");
 }

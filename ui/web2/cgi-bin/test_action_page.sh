@@ -1,5 +1,6 @@
 #!/bin/sh
 echo -n "."
+echo TEST_ACTION_PAGE.SH......
 export QUERY_STRING="0+test_script=ready"
 create_testtable
 action_page.cgi > output
@@ -64,3 +65,4 @@ then
 fi
 
 rm output
+rm proc_table.dat
