@@ -6,7 +6,12 @@
 #include "action.h"
 #include "process_table.h"
 #include "graph.h"
-
+#include "tclinterp.h"
+/*
+ ******* this variable is global
+ */
+peos_tcl p;
+/*********/
 void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier) 
 {
     int i = 0;
@@ -76,6 +81,8 @@ void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int
 
 peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *total_resources)
 {
+
+    char* result_str=NULL;
     Graph g;
     Node n;
     int i,j;
@@ -86,12 +93,21 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
     int num_proc_resources = context -> num_resources;
 
     peos_resource_t *act_resources;
-
+    printf("___________________get_resource_list_action_requires____________\n");
+    if(started==0)
+    if(peos_tcl_start(&p)==TCL_ERROR){
+    fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+    return TCL_ERROR;
+    }
+    if(!result_str) 
+       result_str = (char*)malloc(sizeof(char)*(255));
+    started =1;
     g = context -> process_graph;
     if(g != NULL) {
         n = find_node(g,act_name);
         if(n == NULL) {
-            fprintf(stderr,"get_resource_list_action :cannot find action");
+            fprintf(stderr,"get_resource_list_action :cannot find action\n");
+	    if(result_str) free(result_str);
 	    return NULL;
 	}
 
@@ -101,17 +117,22 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
         for(i = 0; i < num_resources; i++) {
             for(j = 0; j < num_proc_resources; j++) {
 	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
-		    printf("pr=%s\n",proc_resources[j].value);
-	            strcpy(act_resources[i].value,proc_resources[j].value);
+		    peos_tcl_eval(&p,proc_resources[j].name , proc_resources[j].value, result_str );
+		    //peos_tcl_eval(&p,"something" , "value", result_str );
+		    printf("action provides = %s\n",proc_resources[j].value);
+		    printf("result_str = %s\n", result_str);
+	            strcpy(act_resources[i].value,result_str);//proc_resources[j].value);
 		    break;
 		}
 	    }
 	}
-
+        printf("________________________________________________________________\n");
+	if(result_str) free(result_str);
         return act_resources;
     }    
     else {
         fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
+	if(result_str) free(result_str);
         return NULL;
     }
 }

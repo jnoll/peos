@@ -143,10 +143,10 @@ main (int argc, char **argv)
     char *model;
     int l = 0; /* l == 1 iff login option is passed */
     char *login = "proc_table"; /* default login name */
-    peos_tcl p;
+   // peos_tcl p;
     
     opterr = 0;
-    peos_tcl_start(&p);
+   // peos_tcl_start(&p);
     while ((c = getopt (argc, argv, "+c:n:ihr:d:ul:")) != -1) {
         switch (c) {
             case 'l': {

@@ -9,17 +9,33 @@
 #ifdef MYTEST
 #include "comb.c"
 #endif
+/****
+:::the interface code design plan:::
+- have a script called processname.tcl for each
+  processname.pml file. The processname.tcl file would be loaded along with the .pml
+  file and initialize variables, e.g. $pwd, $rootname, $extensions etc. The user
+  can then bind resources by typing $pwd/$rootname.$extension 
+  in the console or gui, or perhaps if a special flag is set to true, 
+  the tcl helper function would automatically suggest these values(latter is probably
+  better).
+  steps:
+  function: load preliminary process values and flags, if the process.tcl 
+  	filename is not found, TCL is OFF.
+  function: inject these values into the resource table
+  function: update these values if something is changed
+  function(s): task-specific functions e.g. check file presense, check email notification... 
+****/
 int peos_tcl_start(peos_tcl* ptcl)
 {
 
-  if(!started){
-     started=1;
+ // if(!started){
+ //    started=1;
     // ptcl->argc=0;
      ptcl->interp=Tcl_CreateInterp();
      if (Tcl_Init(ptcl->interp) == TCL_ERROR) {
     return TCL_ERROR;
    }
-  }
+ // }
    //  if(ptcl->argc > 0)
    //  //if(ptcl->objv != NULL)
    //      peos_tcl_release(ptcl);
@@ -130,6 +146,43 @@ int peos_tcl_script(peos_tcl* ptcl, char* file_name)
     }
     printf("Script ran, result: %s\n", status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
     return status;
+}
+int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_str )
+{
+    int result=-1;
+    char* str=NULL;
+
+    if(!(str=(char*)malloc(sizeof(char)*(strlen(eval_str)+strlen(name_str)+50)))){
+    	fprintf(stderr,"ERROR: Insufficient memory, malloc failed in peos_tcl_eval\n");
+    	return TCL_ERROR;
+    }else{
+        if(!strcmp(eval_str,"$$")){
+	sprintf(str,"set %s \\$\\$", name_str, eval_str);
+	}else{
+	sprintf(str,"set %s %s", name_str, eval_str);
+	}
+    }
+    if(!result_str){
+       fprintf(stderr,"ERROR: Insufficient memory, malloc failed in peos_tcl_eval\n");
+       free(str);
+       return TCL_ERROR;
+    }
+    result=Tcl_Eval(ptcl->interp, str);
+   
+    if( result == TCL_ERROR){
+       fprintf(stderr,"ERROR: failed with TCL statement: %s\n", str);
+       fprintf(stderr,"ERROR: Tcl reuturned TCL_ERROR in peos_tcl_eval\n");
+       strcpy(result_str,eval_str);
+    }else if(result == TCL_OK){
+       strcpy(result_str,ptcl->interp->result);//peos_tcl_get_var(ptcl, name_str));
+       printf("MESSAGE: successfully evaluated TCL statement: %s\n", str);
+       printf("MESSAGE: variable set: %s %s \n", peos_tcl_get_var(ptcl, name_str));
+    }else{
+       fprintf(stderr,"OTHER Tcl MESSAGE: Result %d in peos_tcl_eval\n", result);
+       strcpy(result_str,eval_str);
+    }
+    free(str);
+    return result;
 }
 #ifdef UNIT_TEST
 #include "test_tclinterp.c"
