@@ -1,6 +1,6 @@
 /* 
  * Submit homework, in-class or via email.
- * $Id: submit_hw.pml,v 1.1 2004/07/02 21:00:17 jmontana Exp $
+ * $Id: submit_hw.pml,v 1.2 2004/07/16 01:43:01 jmontana Exp $
  */
 
 process submit_document {

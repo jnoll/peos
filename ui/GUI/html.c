@@ -3,40 +3,10 @@
 #include "html.h"
 #include "htmllinkage.h"
 
-/* no file outside this one will call this function so we make it static */
-static char *
-parse_prepAccess(char *file_name)
+void link_run (GtkWidget *html)
 {
-  int i, j, size;
- 
-  /* get size of string parsed */
-  for(i = strlen(file_name); file_name[i] != '/'; i--); 
-  
-  size = i;
-  char temp[size + 1];
-  size = 0;
-  j = strlen(file_name);
-  for(i = sizeof(temp)-1; file_name[i] != '/'; i--) {
-  	temp[i] = file_name[j];
-	printf("temp[i] = %c, file_name[j] = %c", temp[i], file_name[j]);
-	j--;
-  }
-  temp[sizeof(temp)] = '\0';
-
-  printf("temp = %s \n", temp);
-  free(file_name);
-  file_name = NULL;
-  size = strlen(temp) + 1;  
-  file_name = (char *) malloc(size);
-  strcpy(file_name, temp);
-   
-  return file_name; 
-
-}
-
-void 
-link_run (GtkWidget *html)
-{
+  char *cmd;
+  int size;
   char *temp;
   char *file_name;
 
@@ -53,17 +23,30 @@ printf("GTK_HTML (html)->pointer_url = %s\n", temp);	/* XXX - temp debug */
   }
 printf("file_name = %s\n", file_name);	/* XXX - temp debug */
 printf("access(%s, F_OK) = %d\n", file_name, access(file_name, F_OK));	/* XXX - temp debug */
-//parse_prepAccess(file_name);
   if(access(file_name, F_OK) != 0){
   	/* XXX - need a popup dialog saying no such file */
 	return;
   }
 
+  size = sizeof("kfmclient exec ") + strlen (temp);
+  cmd = malloc (size);
+  if(cmd == NULL) {
+  	perror("Inefficient memory for cmd. Aborting.");
+	exit(1);
+  }
+  strcpy (cmd, "kfmclient exec ");
+  strcat (cmd, temp);
+printf("cmd = %s\n", cmd);	/* XXX - temp debug */
+  runPeos (cmd);
+  free (cmd);
+  cmd = NULL;
+
+/*
   gnome_url_show (GTK_HTML (html)->pointer_url);
+*/
 }
 
-GtkWidget 
-*action_detail( xmlNode *action)
+GtkWidget *action_detail( xmlNode *action)
 {
 	char *name = NULL;
 	char *value = NULL;

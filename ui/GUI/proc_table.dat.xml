@@ -1,2 +1,34 @@
 <process_table>
+<process pid="0" model="/users/student/jmontana/peos/src/ui/GUI/Timesheet.pml" status="2">
+<action name="Fill_name" state="RUN">
+<script>
+&quot;Fill in your name and other details in the $time_sheet&quot;
+</script>
+<req_resource name="time_sheet" value="geg" qualifier=""></req_resource>
+</action>
+<action name="Fill_hours" state="NONE">
+<script>
+&quot;Fill in the hours in the $time_sheet&quot;
+</script>
+<req_resource name="time_sheet" value="geg" qualifier=""></req_resource>
+</action>
+<action name="Fill_total_hours" state="NONE">
+<script>
+&quot;Fill in total hours in the $time_sheet&quot;
+</script>
+<req_resource name="time_sheet" value="geg" qualifier=""></req_resource>
+</action>
+<action name="Sign_and_date" state="NONE">
+<script>
+&quot;Sign and Date the $time_sheet&quot;
+</script>
+<req_resource name="time_sheet" value="geg" qualifier=""></req_resource>
+</action>
+<action name="Turn_it_in" state="NONE">
+<script>
+&quot;Hand the $time_sheet to your supervisor&quot;
+</script>
+<req_resource name="time_sheet" value="geg" qualifier=""></req_resource>
+</action>
+</process>
 </process_table>

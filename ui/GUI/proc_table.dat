@@ -1,9 +1,9 @@
 pid: 0
-model: none
-status: 1
-actions: 0 
+model: /users/student/jmontana/peos/src/ui/GUI/Timesheet.pml
+status: 2
+actions: 5  Fill_name 2 Fill_hours 0 Fill_total_hours 0 Sign_and_date 0 Turn_it_in 0
 other_nodes: 0 
-resources: 0 
+resources: 1  time_sheet geg
 
 pid: 1
 model: none

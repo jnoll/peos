@@ -13,7 +13,6 @@ int parse ()
    * between the version it was compiled for and the actual shared
    * library used.
    */
-
   /*parse the file and get the DOM */
   doc = xmlParseFile("proc_table.dat.xml");
 
@@ -54,9 +53,9 @@ void freesub (action *iter) {
 }
 
 void destroyDocumentStuff () {
+  destroy_glist();
   if (doc != NULL) xmlFreeDoc(doc);
   doc = NULL; /* xmlFreeDoc does not set doc to NULL */
-  destroy_glist();
   xmlCleanupParser();
 }
 
