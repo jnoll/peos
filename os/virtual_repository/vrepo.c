@@ -111,15 +111,19 @@ void poll_vr( )
 	queryList *tempQueries ;
 	
 	int tag = 0 ;
+	int i=0;
 
 	if( myQueries != NULL )
 	{
-		myQueries = FSqueryTool( myQueries ) ;
+		for(i=0; i<repos_ctr ; i++)
+		{	
+			//myQueries = FSqueryTool( myQueries ) ;
 		
-			
+			myQueries = repos_list[i].queryTool(myQueries);
+		}	
 		tempQueries = myQueries ;
 	
-		while( tempQueries != NULL )
+		while( tempQueries != NULL )			
 		{
 			if( tempQueries -> oneQuery -> numFound )
 			{
@@ -134,6 +138,7 @@ void poll_vr( )
 	
 		if ( tag )
 			myQueries = filterQueryList( myQueries ) ;
+	
 	}
 }
 
