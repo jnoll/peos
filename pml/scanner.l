@@ -51,21 +51,15 @@ string		\"[^"]*\"
 "action"			{return ACTION;}
 "agent"				{return AGENT;}
 "branch"			{return BRANCH;}
-"creates"			{return CREATES;}
 "executable"			{return EXECUTABLE;}
-"input"				{return INPUT;}
-"iterate"			{return ITERATION;}
 "iteration"			{return ITERATION;}
 "manual"			{return MANUAL;}
-"output"			{return OUTPUT;}
 "process"			{return PROCESS;}
 "provides"			{return PROVIDES;}
 "requires"			{return REQUIRES;}
 "script"			{return SCRIPT;}
-"select"			{return SELECTION;}
 "selection"			{return SELECTION;}
 "sequence"			{return SEQUENCE;}
-"task"				{return SEQUENCE;}
 "tool"				{return TOOL;}
 
 {string}			{intern ( ); return STRING;}
@@ -81,11 +75,12 @@ string		\"[^"]*\"
 "!="				{return NE;}
 "<"				{return LT;}
 ">"				{return GT;}
+"!"				{return NOT;}
 "."				{return DOT;}
 
 \n				{lineno ++;}
 "/*"				{comment ( );}
-[ \t]+				{/* ignore */}
+[ \t\r]+			{/* ignore */}
 .				{return *yytext;}
 
 %%

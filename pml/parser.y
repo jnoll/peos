@@ -30,24 +30,30 @@ static void and_trees (
 %token ACTION AGENT BRANCH CREATES EXECUTABLE INPUT ITERATION MANUAL OUTPUT
 %token PROCESS PROVIDES REQUIRES SCRIPT SELECTION SEQUENCE TOOL
 
-%token OR AND EQ NE LE GE LT GT DOT
+%token OR AND EQ NE LE GE LT GT NOT DOT QUALIFIER
 %token ID NUMBER STRING
 %token JOIN RENDEZVOUS
 
 
 %union {
+    int           val;
     struct tree  *tree;
     struct graph *graph;
     char         *string;
 }
 
-%type <tree> value
-%type <tree> resource
-%type <tree> attribute
+%type <val> optional_type
+
 %type <tree> identifier
 %type <tree> expression
-%type <tree> and_expression
+%type <tree> value_expression
+%type <tree> string_expression
 %type <tree> primary_expression
+%type <tree> relation_expression
+%type <tree> variable_expression
+%type <tree> attribute_expression
+%type <tree> disjunction_expression
+%type <tree> conjunction_expression
 
 %type <string> ID
 %type <string> NUMBER
@@ -206,14 +212,26 @@ action_header
 	{
 	    Node node = NodeCreate ($2, ACTION, lineno);
 	    $$ = GraphCreate (node, node);
+	    node -> action_type = $3;
 	}
     ;
 
 
 optional_type
     : MANUAL
+	{
+	    $$ = MANUAL;
+	}
+
     | EXECUTABLE
+	{
+	    $$ = EXECUTABLE;
+	}
+
     | /* empty */
+	{
+	    $$ = 0;
+	}
     ;
 
 
@@ -224,22 +242,7 @@ specification_list
 
 
 specification
-    : INPUT '{' expression '}'
-	{
-	    and_trees (&($<graph>-2 -> source -> inputs), $3);
-	}
-
-    | OUTPUT '{' expression '}'
-	{
-	    and_trees (&($<graph>-2 -> source -> outputs), $3);
-	}
-
-    | CREATES '{' expression '}'
-	{
-	    and_trees (&($<graph>-2 -> source -> creates), $3);
-	}
-
-    | PROVIDES '{' expression '}'
+    : PROVIDES '{' expression '}'
 	{
 	    and_trees (&($<graph>-2 -> source -> provides), $3);
 	}
@@ -267,60 +270,122 @@ specification
 
 
 expression
-    : and_expression
-    | expression OR and_expression
+    : disjunction_expression
+    ;
+
+
+disjunction_expression
+    : conjunction_expression
+    | disjunction_expression OR conjunction_expression
 	{
 	    $$ = TreeCreate ($1, $3, "||", OR);
 	}
     ;
 
 
-and_expression
-    : primary_expression
-    | and_expression AND primary_expression
+conjunction_expression
+    : relation_expression
+    | conjunction_expression AND relation_expression
 	{
 	    $$ = TreeCreate ($1, $3, "&&", AND);
 	}
     ;
 
 
-primary_expression
-    : resource
-    | attribute EQ value
+relation_expression
+    : string_expression
+    | primary_expression
+    | value_expression EQ value_expression
 	{
 	    $$ = TreeCreate ($1, $3, "==", EQ);
 	}
 
-    | attribute NE value
+    | value_expression NE value_expression
 	{
 	    $$ = TreeCreate ($1, $3, "!=", NE);
 	}
 
-    | attribute LE value
-	{
-	    $$ = TreeCreate ($1, $3, "<=", LE);
-	}
-
-    | attribute GE value
-	{
-	    $$ = TreeCreate ($1, $3, ">=", GE);
-	}
-
-    | attribute LT value
+    | value_expression LT value_expression
 	{
 	    $$ = TreeCreate ($1, $3, "<", LT);
 	}
 
-    | attribute GT value
+    | value_expression GT value_expression
 	{
 	    $$ = TreeCreate ($1, $3, ">", GT);
+	}
+
+    | value_expression LE value_expression
+	{
+	    $$ = TreeCreate ($1, $3, "<=", LE);
+	}
+
+    | value_expression GE value_expression
+	{
+	    $$ = TreeCreate ($1, $3, ">=", GE);
+	}
+
+    | variable_expression EQ variable_expression
+	{
+	    $$ = TreeCreate ($1, $3, "==", EQ);
+	}
+
+    | variable_expression NE variable_expression
+	{
+	    $$ = TreeCreate ($1, $3, "!=", NE);
 	}
     ;
 
 
-resource
+primary_expression
+    : variable_expression
+    | attribute_expression
+    | NOT primary_expression
+	{
+	    $$ = TreeCreate (NULL, $2, "!", NOT);
+	}
+
+    | '(' expression ')'
+	{
+	    $$ = $2;
+	}
+    ;
+
+
+variable_expression
     : identifier
-    | STRING
+    | '(' identifier ')'
+	{
+	    $$ = $2;
+	}
+
+    | '(' identifier ')' variable_expression
+	{
+	    $$ = TreeCreate ($2, $4, "(qualifier)", QUALIFIER);
+	}
+    ;
+
+
+attribute_expression
+    : variable_expression DOT identifier
+	{
+	    $$ = TreeCreate ($1, $3, ".", DOT);
+	}
+    ;
+
+
+value_expression
+    : attribute_expression
+    | string_expression
+    | NUMBER
+	{
+	    $$ = TreeCreate (NULL, NULL, $1, lineno);
+	}
+    ;
+
+
+string_expression
+    : STRING
 	{
 	    $$ = TreeCreate (NULL, NULL, $1, lineno);
 	}
@@ -333,29 +398,6 @@ identifier
 	    $$ = TreeCreate (NULL, NULL, $1, lineno);
 	}
     ;
-
-
-attribute
-    : identifier DOT identifier
-	{
-	    $$ = TreeCreate ($1, $3, ".", DOT);
-	}
-    ;
-
-
-value
-    : identifier
-    | STRING
-	{
-	    $$ = TreeCreate (NULL, NULL, $1, lineno);
-	}
-
-    | NUMBER
-	{
-	    $$ = TreeCreate (NULL, NULL, $1, lineno);
-	}
-    ;
-
 %%
 
 

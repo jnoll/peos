@@ -17,23 +17,21 @@ typedef struct node *Node;
 typedef struct graph *Graph;
 
 struct node {
-    String name;
-    short  type;
-    short  line;
-    String tool;
-    String script;
-    Tree   agent;
-    Tree   inputs;
-    Tree   outputs;
-    Tree   creates;
-    Tree   provides;
-    Tree   requires;
-    List   predecessors;
-    List   successors;
-    Node   dominator;
-    Node   matching;
-    Node   next;
-    void  *data;
+    String name;		/* name of node or "(anonymous)" if unnamed  */
+    short  type;		/* node type (ACTION, BRANCH, etc.)          */
+    short  action_type;		/* MANUAL or EXECUTABLE for ACTION nodes     */
+    int    line;		/* line number                               */
+    String tool;		/* tool for manual actions                   */
+    String script;		/* script for executable or manual actions   */
+    Tree   agent;		/* agent or actor                            */
+    Tree   provides;		/* provided resources                        */
+    Tree   requires;		/* required resources                        */
+    List   predecessors;	/* list of control-flow predecessors         */
+    List   successors;		/* list of control-flow successors           */
+    Node   dominator;		/* dominator of this node                    */
+    Node   matching;		/* matching BRANCH/RENDEZVOUS or SELECT/JOIN */
+    Node   next;		/* next node in linked list (lexical order)  */
+    void  *data;		/* client-provided data                      */
 };
 
 struct graph {

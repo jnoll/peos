@@ -13,9 +13,6 @@ $(LIB):		$(SRCS) $(OBJS)
 		ar cru $(LIB) $(OBJS)
 		ranlib $(LIB) || true
 
-traverse:	traverse.o $(LIB)
-	$(CC) -o $@ $< $(LIB)
-
 clean:;		rm -f $(LIB) $(OBJS)
 
 clobber:;	rm -f $(LIB) $(OBJS) $(SRCS)

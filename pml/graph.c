@@ -59,15 +59,6 @@ void GraphDestroy (graph)
 	if (node -> agent != NULL)
 	    TreeDestroy (node -> agent);
 
-	if (node -> inputs != NULL)
-	    TreeDestroy (node -> inputs);
-
-	if (node -> outputs != NULL)
-	    TreeDestroy (node -> outputs);
-
-	if (node -> creates != NULL)
-	    TreeDestroy (node -> creates);
-
 	if (node -> provides != NULL)
 	    TreeDestroy (node -> provides);
 
@@ -152,9 +143,6 @@ Node NodeCreate (name, type, line)
     node -> tool = NULL;
     node -> script = NULL;
     node -> agent = NULL;
-    node -> inputs = NULL;
-    node -> outputs = NULL;
-    node -> creates = NULL;
     node -> provides = NULL;
     node -> requires = NULL;
     node -> matching = NULL;
@@ -163,6 +151,7 @@ Node NodeCreate (name, type, line)
     node -> data = NULL;
     node -> predecessors = ListCreate ( );
     node -> successors = ListCreate ( );
+    node -> action_type = 0;
 
     return node;
 }
