@@ -10,6 +10,7 @@
 #include <pml/list.h>
 #include <pml/graph.h>
 #include <pml/tree.h>
+#include <pml/features.h>
 #include "segments.h"
 
 #include "TestDB.h"
@@ -61,8 +62,13 @@ static void test_Strdup() {
 
 static void test_peos_list_models(){
 	char ** ret;
-	//ret = peos_list_models(); 
-	ASSERT_STR_EQUAL(ret[0],"yo");
+	Int16 dbc;
+	dbc = DmNumDatabases(0);
+	ASSERT_INT16_EQUAL(5, dbc);
+	peos_list_models(); 
+	if (ret == NULL)
+		ASSERT_STR_EQUAL("yo", "YOU");
+//	ASSERT_STR_EQUAL("yo", ret[0]);
 }
 static void test_ListCreate()
 {
@@ -126,6 +132,7 @@ void initialize_suite() {
   add_test_case(group, "Node", test_Node);
   add_test_case(group, "TreeCreate", test_TreeCreate);
   add_test_case(group, "TreeDelete", test_TreeDelete);
+  add_test_case(group, "ListModels", test_peos_list_models);
 }
 
 void terminate_suite() {

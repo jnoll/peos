@@ -39,8 +39,8 @@ FRAMEWORKOBJS = \
 # etc.)
 CFLAGS = -g -Wall -W -Wno-unused -Wno-switch -Wno-sign-compare -DPALM $(INC_PATH)
 LIBS = -lPalmOSGlue -lgcc ../stdio.o \
-	../../../pml/libpalmpml.a  \
-	../../kernel/libpalmpeos.a
+	../../kernel/libpalmpeos.a \
+	../../../pml/libpalmpml.a  
 
 LDFLAGS = -g
 
