@@ -53,7 +53,7 @@ int delete_entry(int pid)
     return 1;
 }
 
-vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state state)
+vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event event)
 {
     return VM_CONTINUE;
 }

@@ -16,7 +16,7 @@ typedef enum {
 
 typedef enum {
     REQUIRES_TRUE = 0, REQUIRES_FALSE, PROVIDES_TRUE, PROVIDES_FALSE
-} vm_resource_state;
+} vm_resource_event;
 
 typedef enum {
     PEOS_EVENT_START = 0, PEOS_EVENT_SUSPEND, PEOS_EVENT_ABORT, PEOS_EVENT_FINISH, PEOS_EVENT_REQUIRES, PEOS_EVENT_PROVIDES

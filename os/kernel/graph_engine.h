@@ -14,7 +14,8 @@
 # define MARKED_3(n) (((Data) (n) -> data) -> marked[3])
 # define MARKED_4(n) (((Data) (n) -> data) -> marked[4])
 # define STATE(n) (((Data) (n) -> data) -> state)
-# define RESOURCE_STATE(n) (((Data) (n) -> data) -> resource_state)
+# define REQUIRES_STATE(n) (((Data) (n) -> data) -> requires_state)
+# define PROVIDES_STATE(n) (((Data) (n) -> data) -> provides_state)
 # define ITER_START(n) (((Data) (n) -> data) -> iter_start)
 # define ITER_END(n) (((Data) (n) -> data) -> iter_end)
 # define ITER_END_NODES(n) (((Data) (n) -> data) -> iter_end_nodes)
@@ -30,7 +31,8 @@ int iter_start;
 int iter_end;
 int order;
 vm_act_state state;
-vm_resource_state resource_state;
+int requires_state;
+int provides_state;
 
 /* This is a list of nodes which are successors of the last node in an iteration. This list is associated with the first node in an iteration. */ 
 List iter_end_nodes; 
@@ -63,6 +65,6 @@ extern void initialize_graph(Graph g);
 
 extern char *get_script_graph(Graph g, char * act_name);
 
-extern vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state resource_state);
+extern vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event resource_event);
 
 #endif

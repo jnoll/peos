@@ -58,8 +58,8 @@ START_TEST(test_handle_resource_event_1)
     act_0 = make_node("act_0",ACT_BLOCKED,ACTION,1);
     act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-    RESOURCE_STATE(act_0) = REQUIRES_FALSE;
-    RESOURCE_STATE(act_1) = REQUIRES_FALSE;
+    REQUIRES_STATE(act_0) = FALSE;
+    REQUIRES_STATE(act_1) = FALSE;
 
     g->source = source;
     g-> sink = sink;
@@ -81,9 +81,9 @@ START_TEST(test_handle_resource_event_1)
     
     fail_unless(STATE(act_0) == ACT_READY, "act_0 not ready");
     fail_unless(STATE(act_1) == ACT_NONE, "act_1 not none");
-    fail_unless(RESOURCE_STATE(act_0) == REQUIRES_TRUE, "act_0 requires not true");
+    fail_unless(REQUIRES_STATE(act_0) == TRUE, "act_0 requires not true");
     
-    fail_unless(RESOURCE_STATE(act_1) == REQUIRES_FALSE, "act_1 requires not false");
+    fail_unless(REQUIRES_STATE(act_1) == FALSE, "act_1 requires not false");
     
 }
 END_TEST
@@ -102,8 +102,8 @@ START_TEST(test_handle_resource_event_2)
     act_0 = make_node("act_0",ACT_READY,ACTION,1);
     act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-    RESOURCE_STATE(act_0) = REQUIRES_TRUE;
-    RESOURCE_STATE(act_1) = REQUIRES_FALSE;
+    PROVIDES_STATE(act_0) = TRUE;
+    REQUIRES_STATE(act_1) = FALSE;
 
     g->source = source;
     g-> sink = sink;
@@ -126,9 +126,9 @@ START_TEST(test_handle_resource_event_2)
     
     fail_unless(STATE(act_0) == ACT_DONE, "act_0 not done");
     fail_unless(STATE(act_1) == ACT_BLOCKED, "act_1 not blocked");
-    fail_unless(RESOURCE_STATE(act_0) == PROVIDES_TRUE, "act_0 provides not true");
+    fail_unless(PROVIDES_STATE(act_0) == TRUE, "act_0 provides not true");
     
-    fail_unless(RESOURCE_STATE(act_1) == REQUIRES_FALSE, "act_1 requires not false");
+    fail_unless(REQUIRES_STATE(act_1) == FALSE, "act_1 requires not false");
     
 }
 END_TEST
@@ -146,8 +146,8 @@ START_TEST(test_handle_resource_event_3)
     act_0 = make_node("act_0",ACT_NONE,ACTION,1);
     act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-    RESOURCE_STATE(act_0) = REQUIRES_FALSE;
-    RESOURCE_STATE(act_1) = REQUIRES_FALSE;
+    REQUIRES_STATE(act_0) = FALSE;
+    REQUIRES_STATE(act_1) = FALSE;
 
     g->source = source;
     g-> sink = sink;
@@ -170,9 +170,9 @@ START_TEST(test_handle_resource_event_3)
     
     fail_unless(STATE(act_0) == ACT_AVAILABLE, "act_0 not available");
     fail_unless(STATE(act_1) == ACT_NONE, "act_1 not none");
-    fail_unless(RESOURCE_STATE(act_0) == REQUIRES_TRUE, "act_0 requires not true");
+    fail_unless(REQUIRES_STATE(act_0) == TRUE, "act_0 requires not true");
     
-    fail_unless(RESOURCE_STATE(act_1) == REQUIRES_FALSE, "act_1 requires not false");
+    fail_unless(REQUIRES_STATE(act_1) == FALSE, "act_1 requires not false");
     
 }
 END_TEST
@@ -223,8 +223,8 @@ START_TEST(test_action_done)
     act_0 = make_node("act_0",ACT_RUN,ACTION,1);
     act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-    RESOURCE_STATE(act_0) = PROVIDES_TRUE;
-    RESOURCE_STATE(act_1) = REQUIRES_TRUE;
+    PROVIDES_STATE(act_0) = TRUE;
+    REQUIRES_STATE(act_1) = TRUE;
 
     g->source = source;
     g-> sink = sink;
@@ -790,7 +790,8 @@ START_TEST(test_set_node_state_ready)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   RESOURCE_STATE(n) = REQUIRES_TRUE;
+   REQUIRES_STATE(n) = TRUE;
+   PROVIDES_STATE(n) = TRUE;
 
    fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
    fail_unless(STATE(n) == ACT_READY, "act not ready");
@@ -803,7 +804,8 @@ START_TEST(test_set_node_state_ready_1)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   RESOURCE_STATE(n) = PROVIDES_TRUE;
+   REQUIRES_STATE(n) = TRUE;
+   PROVIDES_STATE(n) = FALSE;
 
    fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
    fail_unless(STATE(n) == ACT_READY, "act not ready");
@@ -816,7 +818,7 @@ START_TEST(test_set_node_state_ready_2)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   RESOURCE_STATE(n) = REQUIRES_FALSE;
+   REQUIRES_STATE(n) = FALSE;
 
    fail_unless(set_node_state(n, ACT_READY) == ACT_BLOCKED, "return value");
    fail_unless(STATE(n) == ACT_BLOCKED, "act not blocked");
@@ -829,7 +831,7 @@ START_TEST(test_set_node_state_done)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   RESOURCE_STATE(n) = PROVIDES_TRUE;
+   PROVIDES_STATE(n) = TRUE;
 
    fail_unless(set_node_state(n, ACT_DONE) == ACT_DONE, "return value");
    fail_unless(STATE(n) == ACT_DONE, "act not done");
@@ -842,7 +844,8 @@ START_TEST(test_set_node_state_done_1)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   RESOURCE_STATE(n) = REQUIRES_TRUE;
+   REQUIRES_STATE(n) = TRUE;
+   PROVIDES_STATE(n) = FALSE;
 
    fail_unless(set_node_state(n, ACT_DONE) == ACT_PENDING, "return value");
    fail_unless(STATE(n) == ACT_PENDING, "act not pending");
@@ -855,7 +858,7 @@ START_TEST(test_set_node_state_none)
  
    Node n = make_node("act",ACT_READY,ACTION,0);
 
-   RESOURCE_STATE(n) = REQUIRES_TRUE;
+   REQUIRES_STATE(n) = TRUE;
 
    fail_unless(set_node_state(n, ACT_NONE) == ACT_NONE, "return value");
    fail_unless(STATE(n) == ACT_NONE, "act not none");
@@ -873,7 +876,7 @@ START_TEST(test_set_act_state_graph_ready)
 	act_0 = make_node("act_0",ACT_NONE,ACTION,1);
 	act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-	RESOURCE_STATE(act_0) = REQUIRES_TRUE;
+	REQUIRES_STATE(act_0) = TRUE;
 
 
 	g -> source = source;

@@ -490,7 +490,8 @@ void initialize_graph(Graph g)
         n -> data = (void *) malloc (sizeof (struct data));
 	sanitize_node(n);
 	STATE(n) = ACT_NONE;
-	RESOURCE_STATE(n) = REQUIRES_FALSE;
+	REQUIRES_STATE(n) = FALSE;
+	PROVIDES_STATE(n) = FALSE;
         ORDER(n) = i;
         i++;
         ITER_START(n) = FALSE;
@@ -507,7 +508,7 @@ void initialize_graph(Graph g)
 }
 
 
-vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state state)
+vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event event)
 {
     Graph g;
     Node n;
@@ -522,22 +523,22 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state stat
     n = find_node(g,action);
 
     if(n != NULL) {
-	if(state == REQUIRES_TRUE) {
+	if(event == REQUIRES_TRUE) {
             if(STATE(n) == ACT_BLOCKED) {
-	        RESOURCE_STATE(n) = state;
+	        REQUIRES_STATE(n) = TRUE;
 	        set_node_state(n, ACT_READY);
 	        return VM_CONTINUE;
 	    }
 	    else {
-	        RESOURCE_STATE(n) = state;
+	        REQUIRES_STATE(n) = TRUE;
 		set_node_state(n, ACT_AVAILABLE);
 	        return VM_CONTINUE;
 	    }
         }
         else {
-            if(state == PROVIDES_TRUE) {
+            if(event == PROVIDES_TRUE) {
 	        if((STATE(n) == ACT_READY) || (STATE(n) == ACT_RUN) || (STATE(n) == ACT_PENDING)) {
-	            RESOURCE_STATE(n) = PROVIDES_TRUE;
+	            PROVIDES_STATE(n) = TRUE;
 		    handle_action_change(pid, n->name, ACT_RUN);
 		    return handle_action_change(pid, n->name, ACT_DONE);
 		}
@@ -565,24 +566,20 @@ vm_act_state set_node_state(Node n, vm_act_state state)
     switch(state_set) {
         
         case(ACT_READY) : {
-			      if ((RESOURCE_STATE(n) == REQUIRES_TRUE) || (RESOURCE_STATE(n) == PROVIDES_TRUE)) {
+			      if (REQUIRES_STATE(n) == TRUE) {
 			          STATE(n) = state_set;
 		                  return state_set;
 			      }
 	                      else {
-		                  if (RESOURCE_STATE(n) == REQUIRES_FALSE) {
-		                      state_set = ACT_BLOCKED;
-				      STATE(n) = state_set;
-	                              return state_set;
-				  }
-				  else {
-				      return STATE(n);
-				  }
+		                  state_set = ACT_BLOCKED;
+				  STATE(n) = state_set;
+	                          return state_set;
 			      }
 			      break;
 			  }
+			  
         case(ACT_DONE) : {
-			     if(RESOURCE_STATE(n) == PROVIDES_TRUE) {
+			     if(PROVIDES_STATE(n) == TRUE) {
 			         STATE(n) = state_set;
 				 return state_set;
 			     }
@@ -593,7 +590,6 @@ vm_act_state set_node_state(Node n, vm_act_state state)
 			     }
 			     break;
 			 }
-			 
 			  
 	default: {
 		     STATE(n) = state_set;
