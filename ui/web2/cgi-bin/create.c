@@ -22,7 +22,7 @@ int main()
   printf(".myTable {\n");
   printf("background-image:url(../images/bg.jpg);\n");
   printf("background-repeat:no-repeat;\n");
-  printf("background-position:left top; }\n");
+  printf("background-position:center top; }\n");
   printf("-->\n");
   printf("</style>\n");
   printf("</head>\n");

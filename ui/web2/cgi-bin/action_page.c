@@ -6,7 +6,7 @@
 #include "../../../os/kernel/process_table.h"
 
 void get_script(int pid, char *action);
-void print_resources(int pid, char *action);
+void print_resource(int pid, char *action);
 
 int main()
 {
@@ -23,7 +23,7 @@ int main()
   printf(".myTable {\n");
   printf("background-image:url(../images/bg_logoblack.jpg);\n");
   printf("background-repeat:no-repeat;\n");
-  printf("background-position:left top; }\n");
+  printf("background-position:center top; }\n");
   printf("-->\n");
   printf("</style>\n");
   printf("</head>\n");
@@ -36,16 +36,15 @@ int main()
   temp = strtok(NULL, "");
   state = temp;
 
-  printf("<br><br><br><br>\n");
-  printf("<table width=\"950px\">\n");
+  printf("<br><br><br><br><br>\n");
+  printf("<table width=\"850px\" align=\"center\">\n");
   printf("<tr>\n");
-  printf("<td width=\"100\"></td>\n");
   printf("<td width=\"850\">\n");
   printf("<font size=\"6\"><b>Action: %s   (%s)</b></font>\n", action, state);
   printf("<br><br>\n");
   printf("<font size=\"5\">Resources</font>\n");
   printf("<br>\n");
-  print_resources(pid, action);
+  print_resource(pid, action);
   printf("<br><br>\n");
   printf("<font size=\"5\">Description</font>\n");
   printf("<br>\n");
@@ -109,7 +108,7 @@ void get_script(int pid, char *action)
   script = (char *) get_field(pid, action, ACT_SCRIPT);
   save_proc_table("proc_table.dat");
   if(script) {
-    for(i=0; i<30; i++){
+    for(i=0; ; i++){
       if(script[i] == '\0' || script[i] == '\n')
         break;
       if(script[i] == '\"') continue; /* Don't display quotes. */
@@ -122,25 +121,33 @@ void get_script(int pid, char *action)
   }
 }
 
-void print_resources(int pid, char *action)
+void print_resource(int pid, char *action)
 {
-  int i, j, num_resources;
+  int i, j, k=0, num_resources;
+  char temp[256];
   peos_resource_t *resources;
-  
+
   load_proc_table("proc_table.dat");
   resources = (peos_resource_t *) get_resource_list_action(pid, action, &num_resources);
-
   if(resources){
     for(i=0; i<num_resources; i++){
+      k = 0;
       for(j=0; ; j++){
         if(resources[i].name[j] == '\0' || resources[i].name[j] == '\n')
-	  break;
+          break;
         if(resources[i].name[j] == '\"') continue; /* Don't display quotes. */
-	  printf("<a href=\"%s\">%c", resources[i].value, resources[i].name[j]);
-      }	
-        if(i != num_resources-1)
-          printf(", ");
-    } 
-  } 
-  printf("<br>\n");
+        temp[k] = resources[i].name[j];
+        k++;
+      }
+      temp[k] = '\0';
+      if(strcmp(resources[i].value, "default_value") == 0){
+        printf("%s", temp);
+      }
+      else{
+        printf("<a href=\"%s\">%s</a>\n", resources[i].value, temp);
+      }
+      if(i != num_resources-1)
+        printf(", ");
+    }
+  }
 }

@@ -20,7 +20,7 @@ int main()
   printf(".myTable {\n");
   printf("background-image:url(../images/bg_logoblack.jpg);\n");
   printf("background-repeat:no-repeat;\n");
-  printf("background-position:left top; }\n");
+  printf("background-position:center top; }\n");
   printf("-->\n");
   printf("</style>\n");
   printf("</head>\n"); 
@@ -68,7 +68,7 @@ void get_resources(char *model)
 
   if(num_resources < 1){
     printf("<form action=\"do_create.cgi\">\n");
-    printf("<table width=\"800\" align=\"center\">\n");
+    printf("<table width=\"850\" align=\"center\">\n");
     printf("<tr>\n");
     printf("<td>\n");
     printf("<font size=\"5\"><b>No Resources</b></font>\n");
@@ -86,11 +86,13 @@ void get_resources(char *model)
   }
   else{
     printf("<form action=\"do_create.cgi\">\n");
-    printf("<table width=\"950px\">\n");
+    printf("<table width=\"850px\" align=\"center\">\n");
     printf("<tr>\n");
-    printf("<td width=\"200\" rowspan=\"%d\">\n", num_resources);
+    printf("<td>\n");
     printf("<input type=\"hidden\" name=\"model\" value=\"%s\">\n", model);
     printf("</td>\n");
+    printf("</tr>\n");
+    printf("<tr>\n");
     for(i=0; i<num_resources; i++){
       printf("<td width=\"150\">\n");
       for(j=0; ;j++){

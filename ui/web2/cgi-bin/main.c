@@ -17,27 +17,6 @@ int main()
   peos_resource_t *resource;
   int resource_num;
 
-  load_proc_table("proc_table.dat");
-  alist = peos_list_actions(ACT_RUN);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      action_count++;
-    }
-  }
-  alist = peos_list_actions(ACT_SUSPEND);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      action_count++;
-    }
-  }
-  alist = peos_list_actions(ACT_READY);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-      action_count++;
-    }
-  }
-  save_proc_table("proc_table.dat");
-
   printf("%s%c%c\n","Content-Type:text/html;charset=iso-8859-1",13,10);
 
   printf("<html>\n");
@@ -47,19 +26,18 @@ int main()
   printf(".myTable {\n");
   printf("background-image:url(../images/bg_logoblack.jpg);\n");
   printf("background-repeat:no-repeat;\n");
-  printf("background-position:left top; }\n");
+  printf("background-position:center top; }\n");
   printf("-->\n");
   printf("</style>\n");
   printf("</head>\n");
   printf("<body class=\"myTable\" text=\"FFFFFF\" link=\"#FFCC66\" vlink=\"#FFCC66\" alink=\"#FFCC66\">\n");
-  printf("<br><br><br><br><br>\n");
-  printf("<table width=\"900px\">\n");
+  printf("<br><br><br><br><br><br>\n");
+  printf("<table width=\"850px\" align=\"center\">\n");
   printf("<tr>\n");
-  printf("<td width=\"100\" rowspan=\"%d\">\n", action_count+2);
   printf("<td width=\"100\">\n");
   printf("<font size=\"5\"<b><u>Status</u></b></font>\n"); 
   printf("</td>\n");
-  printf("<td width=\"100\">\n");
+  printf("<td width=\"150\">\n");
   printf("<font size=\"5\"<b><u>Task</u></b>\n"); 
   printf("</td>\n");
   printf("<td width=\"300\">\n");
@@ -77,7 +55,7 @@ int main()
       printf("<td width=\"100px\" valign=\"top\">\n"); 
       printf("active\n");
       printf("</td>\n");
-      printf("<td width=\"100\" valign=\"top\">\n");
+      printf("<td width=\"150\" valign=\"top\">\n");
       print_action(alist[i], "active");
       printf("</td>\n");
       printf("<td width=\"300\" valign=\"top\">\n");
@@ -96,7 +74,7 @@ int main()
       printf("<td width=\"100px\" valign=\"top\">\n"); 
       printf("suspended\n"); 
       printf("</td>\n");
-      printf("<td width=\"100\" valign=\"top\">\n");
+      printf("<td width=\"150\" valign=\"top\">\n");
       print_action(alist[i], "suspend");
       printf("</td>\n");
       printf("<td width=\"300\" valign=\"top\">\n");
@@ -115,7 +93,7 @@ int main()
       printf("<td width=\"100px\" valign=\"top\">\n"); 
       printf("ready\n"); 
       printf("</td>\n");
-      printf("<td width=\"100\" valign=\"top\">\n");
+      printf("<td width=\"150\" valign=\"top\">\n");
       print_action(alist[i], "ready");
       printf("</td>\n");
       printf("<td width=\"300\" valign=\"top\">\n");
@@ -159,7 +137,7 @@ void get_script(peos_action_t *action)
   script = (char *) get_field(action->pid, action->name, ACT_SCRIPT);
   save_proc_table("proc_table.dat");
   if(script) {
-    for(i=0; i<50; i++){
+    for(i=0; i<40; i++){
       if(script[i] == '\0' || script[i] == '\n')
       break;
       if(script[i] == '\"') continue; /* Don't display quotes. */
