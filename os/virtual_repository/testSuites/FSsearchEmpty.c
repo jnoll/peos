@@ -39,7 +39,7 @@ int main( int argc, char * argv[] )
 	setup_fs( );	
 	call = callback ;
 	
-	FSexpectedResultEmptyFile = fopen ( "FSsearchEmptyexpectedResult.txt", "w" ) ;
+	FSexpectedResultEmptyFile = fopen ( "FSsearchEmptyExpectedResult.txt", "w" ) ;
 	setEmptyResult( 5, FSexpectedResultEmptyFile ) ;
 	fclose( FSexpectedResultEmptyFile ) ;	
 	

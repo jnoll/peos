@@ -14,16 +14,22 @@ FSsearchSeek \
 FSsearchInvalid \
 FSsearchEmpty
 
+FS_ACTUAL_RESULT_FILES = \
+VRsetupActualResult.txt \
+FSsearchEnd2EndActualResult.txt \
+FSsearchSeekActualResult.txt \
+FSsearchInvalidActualResult.txt \
+FSsearchEmptyActualResult.txt
 
-
-FS_actualResultFiles = 	VRsetupActualResult.txt FSsearchEnd2EndActualResult.txt \
-			FSsearchSeekActualResult.txt FSsearchInvalidActualResult.txt \
-			FSsearchEmptyActualResultEmpty.txt
-
-FS_expectedResultFiles = FSsearchEnd2EndExpectedResult.txt FSsearchSeekExpectedResult.txt \
-			 FSsearchInvalidExpectedResult.txt FSsearchEmptyExpectedResult.txt
+FS_EXPECTED_RESULT_FILES = \
+FSsearchEnd2EndExpectedResult.txt \
+FSsearchSeekExpectedResult.txt \
+FSsearchInvalidExpectedResult.txt \
+FSsearchEmptyExpectedResult.txt
 			 
-FS_queryFiles = FSsearchEnd2EndQuery.dat FSsearchSeekQuery.dat
+FS_QUERY_FILES = \
+FSsearchEnd2EndQuery.dat \
+FSsearchSeekQuery.dat
 
 #VRsetup: dummy_seekers.o setup_repositories.o VRsetup.o 
 #	$(CC) -o VRsetup dummy_seekers.o setup_repositories.o VRsetup.o
@@ -46,24 +52,29 @@ FS%: FS%.o $(OBJECTS)
 	$(CC) $(CFLAGS) $<
 
 test:	$(TESTS)
+
 	FSsearchEnd2End FSsearchEnd2EndQuery.dat > FSsearchEnd2EndActualResult.txt
 	diff FSsearchEnd2EndExpectedResult.txt FSsearchEnd2EndActualResult.txt
+	
 	FSsearchSeek FSsearchSeekQuery.dat > FSsearchSeekActualResult.txt
 	diff FSsearchSeekExpectedResult.txt FSsearchSeekActualResult.txt
+	
 	FSsearchInvalid FSsearchInvalid.dat > FSsearchInvalidActualResult.txt
 	diff FSsearchInvalidExpectedResult.txt FSsearchInvalidActualResult.txt
+	
 	FSsearchEmpty FSsearchEmpty.dat > FSsearchEmptyActualResult.txt
-	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResultEmpty.txt	
+	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResult.txt	
+	
 #	make VRsetup
 #	VRsetup > VRsetupActualResult.txt
 #	diff VRsetupExpectedResult.txt VRsetupActualResult.txt
 
-
 clean:
 	-rm *.o
-	-rm FS_actualResultFiles
-	-rm FS_expectedResultFiles			 
-	-rm FS_queryFiles
-
-reallyclean: clean
+	-rm core
+	-rm $(FS_ACTUAL_RESULT_FILES)
+	-rm $(FS_EXPECTED_RESULT_FILES)
+	-rm $(FS_QUERY_FILES)
 	-rm $(TESTS)
+
+	

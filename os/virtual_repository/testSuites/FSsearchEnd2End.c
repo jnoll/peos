@@ -53,7 +53,7 @@ int main( int argc, char * argv[] )
 	fclose( testQuery ) ;	
 	
 	expectedResultFile = fopen ( "FSsearchEnd2EndExpectedResult.txt", "w" ) ;
-	testFile = fopen ( "FStestQuery.dat", "r" ) ;
+	testFile = fopen ( "FSsearchEnd2EndQuery.dat", "r" ) ;
 	while ( !feof( testFile ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), testFile ) ;
