@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: parseMesg.tcl,v 1.2 1999/05/06 16:37:32 jneuder Exp $
+## File Information: $Id: parseMesg.tcl,v 1.3 1999/05/06 16:44:37 jneuder Exp $
 #######################################################################
 
 ##################################################################
@@ -45,7 +45,7 @@ proc ::parser::parseMesg { message }  {
 
    set tempProcessName  [readMesgField $message "PROCESSNAME"]
    if {$tempProcessName != ""} then {
-      set ::uiValues::processName [readMesgField $message "PROCESSNAME"]
+      set ::uiValues::processName $tempProcessName 
    }
 
    # Now create different message types
