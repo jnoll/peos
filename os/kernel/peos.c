@@ -105,19 +105,22 @@ main (int argc, char **argv)
     char *model;
     opterr = 0;
     	
-    while ((c = getopt (argc, argv, "+c:n:ihr:d:")) != -1) {
+    c = getopt (argc, argv, "+c:n:ihr:d:");
+    if (c != -1) { 
         switch (c) {
             case 'c': {
 		           if(argc != 3) {
 		               fprintf(stderr, "Usage: peos -c process_file\n");
 	                       exit(EXIT_FAILURE);
 	                   }
-                           model = argv[2];
-			   if(create_process(model) < 0) {
-			       fprintf(stderr, "Could not Create Process\n");
-			       exit(EXIT_FAILURE);
+			   else {
+                               model = argv[2];
+			       if(create_process(model) < 0) {
+			           fprintf(stderr, "Could not Create Process\n");
+			           exit(EXIT_FAILURE);
+			       }
+			       else return 1;
 			   }
-			   else return 1;
 		           break;
 		      }
 		      
@@ -126,14 +129,16 @@ main (int argc, char **argv)
 		             fprintf(stderr, "Usage: peos -n pid act_name start|finish|suspend|abort\n");
 	                     exit(EXIT_FAILURE);
 	                 }
-                         pid = atoi(argv[2]);
-                         act_name = argv[3];
-                         event = argv[4];
-			 if(notify(pid, act_name, event) < 0) {
-			     fprintf(stderr, "Could not %s action %s\n",event, act_name);
-		             exit(EXIT_FAILURE);
+			 else {
+                             pid = atoi(argv[2]);
+                             act_name = argv[3];
+                             event = argv[4];
+			     if(notify(pid, act_name, event) < 0) {
+			         fprintf(stderr, "Could not %s action %s\n",event, act_name);
+		                 exit(EXIT_FAILURE);
+			     }
+	                     else return 1;
 			 }
-	                 else return 1;
 			 break;
 		     }
 		     
@@ -185,7 +190,7 @@ main (int argc, char **argv)
 		       else {
                            pid = atoi(argv[2]);
 			   if(peos_delete_process_instance(pid) < 0) {
-			       fprintf(stderr, "Could not delete process instance");
+			       fprintf(stderr, "Could not delete process instance\n");
 		               exit(EXIT_FAILURE);
 			   }
 	                   else return 1;
@@ -197,16 +202,17 @@ main (int argc, char **argv)
 	               printf("To start an action: peos -n process_id action_name event\n");
 	               printf("Event can be: start or finish or abort or suspend\n");
 	               printf("To get a list of instances: peos -i\n");
-		       printf("To bind resources: peos -r pid resource_name resource_value");
+		       printf("To bind resources: peos -r pid resource_name resource_value\n");
+		       printf("To delete a process: peos -d pid\n");
 	               printf("To get help: peos -h\n");
 		       break;
 		   }	       
          
 	 case '?': {
                        if (isprint (optopt))
-                           fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+                           fprintf (stderr, "Unknown option `-%c'.Please use peos -h for help.\n", optopt);
                        else
-                           fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
+                           fprintf (stderr, "Unknown option character `\\x%x'.Please use peos -h for help.\n", optopt);
                        return 1;
 		       break;
 		   }
@@ -214,6 +220,9 @@ main (int argc, char **argv)
          default:
               abort ();
          }
+    }
+    else {
+        printf("Invalid Invocation. Please type peos -h for help\n");
     }
     return 0;
 }
