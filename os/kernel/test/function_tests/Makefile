@@ -1,4 +1,4 @@
-HARNESS = ../kernel_harness.exp -- -verbosity 0
+more HARNESS = ../kernel_harness.exp -- -verbosity 0
 CASES = $(wildcard *.tc)
 LOGS = $(CASES:tc=log)
 NUM_ACTS = 1 3 31 53 73 113 187 213 271 301 513 769

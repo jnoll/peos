@@ -114,6 +114,41 @@ START_TEST(test_find_model_file)
 }
 END_TEST
 
+
+/* Look for model file in absolute path */
+START_TEST(test_find_model_file_absolute)
+{
+    char *model_file, *cwd, *model= "model.pml", buf[BUFSIZ];
+    FILE *f;
+
+    /* Pre: model file exists. */
+    setenv("COMPILER_DIR", ".", 1);
+    setenv("PEOS_DIR", ".", 1);
+    cwd = getcwd(NULL, 0);
+    sprintf(buf, "%s/%s", cwd, model);
+
+    f = fopen(model, "w");
+    if (f) {
+	fprintf(f, "I am the example model file.\n");
+	fclose(f);
+    } else {
+	fail("open expected.pml failed");
+    }
+    
+    /* Action: find it. */
+    model_file = find_model_file(buf);
+    /* Post: model file found. */
+    fail_unless(model_file != NULL,
+		"find_model_file failed");
+
+    fail_unless(strcmp(model_file, buf) == 0,
+		"actual model_file not correct");
+    free(cwd);
+    free(model_file);
+    unlink("model.pml");
+}
+END_TEST
+
 #ifdef FIXME
 START_TEST(test_handle_action_change_run)
 {
@@ -270,6 +305,7 @@ main(int argc, char *argv[])
     suite_add_tcase(s,tc);
     tcase_add_test(tc, test_find_model_file_default);
     tcase_add_test(tc, test_find_model_file);
+    tcase_add_test(tc, test_find_model_file_absolute);
 
     tc = tcase_create("create_instance");
     suite_add_tcase(s, tc);

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.21 2003/11/28 07:13:06 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.22 2004/01/21 20:23:00 jnoll Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -83,26 +83,29 @@ char *find_model_file(char *model)
     char *model_dir;
     FILE *f;
 
-    model_dir = getenv("COMPILER_DIR");
-    if (model_dir == NULL) {
-        model_dir = ".";
+    /* XXX FIXME! there is a potential buffer overrun here! */
+    if (model[0] == '/' || strncmp(model, "./", 2) == 0) {
+	model_file[0] = '\0';
+    } else {
+	model_dir = getenv("COMPILER_DIR");
+	if (model_dir == NULL) {
+	    model_dir = ".";
+	}
+	sprintf(model_file, "%s/", model_dir);
     }
 
-    sprintf(model_file, "%s/", model_dir);
     ext = strrchr(model, '.');
     if (ext != NULL) {
-        strncat(model_file, model, ext - model);
-    } 
-    else {
-        strncat(model_file, model, strlen(model));
+	strncat(model_file, model, ext - model);
+    } else {
+	strncat(model_file, model, strlen(model));
     }
 
     strcat(model_file, ".pml");
     if ((f = fopen(model_file, "r"))) {
         fclose(f);
         return strdup(model_file);
-    } 
-    else {
+    } else {
         return NULL;
     }
 }

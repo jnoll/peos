@@ -53,7 +53,7 @@ int print_action(peos_action_t *action)
 {
     printf(" {%d %s %s}", action->pid, action->name, 
 	   act_state_name(action->state));
-
+    fflush(stdout);
     return 0;
 }
 

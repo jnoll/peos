@@ -147,7 +147,7 @@ proc assert {pid act state} {
     send "actions $pid\r\n"
 
     expect {
-	-re "\[{\]${pid}\[ \]${act}\[ \]\(${state}\)\[}\]" {
+	-ex "\{${pid} ${act} ${state}\}"  {
 	    trace 1 "${act} ${pid} found to be ${state}" 
 	}
 
@@ -165,6 +165,9 @@ proc assert {pid act state} {
 	    gdb_interact
 	}
 
+	full_buffer {
+	    error_msg assert "$pid $act $state" "full buffer before status."
+	}
 	timeout {
 	    error_msg assert "$pid $act $state" "timeout before status."
 	}
@@ -205,11 +208,12 @@ proc assert_done {pid model} {
 
 # defaults
 set timeout 10
-log_user 0
+log_user 1
 set verbosity 0
 set gdb 0
 set shell "kernel_wrapper"
 set iterations 1
+set match_max 12000
 
 parse_args $argv $argc
 
