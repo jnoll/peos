@@ -30,16 +30,18 @@ set timeout 10
 
 (
 echo "login Engine mark"; sleep 1 
-#echo "list" ; sleep 1
+echo "list" ; sleep 1
 echo "create timesheet"; sleep 3
 
-#echo "help" ; sleep 1
-#echo "sample" ; sleep 1
-#echo "available" ; sleep 1
+echo "help" ; sleep 1
+echo "sample" ; sleep 1
+echo "available" ; sleep 1
 
 echo "run timesheet.001 get_card" ; sleep 1
-#echo "running" ; sleep 1
+echo "running" ; sleep 1
+echo "available" ; sleep 1
 echo "done timesheet.001 get_card" ; sleep 1
+echo "running" ; sleep 1
 
 echo "run timesheet.001 enter_pay_period" ; sleep 1
 echo "done timesheet.001 enter_pay_period" ; sleep 1
