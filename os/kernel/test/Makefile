@@ -12,8 +12,8 @@ TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib
 
 # objects
-CORE_OBJS = action.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o
-TEST_OBJS = test_util.o action.o graph.o
+CORE_OBJS = action.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o tclinterp.o
+TEST_OBJS = test_util.o action.o graph.o tclinterp.o
 
 # sources
 SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
@@ -49,7 +49,10 @@ test_action: test_action.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out action.o, $(TEST_OBJS)) $(TEST_LIBS) 
 
 test_graph: test_graph.o $(TEST_OBJS)
-	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out graph.o, $(TEST_OBJS)) $(TEST_LIBS) 
+	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out graph.o, $(TEST_OBJS)) $(TEST_LIBS)
+
+test_tclinterp: test_tclinterp.o $(TEST_OBJS)
+	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out tclinterp.o, $(TEST_OBJS)) $(TEST_LIBS)
 
 test_%: test_%.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) $(TEST_LIBS) 
