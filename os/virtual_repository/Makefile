@@ -29,9 +29,11 @@ test_search.o: test_search.c vrepo.o FSseeker.o
 test:	
 	make test_search 
 	make test_setup
+	rm actualResult.txt
+	rm expectedResult.txt
 	test_setup > actualSetup.txt
 	diff expectedSetup.txt actualSetup.txt
-	test_search test.dat > actualResult.txt
+	test_search testQuery.dat > actualResult.txt
 	diff expectedResult.txt actualResult.txt
 clean:
 	rm *.o

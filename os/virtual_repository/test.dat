@@ -1,3 +1,5 @@
-ID EQ file:///home/cgoh/peos/src/os/virtual_repository/test.dat
 ID EQ file://test.dat
-ID EQ test.dat
+ID EQ file:///testDirectory/test1.c
+ID EQ file:///testDirectory/test3.c
+ID EQ file://vrepo.c
+ID EQ file://FSseeker.c

@@ -59,8 +59,9 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 						numParses++ ;
 					}
 					break ;
+			case 3 :	numParses++;
 		}
-		
+
 		word = strtok( NULL, " " ) ;
 	}
 	
@@ -116,11 +117,8 @@ void poll_vr( )
 	if( myQueries != NULL )
 	{
 		for(i=0; i<repos_ctr ; i++)
-		{	
-			//myQueries = FSqueryTool( myQueries ) ;
-		
 			myQueries = repos_list[i].queryTool(myQueries);
-		}	
+		
 		tempQueries = myQueries ;
 	
 		while( tempQueries != NULL )			

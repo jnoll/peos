@@ -66,6 +66,7 @@ queryList* FSqueryTool( queryList *listpointer )
 
 	while( tempQueries != NULL )
 	{
+		
 		strcpy( searchFile, tempQueries -> oneQuery -> myClauses[0].value ) ;
 		
 		if( strchr( searchFile, ':' ) == NULL )	
@@ -82,23 +83,31 @@ queryList* FSqueryTool( queryList *listpointer )
 				strcpy( searchFile, strpbrk( tempQueries -> oneQuery -> myClauses[0].value, "/" ) ) ;
 				if( strchr( searchFile + 2, '/' ) != NULL )
 				{
-					if( stat( searchFile + 1, &statBuffer ) == 0 )
+					if( strlen( searchFile ) > 3 )
 					{
-						tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results, 
-												     tempQueries -> oneQuery -> myClauses[0].value ) ;
-				    		tempQueries -> oneQuery -> numFound++ ;
+						if( stat( searchFile + 1, &statBuffer ) == 0 )
+						{
+							tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results, 
+													     tempQueries -> oneQuery -> myClauses[0].value ) ;
+					    		tempQueries -> oneQuery -> numFound++ ;
+			    			}
 			    		}
 			    	}
 				else
 				{
+					
 					char tempPath[100] ;
-					strcpy( tempPath, directoryPath) ;
-					strcat( tempPath, searchFile + 1 ) ;
-					if( stat( tempPath, &statBuffer ) == 0 )
+								
+					if( strlen( searchFile ) > 2 )
 					{
-						tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results, 
-												     tempQueries -> oneQuery -> myClauses[0].value ) ;
-						tempQueries -> oneQuery -> numFound++ ;
+						strcpy( tempPath, directoryPath) ;
+						strcat( tempPath, searchFile + 1 ) ;
+						if( stat( tempPath, &statBuffer ) == 0 )
+						{
+							tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results, 
+													     tempQueries -> oneQuery -> myClauses[0].value ) ;
+							tempQueries -> oneQuery -> numFound++ ;
+						}
 					}
 				}
 			}
