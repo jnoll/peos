@@ -1,8 +1,8 @@
-/* 
-**	Senior Design Project - PEOS Virtual Repository
-**	Author : TASK4ONE
-**	Filename : search.c
-*/
+/************************************************************************
+ * Senior Design Project - PEOS Virtual Repository			*
+ * Author : TASK4ONE							*
+ * Filename : search.c							*
+ ************************************************************************/
 
 #include "form.h"
 #include "variables.h"
@@ -19,20 +19,22 @@
 
 #define STDIN 0 
 
+/************************************************************************
+ * Function:	 main							*
+ *									*
+ * Description:	 Driver for program.					*
+ ************************************************************************/
+
 int main(int argc, char *argv[])
 {
 	void selectLoop( ) ;
+	
 	repos_ctr = 0;
 	myQueries = NULL;
 
 	if (argv[1] != NULL)
-	{
 		debug_level = atoi(argv[1]);
-		
-	}
-	
-	
-	
+
 	setup_fs( );	
 	while( 1 )
 		selectLoop( ) ;
@@ -40,18 +42,26 @@ int main(int argc, char *argv[])
 	return 0 ;
 }
 
+/************************************************************************
+ * Function:	selectLoop						*
+ *									*
+ * Description:	A simulated engine that reads query from standard 	*
+ *		input and pass the queryto function query_wait.		*
+ *	        Upon timeout, it polls the virtual repository to        *
+ *		search for the requested query.				*
+ ************************************************************************/
+
 void selectLoop( ) 
 {
 	void callback( int size, resultList *listPointer , int *data ) ;
 	void ( *call )( int, resultList *, int * data ) ;
 	
-	struct timeval tv ;
-	fd_set readfds ;
-	char queryString[1000] ;
-	int *d ;
-	queryList *tempQueries ;
-	FILE *testFile ;
-
+	struct timeval tv ;			// struct timeval with seconds and microseconds
+	fd_set readfds ;			// set of descriptor watched
+	char queryString[1000] ;		// buffer that holds the query 
+	int *d ;				// pointer to data in callback 
+	queryList *tempQueries ;		// pointer to queryList
+	
 	tv.tv_sec = 5 ;
 	tv.tv_usec = 500000 ;
 	call = callback ;
@@ -65,26 +75,8 @@ void selectLoop( )
 	{
 		_debug(__FILE__,__LINE__, "receiving..." ) ;		
 		fgets( queryString, sizeof( queryString), stdin ) ;
-		if ( strcmp ( "test\n", queryString ) == 0 )
-		{
-			testFile = fopen ( "test.dat", "r" ) ;
-			while ( !feof( testFile ) ) 
-			{
-				fgets ( queryString, sizeof ( queryString ), testFile ) ;
-				if( strlen( queryString ) )
-				{
-					query_wait( queryString, call, d ) ;
-					queryString[0] = '\0' ;	
-				}					
-			}
-			fclose( testFile ) ;
-		}
-		else
-		{
-			query_wait( queryString, call, d ) ;
-			queryString[0] = '\0' ;	
-		}
-		fflush( stdin ) ;
+		query_wait( queryString, call, d ) ;
+		queryString[0] = '\0' ;	
 	}
 	else
 	{
@@ -98,8 +90,15 @@ void selectLoop( )
 		}
 
 	}
+	fflush( stdin ) ;
 	FD_CLR( STDIN, &readfds ) ;
 }
+
+/************************************************************************
+ * Function:	callback						*
+ *									*
+ * Description:	Prints result of the requested query.			*
+ ************************************************************************/
 
 void callback( int size, resultList *listpointer, int *data )
 {	
