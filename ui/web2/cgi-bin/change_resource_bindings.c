@@ -19,8 +19,6 @@ int main()
     char *process_filename;
     int num_resources;
     peos_resource_t *resources;
-    peos_resource_t *unbound_resource_list;
-    int num_unbound_resources;
     char *resource_type;
     
 
@@ -50,39 +48,18 @@ int main()
 	exit(0);
     }
     
-    unbound_resource_list = (peos_resource_t *) calloc(num_resources+1, sizeof(peos_resource_t));
-    num_unbound_resources = 0;
+
     for(i=0; i < num_resources; i++) {
-        if((strcmp(resources[i].qualifier,"any") == 0) || (strcmp(resources[i].qualifier,"new") == 0)) {
-            strcpy(unbound_resource_list[num_unbound_resources].name,resources[i].name);
-            num_unbound_resources++;
-	}
-	else {
-	    if((strcmp(resources[i].value,"$$") == 0) && (strcmp(resources[i].qualifier,"abstract") != 0)) {
-	        strcpy(unbound_resource_list[num_unbound_resources].name,resources[i].name);
-	        num_unbound_resources++;
-	    }
+	if(strcmp(resources[i].qualifier, "abstract") != 0) {
+	    char *value;    
+	    value = (char *) getvalue(resources[i].name, cgivars);    
+	    peos_set_resource_binding(pid, resources[i].name, value);
 	}
     }
 
-    for(i=0; i < num_unbound_resources; i++) {
-	char *value;    
-	value = (char *) getvalue(unbound_resource_list[i].name, cgivars);    
-	peos_set_resource_binding(pid, unbound_resource_list[i].name, value);
-    }
+    printf("Location: action_page.cgi?process_filename=%s&pid=%d&act_name=%s\r\n\r\n",process_filename,pid,action_name);
 
-
-    if(strcmp(resource_type,"requires") == 0) {
-        peos_notify(pid, action_name, PEOS_EVENT_START);
-        printf("Location: action_page.cgi?process_filename=%s&pid=%d&act_name=%s\r\n\r\n",process_filename,pid,action_name);
-    }
-    else {
-        peos_notify(pid, action_name, PEOS_EVENT_FINISH);
-        printf("Location: action_list.cgi?process_filename=%s&start=false\r\n\r\n",process_filename);
-    }
     
-
-    if(unbound_resource_list) free(unbound_resource_list);
     
     if(resources) free(resources);   
      

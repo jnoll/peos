@@ -28,7 +28,7 @@ int main()
     process_filename = (char *) getvalue("process_filename", cgivars);
     
     peos_set_process_table_file(process_filename);
-
+    peos_set_loginname(process_filename);
   
 
     if(strcmp(action_event, "Abort") == 0) {

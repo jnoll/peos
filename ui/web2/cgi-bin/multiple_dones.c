@@ -60,6 +60,7 @@ int main()
     }
     
     peos_set_process_table_file(process_filename);
+    peos_set_loginname(process_filename);
 
     num_unbound_resources=0;
 
@@ -122,7 +123,7 @@ int main()
 	for(i=0;i < num_unbound_resources; i++) {
 	    printf("<tr>");
 	    printf("<td style=\"vertical-align: top;\">%s<br></td>",unbound_resource_list[i].name);
-	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\" value=\" \"><br></td>",unbound_resource_list[i].name);
+	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\" value=\" \" maxlength=\"256\"><br></td>",unbound_resource_list[i].name);
             printf("</tr>");
 	}
 

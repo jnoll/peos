@@ -1,12 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "getcgi.h"
 #include "kernel/events.h"
 #include "kernel/action.h"
 #include "kernel/process_table.h"
 #include "html.h" 
+#include <crypt.h>
 
+#define _XOPEN_SOURCE
 
 char *process_filename = NULL;
 
@@ -30,11 +33,6 @@ void list_actions()
     int num_rows=0;
 		                                                                                                     
     char ** result = peos_list_instances();
-
-    if(result[0] == NULL) {
-        printf("No Processes Instantiated\n");
-	return;
-    }
 
     printf("<form name=\"pickform\" action=\"multiple_dones.cgi\">");
     printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%%;\">");
@@ -84,14 +82,28 @@ int main()
     cgivars = getcgivars();
 
     start = (char *) getvalue("start", cgivars);
-    login_name = (char *) getvalue("process_filename", cgivars);
-    process_filename = (char *) malloc((strlen(login_name) + strlen(".dat")) * sizeof(char));
-    strcpy(process_filename, login_name);
-    if(strcmp(start,"true") == 0) {
+
+    if(start) {
+        login_name = (char *) getvalue("process_filename",cgivars);
+        process_filename = (char *) malloc(strlen(login_name) * sizeof(char));
+        strcpy(process_filename, login_name);
+    }
+    else {
+	char *enc_loginname;    
+        login_name = (char *) getenv("REMOTE_USER");
+	enc_loginname = (char *) crypt(login_name, "df");
+        for(i=0; i < strlen(enc_loginname); i++) {
+	    if(enc_loginname[i] == '/') enc_loginname[i] = 'A';
+	    if(enc_loginname[i] == '.') enc_loginname[i] = 'X';
+        }
+        process_filename = (char *) malloc((strlen(enc_loginname) + strlen(".dat")) * sizeof(char));
+        strcpy(process_filename, enc_loginname);
         strcat(process_filename, ".dat"); 
     }
 
+
     peos_set_process_table_file(process_filename);
+    peos_set_loginname(process_filename);
     
     print_header("Action List");
      

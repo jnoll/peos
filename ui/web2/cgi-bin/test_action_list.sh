@@ -1,7 +1,9 @@
 #!/bin/sh
+echo -n "$0..."
 
 export QUERY_STRING="process_filename=test.dat&start=false"
 export REQUEST_METHOD=GET
+export REMOTE_USER=test
 
 create_testtable
 action_list.cgi > output
@@ -82,6 +84,8 @@ then
 fi
 
 
-rm output
-rm test.dat
+#rm output
+#rm test.dat
+
+
 echo "done"

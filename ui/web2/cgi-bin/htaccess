@@ -1,0 +1,7 @@
+order deny,allow
+
+AuthName "PEOS Enactment Demonstration"
+AuthType Basic
+AuthUserFile /webpages/jshah1/cgi-bin/test_access/hidden/.htpasswd
+
+require valid-user

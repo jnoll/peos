@@ -30,6 +30,10 @@ int main()
     
     peos_set_process_table_file(process_filename);
 
+    peos_set_loginname(process_filename);
+    
+
+    
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
     if(resources == NULL) {
         goto_error_page(process_filename);

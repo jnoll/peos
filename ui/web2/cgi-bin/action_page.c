@@ -34,7 +34,8 @@ int main()
     process_filename = (char *) getvalue("process_filename", cgivars);
    
     peos_set_process_table_file(process_filename);
-
+    peos_set_loginname(process_filename);
+    
     state = peos_get_act_state(pid, action_name);
     script = peos_get_script(pid, action_name);
 
@@ -49,7 +50,7 @@ int main()
 	exit(0);
     }
      
-    print_header("Action Details");
+    print_header(action_name);
 	    
     printf("<form name=\"actionform\" action=\"action_event.cgi\">");
 
@@ -78,12 +79,33 @@ int main()
         printf("No Required Resources");
     }
     else {
+	int flag = 0;    
         for(i=0; i < num_req_resources; i++) {
-            printf("%s=%s",req_resources[i].name,req_resources[i].value);
+	    if((strcmp(req_resources[i].value, "$$") != 0) && (strcmp(req_resources[i].qualifier, "abstract") != 0)){
+		char *symlink_resource;
+		char *temp = (char *) malloc((strlen(req_resources[i].name)+strlen(process_filename)) * sizeof(char));
+		strcpy(temp, req_resources[1].name);
+		strcat(temp, process_filename);
+		unlink(temp);
+		symlink_resource = (char *) malloc((strlen(req_resources[i].name)+strlen(process_filename)) * sizeof(char));
+		strcpy(symlink_resource, req_resources[i].name);
+		strcat(symlink_resource,process_filename);
+	        symlink(req_resources[i].value, symlink_resource);
+	        printf("<a href =\"%s\">%s</a>",symlink_resource,req_resources[i].name);
+		flag = 1;
+	    }
+            else {	    
+                printf("%s=%s",req_resources[i].name,req_resources[i].value);
+	    }
+	    
 	    if(i < num_req_resources - 1) {
 	        printf(",");
 	    }
         }
+	if(flag == 1) {
+	    printf("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); 	
+	    printf("<a href=\"resource_bindings.cgi?process_filename=%s&pid=%d&act_name=%s&resource_type=requires\">Change Bindings</a>",process_filename,pid,action_name);
+	}	    
     }
 
     printf("<br></td>");
@@ -97,12 +119,34 @@ int main()
         printf("No Provided Resources");
     }
     else {
+	int flag = 0;    
         for(i=0; i < num_prov_resources; i++) {
-            printf("%s=%s",prov_resources[i].name,prov_resources[i].value);
+	    if((strcmp(prov_resources[i].value, "$$") != 0) && (strcmp(prov_resources[i].qualifier, "abstract") != 0)) {
+		char *symlink_presource;
+		char *temp;
+		temp = (char *) malloc((strlen(prov_resources[i].name)+strlen(process_filename)) * sizeof(char));
+		strcpy(temp, prov_resources[i].name);
+		strcat(temp,process_filename);
+		unlink(temp);
+		symlink_presource = (char *) malloc((strlen(prov_resources[i].name)+strlen(process_filename)) * sizeof(char));
+		strcpy(symlink_presource, prov_resources[i].name);
+		strcat(symlink_presource,process_filename);
+	        symlink(prov_resources[i].value, symlink_presource);
+	        printf("<a href =\"%s\">%s</a>",symlink_presource,prov_resources[i].name);
+		flag = 1;
+	    }	
+	    else {
+                printf("%s=%s",prov_resources[i].name,prov_resources[i].value);
+	    }
+	    
 	    if(i < num_prov_resources - 1) {
 	        printf(",");
 	    }
         }
+	if(flag == 1) {
+	    printf("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); 	
+	    printf("<a href=\"resource_bindings.cgi?process_filename=%s&pid=%d&act_name=%s&resource_type=provides\">Change Bindings</a>",process_filename,pid,action_name);
+	}	    
     }
     
     printf("<br></td>");

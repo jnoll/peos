@@ -39,7 +39,7 @@ int main()
     }
     
     peos_set_process_table_file(process_filename);
-
+    peos_set_loginname(process_filename);
     num_unbound_resources=0;
 
     unbound_resource_list = (peos_resource_t *) calloc(256, sizeof(peos_resource_t));

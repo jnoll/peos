@@ -53,6 +53,8 @@ int main()
     resource_type = (char *) getvalue("resource_type", cgivars);
     
     peos_set_process_table_file(process_filename);
+    peos_set_loginname(process_filename);
+
 
     if(strcmp(resource_type,"requires") == 0) {
         resources = peos_get_resource_list_action_requires(pid, action_name, &num_resources);
@@ -105,7 +107,7 @@ int main()
 	for(i=0;i < num_unbound_resources; i++) {
 	    printf("<tr>");
 	    printf("<td style=\"vertical-align: top;\">%s<br></td>",unbound_resource_list[i].name);
-	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\" value=\" \"><br></td>",unbound_resource_list[i].name);
+	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\" value=\" \" maxlength=\"256\"><br></td>",unbound_resource_list[i].name);
             printf("</tr>");
 	}
 
