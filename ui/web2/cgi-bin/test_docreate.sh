@@ -1,5 +1,6 @@
 #!/bin/sh
 echo -n "$0..."
+test -e proc_table.dat && rm proc_table.dat
 
 export QUERY_STRING="model=test_action&test_resource=my_resource&test_provide=my_provide"
 

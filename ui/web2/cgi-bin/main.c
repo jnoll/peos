@@ -6,7 +6,25 @@
 #include "kernel/process_table.h"
 #include "html.h" 
 
-//void print_row(peos_action_t *action, int index, int pid);
+
+void print_row(peos_action_t *action, char *state)
+{
+
+    printf("<tr>\n");
+    printf("<td width=\"100px\" valign=\"top\">\n"); 
+    printf("%s\n", state);
+    printf("</td>\n");
+    printf("<td width=\"150\" valign=\"top\">");
+    print_action(action->pid, action->name, state);
+    printf("</td>\n");
+    printf("<td width=\"300\" valign=\"top\">");
+    print_resource(action->pid, action->name);
+    printf("</td>\n");
+    printf("<td width=\"300\" valign=\"top\">");
+    print_script(action->pid, action->name, 1);
+    printf("</td>\n");
+    printf("</tr>\n");
+}
 
 
 int main()
@@ -52,45 +70,48 @@ int main()
       if(alist){
         for(j = 0; j < num_actions; j++){
           switch(alist[j].state){
-	    case 1:  
-              strcpy(state, "ready");
+
+	  case ACT_READY:  
+	      print_row(&alist[j], "ready");
 	      break;
-	    case 2:
-    	      strcpy(state, "active");
+	  case ACT_RUN:
+	      print_row(&alist[j], "active");
 	      break;
-	    case 3:
-	      strcpy(state, "done");
-	      break;
-	    case 4:
+	  case ACT_SUSPEND:
+	      print_row(&alist[j], "suspend");
 	      strcpy(state, "suspend");
 	      break;
-	    case 5:
+	  case ACT_DONE:
+	      strcpy(state, "done");
+	      break;
+	  case ACT_ABORT:
 	      strcpy(state, "abort");
 	      break;
-	    case 6:
+	  case ACT_NEW:
 	      strcpy(state, "new");
 	      break;
-	    default:
+	  case ACT_DEAD: 
+	      strcpy(state, "dead");
+	      break;
+	  case ACT_BLOCKED:
+	      /* Simulate required resources becoming available. */
+	      peos_notify(pid, alist[j].name, PEOS_EVENT_REQUIRES);
+	      print_row(&alist[j], "ready");
+	      break;
+	  case ACT_PENDING:
+	      /* Simulate provided resources becoming available. */
+	      peos_notify(pid, alist[j].name, PEOS_EVENT_PROVIDES);
+	      strcpy(state, "done");
+	      break;
+	  case ACT_AVAILABLE:
+	      print_row(&alist[j], "available");
+	      break;
+	  case ACT_NONE:
+	  default:
 	      strcpy(state, "none");
-	  break;
+	      break;
 	  }
 	  
-          if(alist[j].state == 1 || alist[j].state == 2 || alist[j].state == 4){
-            printf("<tr>\n");
-            printf("<td width=\"100px\" valign=\"top\">\n"); 
-            printf("%s\n", state);
-            printf("</td>\n");
-            printf("<td width=\"150\" valign=\"top\">");
-            print_action(pid, alist[j].name, state);
-            printf("</td>\n");
-            printf("<td width=\"300\" valign=\"top\">");
-            print_resource(pid, alist[j].name);
-            printf("</td>\n");
-            printf("<td width=\"300\" valign=\"top\">");
-            print_script(pid, alist[j].name);
-            printf("</td>\n");
-            printf("</tr>\n");
-          }
 	}
       }
     }

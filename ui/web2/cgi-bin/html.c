@@ -41,22 +41,24 @@ void print_action(int pid, char* action, char *state)
     printf("<a href=\"action_page.cgi?%d+%s=%s\">%s</a>", pid, action, state, action);
 }
 
-void print_script(int pid, char *action)
+void print_script(int pid, char *action, int one_line)
 {
-  char *script;
-  int i=0;
+    char *script;
+    int i=0;
 
-  script = (char *) peos_get_script(pid, action);
+    script = (char *) peos_get_script(pid, action);
 
-  if(script) {
-    for(i=0; i<40; i++){
-      if(script[i] == '\0' || script[i] == '\n')
-      break;
-      if(script[i] == '\"') continue; /* Don't display quotes. */
-      putchar(script[i]);
+    if(script) {
+	for(i=0; script[i] != '\0';  i++){
+	    if (one_line && (i >= 40 || script[i] == '\n')) {
+		break;
+	    }
+	    if(script[i] == '\"') continue; /* Don't display quotes. */
+	    putchar(script[i]);
+	}
     }
-  }
 }
+
 
 void print_resource(int pid, char *action)
 {

@@ -1,8 +1,11 @@
 OS_DIR = ../../../os
 KERNEL_DIR = $(OS_DIR)/kernel
 
+# Figure out where the 'dot' graph processing command lives.
+DOTBIN = $(shell which dot)
 CC = gcc
-CFLAGS = -g -I$(OS_DIR) -I../../..
+
+CFLAGS = -g -DDOTBIN=\"$(DOTBIN)\" -I$(OS_DIR) -I../../..
 
 LD = gcc
 LIBS = -lpml
@@ -28,6 +31,8 @@ TESTS = test_main.sh \
 	test_resource.sh
 
 CGI = main.cgi action_page.cgi create.cgi do.cgi do_create.cgi resource.cgi
+SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)
+
 PML = test_action.pml ../readme.pml
 
 all: test
@@ -49,4 +54,7 @@ create_testtable: create_testtable.o
 %.cgi: %.o $(OBJECTS)
 	$(LD) -o $@ $(LDFLAGS) $< $(OBJECTS) $(KERNEL_OBJECTS) $(LIBS)
 
-main.o action_page.o create.o do.o do_create.o resource.o: html.h
+#main.o action_page.o create.o do.o do_create.o resource.o: html.h
+.depend: $(SOURCES)
+	$(CC) $(CFLAGS) -MM $^ > $@
+.PHONY: test

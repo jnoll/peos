@@ -46,7 +46,7 @@ int main()
     printf("</tr>\n");
 
     printf("<tr><td>Description</td><td>\n");
-    print_script(pid, action);
+    print_script(pid, action, 0);
     printf("</td>");
     printf("</tr>\n");
     printf("</table>\n");
@@ -64,7 +64,7 @@ int main()
     gifname++;
     makedot(graph_name->source, fname, action, state);
     strtok(gifname, ".");
-    strcat(gifname, ".gif");
+    strcat(gifname, ".jpg");
     printf("<img src=%s>", gifname); 
     printf("<br><br><br>\n");
     printf("</tr>\n");

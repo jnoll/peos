@@ -1,6 +1,8 @@
 #!/bin/sh
 echo -n "$0..."
 
+test -e proc_table.dat && rm proc_table.dat
+
 export QUERY_STRING="0+test_script=ready"
 create_testtable
 action_page.cgi > output

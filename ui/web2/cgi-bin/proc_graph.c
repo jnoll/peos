@@ -4,6 +4,10 @@
 #include <string.h>
 #include "kernel/pmlheaders.h"
 
+/* Path to 'dot' graph processor executable.  This should be defined by make. */
+#ifndef DOTBIN
+#define DOTBIN "/usr/local/bin/dot"
+#endif
 
 Graph make_graph(char *file)
 {
@@ -36,7 +40,7 @@ void makedot(Node n, char *filename, char *action, char *state)
 {
   FILE *file;
   int i, count = 0;
-  char *mapout, *gifout, *tempchild, *tempn, *mapchmod, *gifchmod, *dotchmod;
+  char cmd[BUFSIZ],  *tempchild, *tempn;
   char *color, *temp;
   Node child;
   Node parent;
@@ -61,7 +65,7 @@ void makedot(Node n, char *filename, char *action, char *state)
   file = fopen(temp,"w");
 
   strtok(temp, ".");
-  fprintf(file,"digraph %s {\n", temp);
+  fprintf(file,"digraph %s {\nrankdir=LR;\nsize=\"10,7.5\";\n", temp);
 
   while(n != NULL)
   {
@@ -108,37 +112,22 @@ void makedot(Node n, char *filename, char *action, char *state)
 	fprintf(file, "}");
 	fclose(file);
 
-	mapout = (char *) calloc(2*strlen(filename) + 22, sizeof(char));
-	gifout = (char *) calloc(2*strlen(filename) + 22, sizeof(char));
-	mapchmod = (char *) calloc(strlen(filename) + 12, sizeof(char));
-	gifchmod = (char *) calloc(strlen(filename) + 12, sizeof(char));
-	dotchmod = (char *) calloc(strlen(filename) + 12, sizeof(char));
 
-	strcat(mapout, "dot -Timap ");
-	strcat(gifout, "dot -Tgif ");
-	strcat(filename,".dot");
-        strcpy(dotchmod, "chmod a+rw ");
-	strcat(dotchmod, filename);
-	strcat(mapout, filename);
-	strcat(gifout,filename);
-	strcat(mapout, " > ");
-	strcat(gifout, " > ");
-	strtok(filename, ".");
-	strcat(filename, ".map");
-	strcat(mapout, filename);
-        strcpy(mapchmod, "chmod a+rw ");
-	strcat(mapchmod, filename);
-	strtok(filename, ".");
-	strcat(filename, ".gif");
-	strcat(gifout, filename);
-        strcpy(gifchmod, "chmod a+rw ");
-	strcat(gifchmod, filename);
+	snprintf(cmd, BUFSIZ, "%s -Timap %s.dot > %s.map 2> /dev/null",
+		DOTBIN, filename, filename);
+	system(cmd);
 
-	system("setup graphviz");
-	system(mapout);
-	system(gifout);
-	system(dotchmod);
-	system(mapchmod);
-	system(gifchmod);
+	snprintf(cmd, BUFSIZ, "%s -Tjpg %s.dot > %s.jpg 2> /dev/null", 
+		DOTBIN, filename, filename);
+	system(cmd);
+
+	snprintf(cmd, BUFSIZ, "chmod a+rw %s.dot", filename);
+	system(cmd);
+
+	snprintf(cmd, BUFSIZ, "chmod a+rw %s.jpg", filename);
+	system(cmd);
+
+	snprintf(cmd, BUFSIZ, "chmod a+rw %s.map", filename);
+	system(cmd);
 }
 

@@ -50,7 +50,7 @@ then
   echo
 fi
 
-test -e output && rm output
-test -e proc_table.dat && rm proc_table.dat
+#test -e output && rm output
+#test -e proc_table.dat && rm proc_table.dat
 
 echo done

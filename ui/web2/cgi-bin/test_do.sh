@@ -1,7 +1,8 @@
 #!/bin/sh
 echo -n "$0..."
 
-rm proc_table.dat
+test -e proc_table.dat && rm proc_table.dat
+
 create_testtable
 
 export QUERY_STRING="0+test_script=run"
