@@ -253,7 +253,7 @@ int modelcount = 0;
 		fprintf(LOG,"	WebUI: list<br>\n");
 	}
 
-        ret_value = add_message(ret_value,"<ul >");
+        ret_value = add_message(ret_value,"<ul>\n");
 
 	do {
 		response = engineresponse(s);

@@ -37,8 +37,6 @@ int main() {
     int malformedform = 0;    
     int sessionid = 1;
 
-     
-
 	cfg = readconfig(CONFIG_LOCATION);
 	if (cfg != NULL) {
 
@@ -56,6 +54,9 @@ int main() {
 			pml_done(PARA1,PARA2);
 		}
 		if (strcasecmp(COMMAND,"create") == 0) {
+			pml_create(PARA1);
+		}
+		if (strcasecmp(COMMAND,"create_pre") == 0) {
 			pml_create(PARA1);
 		}
 	}
@@ -87,7 +88,7 @@ int main() {
 
     printf("<SCRIPT LANGUAGE=\"JavaScript\" TYPE=\"TEXT/JAVASCRIPT\">\n");
     printf("writePeosTitle();\n");
-    printf("var commandVar = getCookie(\"commnad\");\n");
+    printf("var commandVar = getCookie(\"command\");\n");
     printf("var actionVar = getCookie(\"action\");\n");
     printf("var sessionidVar = getCookie(\"sessionid\");\n");
     printf("var userName = getCookie(\"userName\");\n");
@@ -131,11 +132,13 @@ int main() {
 
 void showuser()
 {
-	//current_msg = add_message(current_msg,"username: ");
-	//current_msg = add_message(current_msg,NAME);
-	//current_msg = add_message(current_msg,"\npassword: ");
-	//current_msg = add_message(current_msg,PASS);
-	//current_msg = add_message(current_msg," -> Successful login.<br><br>\n\n");
+/*
+	current_msg = add_message(current_msg,"username: ");
+	current_msg = add_message(current_msg,NAME);
+	current_msg = add_message(current_msg,"\npassword: ");
+	current_msg = add_message(current_msg,PASS);
+	current_msg = add_message(current_msg," -> Successful login.<br><br>\n\n");
+*/
 }
 
 int getcgiinput()
@@ -280,11 +283,13 @@ int pml_create(char *model)
 			current_msg = add_message(current_msg,"To get your next available task, reply this message.<br>\n");
 		}
 		else {
-			current_msg = add_message(current_msg,model);
+
+			//current_msg = add_message(current_msg,model);
 			//if (strlen(model) != 0)
 			//	current_msg = add_message(current_msg," can not be found.<br>\n<br>\n");
-			current_msg = add_message(current_msg,"<b>You have the following model(s) available: </b><br>\n<br>\n");
+			current_msg = add_message(current_msg,"<b>You have the following model(s) available: </b>\n");
 			current_msg = list(s,current_msg);
+
 		}
 		logout(s);
 	}
