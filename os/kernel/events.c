@@ -1,152 +1,122 @@
-/*****************************************************************/
-/* File:        events.c
-/* Author:      Tingjun Wen
-/* Date:        7/19/99
-/* Description: Event handling functions.
-/*****************************************************************/   
+/*****************************************************************
+ * File:        events.c
+ * Author:      Tingjun Wen
+ * Date:        7/19/99
+ * Description: Event handling functions.
+ *****************************************************************/   
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <gdbm.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#define __USE_XOPEN
-#include <unistd.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <string.h>
 #include <dirent.h>
-#include <pwd.h>
-#include <errno.h>
-#include "pmlengine.h"
-#include "../vm/vm.h"
+#include <string.h>
+#include <assert.h>
+#include "vm.h"
+#include "process.h"
+#include "events.h"
 
-/* pmlLogin() always return with success. */
-void pmlLogin()
-{
-  char in_buf[4096] = {0};
-  int ret = -1;
-  char cmd[17] = {0};
-  char msg[1024];
-  
-  /* login - what first shows up when you run PMLServer */
-  sendHelp();
-  sendUI("\nPlease login to use the system:\n");
-  do {
-    memset(in_buf, 0, sizeof(in_buf));
-    readUI(in_buf, sizeof(in_buf));
-    if (sscanf(in_buf, "%16s", cmd) != 1)
-      {
-	printf("sscanf error\n");
-	continue;
-      }
-    if (strcasecmp(cmd, "LOGIN") == 0) {
-      if (sscanf(in_buf+5, "%9s%14s", uname, passwd) != 2) {
-	sendUI("500 please use correct format! <'login' username pwd>\n");
-	continue;
-      } 
-      ret = 0;
-      sprintf(msg, "100 login successful.  Welcome, %s!\n", uname);
-      sendUI(msg);
-    }
-    
-    else if (strcasecmp(cmd, "EXIT") == 0) {
-      sendUI("Goodbye.\n");
-      close(newsockfd);
-      exit(0);
-    }
-    
-    else if (strcasecmp(cmd, "HELP") == 0) {
-      sendHelp();
-    }
-    
-    else {
-      sendUI("500 please login first!\n");
-    }
-  } while (ret != 0);
-} /* pmlLogin */
+/* Global variabless. */
 
-/* Opens the directory specified by the environment variable 
- * COMPILER_DIR, and displays all the available models (all 
- * the .txt files, stripped of their extensions). 
- * The user can then create instances
- * of one or more of the available process models.
- */
-int listModel()
+
+void error_msg(char *s) 
 {
-  DIR * dir;
-  struct dirent * ent;
-  char * ext;
-  char msg[4096];
-  char * COMP_DIR = getenv("COMPILER_DIR");
+    fprintf(stderr, "error: %s\n", s);
+}
+
+char **peos_list_models()
+{
+    static char **result;
+    int r = 0, rsize = 256;
+    DIR * dir;
+    struct dirent * ent;
+    char * ext;
+    char * COMP_DIR = getenv("COMPILER_DIR");
   
-  if (COMP_DIR == NULL) {
-    sendUI("500 COMPILER_DIR not set on PMLServer's machine. ");
-    sendUI("COMPILER_DIR must be set to location of compiled .txt files...\n");
-    return -1;
-  }
-  dir = opendir(COMP_DIR);
-  if (dir == NULL) {
-    sendUI("500 model directory does not exist\n");
-    sendUI("Check COMPILER_DIR set to location of compiled .txt files...\n");
-    return -1;
-  }
-  ent = readdir(dir);
-  while (ent) {
-    ext = strrchr(ent->d_name, '.');
-    /* no extension */
-    if (ext == NULL) {
-      ent = readdir(dir);
-      continue;
+    if (COMP_DIR == NULL) {
+	error_msg("peos_list_models: COMPILER_DIR not set.\n");
+	return NULL;
     }
-    if (strcmp(ext, ".txt") != 0) {
-      ent = readdir(dir);
-      continue;
+    dir = opendir(COMP_DIR);
+    if (dir == NULL) {
+	error_msg("COMPILER_DIR directory does not exist\n");
+	return NULL;
     }
-    ext[0] = 0;
-    sprintf(msg, "100-%s\n", ent->d_name);
-    sendUI(msg);
+
+    result = calloc(rsize, sizeof(char *));
     ent = readdir(dir);
-  };
-  sendUI("100 \n");
-  
-  return 0;
-} /* new vm-version (.txt) listModel */
+    while (ent) {
+	ext = strrchr(ent->d_name, '.');
+	if (ext != NULL) {
+	    if (strcmp(ext, ".txt") == 0) {
+		ext[0] = 0;
+		if (r >= rsize) {
+		    rsize += 256;
+		    result = (char **) realloc(result, rsize * sizeof(char *));
+		}
+		result[r++] = strdup(ent->d_name);
+	    }
+	}
+	ent = readdir(dir);
+    }
+    result[r] = NULL;
+    return result;
+}
 
-
-/* sendHelp() prints out, in menu form, a list of all valid commands...
- */
-void sendHelp()
+int peos_set_ready(char *action)
 {
-  sendUI("100- ********************* Help *************************************\n");
-  sendUI("100-'login' <username> <password>\n");
-  sendUI("100-'sample' \t\t- see a sample process instantiated, run.\n");
-  sendUI("100-'list' \t\t- see all process models.\n");
-  sendUI("100-'create' <modelname>- start a process.\n");
-  sendUI("100-'run' <proc> <act> \t- run an action in 'available'.\n");
-  sendUI("100-'done' <proc> <act> - finish a currently-running action.\n");
-  sendUI("100-'available' \t- see next action(s) for current process(es).\n");
-  sendUI("100-'running' \t\t- see what actions you have running.\n");
-  sendUI("100-'active'  \t\t- see all instantiated processes.\n");
-  sendUI("100-'exit' \t\t- close the connection.\n");
-  sendUI("100-'help' \t\t- see this menu again.\n");
-  sendUI("100- ****************************************************************\n");
-} /* sendHelp */           
+    return handle_action_change(action, ACT_READY);
+}
 
-/* Prints out, step by step, a sample stepping-through of the
- * process "sample".  Provided to assist the user in understanding
- * the process of using this command-line-IF to run a process...
+/*
+ * Set action state to 'running.'
  */
-void sampleRun()
+int peos_run_action(char *action)
 {
-  sendUI("100- ************** Running the process \"sample\" *******************\n");
-  sendUI("100- 'list' \t\t\t-- after login, shows available processes.\n");
-  sendUI("100- 'create sample' \t\t-- we'll choose the process called \"sample\".\n");
-  sendUI("100- 'available' \t\t-- to see what the first action in \"sample\" is.\n");
-  sendUI("100- 'run sample.001 edit' \t-- to begin that first action.\n");
-  sendUI("100- 'running' \t\t\t-- should show \"sample.001 edit\".\n");
-  sendUI("100- 'done sample.001 edit' \t-- when you've finished the action.\n");
-  sendUI("100- 'run..', 'done..' \t\t-- for actions \"compile\", \"test\", and \"debug\".\n");
-  sendUI("100- 'available' \t\t-- no more actions for \"sample.001\" - done!\n");
-  sendUI("100- ****************************************************************\n");
-} /* sampleRun */
+    return handle_action_change(action, ACT_RUN);
+}
+
+/*
+ * Set action state to 'suspended'.
+ */
+int peos_suspend_action(char *action)
+{
+    return handle_action_change(action, ACT_SUSPEND);
+}
+
+/*
+ * Set action state to 'done', awaken any waiting processes.
+ */
+vm_exit_code peos_finish_action(char *action)
+{
+    return handle_action_change(action, ACT_DONE);
+}
+
+/*
+ * Set action state to 'aborted', kill owner and children. 
+ */
+int peos_abort_action(peos_action_t action)
+{
+    return 1;
+}
+
+
+
+int peos_run(char *process, int line)
+{
+    vm_exit_code status;
+    int pid = peos_create_instance(process);
+    
+    if (pid >= 0 
+	&& (status = peos_resume(pid)) != VM_ERROR 
+	&& status != VM_INTERNAL_ERROR) {
+	return pid;
+    } else {
+	return -1;
+    }
+
+}
+
+
+#ifdef UNIT_TEST
+#include "test_events.c"
+#endif

@@ -1,1 +1,3 @@
 *.o PMLServer *.idx *.dat
+xref TODO BUGS TAGS
+*.tar

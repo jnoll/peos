@@ -1,34 +1,57 @@
 # compiler:
 CC = gcc -g
 
-
-CFLAGS = -I../repository -I../vm
+CFLAGS = -g -I.
+TCFLAGS = -g -I/usr/local/include
 # keep track of dependencies automatically
 .KEEP_STATE:
 
 # lib
-
-LIBS = -lgdbm -lpmlstate
-
-LDFLAGS = -L../../lib
+LIBS = #-lgdbm -lpmlstate
+TLIBS = -lcheck $(LIBS)
+CORE_LIBS = 
+LDFLAGS = -g -L../../lib
+TLDFLAGS = $(LDFLAGS) -L/usr/local/lib
 
 # objects
-# modified 7/18/02 - gets events.o, vm.o from os/vm/
 OBJS = \
 dispatch.o \
 server.o \
+$(CORE_OBJS)
+
+CORE_OBJS = \
 events.o \
-../vm/events.o \
-../vm/vm.o \
-../repository/repository.o \
-../repository/unixfs_repository.o \
-../repository/debug.o
+vm.o \
+process.o \
+action.o
 
 # sources
+SOURCES = $(OBJS:.o=.c)
+
+all: test shell
 
 # Compile the program
 PMLServer: $(OBJS)
-	   $(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) -g
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) -g
+
+shell: shell.o $(CORE_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) -lreadline -lhistory -ltermcap
+
+test: $(CORE_OBJS)
+	$(MAKE) -C test 
+
+xref:
+	ctags -x $(SOURCES) > $@
+
+TAGS:	$(SOURCES)
+	etags $(SOURCES)
+
+tags:	$(SOURCES)
+	ctags $(SOURCES)
 
 clean:
-	rm *.o
+	-rm *.o core
+
+dist:
+	tar cvf kernel.tar --exclude-from exclude -C .. kernel
+.PHONY:	test

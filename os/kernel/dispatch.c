@@ -547,6 +547,87 @@ void readUI(char* pBuf, size_t bufSize)
 } /* readUI */
 
 
+/* pmlLogin() always return with success. */
+void pmlLogin()
+{
+  char in_buf[4096] = {0};
+  int ret = -1;
+  char cmd[17] = {0};
+  char msg[1024];
+  
+  /* login - what first shows up when you run PMLServer */
+  sendHelp();
+  sendUI("\nPlease login to use the system:\n");
+  do {
+    memset(in_buf, 0, sizeof(in_buf));
+    readUI(in_buf, sizeof(in_buf));
+    if (sscanf(in_buf, "%16s", cmd) != 1)
+      {
+	printf("sscanf error\n");
+	continue;
+      }
+    if (strcasecmp(cmd, "LOGIN") == 0) {
+      if (sscanf(in_buf+5, "%9s%14s", uname, passwd) != 2) {
+	sendUI("500 please use correct format! <'login' username pwd>\n");
+	continue;
+      } 
+      ret = 0;
+      sprintf(msg, "100 login successful.  Welcome, %s!\n", uname);
+      sendUI(msg);
+    }
+    
+    else if (strcasecmp(cmd, "EXIT") == 0) {
+      sendUI("Goodbye.\n");
+      close(newsockfd);
+      exit(0);
+    }
+    
+    else if (strcasecmp(cmd, "HELP") == 0) {
+      sendHelp();
+    }
+    
+    else {
+      sendUI("500 please login first!\n");
+    }
+  } while (ret != 0);
+} /* pmlLogin */
 
 
+/* sendHelp() prints out, in menu form, a list of all valid commands...
+ */
+void sendHelp()
+{
+  sendUI("100- ********************* Help *************************************\n");
+  sendUI("100-'login' <username> <password>\n");
+  sendUI("100-'sample' \t\t- see a sample process instantiated, run.\n");
+  sendUI("100-'list' \t\t- see all process models.\n");
+  sendUI("100-'create' <modelname>- start a process.\n");
+  sendUI("100-'run' <proc> <act> \t- run an action in 'available'.\n");
+  sendUI("100-'done' <proc> <act> - finish a currently-running action.\n");
+  sendUI("100-'available' \t- see next action(s) for current process(es).\n");
+  sendUI("100-'running' \t\t- see what actions you have running.\n");
+  sendUI("100-'active'  \t\t- see all instantiated processes.\n");
+  sendUI("100-'exit' \t\t- close the connection.\n");
+  sendUI("100-'help' \t\t- see this menu again.\n");
+  sendUI("100- ****************************************************************\n");
+} /* sendHelp */           
+
+/* XXX - This is bogus and should be removed. -jn
+ * Prints out, step by step, a sample stepping-through of the
+ * process "sample".  Provided to assist the user in understanding
+ * the process of using this command-line-IF to run a process...
+ */
+void sampleRun()
+{
+  sendUI("100- ************** Running the process \"sample\" *******************\n");
+  sendUI("100- 'list' \t\t\t-- after login, shows available processes.\n");
+  sendUI("100- 'create sample' \t\t-- we'll choose the process called \"sample\".\n");
+  sendUI("100- 'available' \t\t-- to see what the first action in \"sample\" is.\n");
+  sendUI("100- 'run sample.001 edit' \t-- to begin that first action.\n");
+  sendUI("100- 'running' \t\t\t-- should show \"sample.001 edit\".\n");
+  sendUI("100- 'done sample.001 edit' \t-- when you've finished the action.\n");
+  sendUI("100- 'run..', 'done..' \t\t-- for actions \"compile\", \"test\", and \"debug\".\n");
+  sendUI("100- 'available' \t\t-- no more actions for \"sample.001\" - done!\n");
+  sendUI("100- ****************************************************************\n");
+} /* sampleRun */
 
