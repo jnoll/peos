@@ -1,0 +1,56 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "../../../os/kernel/vm.h"
+#include "../../../os/kernel/process_table.h"
+#include "../../../os/kernel/events.h"
+
+void create_process(char *model);
+
+int main()
+{
+  char *input, *model_name;
+
+  printf("%s%c%c\n","Content-Type:text/html;charset=iso-8859-1",13,10);
+
+  input = getenv("QUERY_STRING");
+
+  if(sscanf(input,"model_list=%s", model_name) != 1)
+  {
+    printf("<P>Error! Error in passing variable.\n");
+    exit(1);
+  }
+  else if(model_name == NULL)
+  {
+    printf("<P>Error! Error in passing variable.\n");
+    exit(1);
+  }
+  else
+  {
+    load_proc_table("proc_table.dat");
+    create_process(model_name);
+    save_proc_table("proc_table.dat");
+  }
+
+  printf("<html>\n");
+  printf("<head>\n");
+  printf("<body onload=\"window.location.href='http://linux.students.engr.scu.edu/~wchu/cgi-bin/main.cgi'\"\n");
+  printf("</body>\n");
+  printf("</head>\n");
+  printf("</html>\n");
+
+  return 0;
+}
+
+
+void create_process(char *model)
+{
+  int pid;
+
+  load_proc_table("proc_table.dat");
+  if ((pid = peos_run(model, 0)) < 0) {
+    printf("<P>%d</P>\n", pid);
+    printf("<P>Couldn't create %s</P>\n", model);
+  }
+  save_proc_table("proc_table.dat");
+}

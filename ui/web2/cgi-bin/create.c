@@ -40,7 +40,7 @@ int main()
   printf("<select width=\"160\" style=\"width: 160px\" name=\"model_list\" size=\"10\">\n");
   printf("<option selected> Select Model </option>\n");
   for(j=0; result && result[j]; j++){
-    printf("<option value=\"%s\">%s.txt</option>\n",result[j], result[j]);
+    printf("<option value=\"%s\">%s.pml</option>\n",result[j], result[j]);
   }
   printf("</select>\n");
   printf("</td>\n");
