@@ -54,7 +54,7 @@ int pe_file_exists(char* filename)
 	if(!pe_log) pe_log = fopen ("pelog", "a");
 #endif
 #ifdef PE_DEBUG_B
-	fprintf(pe_log,"CALL pe_file_exists\n");
+	fprintf(pe_log,"CALL pe_file_exists (filename:%s)\n", filename);
 #endif
 #ifdef NO_TCL
 	return 1;
@@ -75,7 +75,7 @@ int pe_file_exists(char* filename)
 	if(!args){
 		args = (char*)malloc(sizeof(char)*(255));
 	}
-	sprintf(args, "file_exists %s", filename);
+	sprintf(args, "tclf_exists %s", filename);
 #ifdef PE_DEBUG_B
 	fprintf(pe_log,"\tIs this what i want? %s\n", args);
 #endif
@@ -112,7 +112,7 @@ int pe_byname(char* func_name, char* argument)
 	strcat(file_name, ".tcl");
 	if (!pe_file_exists(file_name)) return 0;
 #ifdef PE_DEBUG_B
-	fprintf(pe_log,"CALL pe_byname \n\t(file_name:%s ,\n\t[func_name %s,\n\t argument %s])!\n", file_name, func_name, argument);
+	fprintf(pe_log,"CALL pe_byname (func_name:%s,argument:%s) \n\tfilename:%s\n", func_name, argument, file_name);
 #endif
 #ifdef NO_TCL
 	return 1;
@@ -125,7 +125,7 @@ int pe_byname(char* func_name, char* argument)
 	if(!args){
 		args = (char*)malloc(sizeof(char)*(255));
 	}
-	sprintf(args, "%s %s", func_name, argument);
+	sprintf(args, "tclf_%s %s", func_name, argument);
 #ifdef PE_DEBUG_B
 	fprintf(pe_log,"\tIs this what i want? %s\n", args);
 #endif
@@ -157,7 +157,7 @@ int pe_isdirempty(char* path)
 	if(!pe_log) pe_log = fopen ("pelog", "a");
 #endif
 #ifdef PE_DEBUG_B
-	fprintf(pe_log, "CALL pe_isdirempty\n");
+	fprintf(pe_log, "CALL pe_isdirempty(path:%s)\n",path);
 #endif
 #ifdef NO_TCL
 	return 1;
@@ -172,7 +172,7 @@ int pe_isdirempty(char* path)
 	if(!args){
 		args = (char*)malloc(sizeof(char)*(255));
 	}
-	sprintf(args, "filecount %s", path);
+	sprintf(args, "tclf_filecount %s", path);
 #ifdef PE_DEBUG_B
 	fprintf(pe_log, "\tIs this what i want? %s\n", args);
 #endif
@@ -202,7 +202,7 @@ int pe_timestamp(char* file1, char*file2)
 	if(!pe_log) pe_log = fopen ("pelog", "a");
 #endif
 #ifdef PE_DEBUG_B
-	fprintf(pe_log, "CALL pe_timestamp\n");
+	fprintf(pe_log, "CALL pe_timestamp(file1%s, file2:%s)\n",file1,file2);
 #endif
 #ifdef NO_TCL
 	return 1;
@@ -218,7 +218,7 @@ int pe_timestamp(char* file1, char*file2)
 	if(!args){
 		args = (char*)malloc(sizeof(char)*(255));
 	}
-	sprintf(args, "timestamp %s %s", file1, file2);
+	sprintf(args, "tclf_timestamp %s %s", file1, file2);
 #ifdef PE_DEBUG_B
 	fprintf(pe_log, "\tIs this what i want? %s\n", args);
 #endif
@@ -247,7 +247,7 @@ int pe_spellcheck(char* filename)
 	if(!pe_log) pe_log = fopen ("pelog", "a");
 #endif
 #ifdef PE_DEBUG_B
-	fprintf(pe_log, "CALL pe_spellcheck\n");
+	fprintf(pe_log, "CALL pe_spellcheck(filename:%s)\n",filename);
 #endif
 #ifdef NO_TCL
 	return 1;
@@ -263,7 +263,7 @@ int pe_spellcheck(char* filename)
 	if(!args){
 		args = (char*)malloc(sizeof(char)*(255));
 	}
-	sprintf(args, "spellcheck %s", filename);
+	sprintf(args, "tclf_spellcheck %s", filename);
 #ifdef PE_DEBUG_B
 	fprintf(pe_log, "\tIs this what i want? %s\n", args);
 #endif
@@ -308,7 +308,7 @@ int pe_file_size(char* filename)
 	if(!args){
 		args = (char*)malloc(sizeof(char)*(255));
 	}
-	sprintf(args, "file_size %s", filename);
+	sprintf(args, "tclf_file_size %s", filename);
 #ifdef PE_DEBUG_B
 	fprintf(pe_log,"\tIs this what i want? %s\n", args);
 #endif

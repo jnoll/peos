@@ -144,7 +144,7 @@ main (int argc, char **argv)
     char *login = "proc_table"; /* default login name */
     opterr = 0;
     system ("echo '#######################################################################' >  pelog");
-    system ("echo '#######################################################################' >> pelog");
+    system ("echo '###################   PREDICATE EVALUATOR DEBUG LOG    ################' >> pelog");
     system ("echo '#######################################################################' >> pelog");
     while ((c = getopt (argc, argv, "+c:n:ihr:d:ul:")) != -1) {
         switch (c) {
