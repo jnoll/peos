@@ -17,24 +17,6 @@ START_TEST(test_set_act_state_error)
 }
 END_TEST
 
-START_TEST(test_list_actions_error)
-{
-    peos_action_t *acts = 0;
-
-    /* No process loaded. */
-    /*  Pre: no actions. */
-    peos_action_t *actions = NULL;
-
-    /* Action. */
-    mark_point();
-    acts = peos_find_actions(ACT_READY, actions, 0);
-
-    /* Post: assertion failure. */
-    fail_unless(acts == NULL, "didn't return error code.");
-
-}
-END_TEST
-
 
 int
 main(int argc, char *argv[])
@@ -48,7 +30,6 @@ main(int argc, char *argv[])
 
     tc = tcase_create("assertions");
     suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_list_actions_error);
     tcase_add_test(tc, test_set_act_state_error);
 
     sr = srunner_create(s);

@@ -2,17 +2,15 @@
 CC = gcc -g
 
 CFLAGS = -g -I.
-TCFLAGS = -g -I/usr/local/include
 
 # keep track of dependencies automatically
 .KEEP_STATE:
 
 # lib
-LIBS = #-lgdbm -lpmlstate
-TLIBS = -lcheck $(LIBS)
+LIBS = 
+
 CORE_LIBS = 
 LDFLAGS = -g -L../../lib
-TLDFLAGS = $(LDFLAGS) -L/usr/local/lib
 
 # objects
 OBJS = \
@@ -53,7 +51,9 @@ ctags:	$(SOURCES)
 clean:
 	-rm *.o core
 
-dist:
+reallyclean: clean
+
+dist: reallyclean
 	tar cvf kernel.tar --exclude-from exclude -C .. kernel
 
 # Dependencies.

@@ -2,13 +2,13 @@
 PMLC = ../../../compiler/pmlc
 CC = gcc -g
 
-CFLAGS = -g -I. -I.. -I/usr/local/include -Wall
+CFLAGS = -g -Wall -I. -I.. -I/home/jnoll/include
 # keep track of dependencies automatically
 .KEEP_STATE:
 
 # lib
 TEST_LIBS = -lcheck
-LDFLAGS = -g -L/usr/local/lib
+LDFLAGS = -g -L/home/jnoll/lib
 
 # objects
 PMLFILES = $(wildcard *.pml)
@@ -23,12 +23,14 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 
 # These are in order of use.
 TESTS = test_vm test_action test_process test_events test_process_table
-#test_assertions
+
 
 all: test  vm_harness #driver
 
 test:  $(TESTS) 
 	-for i in $^ ; do $$i -f; done
+	@echo "The following test should report an Error due to assertion failure:"
+	-test_assertions -f
 
 driver: driver.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS)
@@ -67,6 +69,8 @@ tags:	$(SOURCES)
 
 clean:
 	-rm *.o core
+reallyclean: clean
+	-rm $(TESTS) test_assertions
 
 # Dependencies.
 include .depend
