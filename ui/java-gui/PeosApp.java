@@ -422,8 +422,8 @@ public class PeosApp extends JFrame implements ActionListener
 	}
 	public JToolBar createToolBar() 
 	{
-	        ImageIcon openIcon = createImageIcon(System.getProperty("peos.images")+ "/open.jpg");
-        	ImageIcon deleteIcon = createImageIcon(System.getProperty("peos.images")+ "/delete.jpg");
+	        ImageIcon openIcon = new ImageIcon(System.getProperty("peos.images")+ "/open.jpg");
+        	ImageIcon deleteIcon = new ImageIcon(System.getProperty("peos.images")+ "/delete.jpg");
 
 		JToolBar toolBar = new JToolBar("peos toolbar");
 		JButton button = new JButton(openIcon);
