@@ -186,6 +186,7 @@ public class execSysCommand extends javax.swing.JDialog
 	    if (bEdit)
 		{
 		    bEdit = false;
+			JTextArea2.selectAll();
 		    JButtonEdit.setText("Exec");
 		}
 		else
@@ -216,9 +217,11 @@ public class execSysCommand extends javax.swing.JDialog
             Process proc = Runtime.getRuntime().exec(cmd);
             BufferedReader is = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 			String line;
+			String newLine = new String("\n");
             while ((line = is.readLine()) != null)
             {
 				JTextArea1.append(line);
+				JTextArea1.append(newLine);
             }
 		    JLabel2.setVisible(true);
             Dimension sz = JLabel2.getSize();
@@ -226,12 +229,12 @@ public class execSysCommand extends javax.swing.JDialog
             proc.waitFor();
             retCode = proc.exitValue();
             Integer iRet = new Integer(retCode);
-			String msg = new String("\nReturn code is "+iRet.toString()+". Press <Close> to continue.");
+			String msg = new String("\nReturn code is "+iRet.toString()+". Press <Close> to continue.\n");
 			JTextArea1.append(msg);
         }
         catch (Exception e)
         {
-            String msg = new String("Get exception "+e+"\nCannot preceed. Press <Close> to continue.");
+            String msg = new String("Get exception "+e+"\nCannot preceed. Press <Close> to continue.\n");
             JTextArea1.setText(msg);
         }
         finally

@@ -13,7 +13,7 @@ import javax.swing.table.*;
 import javax.swing.border.*;
 import engineInterface.*;
 
-/*
+/**
  * A basic JFC 1.1 based application.
  */
 public class PEOS_EI extends javax.swing.JFrame
@@ -29,6 +29,8 @@ public class PEOS_EI extends javax.swing.JFrame
 	final static int BA_focusNone  = 2;
 	final static int BA_focusTree  = 3;
 	final static int BA_focusTable = 4;
+
+	final static int SLEEP_INTERVAL = 10;		// 10 milisec.
 
 	private int	            buttonAccess;
    	private PEOS_Interface  _PEOSInterface;
@@ -105,13 +107,13 @@ public class PEOS_EI extends javax.swing.JFrame
 		JSuspendButton.setEnabled(false);
 		JPanel4.add(JSuspendButton);
 		JSuspendButton.setBounds(38,0,35,31);
-		JDoneButton.setToolTipText("Done Task");
-		JDoneButton.setBorder(bevelBorder1);
-		JDoneButton.setActionCommand("Done Task");
-		JDoneButton.setMnemonic((int)'D');
-		JDoneButton.setEnabled(false);
-		JPanel4.add(JDoneButton);
-		JDoneButton.setBounds(73,0,35,31);
+		JResumeButton.setToolTipText("Resume Task");
+		JResumeButton.setBorder(bevelBorder1);
+		JResumeButton.setActionCommand("Resume Task");
+		JResumeButton.setMnemonic((int)'T');
+		JResumeButton.setEnabled(false);
+		JPanel4.add(JResumeButton);
+		JResumeButton.setBounds(73,0,35,31);
 		JStepRunRadioButton.setText("Single Step");
 		JStepRunRadioButton.setActionCommand("Single Step");
 		JStepRunRadioButton.setSelected(true);
@@ -133,6 +135,34 @@ public class PEOS_EI extends javax.swing.JFrame
 		JTabbedPane1.setBorder(bevelBorder2);
 		JPanel6.add(JTabbedPane1);
 		JTabbedPane1.setBounds(0,0,396,552);
+
+		JPanel3.setLayout(null);
+		JTabbedPane1.add(JPanel3);
+		JPanel3.setBounds(4,4,387,518);
+		JPanel3.setVisible(false);
+		JScrollPane3.setBorder(bevelBorder2);
+		JScrollPane3.setOpaque(true);
+		JPanel3.add(JScrollPane3);
+		JScrollPane3.setBounds(10,34,368,154);
+		JScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		JCurrentExecTextArea.setBorder(emptyBorder1);
+		JScrollPane3.getViewport().add(JCurrentExecTextArea);
+		JCurrentExecTextArea.setBounds(0,0,364,154);
+		JCurrentExecTextArea.setLineWrap(true);
+		JCurrentExecTextArea.setTabSize(4);
+		JCurrentExecTextArea.setEditable(false);
+		JProcExecLabel.setText("Selected Process");
+		JPanel3.add(JProcExecLabel);
+		JProcExecLabel.setBounds(10,10,132,20);
+		JLabel3.setText("Finished or Branched Processes");
+		JPanel3.add(JLabel3);
+		JLabel3.setBounds(10,200,314,24);
+		JScrollPane4.setBorder(bevelBorder2);
+		JScrollPane4.setOpaque(true);
+		JPanel3.add(JScrollPane4);
+		JScrollPane4.setBounds(10,224,368,284);
+		JScrollPane4.getViewport().add(JFinishTable);
+		JFinishTable.setBounds(0,0,364,17);
 
 		JPanel9.setLayout(null);
 		JTabbedPane1.add(JPanel9);
@@ -181,40 +211,13 @@ public class PEOS_EI extends javax.swing.JFrame
 		JScrollPane9.getViewport().add(JDescptTextArea);
 		JDescptTextArea.setBounds(0,0,371,276);
 		JDescptTextArea.setLineWrap(true);
+		JDescptTextArea.setWrapStyleWord(true);
 		JDescptTextArea.setTabSize(4);
 		JDescptTextArea.setEditable(false);
 		JDescptTextArea.setVisible(false);
 
-		JPanel3.setLayout(null);
-		JTabbedPane1.add(JPanel3);
-		JPanel3.setBounds(4,4,387,518);
-		JPanel3.setVisible(false);
-		JScrollPane3.setBorder(bevelBorder2);
-		JScrollPane3.setOpaque(true);
-		JPanel3.add(JScrollPane3);
-		JScrollPane3.setBounds(10,34,368,154);
-		JScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		JCurrentExecTextArea.setBorder(emptyBorder1);
-		JScrollPane3.getViewport().add(JCurrentExecTextArea);
-		JCurrentExecTextArea.setBounds(0,0,364,154);
-		JCurrentExecTextArea.setLineWrap(true);
-		JCurrentExecTextArea.setTabSize(4);
-		JCurrentExecTextArea.setEditable(false);
-		JProcExecLabel.setText("Selected Process");
-		JPanel3.add(JProcExecLabel);
-		JProcExecLabel.setBounds(10,10,132,20);
-		JLabel3.setText("Finished or Branched Processes");
-		JPanel3.add(JLabel3);
-		JLabel3.setBounds(10,200,314,24);
-		JScrollPane4.setBorder(bevelBorder2);
-		JScrollPane4.setOpaque(true);
-		JPanel3.add(JScrollPane4);
-		JScrollPane4.setBounds(10,224,368,284);
-		JScrollPane4.getViewport().add(JFinishTable);
-		JFinishTable.setBounds(0,0,364,17);
-
 		JTabbedPane1.setSelectedComponent(JPanel3);
-		JTabbedPane1.setSelectedIndex(0);
+		JTabbedPane1.setSelectedIndex(1);
 		JTabbedPane1.setTitleAt(1,"Process Properties");
 		JTabbedPane1.setTitleAt(0,"Execution Information");
 		JPanel7.setBorder(bevelBorder2);
@@ -336,7 +339,7 @@ public class PEOS_EI extends javax.swing.JFrame
 
 		JCreateButton.addActionListener(lSymAction);
 		JRefreshButton.addActionListener(lSymAction);
-		JDoneButton.addActionListener(lSymAction);
+		JResumeButton.addActionListener(lSymAction);
 		JSuspendButton.addActionListener(lSymAction);
 		JRunButton.addActionListener(lSymAction);
 
@@ -353,6 +356,7 @@ public class PEOS_EI extends javax.swing.JFrame
 		SymMouse aSymMouse = new SymMouse();
 		JTaskTable.addMouseListener(aSymMouse);
 		JProcessesTree.addMouseListener(aSymMouse);
+		JModelListCB.addMouseListener(aSymMouse);
 
 		//}}
 
@@ -370,9 +374,9 @@ public class PEOS_EI extends javax.swing.JFrame
 		JSuspendButton.setIcon(loadImageIcon("images/suspendButton_up.gif", "Normal Suspend"));
 		JSuspendButton.setPressedIcon(loadImageIcon("images/suspendButton_donw.gif", "Pressed Suspend"));
 		JSuspendButton.setDisabledIcon(loadImageIcon("images/suspendButton_gray.gif", "Disable Suspend"));
-		JDoneButton.setIcon(loadImageIcon("images/doneButton_up.gif", "Normal Done"));
-		JDoneButton.setPressedIcon(loadImageIcon("images/doneButton_down.gif", "Pressed Done"));
-		JDoneButton.setDisabledIcon(loadImageIcon("images/doneButton_gray.gif", "Disable Done"));
+		JResumeButton.setIcon(loadImageIcon("images/resumeButton_up.gif", "Normal Done"));
+		JResumeButton.setPressedIcon(loadImageIcon("images/resumeButton_down.gif", "Pressed Done"));
+		JResumeButton.setDisabledIcon(loadImageIcon("images/resumeButton_gray.gif", "Disable Done"));
 
 	    JProcessesTree.setRootVisible(false);
 	    JProcessesTree.setShowsRootHandles(true);
@@ -450,7 +454,7 @@ public class PEOS_EI extends javax.swing.JFrame
 	javax.swing.JPanel JPanel4 = new javax.swing.JPanel();
 	javax.swing.JButton JRunButton = new javax.swing.JButton();
 	javax.swing.JButton JSuspendButton = new javax.swing.JButton();
-	javax.swing.JButton JDoneButton = new javax.swing.JButton();
+	javax.swing.JButton JResumeButton = new javax.swing.JButton();
 	javax.swing.ButtonGroup ButtonGroup1 = new javax.swing.ButtonGroup();
 	javax.swing.JRadioButton JStepRunRadioButton = new javax.swing.JRadioButton();
 	javax.swing.JRadioButton JAutoRunRadioButton = new javax.swing.JRadioButton();
@@ -604,8 +608,8 @@ public class PEOS_EI extends javax.swing.JFrame
 				JCreateButton_actionPerformed(event);
 			else if (object == JRefreshButton)
 				JRefreshButton_actionPerformed(event);
-			else if (object == JDoneButton)
-				JDoneButton_actionPerformed(event);
+			else if (object == JResumeButton)
+				JResumeButton_actionPerformed(event);
 			else if (object == JSuspendButton)
 				JSuspendButton_actionPerformed(event);
 			else if (object == JRunButton)
@@ -690,14 +694,20 @@ public class PEOS_EI extends javax.swing.JFrame
 	}
 	void JRunButton_actionPerformed(java.awt.event.ActionEvent event)
 	{
-		if (buttonAccess == BA_focusTree)
+		if (JProcessesTree.hasFocus() || (buttonAccess == BA_focusTree))
+		{
+			buttonAccess = BA_focusTree;
 			JRunItem_actionPerformed_Interaction1(event);
-		else
-			JResumeItem_actionPerformed_Interaction1(event);
+		}
+		else if (JTaskTable.hasFocus() || (buttonAccess == BA_focusTable))
+		{
+			buttonAccess = BA_focusTable;
+			JDoneItem_actionPerformed_Interaction1(event);
+		}
 	}
-	void JDoneButton_actionPerformed(java.awt.event.ActionEvent event)
+	void JResumeButton_actionPerformed(java.awt.event.ActionEvent event)
 	{
-		JDoneItem_actionPerformed_Interaction1(event);
+		JResumeItem_actionPerformed_Interaction1(event);
 	}
 	void JSuspendButton_actionPerformed(java.awt.event.ActionEvent event)
 	{
@@ -780,7 +790,7 @@ public class PEOS_EI extends javax.swing.JFrame
 			if (!JTaskTable.isSelectedRun())
 			{
 				int idx = JTaskTable.getSelectedRow();
-				execCommand(PEOS_Interface.COMMAND_RUN,
+				execCommand(PEOS_Interface.COMMAND_RESUME,
 								(String) JTaskTable.getValueAt(idx, 1), 
 								(String) JTaskTable.getValueAt(idx, 2));
 			}
@@ -789,7 +799,7 @@ public class PEOS_EI extends javax.swing.JFrame
 		} 
 		catch (Exception e) 
 		{
-			showException(e, "Resume");
+			showException(e, PEOS_Interface.COMMAND_RESUME);
 		}
 	}
 	//
@@ -867,6 +877,8 @@ public class PEOS_EI extends javax.swing.JFrame
 				JTaskTable_mouseClicked(event);
 			if (object == JProcessesTree)
 				JProcessesTree_mouseClicked(event);
+			if (object == JModelListCB)
+				JModelListCB_mouseClicked(event);
 		}
 	}
 
@@ -882,7 +894,8 @@ public class PEOS_EI extends javax.swing.JFrame
 			}
 			else if (event.getClickCount() == 2)
 			{
-				JDoneButton.doClick(10);
+				buttonAccess = BA_focusTable;
+				JRunButton.doClick(10);
 			}
 		}
 	}
@@ -900,9 +913,19 @@ public class PEOS_EI extends javax.swing.JFrame
 			}
 			else if (event.getClickCount() == 2)
 			{
+				buttonAccess = BA_focusTree;
 				JRunButton.doClick(10);
 			}
 		}
+	}
+
+	void JModelListCB_mouseClicked(java.awt.event.MouseEvent event)
+	{
+		if (event.getClickCount() == 2)
+		{
+			JCreateButton.doClick(10);
+		}
+
 	}
 
 	class SymTreeSelection implements javax.swing.event.TreeSelectionListener
@@ -1098,13 +1121,11 @@ public class PEOS_EI extends javax.swing.JFrame
         throws java.lang.Exception
     {
 		int cur = JTabbedPane1.getSelectedIndex();
-    	JTabbedPane1.setSelectedIndex(1);
-    	JCurrentExecTextArea.updateUI();
-    	JFinishTable.updateUI();
-    	JProcExecLabel.updateUI();
-    	JLabel3.updateUI();
+    	JTabbedPane1.setSelectedIndex(0);
+		JTabbedPane1.setEnabledAt(1, false);
+		JTabbedPane1.updateUI();
 //		Dimension sz = JTabbedPane1.getSize();
-//		JTabbedPane1.paintImmediately(0, 0, sz.width, sz.height);
+//	    JTabbedPane1.paintImmediately(0, 0, sz.width, sz.height);
 
 		PEOS_Process    procObj = null;
 		boolean bContinue = true;
@@ -1128,10 +1149,12 @@ public class PEOS_EI extends javax.swing.JFrame
 			}
 			lastRetValue = _PEOSInterface.PEOS_execTask(PEOS_Interface.COMMAND_DONE, procID, task);
 			addToExecPath(procID, task);
-			showProperties(procID, task, null);		
+			showProperties(procID, task, null);	
+			Thread.sleep(SLEEP_INTERVAL);
 			procObj = foundProc(PEOS_Interface.TL_AVAILABLE, procID);		// in avail
 			bContinue = (procObj != null);
 		}
+		JTabbedPane1.setEnabledAt(1, true);
     	JTabbedPane1.setSelectedIndex(cur);
     	setScriptCommandProp();
 	}
@@ -1315,9 +1338,9 @@ public class PEOS_EI extends javax.swing.JFrame
 
 	void showProperties(String procID, String Task, String type)
 	{
-	    int idx = JTabbedPane1.getSelectedIndex();
+/*	    int idx = JTabbedPane1.getSelectedIndex();
 	    if (idx == -1)
-	        idx = 0;
+	        idx = 0;    */
 		if (JStepRunRadioButton.isSelected())		// not autoRun
 		{
 			if (lastProcProperty.compareTo(procID) == 0)
@@ -1326,9 +1349,7 @@ public class PEOS_EI extends javax.swing.JFrame
 				lastProcProperty = procID;
 		}
 	        
-//		JTabbedPane1.setEnabledAt(0, true);
 		JCurrentExecTextArea.setText("");
-		JScriptTable.getPEOSModel().clear();
 		JCurrentExecTextArea.setText(procID);
 		JCurrentExecTextArea.append(":\n ");
 
@@ -1340,8 +1361,9 @@ public class PEOS_EI extends javax.swing.JFrame
 		else
 			JCurrentExecTextArea.append("No information about execution path.");
 
-		if ((lastRetValue != null) && (type != null))
+		if (JTabbedPane1.isEnabledAt(1) && (lastRetValue != null) && (type != null))
 		{
+    		JScriptTable.getPEOSModel().clear();
 			PEOS_Process theProc = findProcinlLastRV(type, procID, Task);
 			if (theProc != null)
 			{
@@ -1360,9 +1382,8 @@ public class PEOS_EI extends javax.swing.JFrame
 					setScriptCommandProp(script);
 			}
 		}
-//		Dimension sz = JTabbedPane1.getSize();
-//		JTabbedPane1.paintImmediately(0, 0, sz.width, sz.height);
-		JTabbedPane1.setSelectedIndex(idx);
+		Dimension sz = JTabbedPane1.getSize();
+		JTabbedPane1.paintImmediately(0, 0, sz.width, sz.height);
 	}
 
 	protected void addToExecPath(String procID, String taskID)
@@ -1430,15 +1451,15 @@ public class PEOS_EI extends javax.swing.JFrame
 		JRunButton.setEnabled(false);
 		if (type == BA_focusTable)
  		{
-			JRunButton.setEnabled(JResumeMenuItem.isEnabled());
-			JRunButton.setToolTipText("Resume Task");
+			JRunButton.setEnabled(JDoneMenuItem.isEnabled());
+			JRunButton.setToolTipText("Done Task");
 		}
 		else
 		{
 			JRunButton.setEnabled(JRunMenuItem.isEnabled());
 			JRunButton.setToolTipText("Run Task");
 		}
-		JDoneButton.setEnabled(JDoneMenuItem.isEnabled());
+		JResumeButton.setEnabled(JResumeMenuItem.isEnabled());
 		JSuspendButton.setEnabled(JSuspendMenuItem.isEnabled());
 	}
 }

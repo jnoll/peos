@@ -11,9 +11,9 @@ import engineInterface.*;
 public class JPEOSTaskTable
 	extends javax.swing.JTable
 {
-	final static Object[] columnNames = {"Status", "Process ID", "Task ID"};
-	final static String STS_RUN       = new String("R");
-	final static String STS_SUSPENDED = new String("S");
+	final static Object[] columnNames = {"   ", "Process ID", "Task ID"};
+	final static String STS_RUN       = new String("*");
+	final static String STS_SUSPENDED = new String(" ");
 
 	private int		curTableSelection;
 
