@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
 	set_debug(argv[1]);
 
 	setup_fs( ) ;	
-	
 	while( 1 )
 		selectLoop( ) ;
 	
