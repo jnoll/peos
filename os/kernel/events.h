@@ -74,7 +74,7 @@ extern peos_resource_t *peos_get_resource_list_context(int pid, int *num_resourc
 
 extern char *peos_get_script(int pid, char *act_name);
 
-extern char *peos_get_act_state(int pid, char *act_name)
+extern char *peos_get_act_state(int pid, char *act_name);
 	
 
 
