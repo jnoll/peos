@@ -290,7 +290,7 @@ public class displayPO{
 		return (root.getAttribute("value"));
 	}
                 
-	private boolean isResValid(Element root)
+	public boolean isResValid(Element root)
 	{
 		if (root.getAttribute("qualifier").equals("abstract"))
 			return false;

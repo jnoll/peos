@@ -66,7 +66,7 @@ public class testCRJU extends TestCase{
 			
 			test1=new displayPO("proc_table.dat.xml");
 			test1.convertDOM(pid);
-                        test1.changeSetValue("time_sheet", "whatever",pid);
+                        test1.bindResource("time_sheet", "whatever",pid);
 			String[] result = test1.getResourceList(pid);
 			assertEquals(output[0],result[0]);
 			//assertEquals(output[1],result[1]);
@@ -86,8 +86,8 @@ public class testCRJU extends TestCase{
 			int pid=SetupPath.load("testfiles/oldtimec.pml");
 			test1=new displayPO("proc_table.dat.xml");
 			test1.convertDOM(pid);
-                        test1.changeSetValue("time_sheet", "whatever",pid);
-                        test1.changeSetValue("good_times", "whatever",pid);
+                        test1.bindResource("time_sheet", "whatever",pid);
+                        test1.bindResource("good_times", "whatever",pid);
 			String[] result = test1.getResourceList(pid);
 			assertEquals(output[0],result[0]);
 			assertEquals(output[1],result[1]);
