@@ -33,9 +33,12 @@ all: test
 test: unit_tests #func_tests
 
 unit_tests:  $(TESTS) test_assertions
-	-for i in $^ ; do $$i -f; done
+	@echo -n "running unit tests"
+	@-for i in $^ ; do $$i -f -q; done
 	@echo "The following test should report an Error due to assertion failure:"
-	-test_assertions -f
+	@-test_assertions -f
+	@-rm core*
+	@echo "done."
 
 func_tests:  $(FUNC_TESTS)
 	-for i in $^ ; do expect -f test.exp $$i; done

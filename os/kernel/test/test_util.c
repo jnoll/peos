@@ -137,6 +137,7 @@ parse_args(int argc, char *argv[])
 	    break;
 	case 'q':
 	    verbosity = CK_SILENT;
+	    printf("."); fflush(stdout);
 	    break;
 	case 'f': 
 	    fork_status = CK_FORK;

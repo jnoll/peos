@@ -1,7 +1,3 @@
-# Where the cgi programs get installed.
-# XXX Should be inherited from parent make.
-HTML_DIR=$(HOME)/public_html/
-INSTALL_DIR=$(HTML_DIR)/PEOS
 KERNEL_DIR = ../../../os/kernel
 
 CC = gcc
@@ -25,7 +21,7 @@ TESTS = test_main.sh \
 	test_docreate.sh
 
 CGI = main.cgi action_page.cgi create.cgi do.cgi do_create.cgi
-PML = test_action.pml
+PML = test_action.pml ../readme.pml
 
 all: test
 
@@ -35,9 +31,9 @@ test: $(CGI) create_testtable
 	@ echo "done."
 
 install: 
-	cp $(CGI) $(INSTALL_DIR)/cgi-bin
+	[ -d $(INSTALL_DIR)/cgi-bin ] && cp $(CGI) $(INSTALL_DIR)/cgi-bin
+	[ -d $(INSTALL_DIR)/cgi-bin ] && cp $(PML) $(INSTALL_DIR)/cgi-bin
 	for p in $(CGI); do chmod a+rx $(INSTALL_DIR)/cgi-bin/$$p; done
-	cp $(PML) $(INSTALL_DIR)/cgi-bin
 
 create_testtable: create_testtable.o
 	$(LD) -o $@ $(LDFLAGS) $< $(OBJECTS) $(LIBS)
