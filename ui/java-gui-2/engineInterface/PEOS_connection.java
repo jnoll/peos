@@ -133,7 +133,7 @@ class PEOS_connection extends Object
 						}
 						else if (status.compareTo("500") == 0)
 						{
-							String Err = new String("Engine error: ");
+							String Err = new String("connection - from engine: ");
 							if (len > 4)
 							{
 								Err += new String(line.substring(4,len));
@@ -144,6 +144,7 @@ class PEOS_connection extends Object
 							}
 							System.err.println(Err);
 							theExcep = new PEOSInterfaceException(Err);
+							break;
 						}
 					}
 				}
@@ -182,7 +183,7 @@ class PEOS_connection extends Object
 			finally
 			{
 			    if (theExcep != null)
-					throw theExcep;
+				throw theExcep;
 			}
 		}
 		return result;

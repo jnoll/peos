@@ -19,8 +19,8 @@ import java.util.*;
 
 class PEOS_ProcessList extends Vector
 {
-	private String			_lastCommand;
-	private PEOS_Process	_lastProc;
+	String			_lastCommand;
+	PEOS_Process	_lastProc;
 
 	/**
 	 * Constructors	

@@ -59,6 +59,18 @@ public class PEOS_Process extends Object
 	public static final int STS_AVAILABLE = 3;
 	public static final int STS_CURRENTAVAIL = 4;
 	public static final int STS_DONE = 5;
+
+// for parsing PML
+	private static final String PP_requires = new String("requires");
+	private static final String PP_provides = new String("provides");
+	private static final String PP_tool = new String("tool");
+	private static final String PP_script = new String("script");
+	private static final String PP_executable = new String("executable");
+	private static final String PP_children = new String("children");
+	private static final String PP_type = new String("type");
+	private static final String PP_mode = new String("mode");
+	private static final String PP_action = new String("action");
+	private static final String PP_agent = new String("agent");
 	
 	protected String	_processID;			// process ID
 	protected String	_task;				// task ID
@@ -68,12 +80,12 @@ public class PEOS_Process extends Object
 
 	protected String	_PMLScript;			// the PML script 
 	protected String	_systemCommand;		// system command
+	protected String	_descScript;		// system command
 	protected String	_execScript;		// system command
+	protected String	_agent;             // agent, info only
 	protected String	_parentProcID;      // for branch, not in use
 	protected int		_state;				// run, suspend, done, avail.
 	protected int		_status;			// ok, error.
-
-	//	_agent = getContextof("agent");		// what the agent for??
 
 	/**
 	 * Constructors	
@@ -146,6 +158,14 @@ public class PEOS_Process extends Object
 	}
 
     /**
+     * @return the agent
+     */
+	public String getAgent()
+	{
+		return _agent;
+	}
+    
+    /**
      * @return the line for executing system command, or 
 	 * null if no command
      */
@@ -154,10 +174,14 @@ public class PEOS_Process extends Object
 		return _systemCommand;
 	}
 
-	public String getScript()
+	public String getSysCommandDesc()
 	{
-	    return null;
-//		return _execScript;
+		return _descScript;
+	}
+
+	public String getExecScript()
+	{
+		return _execScript;
 	}
 
 	/**
@@ -185,7 +209,7 @@ public class PEOS_Process extends Object
 	 */
 	public boolean isTypeAction()
 	{
-		return (_type.compareTo("action") == 0);
+		return (_type.compareTo(PP_action) == 0);
 	}
 
 	/** 
@@ -340,59 +364,63 @@ public class PEOS_Process extends Object
 	    _task = new String(st.nextToken());
 
 	    aStr = new String(st.nextToken());
-	    if (aStr.compareTo("type") == 0)
+	    if (aStr.compareTo(PP_type) == 0)
 	    {
-            int idx = PMLStr.indexOf("type");
+            int idx = PMLStr.indexOf(PP_type);
 	        _type =  new String(st.nextToken());
 	        aStr  = st.nextToken();
-	        if (aStr.compareTo("mode") == 0)
+	        if (aStr.compareTo(PP_mode) == 0)
 	        {
 			    _mode  =  new String(st.nextToken());
+        		if (_mode.compareTo(PP_executable) == 0)
+		        	_execScript = getContextof(PP_script);
+		        else
+		        {
+			        parseTool();
+			        _descScript = getContextof(PP_script);
+		        }	
+            	_agent = getContextof(PP_agent);		// what the agent for??
 
 			}
-            else if (aStr.compareTo("children") == 0)
-			    _children = getContextof("children");
+            else if (aStr.compareTo(PP_children) == 0)
+			    _children = getContextof(PP_children);
 			else
 			    bRet = false;
         }
         else
             bRet = false;
 
-		parseTool();
-		_execScript = getContextof("_script");
-			
 		return bRet;
 	}
 
 	void parseTool()
 	{
 		StringBuffer command;
-		String aStr = getContextof("tool");
+		String aStr = getContextof(PP_tool);
 		if (aStr != null)
 		{
 		    StringTokenizer st = new StringTokenizer(aStr, " \t");
 			command = new StringBuffer(st.nextToken());
-			boolean bAbort = false;
-			while (st.hasMoreTokens() && !bAbort)
+			String bStr = null;
+			while (st.hasMoreTokens())
 			{
 				aStr = st.nextToken();
+				bStr = null;
 				if (aStr.compareTo("%r") == 0)
-					aStr = getContextof(new String("requires"));
+					bStr = getContextof(PP_requires);
 				else if (aStr.compareTo("%p") == 0)
-					aStr = getContextof(new String("provides"));
-				else
-					bAbort = true;			// something is wrong. Ignore the rest.
+					bStr = getContextof(PP_provides);
 
-				if (aStr != null)
+				if (bStr != null)
 				{
 					command.append(" ");
-					command.append(aStr);
+					command.append(bStr);
 				}
-				else
-					bAbort = true;			// something is wrong. Ignore the rest.
 			}
-			if (!bAbort)
+			if (command.length() > 0)
 				_systemCommand = command.toString();
+			else
+				_systemCommand = null;
 		}
 	}
 }

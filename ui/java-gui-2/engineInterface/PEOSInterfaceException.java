@@ -18,5 +18,4 @@ class PEOSInterfaceException extends Exception
     {
 	    super(s);
     }
-
 }
