@@ -207,7 +207,7 @@ char* get_actions_query(char action_str[1024], data_dict_element_struct* element
 		(strcmp(*type,"task") == 0)) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		child_element_ptr = data_dict_get_child(child_list_ptr);
-		strcat(action_str,get_actions_query(temp_str,child_element_ptr,iteration_flag,*type));
+		strcpy(action_str,get_actions_query(temp_str,child_element_ptr,iteration_flag,attr_type));
 		free(name);
 		free(type);
 		free(desc);
@@ -216,7 +216,7 @@ char* get_actions_query(char action_str[1024], data_dict_element_struct* element
 	else if (strcmp(*type,"iteration") == 0) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		child_element_ptr = data_dict_get_child(child_list_ptr);
-		strcat(action_str,get_actions_query(temp_str,child_element_ptr,FALSE,attr_type));
+		strcpy(action_str,get_actions_query(temp_str,child_element_ptr,FALSE,attr_type));
 		/* there are some times when we do not want to find the actions
 		 * that come after the iteration */
 		if (iteration_flag != TRUE) {
@@ -232,6 +232,7 @@ char* get_actions_query(char action_str[1024], data_dict_element_struct* element
 	}
 	else if (strcmp(*type,"selection") == 0) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
+		strcpy(action_str,"\0");
 		while (child_list_ptr != NULL) {
 			child_element_ptr = data_dict_get_child(child_list_ptr);
 			strcat(action_str,get_actions_query(temp_str,child_element_ptr,TRUE,attr_type));
@@ -592,6 +593,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(var_name,strtok(action_str,". "));
 		rc = check_for_var(var_name);
 		query_str = strtok(NULL,"& ");
+printf("Hello:%s:%d\n",query_str,rc);
 		if (query_str != NULL) {
 			strtok(NULL,". ");
 			temp_ptr = strtok(NULL,"& ");
@@ -603,6 +605,8 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 			}
 			strcat(output_str,query_str);
 		}
+		else if (rc != -1)
+			strcat(output_str,var_list[rc].var_desc);
 		if (rc == -1 && query_str != NULL)
 			add_var(var_name, query_str);
 		else if (strcmp(var_name,"(null)\0") != 0){
@@ -747,6 +751,8 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 			}
 			strcat(output_str,query_str);
 		}
+		else if (rc != -1)
+			strcat(output_str,var_list[rc].var_desc);
 		if (rc == -1 && query_str != NULL)
 			add_var(var_name, query_str);
 		else if (strcmp(var_name,"(null)\0") != 0) {
@@ -1022,6 +1028,8 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 			}
 			strcat(output_str,query_str);
 		}
+		else if (rc != -1)
+			strcat(output_str,var_list[rc].var_desc);
 		if (rc == -1 && query_str != NULL)
 			add_var(var_name, query_str);
 		else if (strcmp(var_name,"(null)\0") != 0) {
