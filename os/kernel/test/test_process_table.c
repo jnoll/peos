@@ -56,9 +56,10 @@ START_TEST(test_load_actions)
     
   
 	  s = load_actions("test_sample_1.pml", &(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes));
-   
-	  /* Post: model loaded - each entry matches a line in the file. */
-   fail_unless(context->num_actions == 2, "num_actions wrong");
+ 
+  /* Post: model loaded - each entry matches a line in the file. */
+    fail_unless(s == 1,"return value");	  
+    fail_unless(context->num_actions == 2, "num_actions wrong");
     fail_unless(strcmp(context->actions[0].name,"act_0") == 0, "action name wrong");
     fail_unless(strcmp(context->actions[1].name,"act_1") == 0, "action name wrong");
     fail_unless(context->num_other_nodes == 1, "num_other_nodes wrong");
@@ -66,6 +67,7 @@ START_TEST(test_load_actions)
 
 }
 END_TEST
+
 
 START_TEST(test_peos_set_resource_value)
 {

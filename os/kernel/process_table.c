@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.14 2003/11/03 23:49:20 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.15 2003/11/05 22:59:41 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -80,6 +80,8 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
 
     peos_other_node_t *node_array = (peos_other_node_t *) calloc(osize, sizeof(peos_other_node_t));
     
+    
+
     if (file [0]!= '\0') {
         g = makegraph(file);
 	if (g != NULL) {
@@ -90,9 +92,13 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
 		    act_array[num_act].script = n -> script;
 		    num_act ++;
 		    if(num_act > asize) {
-		        asize = asize*2;
-			realloc(act_array,asize);
-		    }
+			asize = asize + INST_ARRAY_INCR;
+			if ((act_array = realloc(act_array,asize*sizeof(peos_action_t))) == NULL) {
+			    fprintf(stderr, "Too Many Actions\n");
+			    return -1;
+			}
+		    }	
+		    
 		}
 		 
 		else {
@@ -101,8 +107,11 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
 		        node_array[num_nodes].state = STATE(n);
 			num_nodes ++;
 			if(num_nodes > osize) {
-               		    osize = osize*2;
-			    realloc(node_array,osize);
+               		    osize = osize + INST_ARRAY_INCR;
+			    if((node_array = realloc(node_array,osize*sizeof(peos_other_node_t))) == NULL) {
+			        fprintf(stderr,"Too many nodes\n");
+				return -1;
+			    }
 			}
 		    }
 		}
