@@ -18,6 +18,7 @@ int main( int argc, char * argv[] )
 {	
 	void callback( int size, resultList *listPointer , int *data ) ;
 	void ( *call )( int, resultList *, int * data ) ;
+	void setInvalidResult( int, FILE * ) ;
 	void setExpectedResult ( char *, FILE * )  ;
 	void setTestData ( char *, FILE * ) ;
 	
@@ -47,8 +48,10 @@ int main( int argc, char * argv[] )
 	fclose( sampleFile ) ;
 	fclose( testQuery ) ;	
 	
-	testFile = fopen ( "testQuery.dat", "r" ) ;
 	expectedResultFile = fopen ( "expectedResult.txt", "w" ) ;
+	setInvalidResult( 5, expectedResultFile ) ;
+	
+	testFile = fopen ( "testQuery.dat", "r" ) ;
 	while ( !feof( testFile ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), testFile ) ;
@@ -77,10 +80,20 @@ int main( int argc, char * argv[] )
 
 	return 0 ;
 }
-  
+
 void callback( int size, resultList *listpointer, int *data )
 {	
 	printResultList( listpointer ) ;	
+}
+
+void setInvalidResult( int invalids, FILE *expectedResultFile )
+{
+	int i ;
+	char invalidString[] = "invalid query...\n" ;
+	
+	for( i = 0 ; i < invalids ; i++ )
+		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultFile ) ;
+		
 }
 
 void setExpectedResult ( char *queryString, FILE *expectedResultFile ) 
@@ -95,15 +108,16 @@ void setExpectedResult ( char *queryString, FILE *expectedResultFile )
 	{
 		pValue = strpbrk( tempQuery, ":" ) ;
 		strcpy( testString, pValue - 4 ) ;
+		strcat( testString, "\n" ) ;
+		fwrite( testString, sizeof( char ), strlen( testString ), expectedResultFile ) ;
 	}
-	else
+	/*else
 	{
 		pValue = strrchr( tempQuery, ' ' ) ;
 		strcat( testString, "./" ) ;
 		strcat( testString, pValue + 1 ) ;
-	}
-	strcat( testString, "\n" ) ;
-	fwrite( testString, sizeof( char ), strlen( testString ), expectedResultFile ) ;
+	}*/
+	
 }
 
 void setTestData ( char *queryString, FILE *testQuery ) 
