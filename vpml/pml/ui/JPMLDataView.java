@@ -36,21 +36,23 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
     /** 
      * Constructor that passes in an associated DataModel for use by the view
      *
-     * @param DataModel Reference to the DataModel for which this class illustrates
-     * @param ParentFrame Reference to the frame hosting this view, so view can set titles etc
+     * @param DataModel Reference to the DataModel for which this class 
+     * illustrates
+     * @param ParentFrame Reference to the frame hosting this view, so view 
+     * can set titles etc
      */
 	public JPMLDataView( JPMLDataModel DataModel, JFrame ParentFrame )
 	{
-	    // Call the base class so our members are setup properly
+	        // Call the base class so our members are setup properly
 		super( DataModel, ParentFrame );
 		
 		// Create our widgets hash table for event referencing etc.
 		m_PMLWidgets = new Hashtable();
 		
 		// Set our layout manager
-		// Down the road we'll probably want to create a special layout manager
-		// that handles all of the PML view details for us.  For now make do with a vertical
-		// box layout manager
+		// Down the road we'll probably want to create a special layout
+                // manager that handles all of the PML view details for us. 
+                // For now make do with a vertical box layout manager
 		setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
 		
 		
@@ -76,71 +78,70 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
 	protected void BuildViewMenu()
 	{
 
-        JMenuBar mb = getParentFrame().getJMenuBar();
+        	JMenuBar mb = getParentFrame().getJMenuBar();
 		
 		// Remove all components so we can build the menu
 		mb.removeAll();
 		
-        // Create and add the base filemenu, register this class as a listener
-        // and stuff it into the menu bar
+        	// Create and add the base filemenu, register this class as a 
+                // listener and stuff it into the menu bar
 
-        JMenuEx Menu = new JMenuEx( "File", 'F',
+                JMenuEx Menu = new JMenuEx( "File", 'F',
                                     m_FileMenuItems,
                                     m_FileShortCuts,
                                     m_FileAccelerators,
                                     m_FileKeyModifiers );
-        Menu.addMenuListeners( this, this );
-        Menu.addMenuListeners( null, (JMainFrame)getParentFrame() );
-        mb.add( Menu );
+        	Menu.addMenuListeners( this, this );
+        	Menu.addMenuListeners( null, (JMainFrame)getParentFrame() );
+        	mb.add( Menu );
 
-        // Create and add the base edit menu next
-        Menu = new JMenuEx( "Edit", 'E',
-                            m_EditMenuItems,
-                            m_EditShortCuts,
-                            m_EditAccelerators,
-                            m_EditKeyModifiers );
-        Menu.addMenuListeners( this, this );
-        Menu.addMenuListeners( this, (JMainFrame)getParentFrame() );
-        mb.add( Menu );
+        	// Create and add the base edit menu next
+        	Menu = new JMenuEx( "Edit", 'E',
+               	            	m_EditMenuItems,
+                            	m_EditShortCuts,
+                            	m_EditAccelerators,
+                           	m_EditKeyModifiers );
+        	Menu.addMenuListeners( this, this );
+        	Menu.addMenuListeners( this, (JMainFrame)getParentFrame() );
+        	mb.add( Menu );
 
-        // Next we're going to insert the PML menu.  This menu allows you to 
-
-        // Get the type of object that has the focus
-        // and build and insert the proper menu.  For now I'm 
-        // going to assume we're working with the Process itself
-        // so insert the PMLProcessMenu
+        	// Next we're going to insert the PML menu.  This menu allows 
+                // you to get the type of object that has the focus
+        	// and build and insert the proper menu.  For now I'm 
+        	// going to assume we're working with the Process itself
+        	// so insert the PMLProcessMenu
 		CPMLNode Focus = ((JPMLDataModel)getDataModel()).getFocusNode();
 		
 		if ( Focus instanceof CProcessNode )
 			Menu = new JMenuEx( "PML", 'P',
-								m_ProcessMenuItems,
-								m_ProcessShortCuts,
-								m_ProcessAccelerators,
-								m_ProcessKeyModifiers );
+						m_ProcessMenuItems,
+						m_ProcessShortCuts,
+						m_ProcessAccelerators,
+						m_ProcessKeyModifiers );
 		else if ( Focus instanceof CTCNode )
 			Menu = new JMenuEx( "PML", 'P',
-								m_TCMenuItems,
-								m_TCShortCuts,
-								m_TCAccelerators,
-								m_TCKeyModifiers );
+						m_TCMenuItems,
+						m_TCShortCuts,
+						m_TCAccelerators,
+						m_TCKeyModifiers );
 		else if ( Focus instanceof CActionNode )
 			Menu = new JMenuEx( "PML", 'P',
-								m_ActionMenuItems,
-								m_ActionShortCuts,
-								m_ActionAccelerators,
-								m_ActionKeyModifiers);
+						m_ActionMenuItems,
+						m_ActionShortCuts,
+						m_ActionAccelerators,
+						m_ActionKeyModifiers);
 		else if ( Focus instanceof CSpecNode )
 			Menu = new JMenuEx( "PML", 'P',
-								m_SpecMenuItems,
-								m_SpecShortCuts,
-								m_SpecAccelerators,
-								m_SpecKeyModifiers );
+						m_SpecMenuItems,
+						m_SpecShortCuts,
+						m_SpecAccelerators,
+						m_SpecKeyModifiers );
 		else
 			return;
 			
-        Menu.addMenuListeners( this, this );
-        Menu.addMenuListeners( null, (JMainFrame)getParentFrame() );
-        mb.add( Menu );
+        	Menu.addMenuListeners( this, this );
+        	Menu.addMenuListeners( null, (JMainFrame)getParentFrame() );
+        	mb.add( Menu );
 
 		// Force the menu bar to refresh
 		mb.revalidate();
@@ -152,44 +153,44 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
 	 *
 	 * @param node Node for which properties should be shown and updated
 	 *
-	 * @return true if the user verifies the changes, false if cancel selected
+	 * @return true if the user verifies the changes, false if cancel 
+         * selected
 	 */
 	protected boolean updateNodeProperties(  CPMLNode node )
 	{
-    String componentName  = null;
-    Icon icon = null;
-    final String IMAGE_PATH = "D:/JBuilder3/myclasses/Images/";
+        	String componentName  = null;
+        	Icon icon = null;
+        	final String IMAGE_PATH = "D:/JBuilder3/myclasses/Images/";
 
 		if ( node instanceof CProcessNode )  {
 			// Bring up Process Dlg
-      componentName= "Process";
-      icon = new ImageIcon( IMAGE_PATH + "Process.gif" );
-      m_Dialog = new ProcessPropertyDialog(
-          getParentFrame(), componentName, icon
-      );
+      			componentName= "Process";
+      			icon = new ImageIcon( IMAGE_PATH + "Process.gif" );
+      			m_Dialog = new ProcessPropertyDialog(
+          				getParentFrame(), componentName, icon);
 
-      m_Dialog.pack();
-      m_Dialog.setLocationRelativeTo( this );
-      m_Dialog.setVisible(true);
+      			m_Dialog.pack();
+      			m_Dialog.setLocationRelativeTo( this );
+      			m_Dialog.setVisible(true);
 
-      node.setSymbolName( m_Dialog.getName());
-      node.setComments( m_Dialog.getComments());
-      ((CProcessNode)node).setAuthor( ((ProcessPropertyDialog) m_Dialog).getAuthor());
-    }
+      			node.setSymbolName( m_Dialog.getName());
+      			node.setComments( m_Dialog.getComments());
+      			((CProcessNode)node).setAuthor( ((ProcessPropertyDialog)                                                        m_Dialog).getAuthor());
+    		}
 		else if( node instanceof CTCNode ) {
 			// Bring up TC Flg
-      componentName= "Task Chain";
-      icon = new ImageIcon( IMAGE_PATH + "ChainLink.gif" );
-    }
+      			componentName= "Task Chain";
+      			icon = new ImageIcon( IMAGE_PATH + "ChainLink.gif" );
+    		}
 		else if( node instanceof CActionNode ) {
 			// Bring up Action Dlg
-      componentName= "Action";
-      icon = new ImageIcon( IMAGE_PATH + "action.gif" );
-    }
+      			componentName= "Action";
+      			icon = new ImageIcon( IMAGE_PATH + "action.gif" );
+    		}
 		else if( node instanceof CSpecNode ) {
-      componentName= "Spec";
-      icon = new ImageIcon( IMAGE_PATH + "spectacles1.gif" );
-    }
+      			componentName= "Spec";
+      			icon = new ImageIcon( IMAGE_PATH + "spectacles1.gif" );
+    		}
 /*
     final JTextField symbolNameField = new JTextField(10);
     final JLabel symbolNameLabel = new JLabel("Name:");
