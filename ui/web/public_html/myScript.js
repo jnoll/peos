@@ -17,4 +17,5 @@ function writeMenu(userType){
     }
 
     document.write("<p><A href=\"logout.html\">Log out</a>");
+    document.write("<img src=\"invisibleBar.gif\" width=100 height=1 alt=\"\">");
 }
