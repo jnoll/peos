@@ -25,8 +25,6 @@ int main( void )
 	void callback( int size, resultList *listPointer , int *data ) ;
 	void ( *call )( int, resultList *, int * data ) ;
 	void setInvalidResult( int, FILE * ) ;
-	void setExpectedResult ( char *, FILE * )  ;
-	void setTestData ( char *, FILE * ) ;
 	
 	char queryString[1000] ;
 	char *testString ;

@@ -21,8 +21,10 @@ testFSsearchInvalid \
 testFSsearchEmpty \
 testUNITandResult \
 testUNITorResult \
-testUNITquerywait \
-testUpdateTestSite
+testUpdateTestSite \
+testEMAILsearchEnd2End \
+testEMAILsearchInvalid \
+testUNITquerywait
 
 FS_ACTUAL_RESULT_FILES = \
 VRsetupActualResult.txt \
@@ -33,6 +35,8 @@ FSsearchEmptyActualResult.txt\
 UNITandResultActualResult.txt \
 UNITorResultActualResult.txt \
 UNITquerywaitActualResult.txt \
+EMAILsearchEnd2EndActualResult.txt \
+EMAILsearchInvalidActualResult.txt 
 
 FS_EXPECTED_RESULT_FILES = \
 FSsearchEnd2EndExpectedResult.txt \
@@ -42,7 +46,9 @@ FSsearchEmptyExpectedResult.txt\
 UNITandResultExpectedResult.txt \
 UNITorResultExpectedResult.txt \
 UNITquerywaitExpectedResult.txt \
-
+EMAILsearchEnd2EndExpectedResult.txt \
+EMAILsearchInvalidExpectedResult.txt 
+			 
 all: $(TESTS)
 
 $(LIB): $(OBJECTS)
@@ -82,6 +88,12 @@ test:	$(TESTS)
 	testUNITorResult > UNITorResultActualResult.txt
 	diff UNITorResultExpectedResult.txt UNITorResultActualResult.txt
 	
+	testEMAILsearchEnd2End > EMAILsearchEnd2EndActualResult.txt
+	diff EMAILsearchEnd2EndExpectedResult.txt EMAILsearchEnd2EndActualResult.txt
+	
+	testEMAILsearchInvalid > EMAILsearchInvalidActualResult.txt
+	diff EMAILsearchInvalidExpectedResult.txt EMAILsearchInvalidActualResult.txt
+
 	testUNITquerywait > UNITquerywaitActualResult.txt
 	diff UNITquerywaitExpectedResult.txt UNITquerywaitActualResult.txt
 

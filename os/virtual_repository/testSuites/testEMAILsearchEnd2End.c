@@ -1,12 +1,12 @@
 /************************************************************************
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
- * Filename : testFSsearchEnd2End.c					*
+ * Filename : testEMAILsearchEnd2End.c					*
  ************************************************************************/
 
 /************************************************************************
  * Description:	Test the implementation of Virtual Repository for the	*
- 		Unix file system with valid and found queries		*
+ 		mail box with valid and found queries			*
  ************************************************************************/
 
 #include "form.h"
@@ -14,7 +14,9 @@
 #include "variables.h"
 #include "vrepo.h"
 #include "setup_repositories.h"
+#include "EMAILseeker.h"
 #include "queryLinkedList.h"
+#include "resultLinkedList.h"
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h>
@@ -37,10 +39,10 @@ int main( void )
 	repos_ctr = 0;
 	myQueries = NULL;
 	
-	setup_fs( );	
+	setup_email( );	
 	call = callback ;
 
-	sampleFile = fopen ( "FSsearchEnd2End.dat", "r" ) ;
+	sampleFile = fopen ( "EMAILsearchEnd2End.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, sampleFile ) ;
 	
 	while ( !feof( sampleFile ) ) 
@@ -54,13 +56,12 @@ int main( void )
 		}
 	}
 	fclose( sampleFile ) ;
-	
-	setTestData( myQueries ) ;
-	
-	setExpectedResult( ) ;	
-	
-	poll_vr( ) ;
 
+	setTestData( myQueries ) ;
+	setExpectedResult( ) ;	
+		
+	poll_vr( ) ;
+		
 	return 0 ;
 }
 
@@ -71,106 +72,91 @@ void callback( int size, resultList *listpointer, int *data )
 
 void setExpectedResult ( ) 
 {
-	char cwd[BUFFER_SIZE] = { '\0' } ;
-					
-	if( getcwd ( cwd , BUFFER_SIZE ) == NULL )
-		_debug( __FILE__, __LINE__, 0, "error in getcwd" ) ;
+	char mailPath[BUFFER_SIZE] = { '\0' } ;
+	
+	getMailBox( mailPath ) ;
+	
+	if ( mailPath == NULL ) 
+		_debug( __FILE__, __LINE__, 5, "error in getMailBox" ) ;
 	else
 	{
 		FILE *expectedResultFile ;
 		char oneResult[BUFFER_SIZE] = { '\0' } ;
 		char expectedString[BUFFER_SIZE] = { '\0' } ;
 		
-		expectedResultFile = fopen ( "FSsearchEnd2EndExpectedResult.txt", "w" ) ;
+		expectedResultFile = fopen ( "EMAILsearchEnd2EndExpectedResult.txt", "w" ) ;
 		_assert( __FILE__, __LINE__, expectedResultFile ) ;
+		
+		/* test for ID attribute */
 	
-		// test for ID attribute
-	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n\n" ) ;
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
-	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/FSsearchEnd2End.dat\n\n" ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/200210081925.MAA28947@hpux31.dc.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		/* test for AND conjecture - ID && DATE( EQ, LT, GT ) */
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message3.test.case.12345@server.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		strcat( expectedString, oneResult ) ;
+		strcat( expectedString, oneResult ) ; 
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		/* test for AND conjecture - ID && NAME( EQ, ~ ) */
+	
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message2.test.case.12345@school.engr.scu.edu\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+				
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message3.test.case.12345@server.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+				
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message7@server.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ; 
+				
+		/* test for OR conjecture - ID || DATE( EQ, LT, GT ) */
+	
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+				
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message7@server.engr.scu.edu\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		/* test for OR conjecture - ID, NAME, DATE( EQ, LT, GT ) */
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/200210081925.MAA28947@hpux31.dc.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
 
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-	
-		// test for AND conjecture - ID && DATE( EQ, LT, GT )
-		
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE2.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE3.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-	
-		// test for AND conjecture - ID && NAME( EQ, ~ )
-	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME3.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		strcat( expectedString, oneResult ) ;
-	
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
-		// test for OR conjecture - ID || ID || ID
-	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID2.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID3.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-	
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
-		// test for DATE - LT
-	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		
-		// test for DATE - EQ
-	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE2.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID2.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME2.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-	
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
-		// test for NAME - EQ
-	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-	
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;	
-		
-		// test for OR conjecture - NAME ~ OR DATE EQ
-	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-	
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
 		fclose( expectedResultFile ) ;	
 	}
 }
@@ -186,38 +172,34 @@ void setTestData( queryList *listpointer )
 	{
 		char testString[BUFFER_SIZE] = { '\0' } ;		
 		char valueString[BUFFER_SIZE] = { '\0' } ;
-
+		
 		for( numClauses = 0 ; numClauses <= tempQueries -> oneQuery -> numClauses ; numClauses++ )
 		{
 			strcpy( valueString, tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
 			
 			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "ID" ) == 0 )
 			{
-				if( ( strstr( valueString, "file:///" ) ) != NULL ) 
+				if( ( strstr( valueString, "email:///" ) ) != NULL ) 
 				{
-					char cwd[BUFFER_SIZE] = { '\0' } ;
+					char mailPath[BUFFER_SIZE] = { '\0' } ;
+					getMailBox( mailPath ) ;
 					
-					_debug( __FILE__, __LINE__, 5, "numClauses is %d", numClauses ) ;
-					_debug( __FILE__, __LINE__, 5, "attribute is %s", tempQueries -> oneQuery -> myClauses[numClauses].attribute ) ;
-					_debug( __FILE__, __LINE__, 5, "operator is %s", tempQueries -> oneQuery -> myClauses[numClauses].operator ) ;
-					_debug( __FILE__, __LINE__, 5, "value is %s", tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
-					
-					if( getcwd ( cwd , BUFFER_SIZE ) == NULL )
-						_debug( __FILE__, __LINE__, 0, "error in getcwd" ) ;
+					if( mailPath == NULL )
+						_debug( __FILE__, __LINE__, 5, "error in getMailBox" ) ;
 					else
 					{		
 						char *token, *value ;
 						char tempQuery[BUFFER_SIZE] = { '\0' } ;
-						
+							
 						strcpy( tempQuery, valueString ) ;
-						_debug( __FILE__, __LINE__, 5, "valueString is %s", valueString ) ;
+						_debug( __FILE__, __LINE__, 5, "tempQuery is %s", tempQuery ) ;
 						
 						token = strtok( tempQuery, ":" ) ;
 						_assert( __FILE__, __LINE__, token  ) ;
 			
 						strcat( testString, token ) ;
 						strcat( testString, "://" ) ;
-						strcat( testString, cwd ) ;
+						strcat( testString, mailPath ) ;
 						
 						value = strpbrk( valueString, ":" ) ;
 						_assert( __FILE__, __LINE__, value  ) ;
@@ -230,8 +212,8 @@ void setTestData( queryList *listpointer )
 				
 				free( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
 				tempQueries -> oneQuery -> myClauses[numClauses].value = strdup( testString ) ;	
-				_debug( __FILE__, __LINE__, 5, "testString is %s", testString ) ;
-				testString[0] = '\0' ;
+
+				
 			}
 		}
 		tempQueries = ( queryList* ) tempQueries -> link ;
