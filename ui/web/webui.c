@@ -32,7 +32,7 @@ int i;
 void showuser();
 int getstdinput();
 
-void main() {
+int main() {
 
     int malformedform = 0;    
     int sessionid = 1;

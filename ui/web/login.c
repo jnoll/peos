@@ -135,8 +135,8 @@ int setCookie(){
     printf("<SCRIPT LANGUAGE=\"JavaScript\">\n");
     printf("document.cookie=\"userName=%s\";\n", name);
     printf("document.cookie=\"userType=%i\";\n", isPasswordRight);
-    printf("document.cookie=\"password=%i\";\n", pass);
-    printf("document.cookie=\"sessionId=%i\";\n", sessionId);
+    printf("document.cookie=\"password=%s\";\n", pass);
+    printf("document.cookie=\"sessionid=%i\";\n", sessionId);
     printf("</SCRIPT>\n");
 }
 

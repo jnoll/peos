@@ -1,8 +1,8 @@
 CC=gcc
-OBJECTS =available.o SMTP.o getcgivars.o interface.o smpsock.o strlib.o config.o
+OBJECTS =webui.o SMTP.o getcgivars.o interface.o smpsock.o strlib.o config.o
 
-available.cgi:  $(OBJECTS)
-	$(CC) -o available.cgi $(OBJECTS)
+webui.cgi:  $(OBJECTS)
+	$(CC) -o webui.cgi $(OBJECTS)
 
 
 INSTALL_DIR=${HOME}/public_html

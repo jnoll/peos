@@ -2,66 +2,27 @@
 <head>
 <title>P.E.O.S</title>
 
-<SCRIPT LANGUAGE="JavaScript">
+<SCRIPT LANGUAGE="JavaScript" SRC="commonHeadFunction.js"></SCRIPT>
 
-var origWidth = window.innerWidth;
-var origHeight = window.innerHeight;
+<SCRIPT LANGUAGE="JavaScript" SRC="menuResponse.js"></SCRIPT>
 
-function reloadPage() {//Fixes funky netscape behavior when window is resized
-    if (navigator.appName=="Netscape") {
-        if (origWidth != window.innerWidth || origHeight != window.innerHeight) {
-            location.reload();
-        }
-    }
-}
-
-// functions to read cookies from User (GetCookie() & getCookieVal() must be used together!)
-function getCookie(name) {
-    var arg = name + "=";
-    var alen = arg.length;
-    var clen = document.cookie.length;
-    var i=0;
-    while (i < clen) {
-        var j = i+alen;
-
-        if (document.cookie.substring(i,j) == arg)
-            return getCookieVal(j);
-            i = document.cookie.indexOf(" ", i) + 1;
-            if (i == 0) break;
-        }
-    return null;
-}
-
-function getCookieVal(offset) {
-    var endstr = document.cookie.indexOf (";", offset);
-    if (endstr == -1)
-        endstr = document.cookie.length;
-    return unescape(document.cookie.substring(offset, endstr));
-}
-
-if(getCookie("userName") == null){
-    window.location="Login.html";
-}
-</SCRIPT>
+<SCRIPT LANGUAGE="JavaScript" SRC="checkDeleteCookie.js"></SCRIPT>
 
 </head>
 
 <BODY MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 BGCOLOR="white" onResize="reloadPage();">
 <SCRIPT LANGUAGE="JavaScript" SRC="myScript.js"></SCRIPT>
 
-<TABLE CELLSPACING="0"  CELLPADDING="10" BORDER="0" WIDTH="100%" HEIGHT="100%" ALIGH="CENTER">
-
-<TR><TD HEIGHT="75" ALIGH="CENTER" COLSPAN=2 BGCOLOR="94D6E7">
-<P><img src="peos_title.gif" width=470 height=75 alt="" border=0></TD>
-</TR>
-
-<TR><TD WIDTH="100" VALIGN="TOP" ALIGH="CENTER" BGCOLOR="94D6E7" HEIGHT="100%">
 <SCRIPT LANGUAGE="JavaScript" TYPE="TEXT/JAVASCRIPT">
+writePeosTitle();
+var commandVar = getCookie("commnad");
+var actionVar = getCookie("action");
+var sessionidVar = getCookie("sessionid");
 var userName = getCookie("userName");
+var passwordVar = getCookie("password");
 var userType = getCookie("userType");
 writeMenu(userType);
 </SCRIPT>
-</TD>
 
 <TD VALIGN="TOP" WIDTH="100%" HEIGHT="100%">
 <SCRIPT LANGUAGE="JavaScript" TYPE="TEXT/JAVASCRIPT">
