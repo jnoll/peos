@@ -37,31 +37,40 @@ int main()
       return;
     }
   
-  for(i=0; i<num_resources-1; i++){
-    temp = strtok(NULL, "&");
-    temp = strchr(temp, '=');
+  for(i=0; i<num_resources; i++){
+    if(i == num_resources-1){
+      temp = strtok(NULL, "");
+      temp = strchr(temp, '=');
+      temp++;
+      if(temp[0] != '\0'){
+        if(strlen(temp) < 256){
+          sprintf(resources[i].value, "%s", temp);
+	} 
+        else{
+          printf("Error: Resource value must be less than 256 characters.\n");
+	} 
+      }
+        else{
+          sprintf(resources[i].value, "%s", "default_value");
+	}
+    } 
+    else{
+      temp = strtok(NULL, "&");
+      temp = strchr(temp, '=');
       temp++;
       if(temp[0] != '\0'){
         if(strlen(temp) < 256){
           sprintf(resources[i].value, "%s", temp);
         }
-        else
+        else{
           printf("Error: Resource value must be less than 256 characters.\n");
+	}
       }
-      else
+      else{
 	sprintf(resources[i].value, "%s", "default_value");
-  }
-  temp = strtok(NULL, "");
-  temp = strchr(temp, '=');
-  temp++;
-  if(temp[0] != '\0'){
-    if(strlen(temp) < 256)
-      sprintf(resources[i].value, "%s", temp);
-    else
-      printf("Error: Resource value must be less than 256 characters.\n");
-  }
-  else
-    sprintf(resources[i].value, "%s", "default_value");
+      }
+    }
+  } 
 
   load_proc_table("proc_table.dat");
   if((pid = peos_run(model_name, resources, num_resources)) < 0) {
