@@ -9,12 +9,23 @@ void create_process(char *model);
 
 int main()
 {
-  char *input, *model_name;
+  char *input, *model_name, *temp;
 
-  model_name = calloc(200, sizeof(char));
   printf("%s%c%c\n","Content-Type:text/html;charset=iso-8859-1",13,10);
 
   input = getenv("QUERY_STRING");
+  temp = strchr(input, '=');
+  if(temp){
+    temp++;
+    model_name = (char *) calloc(strlen(temp) + 1, sizeof(char));
+    strcpy(model_name, temp);
+    create_process(model_name);
+  }
+  else{ /*Model name is NULL*/
+    printf("<p>Error! Error in passing variable.\n");
+    exit(1);
+  }
+  
 
   if(sscanf(input,"model_list=%s", model_name) != 1)
   {
