@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.16 2003/11/11 01:46:18 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.17 2003/11/14 19:40:46 jnoll Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
-* Modified:     Sun Jul  6 15:11:56 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Fri Nov 14 11:38:38 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -129,15 +129,15 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
     }
 
     if ((start = load_actions(model_file,&(context->process_graph))) >= 0) {
-        int  pid = peos_get_pid(context);
+	context->pid = peos_get_pid(context);
         strcpy(context->model, model_file);
         context->status = PEOS_READY;
-	    
+	
 	// stick the resources into the context
         context->num_resources = num_resources;
         context -> resources = resources;
    
-        return (pid); 
+        return (context->pid); 
     }
     
     return -1;

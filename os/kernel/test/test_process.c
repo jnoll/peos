@@ -11,9 +11,9 @@
 /* Globals. */
 char *instance_dir = NULL;
 peos_context_t process_table[PEOS_MAX_PID+1];
+int free_entry = 0;
 
 /* Stubs. */
-
 
 int stub_load_actions(char *file,Graph *process_graph);
 
@@ -29,7 +29,7 @@ int delete_entry(int pid)
 
 int peos_get_pid(peos_context_t *context) 
 {
-    return context == &(process_table[0]) ? 0 : -1;
+    return context - process_table;
 }
 
 peos_context_t *peos_get_context(int pid)
@@ -39,7 +39,7 @@ peos_context_t *peos_get_context(int pid)
 
 peos_context_t *find_free_entry()
 {
-    return &(process_table[0]);
+    return &(process_table[free_entry]);
 }
 
 peos_resource_t *peos_get_resource_list_action(int pid,char *action, int *num_resources)
@@ -176,24 +176,60 @@ END_TEST
    mostly from process_table.c. */
 START_TEST(test_create_instance)
 {
-    int pid;
+    int pid = 0, new_pid;
     char *model = "test_sample_1.pml";
     peos_context_t *context;
-    
-    int num_resources = 2;
-    peos_resource_t *resources = (peos_resource_t *) calloc(num_resources,sizeof(peos_resource_t));
+    const int num_resources = 2;
+    peos_resource_t resources[num_resources];
 
+    /* pre: process table exists, resources exist. */
     memset(process_table, 0, PEOS_MAX_PID + 1);
+    memset(resources, 'x', sizeof(resources));
 
-   fail_unless((pid = peos_create_instance(model,resources,num_resources)) == 0, "failed to create instance");
-    context = &(process_table[0]);
+    /* action */
+    fail_unless((new_pid = peos_create_instance(model,resources,num_resources)) == pid, "failed to create instance");
+
+    /* post: correct entry initialized correctly. */
+    context = &(process_table[pid]);
+    fail_unless(context->pid == pid,"wrong pid");
     fail_unless(context->process_graph != NULL,"graph null");
     fail_unless(context->status == PEOS_READY, "process status");
-    fail_unless(context->num_resources == 2,"num_resources wrong");
+    fail_unless(context->num_resources == num_resources,"num_resources wrong");
     fail_unless(context->resources != NULL,"resources null");
+    fail_unless(memcmp(context->resources, resources, sizeof(resources)) == 0,
+		"resources wrong");
 }
 END_TEST
 
+START_TEST(test_create_instance_multi)
+{
+    int pid = 1;
+    char *model = "test_sample_1.pml";
+    peos_context_t *context;
+    const int num_resources = 2;
+    peos_resource_t resources[num_resources];
+
+
+    /* pre: entry 0 is in use. */
+    free_entry = pid;
+    memset(process_table, 0, PEOS_MAX_PID + 1);
+    memset(resources, 'x', sizeof(resources));
+
+    /* action */
+    fail_unless(peos_create_instance(model,resources,num_resources) == pid,
+		"failed to create instance");
+
+    /* post: context at 1 initialized. */
+    context = &(process_table[pid]);
+    fail_unless(context->pid == pid,"wrong pid");
+    fail_unless(context->process_graph != NULL,"graph null");
+    fail_unless(context->status == PEOS_READY, "process status");
+    fail_unless(context->num_resources == num_resources,"num_resources wrong");
+    fail_unless(context->resources != NULL,"resources null");
+    fail_unless(memcmp(context->resources, resources, sizeof(resources)) == 0,
+		"resources wrong");
+}
+END_TEST
 
 START_TEST(test_log_event)
 {
@@ -250,6 +286,7 @@ main(int argc, char *argv[])
     tc = tcase_create("create_instance");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_create_instance);
+    tcase_add_test(tc, test_create_instance_multi);
 
   /*  tc = tcase_create("handle action change");
     suite_add_tcase(s,tc);
