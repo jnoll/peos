@@ -37,5 +37,5 @@ int peos_create_instance(char *model,peos_resource_t *resources,int num_resource
 char **peos_list_instances();
 peos_action_t *peos_list_actions(int pid, int *num_actions);
 
-
+int delete_entry(int pid);
 #endif 

@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-//#include "vm.h"
 #include "process.h"
 #include "action.h"
 #include "pmlheaders.h"
@@ -229,7 +228,6 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
     peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
     model_file = context->model;
-    //g = makegraph(model_file);
     g = context -> process_graph;
     if(g != NULL) {
         n = find_node(g,act_name);
@@ -270,7 +268,6 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
     peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
                                                                                     
     model_file = context->model;
- //   g = makegraph(model_file);
     g = context -> process_graph;   
     if(g != NULL) {
         n = find_node(g,act_name);
@@ -309,7 +306,7 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
     peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
     model_file = context->model;
-//    g = makegraph(model_file);
+
     g = context -> process_graph;
     if(g != NULL) {
         n = find_node(g,act_name);

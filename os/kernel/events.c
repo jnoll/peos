@@ -136,7 +136,7 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
     // this is the only change in peos_run
     pid = peos_create_instance(model_file,resources,num_resources);
 
-    sprintf(msg, " jnoll start %s %d\n", model_file, pid);
+    sprintf(msg, " jnoll start %s %d", model_file, pid);
     log_event(msg);
     
     if (pid >= 0) {  

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.17 2003/11/10 23:13:51 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.18 2003/11/11 01:46:18 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -323,6 +323,10 @@ int delete_entry(int pid)
     if (pid >= 0 && pid <= PEOS_MAX_PID) {
         context = &(process_table[pid]);
 	context->model[0] = '\0';
+	context->status = ACT_NONE;
+	GraphDestroy(context->process_graph);
+	context->num_resources = 0;
+	free(context->resources);
 	return 1;
     } 
     else {

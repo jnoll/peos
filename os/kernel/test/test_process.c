@@ -22,6 +22,10 @@ vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state stat
 	return VM_CONTINUE;
 }
 	
+int delete_entry(int pid)
+{
+    return 1;
+}
 
 int peos_get_pid(peos_context_t *context) 
 {
