@@ -3,7 +3,7 @@
 
 #define exit(a) 0
 
-#include </usr/m68k-palmos/include/stdio.h>
+#include <include/stdio.h>
 #include <FileStream.h>
 #include <PalmOS.h>
 #include <stdlib.h>
