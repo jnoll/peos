@@ -10,6 +10,7 @@ OBJECTS = \
 ../queryLinkedList.o \
 ../resultLinkedList.o \
 ../setup_repositories.o \
+../seekerTools.o \
 ../vrepo.o \
 ../debug.o
 

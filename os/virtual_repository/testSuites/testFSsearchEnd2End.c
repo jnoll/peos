@@ -14,6 +14,7 @@
 #include "variables.h"
 #include "vrepo.h"
 #include "setup_repositories.h"
+#include "seekerTools.h"
 #include "queryLinkedList.h"
 #include <stdio.h> 
 #include <stdlib.h> 
