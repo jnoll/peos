@@ -145,7 +145,7 @@ END_TEST
 
 START_TEST(test_run_process)
 {
-    char *model = "test.pml";
+    char *model = TEST_PROC_NAME;
     peos_resource_t *resources;
     int num_resources;
 

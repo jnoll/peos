@@ -4,7 +4,11 @@
 #include "pmlheaders.h"
 
 #define PEOS_MAX_PID (10)
-#define MAX_LOCK_ATTEMPTS (10)
+#ifdef UNIT_TEST
+# define MAX_LOCK_ATTEMPTS (0)
+#else
+# define MAX_LOCK_ATTEMPTS (10)
+#endif
 
 typedef enum {
     PEOS_NONE = 0x1,		/* Unoccupied */ 

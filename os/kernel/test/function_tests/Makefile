@@ -1,4 +1,4 @@
-HARNESS = ../kernel_harness.exp -- -verbosity 3
+HARNESS = ../kernel_harness.exp -- -verbosity 0
 CASES = $(wildcard *.tc)
 LOGS = $(CASES:tc=log)
 NUM_ACTS = 1 3 31 53 73 113 187 213 271 301 513 769
@@ -12,9 +12,9 @@ test_cases: baseline inventory combinations bounds
 
 # Run the tests.
 run: $(LOGS)
-	@echo "tests:"
-	@(grep -l FAIL *.log && echo "FAILED") || echo "passed."
-
+#	@echo "tests:"
+#	@(grep -l FAIL *.log && echo "FAILED") || echo "passed."
+	@echo done.
 
 #
 # Baseline
@@ -42,21 +42,21 @@ combinations:
 # Trends analysis.
 # 
 trends: base_trend inv_trend combo_trend
-	echo "Caution: this takes a long time to execute!'
+	echo "Now type 'make run'.  Caution: this takes a long time to execute!"
 
 base_trend:
-	i=1; while [ $$i -lt 769 ] ; do \
-	    ../gen_tc.tcl -baseline -num_act $$i; i=`expr $$i + 1`; \
+	i=1; while [ $$i -lt 1025 ] ; do \
+	    ../gen_tc.tcl -baseline -num_act $$i; i=`expr $$i + 256`; \
 	done
 
 inv_trend:
-	i=1; while [ $$i -lt 769 ] ; do \
-	../gen_tc.tcl -inventory -num_act $$i; i=`expr $$i + 1`; \
+	i=1; while [ $$i -lt 1025 ] ; do \
+	../gen_tc.tcl -inventory -num_act $$i; i=`expr $$i + 256`; \
 	done
 
 combo_trend:
-	i=1; while [ $$i -lt 769 ] ; do \
-	../gen_tc.tcl -combinations -num_act $$i; i=`expr $$i + 1`; \
+	i=1; while [ $$i -lt 1025 ] ; do \
+	../gen_tc.tcl -combinations -num_act $$i; i=`expr $$i + 256`; \
 	done
 
 
@@ -75,10 +75,10 @@ proc_table:
 # How to run tests.
 #
 %.log: %.tc
-	-$(HARNESS) $<  > $@ 2>&1
+	-@$(HARNESS) $<  2>&1 |tee $@ | grep -n FAILURE || true
 
 clean:
-	-rm *.tc *.pml *.log
+	-rm *.tc *.pml *.log || true
 
 reallyclean: clean
 	-rm  core*

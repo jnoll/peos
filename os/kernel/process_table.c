@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.31 2003/12/08 19:55:53 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.32 2004/01/16 06:49:16 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Mon Nov 17 10:58:18 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Thu Dec  4 11:48:43 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -250,13 +250,17 @@ load_context(FILE *in, peos_context_t *context)
     }
     if (strcmp(context->model, "none") == 0) {
 	context->model[0] = '\0';
+	context->process_graph = NULL;
     }
-    if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
 
-    if ((context->process_graph = makegraph(context->model)) == NULL) {
-	return 0;
-    } else {
-	initialize_graph(context->process_graph);
+    if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
+    
+    if (context->status != PEOS_NONE && context->model[0]) {
+	if ((context->process_graph = makegraph(context->model)) == NULL) {
+	    return 0;
+	} else {
+	    initialize_graph(context->process_graph);
+	}
     }
     
     if (fscanf(in, "actions: ") < 0) return 0; 
@@ -309,10 +313,15 @@ load_context(FILE *in, peos_context_t *context)
 
     if (fscanf(in, "\n\n") < 0) return 0; 
 
-    if(annotate_graph(context->process_graph,actions,num_actions,other_nodes,num_other_nodes) < 0) return 0;
+    if (context->process_graph) {
+	if (annotate_graph(context->process_graph, actions, num_actions, 
+		       other_nodes, num_other_nodes) < 0) {
+	return 0;
+	}
+    }
 
-    free(actions);
-    free(other_nodes);
+    if (num_actions) free(actions);
+    if (num_other_nodes) free(other_nodes);
     return 1;
 }
 

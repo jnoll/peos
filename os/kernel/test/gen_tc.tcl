@@ -115,10 +115,14 @@ proc selection {pfile num_act} {
 }
 
 proc emit_act {tfile pid act} {
+    puts $tfile "assert $pid $act BLOCKED"
+    puts $tfile "notify $pid $act requires"
     puts $tfile "assert $pid $act READY"
     puts $tfile "notify $pid $act start"
     puts $tfile "assert $pid $act RUN"
     puts $tfile "notify $pid $act finish"
+    puts $tfile "assert $pid $act PENDING"
+    puts $tfile "notify $pid $act provides"
 }
 
 proc emit_concurrent {tfile pname actions iterations} {

@@ -112,20 +112,20 @@ int create_process(int argc, char *argv[])
 }
 
 
-vm_act_state state_of(char *event)
+peos_event state_of(char *event)
 {
     if (strcasecmp(event, "start") == 0) {
-	return ACT_RUN;
+	return PEOS_EVENT_START;
     } else if (strcasecmp(event, "finish") == 0) {
-	return ACT_DONE;
+	return PEOS_EVENT_FINISH;
     } else if (strcasecmp(event, "suspend") == 0) {
-	return ACT_SUSPEND;
+	return PEOS_EVENT_SUSPEND;
     } else if (strcasecmp(event, "abort") == 0) {
-	return ACT_ABORT;
+	return PEOS_EVENT_ABORT;
     } else if (strcasecmp(event, "requires") == 0) {
-	return -1;		/* XXX */
+	return PEOS_EVENT_REQUIRES;
     } else if (strcasecmp(event, "provides") == 0) {
-	return -1;		/* XXX */
+	return PEOS_EVENT_PROVIDES;
     } else {
 	return -1;		/* error */
     }
@@ -133,9 +133,9 @@ vm_act_state state_of(char *event)
 
 int notify_event(int argc, char *argv[])
 {
-    char *action, *event;
+    char *action;
     int pid; 
-    vm_act_state state;
+    peos_event event;
 
     vm_exit_code status;
 
@@ -146,12 +146,11 @@ int notify_event(int argc, char *argv[])
 
     pid = atoi(argv[1]);
     action = argv[2];
-    event = argv[3];
-    state = state_of(event);
+    event = state_of(argv[3]);
     
-    if ((status = peos_set_action_state(pid, action, state)) == VM_ERROR 
+    if ((status = peos_notify(pid, action, event)) == VM_ERROR 
 	|| status == VM_INTERNAL_ERROR) {
-	printf("error: notify %d %s %s\n", pid, action, event);
+	printf("error: notify %d %s %s\n", pid, action, argv[3]);
 	return -1;
     }
     return 0;
