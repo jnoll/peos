@@ -119,6 +119,7 @@ int peos_tcl_link_var(peos_tcl* ptcl, char* var_name, char* var_addr, int type)
 {
       Tcl_LinkVar(ptcl->interp,var_name,var_addr,type) ;
       return 1;// Tcl_UpdateLinkedVar(ptcl->interp,var_name);
+      
 }
 
 

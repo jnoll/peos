@@ -144,6 +144,7 @@ main (int argc, char **argv)
     int l = 0; /* l == 1 iff login option is passed */
     char *login = "proc_table"; /* default login name */
     peos_tcl p;
+    
     opterr = 0;
     peos_tcl_start(&p);
     while ((c = getopt (argc, argv, "+c:n:ihr:d:ul:")) != -1) {
