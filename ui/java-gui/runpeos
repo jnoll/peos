@@ -1,0 +1,2 @@
+xprop -root -remove _MOTIF_DEFAULT_BINDINGS
+java -classpath ./include/xercesImpl.jar:./include/xmlParserAPIs.jar:. PeosApp
