@@ -50,7 +50,6 @@ int main( void )
 		fgets ( queryString, sizeof ( queryString ), sampleFile ) ;
 		if( strlen( queryString ) )
 		{
-			_debug( __FILE__, __LINE__, 5, "query_wait() with %s", queryString ) ;
 			query_wait( queryString, call, d ) ;
 			queryString[0] = '\0' ;
 		}
@@ -74,7 +73,7 @@ void setExpectedResult ( )
 {
 	char mailPath[BUFFER_SIZE] = { '\0' } ;
 	
-	getPath(mailPath,"MAILBOX");
+	getPath( mailPath, "MAILBOX" ) ;
 	
 	if ( mailPath == NULL ) 
 		_debug( __FILE__, __LINE__, 5, "error in getMailBox" ) ;
@@ -213,17 +212,16 @@ void setTestData( queryList *listpointer )
 				if( ( strstr( valueString, "email:///" ) ) != NULL ) 
 				{
 					char mailPath[BUFFER_SIZE] = { '\0' } ;
-					getPath(mailPath,"MAILBOX");
+					getPath( mailPath, "MAILBOX" ) ;
 					
 					if( mailPath == NULL )
-						_debug( __FILE__, __LINE__, 5, "error in getMailBox" ) ;
+						_debug( __FILE__, __LINE__, 0, "error in getMailBox" ) ;
 					else
 					{		
 						char *token, *value ;
 						char tempQuery[BUFFER_SIZE] = { '\0' } ;
 							
 						strcpy( tempQuery, valueString ) ;
-						_debug( __FILE__, __LINE__, 5, "tempQuery is %s", tempQuery ) ;
 						
 						token = strtok( tempQuery, ":" ) ;
 						_assert( __FILE__, __LINE__, token  ) ;
@@ -243,8 +241,6 @@ void setTestData( queryList *listpointer )
 				
 				free( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
 				tempQueries -> oneQuery -> myClauses[numClauses].value = strdup( testString ) ;	
-
-				
 			}
 		}
 		tempQueries = ( queryList* ) tempQueries -> link ;

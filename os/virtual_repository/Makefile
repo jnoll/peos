@@ -4,7 +4,6 @@ LDFLAGS = -g -L. -L/home/jnoll/lib/
 LIBS = -lvr -linn
 LIB = libvr.a 
 
-
 OBJECTS = \
 queryLinkedList.o \
 resultLinkedList.o \
@@ -14,10 +13,6 @@ EMAILseeker.o \
 setup_repositories.o \
 vrepo.o \
 debug.o 
-
-
-
-
 
 all: $(LIB) search
 
@@ -33,6 +28,7 @@ install:
 clean:
 	-rm $(OBJECTS)
 	-rm core*
+	-rm libvr.a
 	-rm search
 
 

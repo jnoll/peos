@@ -9,6 +9,7 @@
 #include "variables.h"
 #include "vrepo.h"
 #include "FSseeker.h"
+#include "EMAILseeker.h"
 #include "resultLinkedList.h"
 #include "queryLinkedList.h"
 #include <stdio.h>
@@ -21,7 +22,7 @@
 /************************************************************************
  * Function:	query_wait						*
  *									*
- * Description:	Tokenizes the  queryString into clauses consisting of  *
+ * Description:	Tokenizes the  queryString into clauses consisting of  	*
  *		Id, attribute and value. Checks for the validity of 	*
  *		queryString then makes a new query and register it	*
  * 		in the list "myQuery".					*
@@ -46,14 +47,11 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, void * )
 	numParses = numClauses = numTokens = 0 ;
 	word = toParse = NULL ;
 
-	_debug( __FILE__, __LINE__,5, "queryString is %s", queryString) ;
-		
 	toParse = strtok( queryString, "\n" ) ;	
 
 	if( toParse != NULL )
 		word = strtok( toParse, " " ) ;
 
-	
 	while( word != NULL )
 	{
 		numTokens++;
@@ -66,11 +64,10 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, void * )
 		
 		switch( numParses )
 		{
-			case 0 :	if (isValidAttribute( word) )
+			case 0 :	if( isValidAttribute( word ) )
 					{
 						newQuery -> myClauses[numClauses].attribute = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 5, "Attribute is %s", word ) ;
 					}
 					break ;
 						
@@ -79,7 +76,6 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, void * )
 					{
 						newQuery -> myClauses[numClauses].operator = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__,5, "Operator is %s", word ) ;
 					}						
 					break ;
 					
@@ -87,7 +83,6 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, void * )
 					{
 						newQuery -> myClauses[numClauses].value = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__,5, "Value is %s", newQuery -> myClauses[numClauses].value ) ;
 					}
 					break ;
 			
@@ -95,28 +90,18 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, void * )
 					{
 						newQuery -> myClauses[numClauses].conjecture = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__,5, "Conjecture is %s", word ) ;
 					}
-
 					break ;
 		}
-		
 		word = strtok( NULL, " " ) ;
 	}
 	
-	_debug( __FILE__, __LINE__,5, "numClauses is %d, numParses is %d, numTokens is %d, calculated numTokens is %d", 
-					numClauses, numParses, numTokens, ( numClauses * 4 + numParses ) ) ;	
-	
 	validated = 0 ;	
 	if( ( ( numClauses * 4 + numParses ) == numTokens ) && ( numParses == 3 ) )
-	{		
 		validated = isValidQuery( newQuery, numClauses ) ;	
-		_debug( __FILE__, __LINE__,5, "validated is %d", validated ) ;
-	}
 	
 	if( validated )
 	{	
-		_debug( __FILE__, __LINE__,5, "Storing Clause" ) ;
 		newQuery -> callback = cback;
 		newQuery -> data = d ;
 		newQuery -> numFound = 0 ;
@@ -162,45 +147,10 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, void * )
 			printf( "invalid query...\n" ) ;
 		}
 		else
-			printf( "empty query...\n" ) ;			
+			printf( "empty query...\n" ) ;
 	}
-	_debug( __FILE__, __LINE__, 5, "exiting query_wait( )" ) ;
 }
 
-int isValidQuery( query *theQuery, int numClauses )
-{
-	int i ;
-	int validateTimeStamp(char *timeStamp);
-	char testValue[BUFFER_SIZE] = { '\0' } ;
-	int validResult = 1 ;
-	
-	_debug( __FILE__, __LINE__, 5, "numClauses is %d", numClauses ) ;
-	for( i = 0 ; i <= numClauses ; i++ )
-	{
-		if( strcmp( "ID", theQuery -> myClauses[i].attribute ) == 0 ) 
-		{
-			strcpy ( testValue ,theQuery -> myClauses[i].value ) ;
-			_debug( __FILE__, __LINE__, 5, "query Value is %s : %d", theQuery -> myClauses[i].value, strlen( theQuery -> myClauses[i].value ) ) ;
-			_debug( __FILE__, __LINE__, 5, "testValue is %s : %d", testValue, strlen( testValue ) ) ;
-			if( isFileQuery( testValue ) )
-				validResult = FSqueryValidator ( testValue ) ;
-			else if( isEMAILQuery( testValue ) )
-				validResult = EMAILqueryValidator ( testValue ) ;
-			else
-				validResult = 0 ;
-		}
-		
-		else if( strcmp( "DATE", theQuery -> myClauses[i].attribute ) == 0 ) 
-		{
-			
-			validResult = validateTimeStamp(theQuery -> myClauses[i].value);
-			
-		}
-			
-	}
-	return validResult ;
-}
-	
 /************************************************************************
  * Function:	poll_vr							*
  *									*
@@ -213,15 +163,12 @@ void poll_vr( )
 {
 	queryList *tempQueries ;	// temporary variable to store myQuery
 	int tag = 0 ;			// tag is one if a query is satisfied in myQueries
-	int i=0;			// used in for loop
+	int i ;				// used in for loop
 
-	_debug( __FILE__, __LINE__, 5, "entering poll_vr( )" ) ;
-	
 	if( myQueries != NULL )
 	{
-		
-		for(i=0; i<repos_ctr ; i++)
-			myQueries = repos_list[i].queryTool(myQueries);
+		for( i = 0 ; i < repos_ctr ; i++ )
+			myQueries = repos_list[i].queryTool( myQueries ) ;
 		
 		tempQueries = myQueries ;
 	
@@ -237,9 +184,7 @@ void poll_vr( )
 			}
 			
 			else if( tempQueries -> oneQuery -> removeTag )
-			{
 				tag = 1 ;
-			}
 			
 			tempQueries = ( queryList* ) tempQueries -> link ;
 		}
@@ -248,7 +193,6 @@ void poll_vr( )
 			myQueries = filterQueryList( myQueries ) ;
 	
 	}
-	_debug( __FILE__, __LINE__, 5, "exiting poll_vr( )" ) ;
 }
 
 /************************************************************************
@@ -283,9 +227,8 @@ bool isValidAttribute( char *attr )
 
 bool isValidOperator( char *op, char *attr )
 {
-	int i ;							// used in for loop
-	
-			
+	int i ;		// used in for loop
+				
 	if( op == NULL )
 		return false;
 		
@@ -316,7 +259,6 @@ bool isValidOperator( char *op, char *attr )
 				return true ;
 		}
 	}
-	
 	return false;
 }
 
@@ -343,7 +285,7 @@ bool isValidValue( char *val )
 
 bool isValidConjecture( char *con )
 {
-	int i ;						// used in for loop
+	int i ;					// used in for loop
 	char *conjecture[2] = { "AND","OR" } ;	// array that stores repository operators
 	
 	if( con == NULL ) 
@@ -351,23 +293,64 @@ bool isValidConjecture( char *con )
 	
 	for( i = 0 ; i < 2; i++ )
 	{
-		_debug(__FILE__,__LINE__,5,"in conjecture con is %s conjecture[i] is %s ", con, conjecture[i]);
 		if( ( strcmp( conjecture[i], con ) == 0 ) )
 			return true ;
 	}
 	return false ;
 }
 
-int validateTimeStamp(char *temp)
+/************************************************************************
+ * Function:	isValidQuery						*
+ *									*
+ * Description:	Validates roughly the input for the queries		*
+ ************************************************************************/
+ 
+int isValidQuery( query *theQuery, int numClauses )
 {
+	int timeStampValidator( char * ) ;
 	
+	char testValue[BUFFER_SIZE] = { '\0' } ;
+	int i ;	
+	int validResult = 1 ;
 	
-	_debug(__FILE__,__LINE__,5,"(temp+2)[0] == %c && (temp+5)[0] == %c && 
-				    (temp+10)[0] == %c && (temp+13)[0] == %c && 
-				    (temp+16)[0]  == %c && (temp+19)[0]  == %c ",(temp+2)[0],(temp+5)[0], (temp+10)[0],(temp+13)[0],(temp+16)[0] , (temp+19)[0]);
-	if( (temp+2)[0] =='/' && (temp+5)[0] == '/' && (temp+10)[0] == '-' && (temp+13)[0] == ':' && (temp+16)[0]  == ':' && (temp+19)[0]  == '\0')
-		return 1;
+	for( i = 0 ; i <= numClauses ; i++ )
+	{
+		if( strcmp( "ID", theQuery -> myClauses[i].attribute ) == 0 ) 
+		{
+			strcpy ( testValue ,theQuery -> myClauses[i].value ) ;
+			if( isFileQuery( testValue ) )
+				validResult = FSqueryValidator( testValue ) ;
+			else if( isEMAILQuery( testValue ) )
+				validResult = EMAILqueryValidator( testValue ) ;
+			else
+				validResult = 0 ;
+		}		
+		else if( strcmp( "DATE", theQuery -> myClauses[i].attribute ) == 0 ) 
+			validResult = timeStampValidator( theQuery -> myClauses[i].value ) ;
+	}
+	return validResult ;
+}
+
+/************************************************************************
+ * Function:	timeStampValidator					*
+ *									*
+ * Description:	Validates roughly the format of input timeStamp		*
+ *		01/01/2002-00:00:00 for later processing by parseDate.	*
+ *		Warning: Does not totally filter erroreous formats	*
+ *		Returns 1 for a valid format for parseDate.		*
+ *		Otherwise returns 0					*
+ ************************************************************************/
+ 
+int timeStampValidator( char *timeStamp )
+{	
+	if( ( timeStamp + 2 )[0] == '/' &&
+	    ( timeStamp + 5 )[0] == '/' &&
+	    ( timeStamp + 10)[0] == '-' &&
+	    ( timeStamp + 13)[0] == ':' &&
+	    ( timeStamp + 16)[0] == ':' &&
+	    ( timeStamp + 19)[0]  == '\0')
+		return 1 ;
 	else 
-		return 0;
+		return 0 ;
 }
 	

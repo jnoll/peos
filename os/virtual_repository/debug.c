@@ -20,27 +20,26 @@ int debug_level = 0 ; 	// 0 = silent-mode
  *		level requested						*
  ************************************************************************/
  
-void _debug(char *file, int line,int level,char *fmt, ...)
+void _debug( char *file, int line, int level, char *fmt, ... )
 {
-	va_list argp;
+	va_list argp ;
 	
-	va_start(argp, fmt);
-	if (debug_level >= level)
+	va_start( argp, fmt ) ;
+	if ( debug_level >= level )
 	{
-		fprintf(stderr, "\n\n");
-		fprintf(stderr, "%s %d:  ",file,line);
-		vfprintf(stderr, fmt, argp);
-		fprintf(stderr, "\n\n");
+		fprintf( stderr, "\n\n" ) ;
+		fprintf( stderr, "%s %d:  ", file, line) ;
+		vfprintf( stderr, fmt, argp ) ;
+		fprintf( stderr, "\n\n" ) ;
 	}
-	va_end(argp);
+	va_end( argp ) ;
 }
 
-void set_debug(char *mylevel)
+void set_debug( char *mylevel )
 {
-	if (mylevel != NULL)
-		debug_level = atoi(mylevel);
+	if ( mylevel != NULL )
+		debug_level = atoi( mylevel ) ;
 }
-
 
 /************************************************************************
  * Function:	_assert							*

@@ -1,12 +1,12 @@
 /************************************************************************
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
- * Filename : testEMAILsearchInvalid.c					*
+ * Filename : testEMAILsearchEmpty.c					*
  ************************************************************************/
 
 /************************************************************************
  * Description:	Test the implementation of Virtual Repository for the	*
- 		mail box with invalid and empty queries			*
+ 		mail box with empty queries				*
  ************************************************************************/
 
 #include "form.h"
@@ -28,7 +28,7 @@ int main( void )
 	void ( *call )( int, resultList *, void * data ) ;
 	void setEmptyResult( int, FILE * ) ;
 	
-	char queryString[BUFFER_SIZE] ;
+	char queryString[BUFFER_SIZE] = { '\0' } ;
 	char *testString ;
 	int *d, index, numEmptyQueries ;
 	queryList *tempQueries ;
@@ -77,6 +77,5 @@ void setEmptyResult( int emptys, FILE *FSexpectedResultEmptyFile )
 	char emptyString[] = "empty query...\n" ;
 	
 	for( i = 0 ; i < emptys ; i++ )
-		fwrite( emptyString, sizeof( char ), strlen( emptyString ), FSexpectedResultEmptyFile ) ;
-		
+		fwrite( emptyString, sizeof( char ), strlen( emptyString ), FSexpectedResultEmptyFile ) ;		
 }

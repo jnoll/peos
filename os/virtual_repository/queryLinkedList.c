@@ -14,7 +14,6 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-
 /************************************************************************
  * Function:	printQueryList						*
  *									*
@@ -31,25 +30,23 @@ void printQueryList( queryList *listpointer )
 		{
 			int i ;
 			printf( "\nquery is" );
-			for(i = 0; i <= listpointer -> oneQuery -> numClauses; i++)
+			for( i = 0; i <= listpointer -> oneQuery -> numClauses; i++ )
 			{
 				printf( " %s %s %s", listpointer -> oneQuery -> myClauses[i].attribute ,
 						     listpointer -> oneQuery -> myClauses[i].operator, 
-						    listpointer -> oneQuery -> myClauses[i].value ) ;
+						     listpointer -> oneQuery -> myClauses[i].value ) ;
 						    
-				if(listpointer -> oneQuery -> myClauses[i].conjecture != NULL)
-					printf( " %s", 	listpointer -> oneQuery -> myClauses[i].conjecture);
-			}
-			
+				if( listpointer -> oneQuery -> myClauses[i].conjecture != NULL )
+					printf( " %s", 	listpointer -> oneQuery -> myClauses[i].conjecture ) ;
+			}			
 			listpointer = ( queryList* ) listpointer -> link ;
 		}
 	}
 	printf ( "\n" ) ;
 }
 
-
 /************************************************************************
- * Function:	printQueryList						*
+ * Function:	addQueryItem						*
  *									*
  * Description:	Adds the data at the end of the queryList.		*
  ************************************************************************/
@@ -80,11 +77,10 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
     	}
 }
 
-
 /************************************************************************
- * Function:	printQueryList						*
+ * Function:	filterQueryList						*
  *									*
- * Description:	Removes the item with removetag = 1 from the queryList.	*
+ * Description:	Removes the item with removetag = 1 from the queryList	*
  *		and resets the pointers in the list.			*
  ************************************************************************/
  
@@ -98,25 +94,36 @@ queryList *filterQueryList( queryList *listpointer )
 		if( current -> oneQuery -> removeTag )
 			if( current == listpointer )
 			{
-				
+				int numClauses ;
 				listpointer = ( queryList * ) listpointer -> link ;
-				free( current -> oneQuery -> myClauses[0].attribute ) ;
-				free( current -> oneQuery -> myClauses[0].operator ) ;
-				free( current -> oneQuery -> myClauses[0].value ) ;
+				
+				for( numClauses = 0 ; numClauses <= current -> oneQuery -> numClauses ; numClauses++ )
+				{
+					free( current -> oneQuery -> myClauses[numClauses].attribute ) ;
+					free( current -> oneQuery -> myClauses[numClauses].operator ) ;
+					free( current -> oneQuery -> myClauses[numClauses].value ) ;
+				}
 				clearResultList( current -> oneQuery -> results ) ;
 				free( current -> oneQuery ) ;
 				free( current ) ;
+				
 				previous = current = listpointer ;
 			}
 			else
 			{
+				int numClauses ;
 				previous -> link = current -> link ;
-				free( current -> oneQuery -> myClauses[0].attribute ) ;
-				free( current -> oneQuery -> myClauses[0].operator ) ;
-				free( current -> oneQuery -> myClauses[0].value ) ;
+				
+				for( numClauses = 0 ; numClauses <= current -> oneQuery -> numClauses ; numClauses++ )
+				{
+					free( current -> oneQuery -> myClauses[numClauses].attribute ) ;
+					free( current -> oneQuery -> myClauses[numClauses].operator ) ;
+					free( current -> oneQuery -> myClauses[numClauses].value ) ;
+				}
 				clearResultList( current -> oneQuery -> results ) ;
 				free( current -> oneQuery ) ;
 				free( current ) ;
+				
 				current = ( queryList * ) previous -> link ;
 			}
 		else

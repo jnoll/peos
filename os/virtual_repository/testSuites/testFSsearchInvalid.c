@@ -20,13 +20,15 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#define BUFFER_SIZE 1000
+
 int main( void )
 {	
 	void callback( int size, resultList *listPointer , void *data ) ;
 	void ( *call )( int, resultList *, void * data ) ;
 	void setInvalidResult( int, FILE * ) ;
 	
-	char queryString[1000] ;
+	char queryString[BUFFER_SIZE] = { '\0' } ;
 	char *testString ;
 	int *d, index, numQueries ;
 	queryList *tempQueries ;
@@ -74,7 +76,6 @@ void setInvalidResult( int invalids, FILE *expectedResultInvalidFile )
 	char invalidString[] = "invalid query...\n" ;
 	
 	for( i = 0 ; i < invalids ; i++ )
-		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultInvalidFile ) ;
-		
+		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultInvalidFile ) ;		
 }
 

@@ -49,15 +49,13 @@ int main( void )
 		fgets ( queryString, sizeof ( queryString ), sampleFile ) ;
 		if( strlen( queryString ) )
 		{
-			_debug( __FILE__, __LINE__, 5, "query_wait() with %s", queryString ) ;
 			query_wait( queryString, call, d ) ;
 			queryString[0] = '\0' ;
 		}
 	}
 	fclose( sampleFile ) ;
 	
-	setTestData( myQueries ) ;
-	
+	setTestData( myQueries ) ;	
 	setExpectedResult( ) ;	
 	
 	poll_vr( ) ;
@@ -541,12 +539,6 @@ void setTestData( queryList *listpointer )
 				if( ( strstr( valueString, "file:///" ) ) != NULL ) 
 				{
 					char cwd[BUFFER_SIZE] = { '\0' } ;
-					
-					_debug( __FILE__, __LINE__, 5, "numClauses is %d", numClauses ) ;
-					_debug( __FILE__, __LINE__, 5, "attribute is %s", tempQueries -> oneQuery -> myClauses[numClauses].attribute ) ;
-					_debug( __FILE__, __LINE__, 5, "operator is %s", tempQueries -> oneQuery -> myClauses[numClauses].operator ) ;
-					_debug( __FILE__, __LINE__, 5, "value is %s", tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
-					
 					if( getcwd ( cwd , BUFFER_SIZE ) == NULL )
 						_debug( __FILE__, __LINE__, 0, "error in getcwd" ) ;
 					else
@@ -555,7 +547,6 @@ void setTestData( queryList *listpointer )
 						char tempQuery[BUFFER_SIZE] = { '\0' } ;
 						
 						strcpy( tempQuery, valueString ) ;
-						_debug( __FILE__, __LINE__, 5, "valueString is %s", valueString ) ;
 						
 						token = strtok( tempQuery, ":" ) ;
 						_assert( __FILE__, __LINE__, token  ) ;
@@ -575,7 +566,6 @@ void setTestData( queryList *listpointer )
 				
 				free( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
 				tempQueries -> oneQuery -> myClauses[numClauses].value = strdup( testString ) ;	
-				_debug( __FILE__, __LINE__, 5, "testString is %s", testString ) ;
 				testString[0] = '\0' ;
 			}
 		}

@@ -8,6 +8,6 @@
  * Description:	Contains function declarations for queryLinkedList.c	*
  ************************************************************************/
 
-queryList *addQueryItem( queryList *listpointer, const query *data ) ;
-queryList *filterQueryList( queryList *listpointer ) ;
-void printQueryList( queryList *listpointer ) ;
+queryList *addQueryItem( queryList *, const query * ) ;
+queryList *filterQueryList( queryList * ) ;
+void printQueryList( queryList * ) ;

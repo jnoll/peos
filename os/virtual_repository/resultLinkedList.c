@@ -14,7 +14,6 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-
 /************************************************************************
  * Function:	printResultList						*
  *									*
@@ -37,9 +36,8 @@ void printResultList( resultList *listpointer )
 	printf( "\n" );
 }
 
-
 /************************************************************************
- * Function:	printResultList						*
+ * Function:	clearResultList						*
  *									*
  * Description:	Clears the resultList.					*
  ************************************************************************/
@@ -50,9 +48,8 @@ void clearResultList( resultList *listpointer )
 		listpointer = ( resultList* ) removeResultItem( listpointer ) ;
 }
 
-
 /************************************************************************
- * Function:	printResultList						*
+ * Function:	removeResultItem					*
  *									*
  * Description:	Removes the first element in the resultList.		*
  ************************************************************************/
@@ -65,8 +62,6 @@ resultList* removeResultItem( resultList *listpointer )
 	free( listpointer ) ;
 	return temp ;
 }
-
-
 
 /************************************************************************
  * Function:	addResultItem						*
@@ -104,7 +99,7 @@ resultList* addResultItem( resultList *listpointer, const char *data )
     	}
 }
 
-resultList* copyResultList( resultList *copyFrom )
+/*resultList* copyResultList( resultList *copyFrom )
 {
 	resultList *tempCopyFrom,*copyTo;
 	tempCopyFrom = copyFrom;
@@ -116,4 +111,4 @@ resultList* copyResultList( resultList *copyFrom )
 	}
 	
 	return copyTo;
-}
+}*/

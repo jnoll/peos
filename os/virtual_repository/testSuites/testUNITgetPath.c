@@ -24,7 +24,6 @@
 
 int main( void )
 {	
-	
 	FILE *expectedResultFile ;
 	char myPath[BUFFER_SIZE] = { '\0' } ;
 	char myPath2[BUFFER_SIZE] = { '\0' } ;

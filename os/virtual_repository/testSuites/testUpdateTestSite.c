@@ -5,8 +5,7 @@
  ************************************************************************/
 
 /************************************************************************
- * Description:	Test the implementation of Virtual Repository for the	*
- 		Unix file system with valid and found queries		*
+ * Description:	setup the test environment for test run			*
  ************************************************************************/
 
 #include "form.h"
@@ -32,9 +31,7 @@ int main( void )
  	char searchDir[BUFFER_SIZE] = { '\0' } ;
  	
 	if( getcwd ( cwd , BUFFER_SIZE ) == NULL )
-	{
-		puts( "error" ) ;
-	}
+		_debug( __FILE__, __LINE__, 0, "error from getcwd()..." ) ;
 	else
 	{
 		getConfiguartionData( cwd, searchDir ) ;

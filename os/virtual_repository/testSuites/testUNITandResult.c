@@ -33,8 +33,6 @@ int main( void )
 	expectedResultFile = fopen ( "UNITandResultExpectedResult.txt", "w" ) ;
 	_assert( __FILE__, __LINE__, expectedResultFile ) ;
 	
-	_debug( __FILE__, __LINE__, 5, "expectedString is %s", expectedString ) ;
-	
 	fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 	
 	fclose( expectedResultFile ) ;	

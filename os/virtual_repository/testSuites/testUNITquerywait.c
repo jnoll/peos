@@ -5,8 +5,7 @@
  ************************************************************************/
 
 /************************************************************************
- * Description:	Test the implementation of Virtual Repository for the	*
- 		Unix file system with invalid queries			*
+ * Description:	Test the unit implementation of query_wait		*
  ************************************************************************/
 
 #include "form.h"
@@ -19,21 +18,23 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#define BUFFER_SIZE 1000
+
 int main( void )
 {	
-
 	void setInvalidResult( int, FILE * ) ;
 	void setEmptyResult( int, FILE * ) ;
 	void setExpectedResult ( char *, FILE * )  ;
 	void setTestData ( char *, FILE * ) ;
+	void callback( int size, resultList *listPointer , void *data ) ;
+	void ( *call )( int, resultList *, void * data ) ;
 	
-	char queryString[1000],tempString[1000] ;
+	char queryString[BUFFER_SIZE] = { '\0' } ;
+	char tempString[BUFFER_SIZE] = { '\0' } ;
 	char *testString;
 	int *d, index,  numQueries;
 	queryList *tempQueries ;
-	FILE *expectedResultFile, *testInputInvalid, *testInputEmpty, *testInputValid ;
-	void callback( int size, resultList *listPointer , void *data ) ;
-	void ( *call )( int, resultList *, void * data ) ;
+	FILE *expectedResultFile, *testInputInvalid, *testInputEmpty, *testInputValid ;	
 	
 	//set expectedResultInvalidFile
 	
@@ -47,8 +48,7 @@ int main( void )
 		{
 			query_wait( queryString, call, d ) ;
 			queryString[0] = '\0' ;
-			numQueries++;
-			
+			numQueries++;			
 		}
 	}
 	fclose( testInputInvalid ) ;
@@ -70,16 +70,14 @@ int main( void )
 		{
 			query_wait( queryString, call, d ) ;
 			queryString[0] = '\0' ;
-			numQueries++;
-			
+			numQueries++;			
 		}
 	}
 	fclose( testInputEmpty ) ;
 	setEmptyResult( numQueries, expectedResultFile ) ;
 	
 	printQueryList(myQueries);
-	fwrite( "\nqueue list is empty!\n\n\n", sizeof( char ), strlen("\nqueue list is empty!\n\n\n"), expectedResultFile ) ;
-	
+	fwrite( "\nqueue list is empty!\n\n\n", sizeof( char ), strlen("\nqueue list is empty!\n\n\n"), expectedResultFile ) ;	
 	
 	testInputValid = fopen ( "UNITquerywaitValid.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputValid) ;
@@ -94,15 +92,13 @@ int main( void )
 			fwrite( "query is ", sizeof( char ), strlen("query is "), expectedResultFile ) ;
 			fwrite( tempString, sizeof ( char ), strlen( tempString ), expectedResultFile ) ;
 			queryString[0] = '\0' ;
-			numQueries++;		}
+			numQueries++;
+		}
 	}
 	fclose( testInputValid ) ;
 	
 	printQueryList(myQueries);
-	//fwrite( "\n", sizeof ( char ), strlen( "\n" ), expectedResultFile ) ;	
 	fclose( expectedResultFile ) ;
-	
-	
 	
 	return 0 ;
 }
@@ -115,7 +111,6 @@ void setInvalidResult( int invalids, FILE *expectedResultInvalidFile )
 	
 	for( i = 0 ; i < invalids ; i++ )
 		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultInvalidFile ) ;
-		
 }
 
 void setEmptyResult( int invalids, FILE *expectedResultInvalidFile )
@@ -125,9 +120,7 @@ void setEmptyResult( int invalids, FILE *expectedResultInvalidFile )
 	
 	for( i = 0 ; i < invalids ; i++ )
 		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultInvalidFile ) ;
-		
 }
-
 
 
 void callback( int size, resultList *listpointer, void *data )

@@ -6,7 +6,7 @@
 
 /************************************************************************
  * Description:	Test the implementation of Virtual Repository for the	*
- 		mail box with invalid and empty queries			*
+ 		mail box with invalid queries				*
  ************************************************************************/
 
 #include "form.h"
@@ -29,7 +29,7 @@ int main( void )
 	void setInvalidResult( int, FILE * ) ;
 	void setEmptyResult( int, FILE * ) ;
 	
-	char queryString[BUFFER_SIZE] ;
+	char queryString[BUFFER_SIZE] = { '\0' } ;
 	char *testString ;
 	int *d, index, numInvalidQueries ;
 	queryList *tempQueries ;
@@ -78,6 +78,5 @@ void setInvalidResult( int invalids, FILE *expectedResultInvalidFile )
 	char invalidString[] = "invalid query...\n" ;
 	
 	for( i = 0 ; i < invalids ; i++ )
-		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultInvalidFile ) ;
-		
+		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultInvalidFile ) ;		
 }
