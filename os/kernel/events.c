@@ -143,7 +143,7 @@ peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resou
 }
 
 
-peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *num__req_resources)
+peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *num_req_resources)
 {
     peos_resource_t *resources;	
 
@@ -152,7 +152,7 @@ peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *
 	exit(EXIT_FAILURE);
     }
     
-    resources = get_resource_list_action_requires(pid,name,num__req_resources);
+    resources = get_resource_list_action_requires(pid,name,num_req_resources);
 
     if(save_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Save Process Table\n");

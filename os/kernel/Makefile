@@ -25,6 +25,7 @@ graph_engine.o \
 process_table.o \
 process.o \
 resources.o \
+predicate_evaluator.o \
 
 
 # sources

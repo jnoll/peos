@@ -14,7 +14,7 @@ extern int verbosity;
 #define BASELINE_PML "process test {\n  action a {}\n}\n"
 
 /* Stubs and utility functions. */
-extern peos_action_t *make_actions(int size, vm_act_state state, int requires_state, int provides_state);
+extern peos_action_t *make_actions(int size, vm_act_state state);
 extern void free_actions(peos_action_t *actions, int size);
 extern void parse_args(int argc, char *argv[]);
 extern void make_pml_file(char *filename, char *text);

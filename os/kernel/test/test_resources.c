@@ -97,7 +97,7 @@ main(int argc, char *argv[])
 {
     int nf;
     SRunner *sr;
-    Suite *s = suite_create("graph_engine");
+    Suite *s = suite_create("resources");
     TCase *tc;
 
     parse_args(argc, argv);

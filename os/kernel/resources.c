@@ -97,8 +97,10 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
 
         return act_resources;
     }    
-    else
+    else {
+        fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
         return NULL;
+    }
 }
 
 peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int

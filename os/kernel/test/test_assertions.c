@@ -12,7 +12,7 @@ int __assert_fail(const char *assertion, const char *file, unsigned int line, co
 START_TEST(test_set_act_state_error)
 {
     /* Pre: action list is initialized. */
-    peos_action_t *actions = make_actions(10, ACT_NONE,0,0);
+    peos_action_t *actions = make_actions(10, ACT_NONE);
     
     /* Action/Post: assertion failure. */
     mark_point();

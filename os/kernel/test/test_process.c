@@ -46,7 +46,7 @@ strcpy(resources[1].name,"b");
 return resources;
 }
   
-void initialize_graph(Graph g)
+void initialize_graph(Graph g, int pid)
 {
 }
 

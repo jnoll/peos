@@ -12,14 +12,14 @@ TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib
 
 # objects
-CORE_OBJS = action.o events.o graph.o graph_engine.o process.o process_table.o resources.o
+CORE_OBJS = action.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o
 TEST_OBJS = test_util.o action.o graph.o
 
 # sources
 SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 
 # These are in order of use.
-TESTS = test_resources test_graph test_action test_events test_process test_process_table test_graph_engine test_assertions 
+TESTS = test_resources test_graph test_action test_events test_process test_process_table test_graph_engine test_assertions test_predicate_evaluator
 
 
 all: test kernel_wrapper

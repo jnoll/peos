@@ -30,8 +30,6 @@ typedef struct {
     char name[256];
     char *script;
     vm_act_state state;
-    int requires_state;
-    int provides_state;
 } peos_action_t;
 
 /* list of nodes other than action nodes. These nodes have states and hence their state has to be saved in the context */

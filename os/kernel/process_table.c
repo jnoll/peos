@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.33 2004/02/02 22:58:49 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.34 2004/02/09 19:39:37 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -169,8 +169,6 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 		}
 	        strcpy(act_array[num_act].name, n -> name);
 		act_array[num_act].state = STATE(n);
-		act_array[num_act].requires_state = REQUIRES_STATE(n);
-		act_array[num_act].provides_state = PROVIDES_STATE(n);
 		act_array[num_act].script = n -> script;
 	        num_act ++;
 	    }
@@ -216,8 +214,6 @@ int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other
     for(node = g -> source; node != NULL; node = node -> next) {
         if (node -> type == ACTION) {
             STATE(node) = get_act_state(node -> name,actions,num_actions);
-	    REQUIRES_STATE(node) = get_act_requires_state(node -> name, actions, num_actions);
-	    PROVIDES_STATE(node) = get_act_provides_state(node -> name, actions, num_actions);
 	}
 	else {
 	    if((node->type == SELECTION) || (node->type == BRANCH)) {
@@ -261,7 +257,7 @@ load_context(FILE *in, peos_context_t *context)
 	if ((context->process_graph = makegraph(context->model)) == NULL) {
 	    return 0;
 	} else {
-	    initialize_graph(context->process_graph);
+	    initialize_graph(context->process_graph, context->pid);
 	}
     }
     
@@ -271,7 +267,7 @@ load_context(FILE *in, peos_context_t *context)
     actions = (peos_action_t *) calloc(num_actions, sizeof(peos_action_t));
 
     for (i = 0; i < num_actions; i++) {
-        if (fscanf(in, "%s %d %d %d", actions[i].name,(int *)&actions[i].state, (int *)&actions[i].requires_state, (int *)&actions[i].provides_state) != 4) {
+        if (fscanf(in, "%s %d", actions[i].name,(int *)&actions[i].state) != 2) {
 	    free(actions);
 	    return 0; 
 	}
@@ -396,7 +392,7 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     fprintf(out, "actions: "); 
     fprintf(out, "%d ", num_actions);
     for (i = 0; i < num_actions; i++) {
-        fprintf(out, " %s %d %d %d", actions[i].name, actions[i].state, actions[i].requires_state, actions[i].provides_state); 
+        fprintf(out, " %s %d", actions[i].name, actions[i].state); 
     }
 
     fprintf(out, "\nother_nodes: ");

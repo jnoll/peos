@@ -53,8 +53,6 @@ Node make_node(char *name, vm_act_state state, int type,int order)
      n -> data = (void *) malloc (sizeof (struct data));
      n->name = name;
      STATE(n) = state;
-     REQUIRES_STATE(n) = TRUE;
-     PROVIDES_STATE(n) = TRUE;
      n->type = type;
      n -> predecessors = NULL;
      n -> successors = NULL;
@@ -72,15 +70,13 @@ Node make_node(char *name, vm_act_state state, int type,int order)
      return n;
 }
 
-peos_action_t *make_actions(int size, vm_act_state state, int requires_state, int provides_state)
+peos_action_t *make_actions(int size, vm_act_state state)
 {
     int i;
     peos_action_t *actions = (peos_action_t *)calloc(size, sizeof(peos_action_t));
     for (i = 0; i < size; i++) {
 	sprintf(actions[i].name, "act_%d", i);
 	actions[i].state = state;
-	actions[i].requires_state = requires_state;
-	actions[i].provides_state = provides_state;
 	actions[i].pid = -1;
     }
     return actions;
@@ -151,8 +147,6 @@ Graph stub_makegraph(char *file)
    MARKED_3(act_0) = 0;
    MARKED_4(act_0) = 0;
    STATE(act_0) = ACT_NONE;
-   REQUIRES_STATE(act_0) = FALSE;
-   PROVIDES_STATE(act_0) = FALSE;
 			  
    
    act_1->type = ACTION;
@@ -166,15 +160,10 @@ Graph stub_makegraph(char *file)
    MARKED_4(act_1) = 0;
 	       
    STATE(act_1) = ACT_NONE;
-
-   REQUIRES_STATE(act_1) = FALSE;
-   PROVIDES_STATE(act_1) = FALSE;
-
   
    return g;
    
 }
-
 
 
 

@@ -8,6 +8,7 @@
 #include "pmlheaders.h"
 #include "process_table.h"
 #include "graph_engine.h"
+#include "predicate_evaluator.h"
 
 
 void handle_selection(Node n);
@@ -508,7 +509,7 @@ char *get_script_graph(Graph g, char *action_name)
         return(n -> script ? n -> script : "(no script)");
 }
 
-void initialize_graph(Graph g)
+void initialize_graph(Graph g, int pid)
 {
     Node n;
     int i = 0;
@@ -516,9 +517,8 @@ void initialize_graph(Graph g)
     for(n = g -> source; n != NULL; n = n -> next) {
         n -> data = (void *) malloc (sizeof (struct data));
 	sanitize_node(n);
+	PID(n) = pid;
 	STATE(n) = ACT_NONE;
-	REQUIRES_STATE(n) = FALSE;
-	PROVIDES_STATE(n) = FALSE;
         ORDER(n) = i;
         i++;
         ITER_START(n) = FALSE;
@@ -552,13 +552,11 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
     if(n != NULL) {
 	if(event == REQUIRES_TRUE) {
             if(STATE(n) == ACT_BLOCKED) {
-	        REQUIRES_STATE(n) = TRUE;
 	        set_node_state(n, ACT_READY);
 	        return VM_CONTINUE;
 	    }
 	    else {
-	        REQUIRES_STATE(n) = TRUE;
-		if(STATE(n) != ACT_READY) {
+	        if((STATE(n) != ACT_READY) || (STATE(n) != ACT_RUN) || (STATE(n) != ACT_PENDING) || (STATE(n) != ACT_SUSPEND)) {
 		    set_node_state(n, ACT_AVAILABLE);
 		}
 	        return VM_CONTINUE;
@@ -567,8 +565,7 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
         else {
             if(event == PROVIDES_TRUE) {
 	        if((STATE(n) == ACT_READY) || (STATE(n) == ACT_RUN) || (STATE(n) == ACT_PENDING)) {
-	            PROVIDES_STATE(n) = TRUE;
-		    handle_action_change(pid, n->name, ACT_RUN);
+	            handle_action_change(pid, n->name, ACT_RUN);
 		    return handle_action_change(pid, n->name, ACT_DONE);
 		}
 		else 
@@ -595,7 +592,7 @@ vm_act_state set_node_state(Node n, vm_act_state state)
     switch(state_set) {
         
         case(ACT_READY) : {
-			      if (REQUIRES_STATE(n) == TRUE) {
+			      if(is_requires_true(PID(n), n -> name)) {
 			          STATE(n) = state_set;
 		                  return state_set;
 			      }
@@ -608,7 +605,7 @@ vm_act_state set_node_state(Node n, vm_act_state state)
 			  }
 			  
         case(ACT_DONE) : {
-			     if(PROVIDES_STATE(n) == TRUE) {
+			     if(is_provides_true(PID(n), n->name)) {
 			         STATE(n) = state_set;
 				 return state_set;
 			     }

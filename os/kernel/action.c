@@ -34,31 +34,6 @@ vm_act_state get_act_state(char *act, peos_action_t *actions, int num_actions)
 }
 
 
-int get_act_requires_state(char *act, peos_action_t *actions, int num_actions)
-{
-    peos_action_t *p;
-    assert(act != NULL);
-    for(p = actions; p - actions < num_actions; p++) {
-        if (strcmp(p -> name, act) == 0) {
-	    return (p -> requires_state);
-	}
-    }
-    return -1;
-}
-
-
-int get_act_provides_state(char *act, peos_action_t *actions, int num_actions)
-{
-    peos_action_t *p;
-    assert(act != NULL);
-    for(p = actions; p - actions < num_actions; p++) {
-        if (strcmp(p -> name, act) == 0) {
-	    return (p -> provides_state);
-	}
-    }
-    return -1;
-}
-
 
 #ifdef UNIT_TEST
 #include "test_action.c"

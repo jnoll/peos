@@ -14,25 +14,24 @@
 # define MARKED_3(n) (((Data) (n) -> data) -> marked[3])
 # define MARKED_4(n) (((Data) (n) -> data) -> marked[4])
 # define STATE(n) (((Data) (n) -> data) -> state)
-# define REQUIRES_STATE(n) (((Data) (n) -> data) -> requires_state)
-# define PROVIDES_STATE(n) (((Data) (n) -> data) -> provides_state)
 # define ITER_START(n) (((Data) (n) -> data) -> iter_start)
 # define ITER_END(n) (((Data) (n) -> data) -> iter_end)
 # define ITER_END_NODES(n) (((Data) (n) -> data) -> iter_end_nodes)
 # define ITER_START_NODES(n) (((Data) (n) -> data) -> iter_start_nodes)
 # define ORDER(n) (((Data) (n) -> data) -> order)
 # define SUPER_NODES(n) (((Data) (n) -> data) -> super_nodes)
+# define PID(n) (((Data) (n) -> data) -> pid)
+
 
 			
 typedef struct data
 {
+int pid;	
 int  marked[5];
 int iter_start;
 int iter_end;
 int order;
 vm_act_state state;
-int requires_state;
-int provides_state;
 
 /* This is a list of nodes which are successors of the last node in an iteration. This list is associated with the first node in an iteration. */ 
 List iter_end_nodes; 
@@ -61,7 +60,7 @@ extern vm_exit_code handle_action_change(int , char *, vm_act_state);
 
 extern vm_exit_code set_act_state_graph(Graph g,char *act_name, vm_act_state state);
 
-extern void initialize_graph(Graph g);
+extern void initialize_graph(Graph g, int pid);
 
 extern char *get_script_graph(Graph g, char * act_name);
 
