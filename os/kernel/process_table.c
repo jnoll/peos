@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.40 2004/04/09 03:33:16 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.41 2004/04/28 21:14:58 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -510,6 +510,26 @@ int save_process_table()
     return save_proc_table(process_table_filename);
 }
 
+void print_after_escaping(char *str, FILE *fp)
+{
+    int i;
+    if(str!=NULL) {
+        for(i=0; i<strlen(str); i++) {
+	    switch(str[i]) {
+	        case '<' : fprintf(fp,"&lt;");
+			   break;
+		case '>' : fprintf(fp, "&gt;");
+			   break;
+		case '&' : fprintf(fp, "&amp;");
+			   break;
+		default : fprintf(fp, "%c",str[i]);
+			  break;
+	    }
+	}
+    }
+    else fprintf(fp, "(null)");
+}
+
 
 void print_action_node(Node n, FILE *fp)
 {
@@ -522,18 +542,33 @@ void print_action_node(Node n, FILE *fp)
     
     req_resources = get_resource_list_action_requires(PID(n), n->name, &num_req_resources);
     prov_resources = get_resource_list_action_provides(PID(n), n->name, &num_prov_resources);
-    
-    fprintf(fp, "<action name=\"%s\" state=\"%s\">\n",n->name,(char *)act_state_name(STATE(n)));
-    fprintf(fp, "<script>\n%s\n</script>\n",n->script);
+  
+    fprintf(fp, "<action name=\"");
+    print_after_escaping(n->name,fp);
+    fprintf(fp, "\" state=\"%s\">\n", (char *)act_state_name(STATE(n)));
+    fprintf(fp, "<script>\n");
+    print_after_escaping(n->script, fp);
+    fprintf(fp, "\n</script>\n");
 
     for(i=0; i < num_req_resources; i++) {
-        fprintf(fp, "<req_resource name=\"%s\" value=\"%s\" qualifier=\"%s\"></req_resource>\n", req_resources[i].name, req_resources[i].value, req_resources[i].qualifier);
+	fprintf(fp, "<req_resource name=\"");
+	print_after_escaping(req_resources[i].name, fp);
+	fprintf(fp, "\" value=\"");
+	print_after_escaping(req_resources[i].value, fp);
+	fprintf(fp, "\" qualifier=\"%s\"></req_resource>\n",req_resources[i].qualifier);
+	
     }
 
     for(i=0; i < num_prov_resources; i++) {
-        fprintf(fp, "<prov_resource name=\"%s\" value=\"%s\" qualifier=\"%s\"></prov_resource>\n", prov_resources[i].name, prov_resources[i].value, prov_resources[i].qualifier);
-    }
 
+	fprintf(fp, "<prov_resource name=\"");
+	print_after_escaping(prov_resources[i].name, fp);
+	fprintf(fp, "\" value=\"");
+	print_after_escaping(prov_resources[i].value, fp);
+	fprintf(fp, "\" qualifier=\"%s\"></prov_resource>\n",prov_resources[i].qualifier);
+	
+    }
+	
     fprintf(fp, "</action>\n");
 }
 

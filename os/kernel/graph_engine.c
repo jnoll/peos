@@ -769,7 +769,7 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
 			           Node n = find_node(g,action);
 				   if (n != NULL) {
 				       if(STATE(n) == ACT_RUN) {   	   
-				           set_node_state(n, ACT_ABORT);
+					   set_node_state(n, ACT_NONE);    
 			                   handle_resource_change(PID(n));
 				       }		   
 			               return VM_CONTINUE;

@@ -722,6 +722,47 @@ START_TEST(test_print_action_node)
 }
 END_TEST
 
+START_TEST(test_print_after_escaping)
+{
+    int abytes, nbytes;	
+    FILE *expected, *actual;	
+    char expectedmem[BUFSIZ], actualmem[BUFSIZ];
+    char str[20]="<input type=\"&test\">";
+
+    expected = fopen("expected.xml", "w");
+    fprintf(expected, "&lt;input type=\"&amp;test\"&gt;");
+    fclose(expected);
+    mark_point();
+
+    expected = fopen("expected.xml", "r");
+    memset(expectedmem, 0, BUFSIZ);
+    nbytes = fread(expectedmem, sizeof(char), BUFSIZ, expected);
+    fclose(expected);
+    mark_point();
+ 
+    actual = fopen("actual.xml", "w");
+    
+
+    print_after_escaping(str, actual);
+    fclose(actual);
+
+    mark_point();
+
+    actual = fopen("actual.xml", "r");
+    memset(actualmem, 0, BUFSIZ);
+    abytes = fread(actualmem, sizeof(char), BUFSIZ, actual);
+    fail_unless(abytes == nbytes, "file size");
+    fclose(actual);
+    mark_point();
+
+    fail_unless (strcmp(actualmem, expectedmem) == 0, "print_after_escaping : not escaped");
+
+    unlink("expected.xml");
+    unlink("actual.xml");
+
+}
+END_TEST
+
 Graph create_xml_test_graph()
 {
 
@@ -1130,6 +1171,7 @@ main(int argc, char *argv[])
     tc = tcase_create("xml file");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_print_action_node);
+    tcase_add_test(tc, test_print_after_escaping);
     tcase_add_test(tc, test_print_graph);
     tcase_add_test(tc, test_save_proc_table_xml);
 

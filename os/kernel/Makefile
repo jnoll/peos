@@ -77,6 +77,7 @@ clean:
 	-rm *.o core.*
 
 reallyclean: clean
+	rm proc_table.dat proc_table.dat.xml		
 
 dist: reallyclean
 	tar cvf kernel.tar --exclude-from exclude -C .. kernel

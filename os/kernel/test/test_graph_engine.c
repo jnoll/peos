@@ -1225,9 +1225,16 @@ START_TEST(test_set_act_state_graph_abort)
 	source = make_node("p",ACT_NONE,PROCESS,0);
 	sink = make_node("p",ACT_NONE,PROCESS,3);
 	act_0 = make_node("act_0",ACT_RUN,ACTION,1);
-	act_1 = make_node("act_1",ACT_RUN,ACTION,2);
+	act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 	PID(act_0) = 0;
 	PID(act_1) = 0;
+
+	requires_index=0;
+	requires_state[1]=TRUE;
+	provides_state[1]=FALSE;
+	requires_state[2]=FALSE;
+	provides_state[1]=FALSE;
+	
 
 	g -> source = source;
 	g -> sink = sink;
@@ -1240,7 +1247,7 @@ START_TEST(test_set_act_state_graph_abort)
 	global_graph = g;
 
     fail_unless(set_act_state_graph(g,"act_0",ACT_ABORT) == VM_CONTINUE, "return value");
-    fail_unless(STATE(act_0) == ACT_ABORT, "act 0 state not changed");
+    fail_unless(STATE(act_0) == ACT_AVAILABLE, "act 0 state not changed");
 
 }
 END_TEST
