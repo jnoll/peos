@@ -5,10 +5,10 @@ echo -n "Running testscript $0... "
 export QUERY_STRING="action=start"
 export REQUEST_METHOD=GET
 export REMOTE_USER=test
-active_processes.cgi > /dev/null
+./active_processes.cgi > /dev/null
 # Create model list
 export QUERY_STRING="process_filename=dfZRuitU82fEY.dat"
-create_process.cgi > output
+./create_process.cgi > output
 
 # Check the title
 if !(grep '>Create Process</h2>' output > /dev/null)

@@ -2,7 +2,7 @@
 echo -n "Running testscript $0... "
 
 check_for_notable() {
-  active_processes.cgi > output
+  ./active_processes.cgi > output
 
   # Testing the table does not appear
   if !(grep 'Active Processes' output > /dev/null)
@@ -26,7 +26,7 @@ check_for_notable() {
 }
 
 check_for_table() {
-  active_processes.cgi > output
+  ./active_processes.cgi > output
 
   # Testing the table headers
   if !(grep 'PID' output > /dev/null)

@@ -3,7 +3,7 @@ KERNEL_DIR = $(OS_DIR)/kernel
 
 CC = gcc
 
-CFLAGS = -g -Wall -I$(OS_DIR) -I../../.. -I/usr/include/libxml2
+CFLAGS = -w -g -Wall -I$(OS_DIR) -I../../.. -I/usr/include/libxml2
 
 LD = gcc
 LIBS = -lpml -lcrypt -lxml2 -lz -lm
@@ -35,7 +35,7 @@ PML = test_action.pml readme.pml cvs_add_dir.pml
 all: test
 
 test: $(CGI) create_testtable
-	@for t in $(TESTS) ; do $$t ; done
+	@for t in $(TESTS) ; do sh $$t ; done
 	rm event.log
 
 

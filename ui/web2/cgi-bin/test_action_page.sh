@@ -5,14 +5,14 @@ echo -n "Running testscript $0... "
 export QUERY_STRING="action=start"
 export REQUEST_METHOD=GET
 export REMOTE_USER=test
-active_processes.cgi > /dev/null
+./active_processes.cgi > /dev/null
 # Invoke create process
 export QUERY_STRING="action=create&model=cvs_add_dir.pml&process_filename=dfZRuitU82fEY.dat"
-active_processes.cgi > /dev/null
+./active_processes.cgi > /dev/null
 
 # Create the action page
 export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=create_directory"
-action_page.cgi > output
+./action_page.cgi > output
 
 # Test the table on the left hand side
 if !(grep '>Create Process</a>]' output > /dev/null)
