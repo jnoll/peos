@@ -1,0 +1,70 @@
+#!/usr/bin/sh
+#
+# Script file to test-run a process (timesheet)
+# through the VM, to verify VM's working...
+# Mark Mastroieni, SCU, 2002/07/26
+
+#so we can execute pmlvm
+export PATH=$PATH:/home/mmastroi/summer/peos/src/os/vm/
+
+#so pmlvm can see timesheet.txt (compiled timesheet.pml)
+export COMPILER_DIR=/home/mmastroi/summer/peos/src/compiler/models/
+#--- neither of the last 2 lines seem to have any effect... ---
+
+#for output...so we don't see pmlvm's output onscreen
+O=/dev/null
+
+#NOTE: If a previous timesheet process has been started
+#  but not finished, its state may be saved in files 1,
+#  pmlstate.dat, ".idx - and this script may not run
+#  correctly!
+#if [ ls pmlstate.* 1 |wc -gt 1 ] ; then
+rm pmlstate.dat pmlstate.idx 1 2>1
+#fi
+
+#command-list to run process 'timesheet'
+
+if pmlvm -p timesheet3 2>1 |grep "a 3 get_card" > $O ; then
+#-- doesn't work if grep for "create successful" --
+
+echo "OK - create timesheet"
+
+pmlvm -p timesheet.001 -a get_card 2>1 |grep "Run successful" > $O && echo "OK - run get_card"
+
+pmlvm -p timesheet.001 -e 3 -o get_card 2>1 |grep "a 3 enter_pay_period"  > $O && echo "OK - done get_card"
+
+pmlvm -p timesheet.001 -a enter_pay_period 2>1 |grep "Run successful" > $O && echo "OK - run enter_pay_period"
+
+pmlvm -p timesheet.001 -e 3 -o enter_pay_period 2>1 |grep "a 3 fill_hours" > $O && echo "OK - done enter_pay_period"
+
+pmlvm -p timesheet.001 -a fill_hours 2>1 |grep  "Run successful" > $O && echo "OK - run fill_hours"
+
+pmlvm -p timesheet.001 -e 3 -o fill_hours 2>1 |grep "a 3 fill_totals" > $O && echo "OK - done fill_hours"
+
+pmlvm -p timesheet.001 -a fill_totals 2>1 |grep "Run successful" > $O && echo "OK - run fill_totals"
+
+pmlvm -p timesheet.001 -e 3 -o fill_totals 2>1 |grep "a 3 sign_card" > $O && echo "OK - done fill_totals"
+
+pmlvm -p timesheet.001 -a sign_card 2>1 |grep "Run successful" > $O && echo "OK - run sign_card"
+
+pmlvm -p timesheet.001 -e 3 -o sign_card 2>1 |grep "a 3 approve_card"  > $O && echo "OK - done sign_card"
+
+pmlvm -p timesheet.001 -a approve_card 2>1 |grep "Run successful" > $O && echo "OK - run approve_card"
+
+pmlvm -p timesheet.001 -e 3 -o approve_card 2>1 |grep "a 3 turn_in" > $O && echo "OK - done approve_card"
+
+pmlvm -p timesheet.001 -a turn_in 2>1 |grep "Run successful" > $O && echo "OK - run turn_in"
+
+pmlvm -p timesheet.001 -e 3 -o turn_in 2>1 |grep "e 0"  > $O && echo "OK - done turn_in"
+
+
+if [ $? -eq 0 ] ; then
+echo "--VM PASSED--" ; exit 0
+else echo "--VM FAILED--" ; exit 1
+fi
+
+elsif pmlvm -p timesheet 2>1 |grep "Usage|does not exist"
+echo "--VM FAILED TO INITIALIZE TIMESHEET--" ; exit 1
+#if pmlvm is working properly, should NOT get here...
+else echo "--VM FAILED...--" ; exit 1
+fi
