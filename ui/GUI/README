@@ -1,0 +1,71 @@
+PEOS GUI Iteration 4 README
+Authors: Cp Agarwal       cagarwal@scu.edu   219290
+	 Jonathan Montana jmontana@scu.edu   221223
+	 Leo Pinard       lpinard@scu.edu    196986
+	 Tri Pham         tpham1@scu.edu     208920
+
+
+(1) How to Build the Program
+
+To build the program, untar the tarball into your current directory
+and then change to the peos directory.  From the command line, run
+the Makefile using the command "make".
+
+
+(2) How to Install
+
+This program requires no installation.  Once you have run the
+"make" command as outlined in section (1) of this README file,
+you can run the program as instructed in section (3).
+
+
+(3) How to Run the Program
+
+After building the program as outlined in section (1) above,
+you can run the program by typing the command "./runpeos" at the
+command prompt from the directory containing the program files.
+
+NOTE: This program is not case sensitive.
+
+
+(4) Creating a Process
+
+Click on File->Create (or press Control + C) in order to create a process.  A dialog box will pop up, allowing you to browse through your directories.  Find the desired .pml file, select it, and click on "OK."
+
+
+(5) Viewing a Process
+
+There are 2 ways to view active processes:
+1. Once a process has been created, you can view it by goingto the "View" menu in the menu bar.  It will list all of the active processes. Click on the process you want to view.
+2. Click on the tab with the desired process.
+
+
+(6) Deleting a Process
+
+Click on File->Delete, then select the process you want to delete.  Click "OK" on the dialog box that pops up.
+
+
+(7) Actions
+
+(7a) Completing an Action
+
+Click on the "Start" button at the bottom of the window.  If there is a required resource, enter it into the dialog box that pops up.  Click on the "Finish" button to finish the action.  Click the right arrow at the bottom of the screen to move on to the next action.
+
+(7b) Extra Capabilities for an Action
+
+At any time before you finish the action, you can suspend, abort, or rebind.  Clicking on "Suspend" lets you save the state of the action, which lets you move on to the next action without losing the state or any resources you have already entered.  Clicking on "Abort" stops the action, and resets the state back to "NONE," but it keeps any entered resources.  "Rebind" lets you re-enter a required resource if there already is one, and the action allows it.
+
+If you want to revisit an action, you can click on the back arrow.
+
+
+(8) Finishing a Process
+
+When you click "Finish" on the last action, you are done with the process.
+
+(9) Checking the resources
+
+There are links on the right window pane when the resouce is given a value. If the value is found the Konqueror will run that specific resource with the associated program. If the resources is not executable the Konqueror will pop-up a window with an error. DO NOT CLICK ON THAT WINDOW, PRESS ENTER TO ESCAPE FROM THAT WINDOW. Given the behaviour of Konqueror, if you have clicked on the window by mistake, you will have to press ENTER the same number of times as you have clicked the mouse on the window.
+
+
+Last Modified: 06/06/2004
+
