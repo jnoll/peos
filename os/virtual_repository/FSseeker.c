@@ -96,8 +96,6 @@ queryList* FSqueryTool( queryList *listpointer )
 			if( strchr( searchFile + 2, '/' ) != NULL )
 			{
 				// executing file:/// query request
-				//printf( "sf is %s %d\n", searchFile, strlen( searchFile ) ) ;
-				//printf( "dp is %s %d\n", directoryPath, strlen( directoryPath ) ) ;
 				if( strlen( searchFile ) > ( strlen( directoryPath ) + 3 ) )
 				{
 					if( stat( searchFile + 1, &statBuffer ) == 0 )

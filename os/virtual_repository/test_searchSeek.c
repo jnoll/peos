@@ -1,8 +1,13 @@
-/* 
-**	Senior Design Project - PEOS Virtual Repository
-**	Author : TASK4ONE
-**	Filename : test_searchSeek.c
-*/
+/************************************************************************
+ * Senior Design Project - PEOS Virtual Repository			*
+ * Author : TASK4ONE							*
+ * Filename : test_searchSeek.c						*
+ ************************************************************************/
+
+/************************************************************************
+ * Description:	Test the implementation of Virtual Repository for the	*
+ 		Unix file system with valid but not found queries	*
+ ************************************************************************/
 
 #include "form.h"
 #include "variables.h"

@@ -1,17 +1,18 @@
 CC = gcc
 CFLAGS = -g -c
-OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o debug.o search.o
-TEST_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_search.o
-TEST_SEEK_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_searchSeek.o
-TEST_INVALID_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_searchInvalid.o
-TEST_EMPTY_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_searchEmpty.o
+OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o Mailseeker.o setup_repositories.o vrepo.o debug.o search.o
+TEST_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o Mailseeker.o setup_repositories.o vrepo.o test_search.o
+TEST_SEEK_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o Mailseeker.o setup_repositories.o vrepo.o test_searchSeek.o
+TEST_INVALID_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o Mailseeker.o setup_repositories.o vrepo.o test_searchInvalid.o
+TEST_EMPTY_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o Mailseeker.o setup_repositories.o vrepo.o test_searchEmpty.o
+TEST_MAIL_OBJECTS = debug.o Mailseeker.o test_MailPath.o
 search: $(OBJECTS)
 	$(CC) -o search $(OBJECTS)
 search.o: search.c vrepo.o FSseeker.o
 	$(CC) $(CFLAGS) search.c
 vrepo.o: vrepo.c vrepo.h FSseeker.o resultLinkedList.o queryLinkedList.o
 	$(CC) $(CFLAGS) vrepo.c
-setup_repositories.o: setup_repositories.c setup_repositories.h FSseeker.o dummy_seekers.o
+setup_repositories.o: setup_repositories.c setup_repositories.h FSseeker.o Mailseeker.o dummy_seekers.o
 	$(CC) $(CFLAGS) setup_repositories.c
 FSseeker.o: FSseeker.c FSseeker.h resultLinkedList.o queryLinkedList.o
 	$(CC) $(CFLAGS) FSseeker.c 
@@ -41,6 +42,12 @@ test_searchEmpty: $(TEST_EMPTY_OBJECTS)
 	$(CC) -o test_searchEmpty $(TEST_EMPTY_OBJECTS)
 test_searchEmpty.o: test_searchEmpty.c vrepo.o FSseeker.o
 	$(CC) $(CFLAGS) test_searchEmpty.c
+Mailseeker.o: Mailseeker.c Mailseeker.h queryLinkedList.o
+	$(CC) $(CFLAGS) Mailseeker.c
+test_MailPath: $(TEST_MAIL_OBJECTS)
+	$(CC) -o test_MailPath $(TEST_MAIL_OBJECTS)
+test_MailPath.o: test_MailPath.c Mailseeker.o
+	$(CC) $(CFLAGS) test_MailPath.c
 debug.o: debug.c debug.h 
 	$(CC) $(CFLAGS) debug.c
 

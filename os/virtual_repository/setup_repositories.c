@@ -7,7 +7,7 @@
 #include "form.h"
 #include "variables.h"
 #include "FSseeker.h"
-
+#include "Mailseeker.h"
 
 /************************************************************************
  * Function:	setup_fs						*
@@ -20,5 +20,13 @@ void setup_fs( )
 	
 	repos_list[repos_ctr].queryTool = FSqueryTool;
 	repos_list[repos_ctr].name = "file" ;
+	repos_ctr ++;
+}
+
+void setup_mail( )
+{
+	
+	repos_list[repos_ctr].queryTool = MailqueryTool;
+	repos_list[repos_ctr].name = "mail" ;
 	repos_ctr ++;
 }

@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 	if (argv[1] != NULL)
 		debug_level = atoi(argv[1]);
 
-	setup_fs( );	
+	setup_fs( ) ;	
+	setup_mail( ) ;
 	while( 1 )
 		selectLoop( ) ;
 	

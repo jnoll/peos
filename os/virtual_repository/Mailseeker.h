@@ -1,12 +1,12 @@
 /************************************************************************
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
- * Filename : setup_repositories.h					*
+ * Filename : Mailseeker.h						*
  ************************************************************************/
 
 /************************************************************************
- * Description:	Contains function declaration for setup_repositories.c	*
+ * Description:	Contains function declaration for Mailseeker.c		*
  ************************************************************************/
 
-void setup_fs( ) ;
-void setup_mail( ) ;
+queryList* MailqueryTool( queryList * ) ;
+//char* getMailPath( ) ;
