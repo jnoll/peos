@@ -1,6 +1,6 @@
 #!/bin/sh
 #######################################################################
-## File Information: $Id: pmlUI.tcl,v 1.3 1999/05/07 18:53:09 jneuder Exp $
+## File Information: $Id: pmlUI.tcl,v 1.4 2000/04/10 23:07:29 nmodi Exp $
 #######################################################################
 
 #
@@ -11,33 +11,39 @@
 exec wish $0 "$@"
 
 # Source all necessary files
-source actionHandler.tcl
-source buildMesg.tcl
-source dynamicWidgets.tcl
-source extractName.tcl
-source generateMesg.tcl
-source inputValidator.tcl
-source mainWin.tcl
-source messageMgr.tcl
-source parseMesg.tcl
-source persistentWidgets.tcl
-source readMesgField.tcl
-source separateIdName.tcl
-source uiConfig.tcl
-source uiEngConn.tcl
-source uiErrorHandler.tcl
-source uiValues.tcl
+#source actionHandler.tcl
+#source buildMesg.tcl
+#source dynamicWidgets.tcl
+#source extractName.tcl
+#source generateMesg.tcl
+#source inputValidator.tcl
+#source mainWin.tcl
+#source messageMgr.tcl
+#source parseMesg.tcl
+#source persistentWidgets.tcl
+#source readMesgField.tcl
+#source separateIdName.tcl
+#source uiConfig.tcl
+#source uiEngConn.tcl
+#source uiErrorHandler.tcl
+#source uiValues.tcl
+source uiLogin.tcl
+source uiHelp.tcl
+source uiInputValidator.tcl
+source uiProcess.tcl
+source uiAction.tcl
 
 # Perform Some Initialization
-::uiConfig::Init
-::mainWin::widgetMgr
+# ::uiConfig::Init
+# ::mainWin::widgetMgr
 
 
 # Show Login Window After Initialization
-if {$::uiConfig::TestMode} then {
-  source uiTest.tcl
-} else {
-  after idle {
-      persistentWidgets::makeLoginWin
-  }
-}
+#if {$::uiConfig::TestMode} then {
+#  source uiTest.tcl
+#} else {
+#  after idle {
+#      persistentWidgets::makeLoginWin
+       uiLogin::uiLoginScreen
+#  }
+#}

@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: persistentWidgets.tcl,v 1.4 1999/05/07 18:53:09 jneuder Exp $
+## File Information: $Id: persistentWidgets.tcl,v 1.5 2000/04/10 23:07:29 nmodi Exp $
 #######################################################################
 
 # persistentWidgets script
@@ -362,7 +362,7 @@ proc ::persistentWidgets::makeLoginWin {} {
     label .loginWin.userFrame.userLabel -text "User Name:"
     entry .loginWin.userFrame.userName -width $entryWidth
 
-    button .loginWin.loginControls.buttonOK -text "OK" \
+   button .loginWin.loginControls.buttonOK -text "OK" \
 	-command {::inputValidator::getName \
 	     [.loginWin.userFrame.userName get] .loginWin}
 
@@ -375,7 +375,7 @@ proc ::persistentWidgets::makeLoginWin {} {
     grid .loginWin.loginControls.buttonOK -row 0 -col 0
     grid .loginWin.loginControls.buttonCancel -row 0 -col 1
 
-    bind .loginWin.userFrame.userName <Return> \
+   bind .loginWin.userFrame.userName <Return> \
 	{::inputValidator::getName \
 	     [.loginWin.userFrame.userName get] .loginWin}
 
