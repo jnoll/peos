@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: dynamicWidgets.tcl,v 1.2 1999/05/06 20:55:37 jneuder Exp $
+## File Information: $Id: dynamicWidgets.tcl,v 1.3 1999/05/07 16:03:54 jneuder Exp $
 #######################################################################
 
 package provide dynamicWidgets 1.0
@@ -221,6 +221,8 @@ proc ::dynamicWidgets::makeRadioButtons {} {
 
 proc ::dynamicWidgets::makeAction {} {
 
+        variable defaultFieldWidth 20
+
         # redraw frames to destroy any widgets currently on screen
         ::persistentWidgets::redrawRightFrame
         ::persistentWidgets::redrawLeftFrame
@@ -229,7 +231,7 @@ proc ::dynamicWidgets::makeAction {} {
         makeRadioButtons
 
         # set all System State labels
-        ::persistentWidgets::configProcess $::uiValues::process
+        ::persistentWidgets::configProcess $::uiValues::processName
         ::persistentWidgets::configTaskName $::uiValues::taskName
         ::persistentWidgets::configTaskState $::uiValues::taskState
         ::persistentWidgets::configActionName $::uiValues::actionName
@@ -245,7 +247,12 @@ proc ::dynamicWidgets::makeAction {} {
         frame .right.lower -borderwidth 2 -relief groove
 
         set ::uiValues::fieldType [lindex $::uiValues::actionField 0]
-        set fieldWidth [lindex $::uiValues::actionField 1]
+        set tempWidth [lindex $::uiValues::actionField 1]
+        if {[string compare $tempWidth ""]} then {
+           set fieldWidth $tempWidth
+        } else {
+           set fieldWidth $defaultFieldWidth
+        }
         set fieldText [lindex $::uiValues::actionField 2]
 
         if {$::uiValues::fieldType != "null"} {

@@ -1,6 +1,6 @@
 #!/bin/sh
 #######################################################################
-## File Information: $Id: pmlUI.tcl,v 1.1 1999/05/06 04:24:54 jneuder Exp $
+## File Information: $Id: pmlUI.tcl,v 1.2 1999/05/07 16:03:54 jneuder Exp $
 #######################################################################
 
 #
@@ -34,6 +34,10 @@ source uiValues.tcl
 
 
 # Show Login Window After Initialization
-after idle {
-    persistentWidgets::makeLoginWin
+if {$::uiConfig::TestMode} then {
+  source uiTest.tcl
+} else {
+  after idle {
+      persistentWidgets::makeLoginWin
+  }
 }

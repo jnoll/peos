@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: uiConfig.tcl,v 1.2 1999/05/06 18:50:16 jneuder Exp $
+## File Information: $Id: uiConfig.tcl,v 1.3 1999/05/07 16:03:54 jneuder Exp $
 #######################################################################
 
 #######################################################################
@@ -15,6 +15,7 @@ namespace eval ::uiConfig:: {
 
      variable UsrCfg
      variable DebugOn 0
+     variable TestMode 0
      variable ModuleName "uiConfig\:\:"
      variable HostSet 0
      variable PortSet 0
@@ -346,6 +347,7 @@ proc ::uiConfig::ParseCommandLine {} {
     variable ModuleName
     variable HostSet
     variable PortSet
+    variable TestMode
     variable TempEngineHost ""
     variable TempEnginePort ""
     variable TempConfigFile ""
@@ -381,6 +383,10 @@ proc ::uiConfig::ParseCommandLine {} {
        ::generator::TurnDebugOn
        ::uiEngConn::TurnDebugOn
        ::uiConfig::TurnDebugOn
+    }
+
+    if {[regexp -nocase {(^|[ ]+)-test} $::argv]} then {
+       set ::uiConfig::TestMode 1
     }
 
     if {$DebugOn} then {

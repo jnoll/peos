@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: persistentWidgets.tcl,v 1.2 1999/05/06 20:55:37 jneuder Exp $
+## File Information: $Id: persistentWidgets.tcl,v 1.3 1999/05/07 16:03:54 jneuder Exp $
 #######################################################################
 
 # persistentWidgets script
@@ -305,6 +305,28 @@ proc ::persistentWidgets::makeMenu {} {
     $menuName add command -label "Login" \
         -command {::persistentWidgets::makeLoginWin} \
         -underline 0
+
+# Test Menu
+    if {$::uiConfig::TestMode} then {
+        set menuName [CreateMenu .menubar testMenu "Test" 0]
+
+	$menuName add command -label "Process Select" \
+            -command { uiTest::test_process_select } -underline 0
+	$menuName add command -label "Choice List - Action" \
+            -command { uiTest::test_choice_list Action } -underline 14
+	$menuName add command -label "Choice List - Branch" \
+            -command { uiTest::test_choice_list Branch } -underline 14
+	$menuName add command -label "Choice List - Selection" \
+            -command { uiTest::test_choice_list Selection } -underline 14
+	$menuName add command -label "Action - Manual" \
+            -command { uiTest::test_action Manual } -underline 9
+	$menuName add command -label "Action - Executable" \
+            -command { uiTest::test_action Executable } -underline 10
+	$menuName add command -label "Iteration Complete" \
+            -command { uiTest::test_iteration_complete } -underline 0
+	$menuName add command -label "Info" \
+            -command { uiTest::test_info } -underline 2
+    }
 
 # Help Menu
     set menuName [CreateMenu .menubar help "Help" 0]
