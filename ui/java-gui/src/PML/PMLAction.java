@@ -58,10 +58,25 @@ public class PMLAction {
   static public String trimQuotes(String stringToTrim)
   {
 
+    String trimmedString = null;
+
     int firstQuote = stringToTrim.indexOf("\"");
-    int secondQuote = stringToTrim.indexOf("\"", firstQuote + 1);
-    String trimmedString = stringToTrim.substring(firstQuote + 1, 
-                                                  secondQuote);
+    int secondQuote = -1;
+
+    if (firstQuote != -1) {
+		// String contains first quote
+      secondQuote = stringToTrim.indexOf("\"", firstQuote + 1);
+    }
+
+    if (secondQuote != -1) {
+        // String contains first and second quote.
+    	  trimmedString = stringToTrim.substring(firstQuote + 1, 
+                                               secondQuote);
+    } else {
+      // No quotes to trim just return the original string.
+    	trimmedString = stringToTrim;
+    }
+
     return trimmedString;
   }
       

@@ -265,6 +265,8 @@ public class PMLActionFrame extends JFrame
     String tool = ActionForFrame.GetFieldValue("tool");
 
     if (tool != null) {
+
+      tool = tool.trim();
       // Get the requires and provides string for the action.
       String requires = ActionForFrame.GetFieldValue("requires");
       String provides = ActionForFrame.GetFieldValue("provides");
