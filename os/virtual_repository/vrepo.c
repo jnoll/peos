@@ -85,8 +85,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 			{
 				switch( k )
 				{
-					case 0 :	
-							free( newQuery -> myClauses[0].attribute ) ;
+					case 0 :	free( newQuery -> myClauses[0].attribute ) ;
 							break ;
 					
 					case 1 :	free( newQuery -> myClauses[0].operator ) ;

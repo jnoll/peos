@@ -1,7 +1,7 @@
 /* 
 **	Senior Design Project - PEOS Virtual Repository
 **	Author : TASK4ONE
-**	Filename : seeker.c
+**	Filename : dummy_seekers.c
 */
 
 #include "form.h"
