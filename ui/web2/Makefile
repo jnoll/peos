@@ -11,6 +11,7 @@ install:
 	[ -d $(INSTALL_DIR) ] || mkdir $(INSTALL_DIR)
 	[ -d $(INSTALL_DIR)/cgi-bin ] || mkdir $(INSTALL_DIR)/cgi-bin
 	[ -d $(INSTALL_DIR)/images ] || mkdir $(INSTALL_DIR)/images
+	cp index.html $(INSTALL_DIR)
 	$(MAKE) -C cgi-bin  install INSTALL_DIR=$(INSTALL_DIR)
 	$(MAKE) -C images install INSTALL_DIR=$(INSTALL_DIR)
 
