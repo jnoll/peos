@@ -25,9 +25,11 @@ char operatorType[3] ;
 char searchFile[BUFFER_SIZE] ;		// the value of the query request
 char queryDate[11] ;
 char queryName[BUFFER_SIZE] ;
+time_t filequeryTime;
 char directoryPath[BUFFER_SIZE] ;	 //the path of the local user
 resultList *dateResults ;
 resultList *nameResults ;
+
 
 
 /************************************************************************
@@ -58,6 +60,7 @@ queryList* FSqueryTool( queryList *listpointer )
 	
 	while( tempQueries != NULL )
 	{
+	   	
 	   	_debug( __FILE__, __LINE__, 5, "tempQueries -> oneQuery -> numClauses is %d", tempQueries -> oneQuery -> numClauses ) ;	
 		for( numClauses = 0 ; numClauses <= tempQueries -> oneQuery -> numClauses ; numClauses++ )
 		{
@@ -65,6 +68,7 @@ queryList* FSqueryTool( queryList *listpointer )
 			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "ID" ) == 0 )
 			{
 				_debug( __FILE__, __LINE__, 5, "attribute is ID") ;
+
 				if( numClauses == 0 )
 					tempResults = attributeID( tempQueries -> oneQuery, numClauses ) ;
 				else
@@ -87,7 +91,8 @@ queryList* FSqueryTool( queryList *listpointer )
 			{
 				_debug( __FILE__, __LINE__, 5, "attribute is DATE" ) ;
 				dateResults = NULL;
-				getFSQueryDate( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;				
+				getFSQueryDate( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
+				filequeryTime = parsedate(tempQueries -> oneQuery -> myClauses[numClauses].value,NULL);				
 				attributeDATE( ) ;
 				if( numClauses == 0 )
 					tempResults = dateResults ;
@@ -213,16 +218,13 @@ int getDate( const char *filename, const struct stat *statptr, int flag )
 		
 	switch ( flag )
 	{
-		case FTW_F : 	_debug( __FILE__, __LINE__, 5, "FTW file is %s", filename ) ;
-		
-				_debug( __FILE__, __LINE__, 5, "statptr -> st_mtime is %s", ctime(  &statptr -> st_mtime  ) ) ;
-				
+		case FTW_F : 	_debug( __FILE__, __LINE__, 1, "FTW file is %s", filename ) ;
+				_debug( __FILE__, __LINE__, 1, "statptr -> st_mtime is %s", ctime(  &statptr -> st_mtime  ) ) ;
+				_debug( __FILE__, __LINE__, 1, "filequeryTime is %s", ctime(  &filequeryTime  ) ) ;
 				getFileDate( fileDate, ctime(  &statptr -> st_mtime  ) ) ;
-				if( strcmp( queryDate, fileDate ) == 0 )
+				if( difftime(filequeryTime,parsedate(fileDate,NULL)) == 0 )
 					dateResults = addResultItem( dateResults, filename ) ;
 								
-				_debug( __FILE__, __LINE__, 5, "fileDate is %s", fileDate) ;	
-							
 				break ;
 	}
 	return 0 ;
@@ -323,6 +325,13 @@ void getFileDate( char *value, char *fileTime )
 }
 
 
+/************************************************************************
+ * Function:	convertMonth						*
+ *									*
+ * Description:	Function coverts the month to numerical string value	*
+ *		and returns the corresponding string.	 		*
+ ************************************************************************/
+
 char* convertMonth( char *theMonth )
 {
 	if( strcmp( theMonth, "Jan" ) == 0 )
@@ -352,6 +361,7 @@ char* convertMonth( char *theMonth )
 	else
 		return NULL ;
 }
+	
 	
 
 /************************************************************************

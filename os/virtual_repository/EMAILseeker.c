@@ -17,6 +17,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <time.h>
 #define BUFFER 1000
 
 /************************************************************************
@@ -48,6 +49,7 @@ queryList* EMAILqueryTool( queryList *listpointer )
    	tempQueries = listpointer ;   	
    	tempResults = NULL ;
    	   	
+	
 	while(tempQueries != NULL)
 	{
 		msgResult = 0;
@@ -330,6 +332,8 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 	tempResults = NULL ;
 	numAttributes = blankLine = fromLine = msgResult = 0 ;	
 	msgStage = lineNumber = 0 ; // first message is without blank
+	
+	
 		
 	while( ( fgets( oneLine, 500, mailFile ) != NULL ) && ( !msgResult ) )
 	{
@@ -399,7 +403,7 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 					break ;
 							
 				case 2:	msgResult = EMAILdateCompare ( queryValue, dateLine ) ;
-					_debug( __FILE__, __LINE__, 5, "attributeType is %d", attributeType ) ;
+					_debug( __FILE__, __LINE__, 1, "attributeType is %d", attributeType ) ;
 					numAttributes = msgStage = 0 ;
 					break ;
 				
@@ -487,11 +491,11 @@ int EMAILdateCompare ( char *queryValue, char *dateLine )
 	char queryDate[11] ;
 	
 	getMailDate( mailDate, dateLine ) ;
-	getMailQueryDate( queryDate, queryValue ) ;
+	//getMailQueryDate( queryDate, queryValue ) ;
 	
-	_debug( __FILE__, __LINE__, 5, "mailDate is %s, queryDate is %s", mailDate, queryDate ) ;
+	_debug( __FILE__, __LINE__, 5, "mailDate is %s, queryDate is %s", mailDate, queryValue ) ;
 	
-	if( strcmp( queryDate, mailDate ) == 0 )
+	if( difftime( parsedate(queryValue,NULL),parsedate( mailDate,NULL )) == 0 )
 		return 1 ;
 	else
 		return 0 ;	

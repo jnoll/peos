@@ -1,8 +1,9 @@
 CC = gcc 
 
 LDFLAGS = -g -L.
-LIBS = -lvr
-LIB = libvr.a
+LIBS = -lvr /home/jnoll/lib/libinn.a
+LIB = libvr.a 
+
 
 
 OBJECTS = \
