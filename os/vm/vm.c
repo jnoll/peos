@@ -26,6 +26,7 @@ int PC = 0, SP = INT_MAX, A = 0; /* A is a register */
 struct context_t context;   /* context of current process */
 
 char* VM_PREF = "ENG"; /* standard prefix for all processes created in Rep.*/
+
 char* VM_ATTR_PROC = "PROCESS_NAME";
 char* VM_ATTR_PCTXT = "PROCESS_CONTEXT";
 char* VM_ATTR_SP = "PROCESS_STACK";
@@ -59,6 +60,7 @@ char * getModel(char * processName)
     char * path = getenv(COMP_DIR);
     char begin = '/';
     char end = '.';
+    FILE* fd; /* file descriptor */
 
     model = (char *) malloc(256);
 
@@ -101,7 +103,11 @@ char * getModel(char * processName)
        strcat(model, ".txt");
     }
 
-//    fprintf(stderr, "getting model file %s\n", model);
+    if ((fd=(FILE*)fopen(model, "r")) == NULL) {
+      return NULL;
+    } else {
+      fclose(fd);
+    }
     return model;
 }
 
@@ -349,7 +355,7 @@ int execute(pml_obj_t process)
 	pml_delete_object(process);
     pml_pack_objects();
     return 0;
-}
+} /* execute */
 
 char * nextOPCode(pml_obj_t proc, char * op)
 {
@@ -389,7 +395,7 @@ char * nextOPCode(pml_obj_t proc, char * op)
     PC++;
     free(fileName);
     return op;
-}
+} /* nextOPCode */
 
 void push(pml_obj_t proc, int arg)
 {
@@ -421,7 +427,7 @@ void push(pml_obj_t proc, int arg)
 		       VM_ATTR_SP_DEPTH, strlen(VM_ATTR_SP_DEPTH)+1,
 		       &depth, sizeof(int));
     SP--;
-}
+} /* push */
 
 int pop(pml_obj_t proc)
 {
@@ -460,7 +466,7 @@ int pop(pml_obj_t proc)
 			&depth, sizeof(depth));
     SP++;
     return stack[depth];
-}
+} /* pop */
 
 int setState(pml_obj_t proc,char * act_name, int state)
 {
@@ -496,7 +502,7 @@ int setState(pml_obj_t proc,char * act_name, int state)
     }
 
     return ret;
-}
+} /* setState */
 
 int setWait(pml_obj_t proc,char * act_name, int wait)
 {
@@ -530,7 +536,7 @@ int setWait(pml_obj_t proc,char * act_name, int wait)
         fprintf(stderr,"pml_store failed.");
 
     return ret;
-}
+} /* setWait */
 
 
 int assert(pml_obj_t proc, char * act_name)
@@ -548,7 +554,7 @@ int assert(pml_obj_t proc, char * act_name)
     if(!ret)
 	fprintf(stderr, "Assert on action %s failed.\n", act_name);
     return ret;
-}
+} /* assert */
 
 int fetchContext(pml_obj_t proc)
 {
@@ -563,7 +569,7 @@ int fetchContext(pml_obj_t proc)
     PC = context.PC;
     SP = context.SP;
     return 0;
-}
+} /* fetchContext */
 
 int storeContext(pml_obj_t proc)
 {
@@ -575,7 +581,7 @@ int storeContext(pml_obj_t proc)
 		       VM_ATTR_PCTXT, strlen(VM_ATTR_PCTXT)+1,
 		       &context, sizeof(struct context_t));
     return 0;
-}
+} /* storeContext */
 
 char* dereference(pml_obj_t proc, char* string)
 {
@@ -591,15 +597,15 @@ char* dereference(pml_obj_t proc, char* string)
                 errExit();
 	value_ptr = value;
 	return value_ptr;
-}
+} /* dereference */
 
 void add_var(pml_obj_t proc, char* name, char* value)
 {
-	int ret;
-
-	ret = pml_write_attribute(proc,
-				name, strlen(name)+1,
-				value, strlen(value)+1);
-        if( ret == 0 )
-                errExit();
-}
+  int ret;
+  
+  ret = pml_write_attribute(proc,
+			    name, strlen(name)+1,
+			    value, strlen(value)+1);
+  if( ret == 0 )
+    errExit();
+} /* add_var */
