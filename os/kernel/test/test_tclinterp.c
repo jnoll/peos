@@ -42,7 +42,7 @@ START_TEST(test_peos_tcl_exec_cmd)
    
    Tcl_ResetResult(interp);
    
-   cmd = "puts";
+   cmd = "set";
    if(cmd!=NULL){
       if(strlen(cmd)<0)
          fail("invalid string cmd");
@@ -67,10 +67,10 @@ START_TEST(test_peos_tcl_exec_cmd)
      
      switch (objc){
      	case 0:
-     		strcpy(arg,"puts");
+     		strcpy(arg,"set");
 		break;
 	case 1:
-		strcpy(arg,"stdout");
+		strcpy(arg,"foo");
 		break;
 	case 2: 
 		strcpy(arg,"TESTING");
@@ -98,17 +98,12 @@ START_TEST(test_peos_tcl_exec_cmd)
     }
   
   }
-  printf("\n");
-  for( i = 0;i < objc;++i)
-       printf( "-->%s<--\n", Tcl_GetStringFromObj(objv[i],NULL) );
-  fail_unless(!strcmp(Tcl_GetStringFromObj(objv[0],NULL),"puts"), "Expected \'puts\'");
-  fail_unless(!strcmp(Tcl_GetStringFromObj(objv[1],NULL),"stdout"), "Expected \'stdout\'");
+  fail_unless(!strcmp(Tcl_GetStringFromObj(objv[0],NULL),"set"), "Expected \'set\'");
+  fail_unless(!strcmp(Tcl_GetStringFromObj(objv[1],NULL),"foo"), "Expected \'foo\'");
   fail_unless(!strcmp(Tcl_GetStringFromObj(objv[2],NULL),"TESTING"), "Expected \'TESTING\'");
 
 
   if((*(info).objProc)((info).objClientData, interp, objc, objv) != TCL_OK){
-    fprintf(stderr,"result is error");
-    fflush(0);
     fail("Tcl Error when executing command");
   }
   
@@ -123,11 +118,8 @@ START_TEST(test_peos_tcl_get_var)
     peos_tcl_start(&ptr);
     Tcl_SetVar(ptr->interp,"var1","dog",0);
     strcpy(result,Tcl_GetVar(ptr->interp,"var1",TCL_GLOBAL_ONLY));
-    printf("\nResult from get var: [%s] %d\n",result, (!strcmp(result,"dog")));
     
     if(strcmp(result,"dog")){
-      printf("\nTCL_ERROR Getting Variable");
-      fflush(0);
       fail("TCL_ERROR Getting Variable");
     }
     free(result);
@@ -141,10 +133,7 @@ START_TEST(test_peos_tcl_set_var)
     result = (char*)malloc(sizeof(char)*100);
     peos_tcl_start(&ptr);
     strcpy(result,Tcl_SetVar(ptr->interp,"var1","cat",0));
-    printf("\nResult from set var: [%s] %d\n",result, (!strcmp(result,"cat")));
     if(strcmp(result,"cat")){
-      printf("TCL_ERROR Setting Variable");
-      fflush(0);
       fail("TCL_ERROR Setting Variable");
     }
     
@@ -159,8 +148,6 @@ START_TEST(test_peos_tcl_link_var)
     peos_tcl_start(&ptr);
     result=(int)Tcl_LinkVar(ptr->interp,"var1",(char*)&var1,TCL_LINK_INT);
     if(result!=TCL_OK){
-      printf("TCL_ERROR Linking Variable");
-      fflush(0);
       fail("TCL_ERROR Linking Variable");
     }
 }
@@ -172,18 +159,14 @@ START_TEST(test_peos_tcl_script)
     peos_tcl* ptr;
     peos_tcl_start(&ptr);
     system("touch tcl_file_for_testing");
-    system("echo \"puts stdout {testing TCL script running functionality. if you see this, it's working.} \"> tcl_file_for_testing");
+    system("echo \"set foo {peos2004} \"> tcl_file_for_testing");
     status = Tcl_EvalFile(ptr->interp, "tcl_file_for_testing");
-    if (*ptr->interp->result != 0){
-        printf("Issue Running Script: %s\n",ptr->interp->result); 
-    }
-    printf("Script ran, result: %s\n", status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
     fail_unless (status == TCL_OK,"Failed b/c status is not TCL_OK after executing a valid tcl script file");
     system("rm tcl_file_for_testing");
 }
 END_TEST
 
-START_TEST(test_peos_tcl_eval)
+START_TEST(test_peos_tcl_eval_validinput)
 {
     
     peos_tcl* ptcl;
@@ -195,24 +178,18 @@ START_TEST(test_peos_tcl_eval)
     char* str=NULL;
     char* str_dollarsigns=NULL;
     if(peos_tcl_start(&ptcl)==TCL_ERROR){
-       printf("Tcl interpreter did not start");
        fail("Tcl interpreter did not start");
     }
     if(Tcl_Eval(ptcl->interp,"set VARIABLE1 VARIABLEVALUE1")!=TCL_OK){
-       fprintf(stderr,"Couldn't set a variable in the interpreter\n");
-       fprintf(stderr,"ERROR: %s", ptcl->interp->result);
        fail("Couldn't set a variable in the interpreter");
     }
     if(!(result_str=(char*)malloc(sizeof(char)*255))){
-       fprintf(stderr,"ERROR: Insufficient memory, malloc failed in peos_tcl_eval\n");
        fail("error allocating memory");
     }
     if(!(str_dollarsigns=(char*)malloc(sizeof(char)*255))){
-       fprintf(stderr,"ERROR: Insufficient memory, malloc failed in peos_tcl_eval\n");
        fail("error allocating memory");
     }
     if(!(str=(char*)malloc(sizeof(char)*(strlen(eval_str)+strlen(name_str)+50)))){
-       fprintf(stderr,"ERROR: Insufficient memory, malloc failed in peos_tcl_eval\n");
        fail("error allocating memory");
     }else{
        if(!strcmp(eval_str,"$$")){
@@ -225,30 +202,117 @@ START_TEST(test_peos_tcl_eval)
     /** dollar signs **/
     sprintf(str_dollarsigns,"set %s \\$\\$", name_str);
     if(strcmp("set VARIABLE2 \\$\\$", str_dollarsigns)){
-       printf("unexpected value for str_dollarsigns");
-       fflush(0);
        fail("unexpected value for str_dollarsigns");
     }
     result=Tcl_Eval(ptcl->interp, str);
     /** Looking at the result **/
     if( result == TCL_ERROR){
-       fprintf(stderr,"ERROR: failed with TCL statement: %s\n", str);
-       fprintf(stderr,"ERROR: Tcl returned TCL_ERROR in peos_tcl_eval\n");
        fail ("ERROR: Interpreter returned an unexpected TCL_ERROR");
     }else if(result == TCL_OK){
        strcpy(result_str,ptcl->interp->result);//peos_tcl_get_var(ptcl, name_str));
-       printf("MESSAGE: successfully evaluated TCL statement: %s\n", str);
-       printf("MESSAGE: variable set: %s %s \n", name_str, peos_tcl_get_var(ptcl, name_str));
     }
     if(!strcmp(peos_tcl_get_var(ptcl, name_str),"VARIABLEVALUE1ANDVARIABLEVALUE1") ||
        !strcmp(result_str,"VARIABLEVALUE1ANDVARIABLEVALUE1")){
-       printf("MESSAGE: Test Passed\n");
     }else{
-       printf("Unexpected value for VARIABLE2");
        fail("Unexpected value for VARIABLE2");
     }
 }
 END_TEST
+
+START_TEST(test_peos_tcl_eval_vardoesntexist)
+{
+    
+    peos_tcl* ptcl;
+    char* name_str="IDONTEXIST";
+    char* eval_str="hi${IDONTEXIST}hi";
+    char* result_str=NULL;
+    
+    int result=-1;
+    char* str=NULL;
+    char* str_dollarsigns=NULL;
+    if(peos_tcl_start(&ptcl)==TCL_ERROR){
+       fail("Tcl interpreter did not start");
+    }
+    if(!(result_str=(char*)malloc(sizeof(char)*255))){
+       fail("error allocating memory");
+    }
+    if(!(str_dollarsigns=(char*)malloc(sizeof(char)*255))){
+       fail("error allocating memory");
+    }
+    if(!(str=(char*)malloc(sizeof(char)*(strlen(eval_str)+strlen(name_str)+50)))){
+       fail("error allocating memory");
+    }else{
+       if(!strcmp(eval_str,"$$")){
+          fail("unexpected eval_str==\"$$\"");
+       }else{
+	   sprintf(str,"set %s %s", name_str, eval_str);
+	}
+    }
+    result=Tcl_Eval(ptcl->interp, str);
+    /** Looking at the result **/
+    if( result == TCL_ERROR){
+       fail_unless(!strcmp("can't read \"IDONTEXIST\": no such variable",ptcl->interp->result),"The interpreter should have complained about the non-existent variable.");
+    }  
+}
+END_TEST
+
+START_TEST(test_peos_tcl_eval_badtcl)
+{
+    
+    peos_tcl* ptcl;
+    char* name_str="IMBAD $${}{{";
+    char* eval_str="${IDONTEXIST";
+    char* result_str=NULL;
+    
+    int result=-1;
+    char* str=NULL;
+    char* str_dollarsigns=NULL;
+    if(peos_tcl_start(&ptcl)==TCL_ERROR){
+       fail("Tcl interpreter did not start");
+    }
+    if(!(result_str=(char*)malloc(sizeof(char)*255))){
+       fail("error allocating memory");
+    }
+    if(!(str_dollarsigns=(char*)malloc(sizeof(char)*255))){
+       fail("error allocating memory");
+    }
+    if(!(str=(char*)malloc(sizeof(char)*(strlen(eval_str)+strlen(name_str)+50)))){
+       fail("error allocating memory");
+    }else{
+       if(!strcmp(eval_str,"$$")){
+          fail("unexpected eval_str==\"$$\"");
+       }else{
+	   sprintf(str,"set %s %s", name_str, eval_str);
+	}
+    }
+    result=Tcl_Eval(ptcl->interp, str);
+    /** Looking at the result **/
+    if( result == TCL_ERROR){
+       fail_unless(!strcmp("missing close-brace for variable name",ptcl->interp->result),"The interpreter should have complained about the non-existent variable.");
+    }
+}
+END_TEST
+
+
+START_TEST(test_peos_tcl_delete)
+{
+    peos_tcl* ptcl;
+    int result=-1;
+   
+    if(peos_tcl_start(&ptcl)==TCL_ERROR){
+       fail("Tcl interpreter did not start");
+    }
+    if(Tcl_Eval(ptcl->interp,"set VAR VALUE")!=TCL_OK){
+       fail("Couldn't set a variable in the interpreter");
+    }else{
+        fail_unless(!Tcl_InterpDeleted(ptcl->interp), "Tcl should have returned zero value because the interpreter hasn't been deleted.");
+        Tcl_DeleteInterp(ptcl->interp);
+        fail_unless(Tcl_InterpDeleted(ptcl->interp), "Tcl should have returned a non zero value because the interpreter is scheduled for deletion");
+    }
+    
+}
+END_TEST
+
 
 int
 main(int argc, char *argv[])
@@ -281,9 +345,21 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_peos_tcl_script);
 
-    tc = tcase_create("testing_peos_tcl_eval");
+    tc = tcase_create("testing_peos_tcl_eval_validinput");
     suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_peos_tcl_eval);
+    tcase_add_test(tc, test_peos_tcl_eval_validinput);
+    
+    tc = tcase_create("testing_peos_tcl_eval_vardoesntexist");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_peos_tcl_eval_vardoesntexist);
+    
+    tc = tcase_create("testing_peos_tcl_eval_badtcl");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_peos_tcl_eval_badtcl);
+    
+    tc = tcase_create("testing_peos_tcl_delete");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_peos_tcl_delete);
         
     sr = srunner_create(s);
 
