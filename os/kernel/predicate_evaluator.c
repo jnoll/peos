@@ -42,7 +42,7 @@ int pe_timestamp(char* file1, char*file2)
 	peos_tcl* interpreter;
 	char* result_str=NULL;
 	char* args=NULL;
-	printf("pe_spellcheck called!\n");
+	printf("pe_t called!\n");
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return 0;
@@ -53,15 +53,15 @@ int pe_timestamp(char* file1, char*file2)
 	if(!args){
 		args = (char*)malloc(sizeof(char)*(255));
 	}
-	//sprintf(args, "timestamp");
+	sprintf(args, "timestamp %s %s", file1, file2);
 #ifdef PE_DEBUG_B
 	//printf("Is this what i want? %s\n", args);
 #endif
-	peos_tcl_eval(interpreter,"path1", file1, result_str );
-	peos_tcl_eval(interpreter,"path2", file2, result_str );
+	//peos_tcl_eval(interpreter,"path1", file1, result_str );
+	//peos_tcl_eval(interpreter,"path2", file2, result_str );
 
 	peos_tcl_script(interpreter, "tclf_timestamp.tcl");
-	Tcl_Eval(interpreter->interp, "timestamp");
+	Tcl_Eval(interpreter->interp, args);
 	if(result_str) free (result_str);
 	if(args) free (result_str);
 #ifdef PE_DEBUG_B
@@ -79,7 +79,7 @@ int pe_spellcheck(char* filename)
 	printf("pe_spellcheck called!\n");
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-		return NULL;
+		return 0;
 	}
 	if(!result_str){
 		result_str = (char*)malloc(sizeof(char)*(255));
@@ -102,8 +102,7 @@ int pe_spellcheck(char* filename)
 #ifdef PE_DEBUG_B
 	printf("Result for pe_spellcheck(%s): %s\n", filename, interpreter->interp->result);
 #endif
-	if(result_str) free (result_str);
-	
+	peos_tcl_delete(interpreter);
 	return 1;
 }
 
@@ -163,10 +162,10 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 {
 	struct stat buf1;
 	struct stat buf2;
-	
+/*	
 	if(cond_type == PE_COND_RA_RA && meth_type == PE_METH_FILE_TIMESTAMP){
 		if(stat(pe_get_resval(pid, TREE_ID(t->left->left)), &buf1) == -1) {
-	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
+	            if(errno == ENOENT) { // If stat failed because file didn't exist 
 #ifdef PE_DEBUG
 		    	fprintf(stderr, "error 1 ENOENT \n");
 #endif
@@ -177,7 +176,7 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 	            }
 	        }
 		if(stat(pe_get_resval(pid, TREE_ID(t->right->left)), &buf2) == -1) {
-	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
+	            if(errno == ENOENT) { // If stat failed because file didn't exist 
 #ifdef PE_DEBUG
 		        fprintf(stderr, "error 2 ENOENT \n");
 #endif
@@ -213,11 +212,37 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 		
 		
 	}
+*/
+	if(cond_type == PE_COND_RA_RA && meth_type == PE_METH_FILE_TIMESTAMP){
+		if(stat(pe_get_resval(pid, TREE_ID(t->left->left)), &buf1) == -1) {
+	            if(errno == ENOENT) { // If stat failed because file didn't exist 
+#ifdef PE_DEBUG
+		    	fprintf(stderr, "error 1 ENOENT \n");
+#endif
+	                return -1;
+	            }
+	            else {
+		        return -1;
+	            }
+	        }
+		if(stat(pe_get_resval(pid, TREE_ID(t->right->left)), &buf2) == -1) {
+	            if(errno == ENOENT) { // If stat failed because file didn't exist 
+#ifdef PE_DEBUG
+		        fprintf(stderr, "error 2 ENOENT \n");
+#endif
+	                return -1;
+	            }
+	            else {
+		        return -1;
+	            }
+	        }
+		return pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
+	}
 	else if(cond_type == PE_COND_FILE && meth_type == PE_METH_FILE_EXISTS){
 		if(stat(pe_get_resval(pid, TREE_ID(t)), &buf1) == -1) {
 	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
 #ifdef PE_DEBUG
-		    	fprintf(stderr, "error 3 ENOENT %s\n",pe_get_resval(pid, TREE_ID(t)));
+		    	fprintf(stderr, "error 4 ENOENT %s\n",pe_get_resval(pid, TREE_ID(t)));
 #endif
 	                return -1;
 	            }
@@ -242,7 +267,7 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 #endif
 	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
 #ifdef PE_DEBUG
-		    	fprintf(stderr, "error 4 ENOENT \n");
+		    	fprintf(stderr, "error 5 ENOENT \n");
 #endif
 	                return -1;
 	            }

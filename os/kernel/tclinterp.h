@@ -16,7 +16,7 @@ typedef struct{
   Tcl_Interp *interp;
 }peos_tcl;
 
-
+extern int peos_tcl_script(peos_tcl* ptcl, char* file_name);
 // Start the TCL interpreter (initialize)
 extern int peos_tcl_start(peos_tcl** ptcl);
 // Execute a TCL command contained in a string

@@ -1,12 +1,14 @@
 
-proc timestamp { } {
+proc timestamp { path1 path2 } {
+	puts stdout "timestamp arguments: $path1 $path2"
         #set path1 mymodule.mod
 	#set path2 myexec.exe
-        file stat $path1 stat1
-        file stat $path2 stat2
-        return [expr $stat1(mtime) > $stat2(mtime)]
+        #file stat $path1 stat1
+        #file stat $path2 stat2
+        #return [expr $stat1(mtime) > $stat2(mtime)]
 	#$stat1(ino) == $stat2(ino) && \
          #               $stat1(dev) == $stat2(dev)
+	 return 55
 }
  
 
