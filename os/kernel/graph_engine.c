@@ -576,6 +576,8 @@ vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state stat
           fprintf(stderr,"Handle Action Error: Unable to update context");
          return VM_INTERNAL_ERROR;
          }
+
+       GraphDestroy(g);
 						                                                                                            
 	 return VM_DONE;
 }

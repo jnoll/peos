@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.9 2003/09/06 22:57:13 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.10 2003/09/07 01:24:20 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -53,8 +53,22 @@ list_instances()
 
 print_action(peos_action_t *action, char *state) 
 {
-    printf("  %2d    %-6s (%s) %s\n", action->pid, action->name, state, action->script ? action->script : "no script");
+    peos_resource_t *resources;
+    int num_resources;
+    int i;
+
+    resources = (peos_resource_t *) get_resource_list_action(action->pid,action->name,&num_resources);
+    
+    printf("  %2d    %-6s (%s) %s  resources:", action->pid, action->name, state, action->script ? action->script : "no script");
+    
+    for(i = 0; i < num_resources; i++)
+    {
+    printf(" %s",resources[i].name);
+    if(i != num_resources-1) printf(",");
+    }
+    printf("\n");
 }
+
 
 list_actions()
 {

@@ -70,6 +70,12 @@ int yyparse()
 	return 0;
 }
 
+void GraphDestroy(Graph g)
+{
+	return;
+}
+
+
 START_TEST(test_find_node)
 {
 	Node n;
