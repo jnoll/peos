@@ -530,6 +530,7 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state stat
 	    }
 	    else {
 	        RESOURCE_STATE(n) = state;
+		set_node_state(n, ACT_AVAILABLE);
 	        return VM_CONTINUE;
 	    }
         }
@@ -540,8 +541,11 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state stat
 		    handle_action_change(pid, n->name, ACT_RUN);
 		    return handle_action_change(pid, n->name, ACT_DONE);
 		}
+		else 
+	            return VM_CONTINUE;
 	    }
-	    else return VM_CONTINUE;
+	    else
+	        return VM_INTERNAL_ERROR;
 	}
     }
     else
