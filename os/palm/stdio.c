@@ -29,7 +29,7 @@ char* strdup(char*string)
 {
         char *newString;
         Int32 len,i;
-        len=strlen(string);
+        len=strlen(string)+1;
         newString =malloc(len);
 
         for (i=0; i<len; i++)
@@ -65,3 +65,13 @@ Int32 ferror(FILE* stream)
 	return -1;
 }
 
+Int32 fclose(FILE * stream)
+{
+	FileClose(*stream);
+	return -1;
+}
+
+void doNothing()
+{
+
+}
