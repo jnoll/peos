@@ -22,6 +22,7 @@ public class PeosApp extends JFrame implements ActionListener
         
 	public JMenu fileMenu;
 	public JMenuBar menuBar;        
+        public JMenuItem switchView;
 	public JFrame confirmFrame;
 	public int currPagePID;
 	public JTabbedPane tabbedPane;
@@ -29,6 +30,7 @@ public class PeosApp extends JFrame implements ActionListener
 	public JButton deleteB;
 	public String lastDir;
 	public int tabPids[] = new int[11];
+        public JPanel actionWindow;
 
    	public PeosApp() 
 	{
@@ -46,11 +48,17 @@ public class PeosApp extends JFrame implements ActionListener
       		setBounds  (	inset, inset,
        	       			screenSize.width  - inset*2,
  			        screenSize.height - inset*2   );
-
+                
 	    	//Set up the GUI.
+                actionWindow=new JPanel();
+                
+           //     actionWindow.setBounds(inset, inset, 
+             //                          screenSize.width - inset *2, 
+               //                        screenSize.height - inset*2);
 		menuBar = new JMenuBar();
        		setJMenuBar(createMenuBar());
-
+                JTextField blah = new JTextField("Hello everyone");
+                actionWindow.add(blah);
 		tabbedPane = new JTabbedPane();
 		getContentPane().add(createToolBar(),BorderLayout.PAGE_START);
 		deleteB.setEnabled(false);
@@ -79,6 +87,13 @@ public class PeosApp extends JFrame implements ActionListener
 		fileItem.setActionCommand("load");
 		fileItem.addActionListener(this);
 		fileMenu.add(fileItem);
+                
+                switchView = new JMenuItem("View All Ready Actions");
+                switchView.setMnemonic(KeyEvent.VK_A);
+                switchView.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK));
+                switchView.setActionCommand("ActionMode");
+		switchView.addActionListener(this);
+		fileMenu.add(switchView);
 
 		/************** ACTIVE PROCESSES **************/				
 		fileMenu.add(listingActiveProcesses());
@@ -173,7 +188,37 @@ public class PeosApp extends JFrame implements ActionListener
                     "Error",	            
                     JOptionPane.ERROR_MESSAGE);
                 }
-                if ("load".equals(e.getActionCommand()))
+                if ("ActionMode".equals(e.getActionCommand()))
+                {                              
+                    switchView.setText("Switch to Process Mode");
+                    switchView.setActionCommand("ProcessMode");
+                    //getContentPane().setVisible(false);
+                    getContentPane().remove(tabbedPane);
+                    
+                    actionWindow.setLayout(new GridLayout(1,1));
+                    getContentPane().add(actionWindow, BorderLayout.CENTER);
+                    deleteB.setEnabled(false);
+                    show();
+                    
+                    actionWindow.setVisible(true);
+
+                }
+                else if ("ProcessMode".equals(e.getActionCommand()))
+                {                              
+                    switchView.setText("Switch to Action Mode");
+                    switchView.setActionCommand("ActionMode");
+                    //getContentPane().setVisible(true);
+                    getContentPane().remove(actionWindow);
+                    getContentPane().add(tabbedPane,BorderLayout.CENTER);
+                    deleteB.setEnabled(true);
+                    actionWindow.setVisible(false);
+                    tabbedPane.setVisible(true);
+                    hide();
+                    show();
+                    
+                
+                }
+                else if ("load".equals(e.getActionCommand()))
 		{
 			if (getNumCurrActive() >= 11)
 			{
@@ -476,6 +521,7 @@ public class PeosApp extends JFrame implements ActionListener
 	        tabbedPane.setVisible(true);
 		
 		tabbedPane.setSelectedIndex(placement);
+                getContentPane().remove(tabbedPane);
 		getContentPane().add(tabbedPane,BorderLayout.CENTER);
 		show();
 		deleteB.setEnabled(true);
@@ -490,6 +536,7 @@ public class PeosApp extends JFrame implements ActionListener
 	        tabbedPane.setVisible(true);
 		
 		tabbedPane.setSelectedIndex(placement);
+                getContentPane().remove(tabbedPane);
 		getContentPane().add(tabbedPane,BorderLayout.CENTER);
 		show();
 		deleteB.setEnabled(true);
