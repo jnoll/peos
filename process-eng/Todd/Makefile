@@ -20,13 +20,26 @@ OBJS = Analysis.pml \
 # Compile the program
 
 all: $(OBJS)
-	$(PML) $(PMLFLAGS) $(OBJS)
+# For some reason this line doesn't work
+#	$(PML) $(PMLFLAGS) $(OBJS)
+	$(PML) $(PMLFLAGS) OperationalConcept.pml; \
+	$(PML) $(PMLFLAGS) ProjectLog.pml; \
+	$(PML) $(PMLFLAGS) RepositoryCheckIn.pml; \
+	$(PML) $(PMLFLAGS) RepositoryCheckOut.pml; \
+	$(PML) $(PMLFLAGS) RepositorySynchronize.pml; \
+	$(PML) $(PMLFLAGS) RiskIdentification.pml; \
+	$(PML) $(PMLFLAGS) SourceCodeEdit.pml; \
+	$(PML) $(PMLFLAGS) FunctionalRequirements.pml; \
+	$(PML) $(PMLFLAGS) NonFunctionalRequirements.pml; \
+	$(PML) $(PMLFLAGS) Milestone2.pml; \
+	$(PML) $(PMLFLAGS) Milestone3.pml
 
 .pml:
 	$(PML) $(PMLFLAGS) $< $(OBJS)
 	
 install:
-	cp *.gdbm ~tools/workspace/summer99/Engine/src/model/.
+	chmod 2664 *.gdbm
+	cp *.gdbm ~peos/src/models/.
 
 clean:
 	rm -f *.gdbm
