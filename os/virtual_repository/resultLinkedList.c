@@ -27,13 +27,11 @@ void printResultList( resultList *listpointer )
 		printf ( "result list is empty!\n" ) ;
 	else
 	{
-		int i = 1;
 		resultList *temp = listpointer;
     		while ( temp != NULL )
 		{
-			printf ( "%d. %s\n", i,temp -> oneResult ) ;
+			printf ( "%s\n", temp -> oneResult ) ;
 			temp = ( resultList* ) temp -> link ;
-			i++;
 		}
 	}
 	printf( "\n" );
