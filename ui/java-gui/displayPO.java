@@ -29,8 +29,15 @@ public class displayPO{
 			System.exit(0);
 		}
 	}
+        
+        /**
+         *  reparse works similarly to convertDOM, except it's designed for 
+         *  updating the ActionMap rather than creating it. This is usually 
+         *  called after an action has had a resource value or state changed.
+         *  @param pid The pid number of the process to be parsed again.
+         */
 	public void reparse(int pid) throws Exception
-	{
+	{ 
 		xmlStream = new DOMParser();
 		xmlStream.parse(new InputSource(xmlInput));
 		Document doc = xmlStream.getDocument();
@@ -40,6 +47,13 @@ public class displayPO{
 		retraverse(doc.getDocumentElement(), pid);
 		actions.setCurrent(pid,temp);
 	}
+        
+        /**
+         * Checks the given pid to see if it is valid.
+         * @param pid The pid being checked for validity.
+         * @return True - if the pid is valid.
+         *         False = otherwise.
+         */
         public boolean checkForPid(int pid) throws Exception
         {
             
@@ -48,14 +62,22 @@ public class displayPO{
             return checkPid(doc.getDocumentElement(), pid);
             
         }
-	public void convertDOM(int pid) throws IOException
+
+        /**
+        * Traverses the process corresponding to parameter pid. Builds an
+        * ActionMap which can be used for creating an outline of the process.
+        * @param pid The process to be parsed.
+        */
+        public void convertDOM(int pid) throws IOException
+
 	{
                 Document doc = xmlStream.getDocument();
 		this.actions.DeleteProcess(pid);
 		this.resources.DeleteProcess(pid);
 		traverse(doc.getDocumentElement(),-1, pid);
 	}
-	public void retraverse(Node root, int pid) throws IOException 
+        
+	private void retraverse(Node root, int pid) throws IOException 
 	{
 		String elemName;
 		if (root == null)
@@ -122,7 +144,8 @@ public class displayPO{
 			retraverse(children.item(i),pid);
 		}
 	}
-	public void traverse(Node root, int offset, int pid) throws IOException 
+        
+	private void traverse(Node root, int offset, int pid) throws IOException 
 	{
 		String elemName;
 		if (root == null)
@@ -197,7 +220,8 @@ public class displayPO{
 			traverse(children.item(i),offset+1,pid);
 		}
 	}
-        public boolean checkPid(Node root, int pid) throws IOException 
+        
+        private boolean checkPid(Node root, int pid) throws IOException 
 	{
 		String elemName;
 		if (root == null)
@@ -238,6 +262,13 @@ public class displayPO{
 		}
                 return false; 
 	}
+        
+        /**
+         * Gets the HTML script data from the given action.
+         * @param root The action to retrieve the script from.
+         * @param pid The pid of the process containing the action.
+         * @return The HTML script for the action. 
+         */
 	public String getScript(Element root, int pid)
 	{	
 		if (root.getLocalName().equals("action") == false)
@@ -248,11 +279,18 @@ public class displayPO{
 		String blah = scriptText.getData();
 		return(parseScript(root, pid, blah.substring(2,blah.length()-2)));	
 	}
+        
+        /**
+         * Returns the value of a resource passed in as an XML element.
+         * @param root The xml-element, it must be a resource node.
+         * @return The value of that resource.
+         */
 	public String getResValue(Element root)
 	{
 		return (root.getAttribute("value"));
 	}
-	public boolean isResValid(Element root)
+                
+	private boolean isResValid(Element root)
 	{
 		if (root.getAttribute("qualifier").equals("abstract"))
 			return false;
@@ -263,7 +301,13 @@ public class displayPO{
 		return true; 
 	}	
 	
-	public String parseScript(Element root, int pid, String scriptText)
+	/**
+         * parseScript is called by getScript. It adds html href to any 
+         * resource name within a script that has been bound with a value.
+         * This way, an html-client such as Swing can execute the lines of 
+         * the href. 
+         */
+        private String parseScript(Element root, int pid, String scriptText)
 	{
 		int parseIndex;
 		String result = new String();
@@ -292,16 +336,29 @@ public class displayPO{
 		}
 		return result;	
 	}
+        
+        /**
+         * Retrieves the state attribute of an XML element.
+         * @param root An XML element that is a PEOS action.
+         */
 	public String getState(Element root)
-	{
+	{            
 		return root.getAttribute("state");
 	}
 	
+         /**
+        * Returns a string to add above the state script for all required
+        * resources for an action.
+        * @param root The action resources are being looked up for.
+        * @return An html-string with a list of required resources if they exist
+        *         or "No required resources.<br>" otherwise.
+        **/
 	public String getRR(Element root)
+      
 	{
 		NodeList nl = root.getChildNodes();
 		Node rr;
-                String rrlist=new String();
+                String rrlist=new String();              
 		for (int i = 0; i<nl.getLength(); i++)
 		{
 			rr=nl.item(i);
@@ -329,35 +386,21 @@ public class displayPO{
                     return rrlist;
 		
 	}
+        
+        
 	public String[] getResourceList(int pid)
 	{
 		return this.resources.getMap(pid);	
 	}
-	public void changeSetValue(String resource_name, String value,int pid)
-	{
-		              
-		Process peos;
-		Runtime r = Runtime.getRuntime();
-		String test=(SetupPath.getPeos()+" -r " + pid +
-			 " " + resource_name + " " + value);
-		try{
-			peos = r.exec(test);
-			try{
-                                peos.waitFor();
-                        }
-                        catch(Exception e2)
-                        {       System.err.println(e2); }
 
-			reparse(pid);
-			
-		}
-		catch(Exception e)
-		{
-			System.err.println(e);
-		}
-	}
-	public boolean changeClickable(Element root)
-	{
+        /**
+         * This method returns a boolean value, whether or not rebinding is 
+         * possible right now.
+         * @param root An action within a process.
+         * @return True if rebinding is possible on the current action.
+         **/
+	public boolean changeClickable(Element root)        
+	{                        
 		NodeList nl=root.getChildNodes();
 		Node rr;
 		if (getRR(root).equals("No required resources.<br>"))
@@ -365,20 +408,25 @@ public class displayPO{
 		for (int i = 0; i<nl.getLength(); i++)
 		{
 			rr=nl.item(i);
-			if (rr.getLocalName() != null && rr.getLocalName().equals("req_resource"))
-			{
-				if (((Element)rr).getAttribute("qualifier").equals("abstract"))
-					return false;
-				if (((Element)rr).getAttribute("qualifier").equals("new"))
-					return false;
-				if (((Element)rr).getAttribute("value").equals("$$"))
-					return false;
+			if (rr.getLocalName() != null && 
+                            (rr.getLocalName().equals("req_resource") 
+                            || rr.getLocalName().equals("prov_resource")) )
+			{				
+                                if ((((Element)rr).getAttribute("value").length()>0) 
+                                    && (((Element)rr).getAttribute("value").equals("$$") == false))                                    
+                                    return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 
+        /**
+         *  Creates and returns a list of all resources required by an action.
+         *  @param root An XML element that contains a PEOS action.
+         *  @return An array of Strings that correspond to resources required
+         *          by an action. 
+         **/
         public String[] getRRName(Element root)
 	{
 		NodeList nl=root.getChildNodes();
@@ -416,6 +464,13 @@ public class displayPO{
                 
                 return rrList;
 	}
+        
+        /**
+         *  Creates and returns a list of all resources provided by an action.
+         *  @param root An XML element containing an action.
+         *  @return An array of strings containing all the provided resource for 
+         *          an action. null if none.
+         */
 	public String[] getPRName(Element root)
 	{
 		NodeList nl=root.getChildNodes();
@@ -451,6 +506,14 @@ public class displayPO{
 		
                 return prList;
 	}
+        
+        /**
+         *  Scans provided resources attached to a certain action to see if any 
+         *  are unset.
+         *  @param root An XML element that contains an action.
+         *  @return 1- If Finish needs one of its values bound.
+         *          0 - If Finish does not need values bound.
+         */
 	public int doesFinishNeedValue(Element root)
 	{
 		NodeList nl=root.getChildNodes();
@@ -473,6 +536,12 @@ public class displayPO{
 		return 0;
 
 	}
+        
+        /**
+         *  Sends the finish command to the PEOS console application.
+         *  @param root The XML element containing the action to be finished.
+         *  @param pid The pid number of the action being finished.        
+         */
 	public void finish(Element root, int pid)
 	{
 		Process peos;
@@ -501,6 +570,11 @@ public class displayPO{
 		}
 	}
 
+        /**
+         *  Sends the abort command to the PEOS console application.
+         *  @param root The XML element containing the action to be aborted.
+         *  @param pid The pid number of the action being aborted.        
+         */
 	public void abort(Element root, int pid)
 	{
 		Process peos;
@@ -529,6 +603,12 @@ public class displayPO{
 			System.err.println(e);
 		}
 	}
+
+        /**
+         *  Sends the suspend command to the PEOS console application.
+         *  @param root The XML element containing the action to be suspended.
+         *  @param pid The pid number of the action being suspended.        
+         */
 	public void suspend(Element root, int pid)
 	{
 		Process peos;
@@ -556,6 +636,14 @@ public class displayPO{
 			System.err.println(e);
 		}
 	}
+        
+        /**
+         *  Scans required resources attached to a certain action to see if any 
+         *  are unset.
+         *  @param root An XML element that contains an action.
+         *  @return 1- If start needs one of its values bound.
+         *          0 - If start does not need values bound.
+         */        
 	public int doesStartNeedValue(Element root)
 	{
 		NodeList nl=root.getChildNodes();
@@ -576,6 +664,13 @@ public class displayPO{
 		return 0;
 
 	}
+        
+        /**
+         *  Sends a command to the PEOS console to bind a value to a given resource.
+         *  @param resourceName the name of the resource to have a value bound.
+         *  @param value The value to be bound to the resource.
+         *  @param pid The pid number of the process containing the resource.
+         */
         public void bindResource(String resourceName, String value, int pid)
         {
             Process peos;
@@ -594,6 +689,11 @@ public class displayPO{
         }
         
 
+        /**
+         *  Sends the start command to the PEOS console application.
+         *  @param root The XML element containing the action to be started.
+         *  @param pid The pid number of the action being started.        
+         */
 	public void start(Element root, int pid)
 	{
 		Process peos;
@@ -620,6 +720,12 @@ public class displayPO{
 			System.err.println(e);
 		}
 	}
+        
+        /**
+         *  Checks to see if start should be clickable.
+         *  @param root The XML element containing an action.
+         *  @return true if start should be clickable, false otherwise.
+         */       
 	public boolean startClickable(Element root)
 	{
 		String cmp=root.getAttribute("state");
@@ -627,6 +733,12 @@ public class displayPO{
 			return false;
 		return true;
 	}
+        
+        /**
+         *  Checks to see if the resume label should be active..
+         *  @param root The XML element containing an action.
+         *  @return true if it should display resume, false otherwise.
+         */       
 	public boolean resumeLabelOk(Element root)
 	{
 		String cmp = root.getAttribute("state");
@@ -634,6 +746,12 @@ public class displayPO{
 			return true;
 		return false;
 	}
+        
+        /**
+         *  Checks to see if finish should be clickable.
+         *  @param root The XML element containing an action.
+         *  @return true if finish should be clickable, false otherwise.
+         */       
 	public boolean finishClickable(Element root)
 	{
 		String cmp=root.getAttribute("state");
@@ -641,6 +759,12 @@ public class displayPO{
 			return false;
 		return true;
 	}
+        
+        /**
+         *  Checks to see if abort should be clickable.
+         *  @param root The XML element containing an action.
+         *  @return true if abort should be clickable, false otherwise.
+         */       
 	public boolean abortClickable(Element root)
 	{
 		String cmp=root.getAttribute("state");
@@ -650,6 +774,12 @@ public class displayPO{
 			return true;
 		return false; 
 	}
+        
+        /**
+         *  Checks to see if suspend should be clickable.
+         *  @param root The XML element containing an action.
+         *  @return true if suspend should be clickable, false otherwise.
+         */       
 	public boolean suspendClickable(Element root)
 	{
 		String cmp=root.getAttribute("state");
@@ -657,7 +787,16 @@ public class displayPO{
 			return true;
 		return false;
 	}
-	public String getPR(Element root)
+        
+        
+         /**
+        * Returns a string to be added above the state script for all provided
+        * resources for an action.
+        * @param root The action resources are being looked up for.
+        * @return An html-string with a list of provided resources if they exist
+        *         or "No provided resources.<br>" otherwise.
+        **/
+        public String getPR(Element root)
 	{
             NodeList nl = root.getChildNodes();
 		Node rr;
@@ -693,10 +832,12 @@ public class displayPO{
 	{
 		return this.resources;
 	}
+        
 	public ActionMap getActions()
 	{
 		return this.actions;
 	}
+        
 	private static int stringToInt(String s1)
 	{
 		if (s1.length()==1)

@@ -1,4 +1,4 @@
-Java GUI For PEOS README.txt
+<<Java GUI For PEOS>> README.txt
 
 This file is intended to help a new user through the setup of the Java-GUI
 Peos application. All intended requirements for the program are listed below,
@@ -40,8 +40,8 @@ JAVAGUI_JAR
 
 The defaults assume you are going to load, compile, and run the program from
 the CVS module directory. If this is the case, the lines do not need to be
-modified. For a server-wide install though, these paths will need to be set
-and the following line will need to be run:
+modified. For a machiner-wide install though, these paths will need to be set.
+The following line will need to be run to create a run-script:
 
 % make script
 
@@ -92,20 +92,22 @@ and all you have to do is type:
 
    FINISH:   As long as the process is not already DONE, you can 
 	     finish the process. Like start, this will move the 
-	     file to the DONE state. If required resources are
-	     not inputted, a submit window will pop up.
+	     file to the DONE state. If provided resources are
+	     not already entered, a submit window will pop up.
 
-   ABORT:    This button will change a process in the RUN state to 
-	     the NONE state. 
+   ABORT:    This button will abort the current action. 
 
-   SUSPEND:  This button will change a process in the RUN state to
-	     the SUSPEND state.
+   REBIND:   This button allows you to change any resource currently bound
+	     in the program. Note that you can not use the main menu
+	     while the rebind window is open. 
+
+   SUSPEND:  This button will suspend the current action.
 
    PREVIOUS: As long as there is an action previous to this action
-	     in the list, you can cycle to the previous action by 
+	     in the process, you can cycle to the previous action by 
 	     clicking this button.
 
-   NEXT:     As long as there is an action after this action in the list,
+   NEXT:     As long as there is an action after this action in the process,
 	     you can cycle to the next action by clicking this button.
 
 4) How do I delete a process?
@@ -116,7 +118,7 @@ and all you have to do is type:
 
 5) How do I quit PEOS?
    A: Quitting PEOS is simple. Either click the X in the upper right 
-   corner of the PEOS window, or select File->Quit. 
+   corner of the PEOS window, press Alt-Q or select File->Quit. 
 
 6) What happens to my files when I quit PEOS?
    A: Your files are saved in the local directory of the PEOS application.
@@ -124,6 +126,9 @@ and all you have to do is type:
    somehow becomes corrupted, you must remove these files:
 	% rm proc_table.*
         % rm event.log
+   Also, if you load an invalid PML file or have trouble with the PEOS
+   application loading, it could be due to the proc table files. The above
+   solution is the first step in troubleshooting PEOS.
 
 7) Check the online help for more information! It's really good!
 
@@ -133,8 +138,16 @@ and all you have to do is type:
   Q: When I try to load an application, nothing happens!
   A: Make sure all paths are set appropriately and re-run make script. 
 
-  
- 
+2)
+  Q: PEOS throws an exception on load.
+  A: PEOS will throw an exception on load for a few reasons. If the path for
+  the console application is not properly loaded, the application will be
+  unable to build an active process list. Check this first.
+
+  If the application still does not load, odds are an invalid PML file was
+  entered. proc_table.dat.xml and proc_table.dat must be removed from the
+  current working directory.
+
 
 -[ Contacting Us ] ---------------------------------------------------
 

@@ -268,7 +268,8 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                         resFrame.setVisible(false);
                         String selection=resources.getSelectedItem().toString();
                         System.out.println(selection);
-                        outline.changeSetValue(selection, value, pidNum);
+                        if (selection.length() > 0) // only change if entry is not blank                                                    
+                            outline.bindResource(selection, value, pidNum);
 
                         //clearing fields from memory
                         resFrame=null;                       

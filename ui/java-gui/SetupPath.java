@@ -3,12 +3,14 @@ import java.util.Properties;
 
 
 public class SetupPath{
-//	private static FileWriter output;
+
+        /**
+         *  Returns the path to the PEOS console application.
+         *  @return A string containing the path to the PEOS executable.
+         */
 	public static String getPeos()
 	{
 		try {
-//			Properties peosSrc = new Properties();
-//			peosSrc.load(new FileInputStream("peos.properties"));
 			return System.getProperty("peos.path");
 		}
 		catch(Exception e)
@@ -18,33 +20,27 @@ public class SetupPath{
 		return "Error";
 	}
 
+        /**
+         *  A simple function that returns the current directory.
+         *  @return The current directory in a String.
+         */
 	public static String getCurrDir() throws IOException
 	{
-		Process pwd;
-		Runtime r = Runtime.getRuntime();
-			
-		pwd = r.exec("pwd");
-
-                try{
-                        pwd.waitFor();
-                }
-                catch(Exception e)
-                {
-                        System.out.println("PWD EXCEPTION");
-                        System.err.println(e);
-                }
-
-		DataInputStream pwd_in = new DataInputStream(pwd.getInputStream());
-
-		return pwd_in.readLine();	
+            return System.getProperty("user.dir");        
 	}
 
+        /**
+         *  Runs the href received from clicking on a resource name within
+         *  the HTML script. Basically, however, this function can be used to 
+         *  execute any commandline code.
+         *  @param path The string that will be sent to the command line
+         *              to be executed.
+         */
 	public static void displayLink(String path) throws IOException
 	{
 		Process pwd;
 		Runtime r = Runtime.getRuntime();
 			
-//		pwd = r.exec("kfmclient exec README.txt");
 		pwd = r.exec(path);
 
                 try{

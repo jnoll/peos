@@ -47,6 +47,10 @@ public class SpecLoader {
         
         try{
             BufferedReader reader = new BufferedReader(new FileReader(path));
+      //      int lineCount;
+        //    while (reader.readLine() != null)
+          //      lineCount++;
+                
             while ((line = reader.readLine()) != null)
             {            
                 String[] pair=line.split(":");                
