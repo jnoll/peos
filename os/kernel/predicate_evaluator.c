@@ -30,6 +30,84 @@
 
 extern char *act_state_name(vm_act_state state);
 
+int pe_file_exists(char* filename)
+{
+	peos_tcl* interpreter;
+	char* result_str=NULL;
+	char* args=NULL;
+	int return_val=0;
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"pe_file_exists called!\n");
+#endif
+	if(!strcmp(filename,"$$")) return 0;
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return 0;
+	}
+	if(!result_str){
+		result_str = (char*)malloc(sizeof(char)*(255));
+	}
+	if(!args){
+		args = (char*)malloc(sizeof(char)*(255));
+	}
+	sprintf(args, "file_exists %s", filename);
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"Is this what i want? %s\n", args);
+#endif
+	peos_tcl_script(interpreter, "tclf_exists.tcl");
+	Tcl_Eval(interpreter->interp, args);
+	if(result_str) free (result_str);
+	if(args) free (args);
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"Result for pe_file_exists(%s): %s\n", filename, interpreter->interp->result);
+#endif
+	if(!strcmp ("1", interpreter->interp->result))
+		return_val = 1;
+	peos_tcl_delete(interpreter);
+	return return_val;
+}
+
+int pe_byname(char* func_name, char* argument)
+{
+	peos_tcl* interpreter;
+	char* result_str=NULL;
+	char* args=NULL;
+	int return_val=0;
+	char* file_name = (char*)malloc(sizeof(char)*255);
+	if(!file_name) return 0;
+	strcpy(file_name,"tclf_");
+	strcat(file_name,func_name);
+	strcat(file_name, ".tcl");
+	if (!pe_file_exists(file_name)) return 0;
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"pe_byname called(file_name:%s [func_name %s, argument %s])!\n", file_name, func_name, argument);
+#endif
+	if(!strcmp(func_name,"$$")) return 0;
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return 0;
+	}
+	if(!args){
+		args = (char*)malloc(sizeof(char)*(255));
+	}
+	sprintf(args, "%s %s", func_name, argument);
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"Is this what i want? %s\n", args);
+#endif
+	peos_tcl_script(interpreter, file_name);
+	Tcl_Eval(interpreter->interp, args);
+	if(args) free (args);
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"Result for pe_byname(file: %s args: %s result: %s)\n", file_name, args, interpreter->interp->result);
+#endif
+        if(args) free (args);
+	if(!strcmp ("1", interpreter->interp->result))
+		return_val = 1;
+	peos_tcl_delete(interpreter);
+	return return_val;
+	
+}
+
 int pe_isdirempty(char* path)
 {
 
@@ -188,43 +266,6 @@ int pe_file_size(char* filename)
 	
 }
 
-int pe_file_exists(char* filename)
-{
-	peos_tcl* interpreter;
-	char* result_str=NULL;
-	char* args=NULL;
-	int return_val=0;
-#ifdef PE_DEBUG_B
-	fprintf(stderr,"pe_file_exists called!\n");
-#endif
-	if(!strcmp(filename,"$$")) return 0;
-	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
-		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-		return 0;
-	}
-	if(!result_str){
-		result_str = (char*)malloc(sizeof(char)*(255));
-	}
-	if(!args){
-		args = (char*)malloc(sizeof(char)*(255));
-	}
-	sprintf(args, "file_exists %s", filename);
-#ifdef PE_DEBUG_B
-	fprintf(stderr,"Is this what i want? %s\n", args);
-#endif
-	peos_tcl_script(interpreter, "tclf_exists.tcl");
-	Tcl_Eval(interpreter->interp, args);
-	if(result_str) free (result_str);
-	if(args) free (args);
-#ifdef PE_DEBUG_B
-	fprintf(stderr,"Result for pe_file_exists(%s): %s\n", filename, interpreter->interp->result);
-#endif
-	if(!strcmp ("1", interpreter->interp->result))
-		return_val = 1;
-	peos_tcl_delete(interpreter);
-	return return_val;
-}
-
 
 char* pe_get_resval(int pid,char* resource_name)
 {
@@ -285,7 +326,6 @@ char* pe_get_resval(int pid,char* resource_name)
 ****************************************************************/
 int pe_perform_predicate_eval(int pid, Tree t)
 {
-	int res= 0;
 #ifdef PE_DEBUG
 	fprintf(stderr, "------------- pe_perform_predicate_eval \n");
 #endif
@@ -327,12 +367,21 @@ int pe_perform_predicate_eval(int pid, Tree t)
 				}
 			}
 			else if(TREE_OP(t->left) == DOT){
+				if(!strcmp("spellchecked", TREE_ID(t->left->right)))
+					return (pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left))) 
+					== pe_perform_predicate_eval(pid, t->right));
+				else if(!strcmp("clean", TREE_ID(t->left->right)))
+					return (pe_isdirempty(pe_get_resval(pid, TREE_ID(t->left->left))) 
+					       == pe_perform_predicate_eval(pid, t->right));
+				else return pe_byname(TREE_ID(t->left->right),pe_get_resval(pid, TREE_ID(t->left->left)));
+			/*
 				if(!strcmp("spellchecked", TREE_ID(t->left->right)) ==
 				pe_perform_predicate_eval(pid, t->right))
 					return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));
-				else if(!strcmp("clean", TREE_ID(t->left->right)) ==
-				pe_perform_predicate_eval(pid, t->right))
+				else if(!strcmp("clean", TREE_ID(t->left->right)) == pe_perform_predicate_eval(pid, t->right))
 					return pe_isdirempty(pe_get_resval(pid, TREE_ID(t->left->left)));
+				else return pe_byname(,pe_get_resval(pid, TREE_ID(t->left->left)));
+			*/
 			}
 
 
