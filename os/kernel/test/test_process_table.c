@@ -340,8 +340,10 @@ START_TEST(test_list_actions_0)
     fail_unless(actions != NULL,"actions null");
     fail_unless(num_actions == 2, "num_actions wrong");
     fail_unless(strcmp(actions[0].name,"act_0") == 0, "act_0 name wrong");
+    fail_unless(actions[0].pid == 0, "act_0 pid wrong");
     fail_unless(actions[0].state == ACT_NONE, "act_0 state wrong");
     fail_unless(strcmp(actions[1].name,"act_1") == 0, "act_1 name wrong"); 
+    fail_unless(actions[0].pid == 0, "act_1 pid wrong");
     fail_unless(actions[1].state == ACT_NONE, "act_1 state wrong");
    
     free(actions);

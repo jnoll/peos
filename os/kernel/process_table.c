@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.19 2003/11/14 03:44:07 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.20 2003/11/14 04:59:27 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -350,15 +350,18 @@ peos_context_t *find_free_entry()
 peos_action_t *peos_list_actions(int pid, int *num_actions)
 {
    
-    int num_act;
-    int num_other_nodes;
-
+    int num_act, num_other_nodes, i;
     peos_action_t *actions;
-    
     peos_other_node_t *other_nodes;
 
     if(make_node_lists(process_table[pid].process_graph,&actions,&num_act,&other_nodes,&num_other_nodes) == -1) return NULL;
     
+    for (i = 0; i < num_act; i++) {
+	actions[i].pid = pid;
+    }
+    for (i = 0; i < num_other_nodes; i++) {
+	other_nodes[i].pid = pid;
+    }
     *num_actions = num_act;  
     return actions;
 }
