@@ -2,6 +2,7 @@
 
 
 export QUERY_STRING="process_filename=test.dat&actions=0\$test1&actions=0\$test2"
+export REQUEST_METHOD=GET
 
 create_testtable
 multiple_dones.cgi > output

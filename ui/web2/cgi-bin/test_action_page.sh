@@ -2,6 +2,7 @@
 
 
 export QUERY_STRING="pid=0&process_filename=test.dat&act_name=test1"
+export REQUEST_METHOD=GET
 
 create_testtable
 action_page.cgi > output

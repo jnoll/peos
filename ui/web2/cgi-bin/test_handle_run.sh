@@ -3,6 +3,8 @@
 
 export QUERY_STRING="process_filename=test.dat&act_name=test2&resource_type=requires&pid=0"
 
+export REQUEST_METHOD=GET
+
 create_testtable
 handle_run.cgi > output
 
