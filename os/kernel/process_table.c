@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.6 2003/08/23 01:39:53 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.7 2003/08/29 22:46:30 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -51,15 +51,19 @@ peos_context_t *peos_get_context(int pid)
 
 
 
-int load_actions(char *file, peos_action_t **actions, int *num_actions)
+int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes,int *num_other_nodes)
 {
     Graph g;
     Node n;
     int i = 0;
     int num_act = 0;
+    int num_nodes = 0;
+    int j = 0;
     int asize = INST_ARRAY_INCR;
     peos_action_t *act_array = (peos_action_t *) calloc(asize, sizeof(peos_action_t));
 
+    peos_other_node_t *node_array = (peos_other_node_t *) calloc(asize, sizeof(peos_other_node_t));
+    
        if (file [0]!= '\0')
        {
            g = makegraph(file);
@@ -70,18 +74,32 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions)
 	  	    if (n -> type == ACTION)
 		    {
 			strcpy(act_array[i].name, n -> name);
-			act_array[i]. state = STATE(n);
+			act_array[i].state = STATE(n);
 			act_array[i].script = n -> script;
 			num_act ++;
 			i++;
 		    }
+		    else
+		    {
+		       if((n->type == SELECTION) || (n->type == BRANCH))
+		       {
+                          strcpy(node_array[j].name, n -> name);
+		          node_array[j].state = STATE(n);
+			  num_nodes ++;
+			  j++;
+		       }
 		
+		    }
 		}
 
-	       
+	    
+	    
+		   
 	    *actions = act_array;
 	    *num_actions = num_act;
-	    return 1;
+	    *other_nodes = node_array;
+	    *num_other_nodes = num_nodes;
+	     return 1;
 	   }
 	   else
 		return -1;
@@ -110,7 +128,7 @@ load_context(FILE *in, peos_context_t *context)
 
     
     /* Load  actions first, to initialize context. */
-   if ((start = load_actions(context->model,&(context->actions),&(context->num_actions))) >= 0) 
+   if ((start = load_actions(context->model,&(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes))) >= 0) 
          {
 	} else {
 	    /* XXX Error - should mark entry somehow? */
@@ -129,6 +147,23 @@ load_context(FILE *in, peos_context_t *context)
 	}
 	context->actions[i].pid = context->pid;
     }
+
+    fscanf(in, "\n");
+
+    if (fscanf(in, "other_nodes: ") < 0) return 0;
+                                                                        
+    if (fscanf(in, "%d ", &context->num_other_nodes) != 1) return 0;
+                                                                         
+    for (i = 0; i < context->num_other_nodes; i++) {
+       if (fscanf(in, "%s %d", context->other_nodes[i].name,
+                (int *)&context->other_nodes[i].state) != 2) {
+	             free(context->other_nodes);
+                     return 0;
+		         }
+       context->other_nodes[i].pid = context->pid;
+     }
+ 
+
     if (fscanf(in, "\n\n") < 0) return 0; 
 
 return 1;
@@ -163,6 +198,14 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     for (i = 0; i < context->num_actions; i++) {
        fprintf(out, " %s %d", context->actions[i].name, context->actions[i].state); 
             }
+
+    fprintf(out, "\nother_nodes: ");
+    fprintf(out, "%d ", context->num_other_nodes);
+    for (i = 0; i < context->num_other_nodes; i++) {
+        fprintf(out, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
+       }
+	    
+    
     fprintf(out, "\n\n"); 
     return 1;
 }

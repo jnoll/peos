@@ -453,7 +453,7 @@ START_TEST(test_annotate_graph)
 {
 	int i;
 	Graph g = (Graph) malloc (sizeof (struct graph));
-	Node source,sink,act_0,act_1;
+	Node source,sink,act_0,act_1,sel,branch,join,rendezvous;
 	peos_context_t *context = &(process_table[0]);
 	context->num_actions = 2;
 	context->actions = (peos_action_t *) calloc(context->num_actions, sizeof(peos_action_t));
@@ -463,21 +463,52 @@ START_TEST(test_annotate_graph)
 		sprintf(context->actions[i].name,"act_%d",i);
 		context->actions[i].state = ACT_RUN;
 	}
+
+        context->num_other_nodes = 2;
+        context->other_nodes = (peos_other_node_t *) calloc(context->num_other_nodes, sizeof(peos_other_node_t));
+                                                                       
+          sprintf(context->other_nodes[0].name,"sel");
+	  sprintf(context->other_nodes[1].name,"br");
+          context->other_nodes[0].state = ACT_RUN;
+	  context->other_nodes[1].state = ACT_READY;
+     
+			
+	
 	source = make_node("p",ACT_NONE,PROCESS);
 	sink = make_node("p",ACT_NONE,PROCESS);
 	act_0 = make_node("act_0",ACT_NONE,ACTION);
 	act_1 = make_node("act_1",ACT_NONE,ACTION);
+	sel = make_node("sel",ACT_NONE,SELECTION);
+	join = make_node("sel",ACT_NONE,JOIN);
+	branch = make_node("br",ACT_NONE,BRANCH);
+	rendezvous = make_node("br",ACT_NONE,RENDEZVOUS);
 
 	g -> source = source;
 	g -> sink = sink;
 	source -> next = act_0;
 	act_0 -> next = act_1;
-	act_1 -> next = sink;
+	act_1 -> next = branch;
+	branch -> next = sel;
+	sel -> next = rendezvous;
+	rendezvous -> next = join;
+	join -> next = sink;
 	sink -> next = NULL;
+
+	sel -> matching = join;
+	branch -> matching = rendezvous;
 
 	fail_unless(annotate_graph(g,context) == 1, "return value");
 	fail_unless(STATE(act_0) == ACT_RUN, "act 0 state not run");
 	fail_unless(STATE(act_1) == ACT_RUN, "act 1 state not run");
+	fail_unless(STATE(sel) == ACT_RUN, "sel not run");
+	fail_unless(STATE(join) == ACT_RUN, "join not run");
+	fail_unless(STATE(branch) == ACT_READY, "branch not ready");
+	fail_unless(STATE(rendezvous) == ACT_READY, "rendezvous not run");
+
+
+
+
+	
 
 }
 END_TEST
@@ -486,7 +517,7 @@ START_TEST(test_update_context)
 {
 	int i;
 	Graph g = (Graph) malloc (sizeof (struct graph));
-	Node source,sink,act_0,act_1;
+	Node source,sink,act_0,act_1,sel,branch,join,rendezvous;
 	peos_context_t *context = &(process_table[0]);
 
 	context -> num_actions = 2;
@@ -498,22 +529,42 @@ START_TEST(test_update_context)
 		context->actions[i].state = ACT_NONE;
 	}
 
-
+	context->num_other_nodes = 2;
+        context->other_nodes = (peos_other_node_t *) calloc(context->num_other_nodes, sizeof(peos_other_node_t));
+                                                                    
+        sprintf(context->other_nodes[0].name,"sel");
+        sprintf(context->other_nodes[1].name,"br");
+        context->other_nodes[0].state = ACT_NONE;
+        context->other_nodes[1].state = ACT_NONE;
+                                                          
 	source = make_node("p",ACT_NONE,PROCESS);
-	sink = make_node("p1",ACT_NONE,PROCESS);
-	act_0 = make_node("act_0",ACT_RUN,ACTION);
-	act_1 = make_node("act_1",ACT_RUN,ACTION);
+        sink = make_node("p",ACT_NONE,PROCESS);
+        act_0 = make_node("act_0",ACT_RUN,ACTION);
+        act_1 = make_node("act_1",ACT_RUN,ACTION);
+        sel = make_node("sel",ACT_RUN,SELECTION);
+        join = make_node("sel",ACT_RUN,JOIN);
+        branch = make_node("br",ACT_READY,BRANCH);
+        rendezvous = make_node("br",ACT_READY,RENDEZVOUS);
 
-	g -> source = source;
-	g -> sink = sink;
-	source -> next = act_0;
-	act_0 -> next = act_1;
-	act_1 -> next = sink;
-	sink -> next = NULL;
+        g -> source = source;
+        g -> sink = sink;
+        source -> next = act_0;
+        act_0 -> next = act_1;
+        act_1 -> next = branch;
+        branch -> next = sel;
+        sel -> next = rendezvous;
+        rendezvous -> next = join;
+        join -> next = sink;
+        sink -> next = NULL;
+									         sel -> matching = join;
+        branch -> matching = rendezvous;
 
+	
         fail_unless(update_context(g,context) == 1, "return value");
 	fail_unless(context->actions[0].state == ACT_RUN, "act 0 state not run");
 	fail_unless(context->actions[1].state == ACT_RUN, "act 1 state not run");
+	fail_unless(context->other_nodes[0].state == ACT_RUN, "sel state not run");
+	fail_unless(context->other_nodes[1].state == ACT_READY, "br state not ready");
 
 
 }

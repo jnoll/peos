@@ -44,16 +44,22 @@ void free_actions(peos_action_t *actions, int size)
 }
 
 
-int stub_load_actions(char *file, peos_action_t **actions, int *num_actions)
+int stub_load_actions(char *file, peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes, int *num_other_nodes)
 {
 	peos_action_t *act_array = (peos_action_t *) calloc(2,sizeof(peos_action_t));
+	peos_other_node_t *nodes_array = (peos_other_node_t *) calloc(1,sizeof(peos_other_node_t));
 	
         if(strcmp(file,"no") == 0) return -1; 
 	strcpy(act_array[0].name,"act_0");
 	strcpy(act_array[1].name,"act_1");
         act_array[0].state = ACT_NONE;
         act_array[1].state = ACT_NONE;	
+	strcpy(nodes_array[0].name,"sel");
+	nodes_array[0].state = ACT_NONE;
 	*actions = act_array;
+	*other_nodes = nodes_array; 
+	
+        *num_other_nodes = 1;	
 
         *num_actions = 2;	
 	return 1;
@@ -68,6 +74,17 @@ Graph stub_makegraph(char *file)
    Node sink = (Node) malloc (sizeof(struct node));
    Node act_0 = (Node) malloc (sizeof(struct node));
    Node act_1 = (Node) malloc (sizeof(struct node));
+   Node sel = (Node) malloc (sizeof(struct node));
+   Node join = (Node) malloc (sizeof(struct node));
+
+   sel->name = "sel";
+   join->name = "sel";
+   sel->type = SELECTION;
+   sel -> data = (void *) malloc (sizeof (struct data));
+   STATE(sel) = ACT_NONE;
+   join->type = JOIN;
+   join -> data = (void *) malloc (sizeof (struct data));
+   STATE(join) = ACT_NONE;
    
    g -> source = source;
    g -> sink = sink;
@@ -76,19 +93,20 @@ Graph stub_makegraph(char *file)
    source->name = "p";  
    sink -> name = "p";
    
+   source->next = sel;
+   sel->next = act_0;
+   act_0->next = act_1;
+   act_1->next = join;
+   join->next=sink;
+   sink->next=NULL;
    
    act_0 -> type = ACTION;
-
    act_0 -> name = "act_0";
-   act_0 -> next = act_1;
    act_0 -> data = (void *) malloc (sizeof (struct data));
    act_0 -> script = "test script";
-   
    MARKED(act_0) = 0;
    STATE(act_0) = ACT_NONE;
 			  
-   source->next = act_0;
- 
    
    act_1->type = ACTION;
    act_1 -> name = "act_1";
@@ -97,9 +115,6 @@ Graph stub_makegraph(char *file)
    MARKED(act_1) = 0;
    STATE(act_1) = ACT_NONE;
 			   
-   act_1->next = sink;
-   sink -> next = NULL;
-   
    
    return g;
    

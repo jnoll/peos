@@ -8,6 +8,13 @@ typedef struct {
     vm_act_state state;
 } peos_action_t;
 
+
+typedef struct {
+	int pid;
+	char name[256];
+	vm_act_state state;
+} peos_other_node_t;
+
 typedef enum { 
     ACT_SCRIPT, ACT_AGENT, ACT_REQUIRES, ACT_PROVIDES, ACT_TOOL 
 } peos_field_t;

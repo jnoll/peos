@@ -50,12 +50,14 @@ START_TEST(test_load_actions)
     /* Action. */
     
   
-	  s = load_actions("test_sample_1.pml", &(context->actions),&(context->num_actions));
+	  s = load_actions("test_sample_1.pml", &(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes));
    
 	  /* Post: model loaded - each entry matches a line in the file. */
    fail_unless(context->num_actions == 2, "num_actions wrong");
     fail_unless(strcmp(context->actions[0].name,"act_0") == 0, "action name wrong");
     fail_unless(strcmp(context->actions[1].name,"act_1") == 0, "action name wrong");
+    fail_unless(context->num_other_nodes == 1, "num_other_nodes wrong");
+    fail_unless(strcmp(context->other_nodes[0].name,"sel") == 0, "sel name wrong");
 
 }
 END_TEST
@@ -87,6 +89,18 @@ START_TEST(test_save_proc_table)
 	    context->actions[i].state = ACT_NONE;
 	    fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
 	}
+        fprintf(f, "\n");
+        context->num_other_nodes = 3;
+        fprintf(f, "other_nodes: ");
+	fprintf(f, "%d ", context->num_other_nodes);
+	context->other_nodes = (peos_other_node_t *)calloc(context->num_other_nodes, sizeof(peos_other_node_t));
+	for (i = 0; i < context->num_other_nodes; i++) {
+	    strcpy(context->other_nodes[i].name, "some_other_node");
+	    context->other_nodes[i].state = ACT_NONE;
+	   fprintf(f, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
+	}
+	
+	
 	fprintf(f, "\n\n"); 
     }
     fclose(f);
@@ -144,6 +158,20 @@ START_TEST(test_load_proc_table)
 	    context->actions[i].script = "test script";
 	    fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
 	}
+
+
+
+	context->num_other_nodes = 1;
+        fprintf(f, "other_nodes: ");
+        fprintf(f, "%d ", context->num_other_nodes);
+        context->other_nodes = (peos_other_node_t *)calloc(context->num_other_nodes, sizeof(peos_other_node_t));
+        for (i = 0; i < context->num_other_nodes; i++) {
+            sprintf(context->other_nodes[i].name, "sel");
+            context->other_nodes[i].state = ACT_NONE;
+            fprintf(f, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
+        }
+	
+	
 	fprintf(f, "\n\n"); 
     }
     fclose(f);
@@ -171,11 +199,18 @@ START_TEST(test_load_proc_table)
 	fail_unless(strcmp(context->actions[0].name,"act_0") == 0, "action name wrong");
 	fail_unless(strcmp(context->actions[1].name,"act_1") == 0, "action name wrong");
 	
+	fail_unless(context->num_other_nodes == 1,"num_other_nodes_wrong");
+	fail_unless(strcmp(context->other_nodes[0].name,"sel") == 0, "sel name wrong");
 	
 	for (i = 0; i < context->num_actions; i++) {
 	    fail_unless(context->actions[i].pid == j, "action pid");
 	    fail_unless(context->actions[i].state == ACT_NONE, "act state");
 	    fail_unless(strcmp(context->actions[i].script, "test script") == 0, "act script");
+	}
+
+	for (i=0; i < context->num_other_nodes;i++) {
+		fail_unless(context->other_nodes[i].pid == j, "other_nodes pid");
+		fail_unless(context->other_nodes[i].state == ACT_NONE, "other node state");
 	}
     }
 

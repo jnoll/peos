@@ -15,7 +15,7 @@
 # define BRANCH 259
 # define RENDEZVOUS 286
 # define SELECTION 270
-# define JOIN 285
+# define JOIN 287
 # define PROCESS 266
 
 void handle_selection(Node n);
@@ -24,17 +24,33 @@ void mark_successors(Node n, vm_act_state state);
 int  annotate_graph(Graph g, peos_context_t *context)
 {
 	
+  int i;
   Node node;
-
+                                                                        
   for(node = g -> source; node != NULL; node = node -> next)
-   {
-    if (node -> type == ACTION)
      {
-        MARKED(node) = FALSE;
-	STATE(node) = get_act_state(node -> name,context -> actions, context -> num_actions); 
+       MARKED(node) = FALSE;
+       if (node -> type == ACTION)
+        {
+           STATE(node) = get_act_state(node -> name,context -> actions, context->num_actions);
+	}
+	else
+	{
+	 if((node->type == SELECTION) || (node->type == BRANCH))
+	  {
+	   for(i=0;i < context->num_other_nodes; i++)
+	    {
+	       if (strcmp(node->name,context->other_nodes[i].name)==0)
+	       {
+	         STATE(node) = context->other_nodes[i].state;
+	         STATE(node->matching) = context->other_nodes[i].state;
+	       }
+	     }
+	  }
+	}
      }
-   }
 
+	
 return 1;   
 }
 
@@ -146,21 +162,13 @@ void handle_selection(Node n)
 											    child = (Node) ListIndex(parent -> successors,j);
 											    if(strcmp((child->name),n->name) != 0)
 											     {
-											      mark_successors(child,ACT_NONE);
-											     }
-											 }
-										     }
+             mark_successors(child,ACT_NONE);
+            }
+	 }
+     }
 										     handle_selection(parent);
 										   }
 }
-
-
-
-
-
-
-
-
 					
 int action_done(Graph g, char *act_name)
 {
@@ -186,16 +194,13 @@ int action_done(Graph g, char *act_name)
 	return 1;
 }
 
-
-
 void initialize_graph(Graph g)
 {
 	Node n;
         
         for(n = g -> source; n != NULL; n = n -> next)
 	{
-	 
-	  
+ 
 	    n -> data = (void *) malloc (sizeof (struct data));
             MARKED(n) = FALSE;
             STATE(n) = ACT_NONE;
@@ -324,18 +329,33 @@ int set_act_state_graph(Graph g, char *action, vm_act_state state)
 
 int update_context(Graph g, peos_context_t *context)
 {
-	Node n;
+	int i;
+        Node n;
+                                                                   
+        for(n = g -> source; n!= NULL; n = n -> next)
+        {
+         if(n -> type == ACTION)
+          {
+           if (set_act_state(n -> name, STATE(n), context -> actions, context -> num_actions) < 0)
+              {
+                return -1;
+              }
+           }
+          else
+           {
+            if((n->type == SELECTION) || (n->type == BRANCH))
+             {
+               for(i=0;i < context->num_other_nodes; i++)
+                 {
+                  if (strcmp(n->name,context->other_nodes[i].name)==0)
+                   {
+                    context->other_nodes[i].state = STATE(n);
+                   }
+                 }
+            }
+          }
+       }
 
-	for(n = g -> source; n!= NULL; n = n -> next)
-	{
-		if(n -> type == ACTION)
-		{
-			if (set_act_state(n -> name, STATE(n), context -> actions, context -> num_actions) < 0)
-			{
-				return -1;
-			}
-		}
-	}
 	return 1;
 }
 			

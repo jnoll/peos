@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.6 2003/08/23 01:39:53 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.7 2003/08/29 22:46:30 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -29,7 +29,7 @@
 
 /* Forward declarations. */
 extern peos_context_t *find_free_entry();
-extern int load_actions(char *file,peos_action_t **actions, int *num_actions);
+extern int load_actions(char *file,peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes, int *num_other_nodes);
 
 
 
@@ -130,7 +130,7 @@ int peos_create_instance(char *model_file)
     }
 
     if ((start = load_actions(model_file,&(context->actions), 
-				   &(context->num_actions))) >= 0) 
+				   &(context->num_actions),&(context->other_nodes),&(context->num_other_nodes))) >= 0) 
 	{
 	    int i, pid = peos_get_pid(context);
 	    strcpy(context->model, model_file);
@@ -138,6 +138,12 @@ int peos_create_instance(char *model_file)
 	    for (i = 0; i < context->num_actions; i++) {
 		context->actions[i].pid = pid;
 	    }
+
+	    for (i = 0; i < context->num_other_nodes; i++) {
+                  context->other_nodes[i].pid = pid;
+				                }
+	    
+	    
 	    return (pid); 
 	}
     return -1;

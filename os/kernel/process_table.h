@@ -17,8 +17,10 @@ typedef struct peos_context_tag {
     process_status_t status; 
     int pid;
     int num_actions;
+    int num_other_nodes;
     char model[PATH_MAX]; 
     peos_action_t *actions;
+    peos_other_node_t *other_nodes;
 } peos_context_t;
 
 /* This has to be here because load_proc_table needs to set it. */

@@ -37,9 +37,9 @@ peos_context_t *find_free_entry()
 }
 
 
-int load_actions(char *file, peos_action_t **actions, int *num_actions)
+int load_actions(char *file, peos_action_t **actions, int *num_actions, peos_other_node_t **other_nodes, int *num_other_nodes)
 {
-    return stub_load_actions(file, actions, num_actions);
+    return stub_load_actions(file, actions, num_actions,other_nodes,num_other_nodes);
 }
 
 
