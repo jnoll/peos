@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
 
 void selectLoop( ) 
 {
-	void callback( int size, resultList *listPointer , int *data ) ;
-	void ( *call )( int, resultList *, int * data ) ;
+	void callback( int size, resultList *listPointer , void *data ) ;
+	void ( *call )( int, resultList *, void * data ) ;
 	
 	struct timeval tv ;			// struct timeval with seconds and microseconds
 	fd_set readfds ;			// set of descriptor watched
@@ -100,7 +100,7 @@ void selectLoop( )
  * Description:	Prints result of the requested query.			*
  ************************************************************************/
 
-void callback( int size, resultList *listpointer, int *data )
+void callback( int size, resultList *listpointer, void *data )
 {	
 	_debug(__FILE__,__LINE__,5,"calling back..." ) ;
 	printf( "%d record(s) found!\n", size ) ;

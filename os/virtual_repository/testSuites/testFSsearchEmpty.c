@@ -22,8 +22,8 @@
 
 int main( void )
 {	
-	void callback( int size, resultList *listPointer , int *data ) ;
-	void ( *call )( int, resultList *, int * data ) ;
+	void callback( int size, resultList *listPointer , void *data ) ;
+	void ( *call )( int, resultList *, void* data ) ;
 	void setEmptyResult( int, FILE * ) ;
 	
 	char queryString[1000] ;
@@ -63,7 +63,7 @@ int main( void )
 	return 0 ;
 }
 
-void callback( int size, resultList *listpointer, int *data )
+void callback( int size, resultList *listpointer, void *data )
 {	
 	printResultList( listpointer ) ;	
 }

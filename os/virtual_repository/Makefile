@@ -13,17 +13,20 @@ FSseeker.o \
 EMAILseeker.o \
 setup_repositories.o \
 vrepo.o \
-debug.o \
-search.o
+debug.o 
+
+
+
+
 
 all: $(LIB) search
 
 $(LIB): $(OBJECTS)
 	ar -r $@ $^
 
-search: $(LIB)
-	$(CC) -o search $(LDFLAGS) $(LIBS) 
-
+search: $(LIB) 
+	$(CC) -o search search.c $(LDFLAGS) $(LIBS) 
+	
 install: 
 	cp $(LIB) ../../lib
 

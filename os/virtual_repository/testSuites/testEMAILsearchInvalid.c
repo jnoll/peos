@@ -24,8 +24,8 @@
 
 int main( void )
 {	
-	void callback( int size, resultList *listPointer , int *data ) ;
-	void ( *call )( int, resultList *, int * data ) ;
+	void callback( int size, resultList *listPointer , void *data ) ;
+	void ( *call )( int, resultList *, void * data ) ;
 	void setInvalidResult( int, FILE * ) ;
 	void setEmptyResult( int, FILE * ) ;
 	
@@ -67,7 +67,7 @@ int main( void )
 	return 0 ;
 }
 
-void callback( int size, resultList *listpointer, int *data )
+void callback( int size, resultList *listpointer, void *data )
 {	
 	printResultList( listpointer ) ;	
 }

@@ -27,10 +27,13 @@ void printResultList( resultList *listpointer )
 		printf ( "result list is empty!\n" ) ;
 	else
 	{
-    		while ( listpointer != NULL )
+		int i = 1;
+		resultList *temp = listpointer;
+    		while ( temp != NULL )
 		{
-			printf ( "%s\n", listpointer -> oneResult ) ;
-			listpointer = ( resultList* ) listpointer -> link ;
+			printf ( "%d. %s\n", i,temp -> oneResult ) ;
+			temp = ( resultList* ) temp -> link ;
+			i++;
 		}
 	}
 	printf( "\n" );
@@ -101,4 +104,18 @@ resultList* addResultItem( resultList *listpointer, const char *data )
 		strcpy( listpointer -> oneResult, data ) ;
 		return listpointer ;
     	}
+}
+
+resultList* copyResultList( resultList *copyFrom )
+{
+	resultList *tempCopyFrom,*copyTo;
+	tempCopyFrom = copyFrom;
+	copyTo = NULL;
+	while ( tempCopyFrom != NULL )
+	{
+		copyTo = addResultItem( copyTo, tempCopyFrom -> oneResult ) ;
+		tempCopyFrom = ( resultList* ) tempCopyFrom -> link ;
+	}
+	
+	return copyTo;
 }

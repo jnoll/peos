@@ -32,8 +32,8 @@ int main( void )
 	int *d, index,  numQueries;
 	queryList *tempQueries ;
 	FILE *expectedResultFile, *testInputInvalid, *testInputEmpty, *testInputValid ;
-	void callback( int size, resultList *listPointer , int *data ) ;
-	void ( *call )( int, resultList *, int * data ) ;
+	void callback( int size, resultList *listPointer , void *data ) ;
+	void ( *call )( int, resultList *, void * data ) ;
 	
 	//set expectedResultInvalidFile
 	
@@ -130,7 +130,7 @@ void setEmptyResult( int invalids, FILE *expectedResultInvalidFile )
 
 
 
-void callback( int size, resultList *listpointer, int *data )
+void callback( int size, resultList *listpointer, void *data )
 {	
 		
 }

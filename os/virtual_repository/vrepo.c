@@ -27,7 +27,7 @@
  * 		in the list "myQuery".					*
  ************************************************************************/
 
-void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ), int *d )
+void query_wait( char *queryString, void ( *cback )( int, resultList *, void * ), void *d )
 {
 	bool isValidAttribute( char * ) ; 
 	bool isValidOperator( char *, char * ) ; 
@@ -45,7 +45,9 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 	newQuery = ( query * ) malloc ( sizeof ( query ) ) ;
 	numParses = numClauses = numTokens = 0 ;
 	word = toParse = NULL ;
-	
+
+	_debug( __FILE__, __LINE__,5, "queryString is %s", queryString) ;
+		
 	toParse = strtok( queryString, "\n" ) ;	
 
 	if( toParse != NULL )
@@ -77,7 +79,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].operator = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 5, "Operator is %s", word ) ;
+						_debug( __FILE__, __LINE__,5, "Operator is %s", word ) ;
 					}						
 					break ;
 					
@@ -85,7 +87,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].value = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 5, "Value is %s", newQuery -> myClauses[numClauses].value ) ;
+						_debug( __FILE__, __LINE__,5, "Value is %s", newQuery -> myClauses[numClauses].value ) ;
 					}
 					break ;
 			
@@ -93,7 +95,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].conjecture = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 5, "Conjecture is %s", word ) ;
+						_debug( __FILE__, __LINE__,5, "Conjecture is %s", word ) ;
 					}
 
 					break ;
@@ -102,19 +104,19 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 		word = strtok( NULL, " " ) ;
 	}
 	
-	_debug( __FILE__, __LINE__, 5, "numClauses is %d, numParses is %d, numTokens is %d, calculated numTokens is %d", 
+	_debug( __FILE__, __LINE__,5, "numClauses is %d, numParses is %d, numTokens is %d, calculated numTokens is %d", 
 					numClauses, numParses, numTokens, ( numClauses * 4 + numParses ) ) ;	
 	
 	validated = 0 ;	
 	if( ( ( numClauses * 4 + numParses ) == numTokens ) && ( numParses == 3 ) )
 	{		
 		validated = isValidQuery( newQuery, numClauses ) ;	
-		_debug( __FILE__, __LINE__, 5, "validated is %d", validated ) ;
+		_debug( __FILE__, __LINE__,5, "validated is %d", validated ) ;
 	}
 	
 	if( validated )
 	{	
-		_debug( __FILE__, __LINE__, 5, "Storing Clause" ) ;
+		_debug( __FILE__, __LINE__,5, "Storing Clause" ) ;
 		newQuery -> callback = cback;
 		newQuery -> data = d ;
 		newQuery -> numFound = 0 ;

@@ -34,7 +34,7 @@ typedef struct
 	int numFound ;			// number of successful matches
 	struct clause myClauses[10] ;	// holder for clauses in the query
 	resultList *results ;		// pointer to the result list
-	void ( *callback )( int, resultList *, int *data ) ;	// function to callback to Engine with results of satisfied queries
+	void ( *callback )( int, resultList *, void *data ) ;	// function to callback to Engine with results of satisfied queries
 } 	query ;
 
 typedef struct
