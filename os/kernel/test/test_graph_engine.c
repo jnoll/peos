@@ -184,15 +184,19 @@ START_TEST(test_action_done)
 	cur_node = 0;
 
 	node_list[0] = act_1;
-	node_list[1] = source;
+	node_list[1] = act_1;
 	node_list[2] = NULL;
+	
 	
 
 	lengths[0] = 1;
 	lengths[1] = 1;
+	lengths[2] = 1;
 
 
 	fail_unless(action_done(g,act_name) == 1,"return value");
+	fail_unless(STATE(source) != ACT_DONE, "source done");
+	fail_unless(STATE(sink) != ACT_DONE, "sink done");
 	fail_unless(STATE(act_0) == ACT_DONE,"action not done");
 	fail_unless(STATE(act_1) == ACT_READY,"next action not ready");
 
@@ -269,20 +273,18 @@ START_TEST(test_action_done_iteration)
    cur_node = 0;
    node_list[0] = sink;
    node_list[1] = act_0;
-   node_list[2] = act_0;
-   node_list[3] = source;
-   node_list[4] = act_1;
-   node_list[5] = NULL;
+   node_list[2] = NULL;
+
    
 
    lengths[0] = 2;
    lengths[1] = 2;
    lengths[2] = 1;
-   lengths[3] = 2;
-   lengths[4] = 2;
-   lengths[5] = 1;
+
    
 fail_unless(action_done(g,act_1->name) == 1,"return value");
+fail_unless(STATE(sink) != ACT_DONE, "sink set to done");
+fail_unless(STATE(source) != ACT_DONE, "source set to done");
 fail_unless(STATE(act_0) == ACT_READY, "action 0  not ready");
 fail_unless(STATE(act_1) == ACT_DONE, "action 1 not done");
 
@@ -664,6 +666,7 @@ START_TEST(test_update_context)
 	Node source,sink,act_0,act_1,sel,branch,join,rendezvous;
 	peos_context_t *context = &(process_table[0]);
 
+	context -> status = PEOS_READY;
 	context -> num_actions = 2;
 	context -> actions = (peos_action_t *) calloc(context->num_actions, sizeof(peos_action_t));
 
@@ -681,8 +684,8 @@ START_TEST(test_update_context)
         context->other_nodes[0].state = ACT_NONE;
         context->other_nodes[1].state = ACT_NONE;
                                                           
-	source = make_node("p",ACT_NONE,PROCESS);
-        sink = make_node("p",ACT_NONE,PROCESS);
+	source = make_node("p",ACT_DONE,PROCESS);
+        sink = make_node("p",ACT_DONE,PROCESS);
         act_0 = make_node("act_0",ACT_RUN,ACTION);
         act_1 = make_node("act_1",ACT_RUN,ACTION);
         sel = make_node("sel",ACT_RUN,SELECTION);
@@ -705,6 +708,7 @@ START_TEST(test_update_context)
 
 	
         fail_unless(update_context(g,context) == 1, "return value");
+	fail_unless(context -> status == PEOS_DONE, "status not peos_done");
 	fail_unless(context->actions[0].state == ACT_RUN, "act 0 state not run");
 	fail_unless(context->actions[1].state == ACT_RUN, "act 1 state not run");
 	fail_unless(context->other_nodes[0].state == ACT_RUN, "sel state not run");

@@ -178,6 +178,26 @@ void set_rendezvous_state(Node n)
 		return;
 }
 	
+void set_process_state(Graph g)
+{
+	Node parent;
+	int i;
+	int status = 1;
+
+	for(i = 0; i < ListSize(g -> sink -> predecessors); i++)
+	{
+		parent = (Node) ListIndex(g -> sink -> predecessors,i);
+		if (STATE(parent) != ACT_DONE)
+			status = 0;
+	}
+
+	if (status == 1)
+	{
+		STATE(g -> source) = ACT_DONE;
+		STATE(g -> sink) = ACT_DONE;
+	}
+}
+
 
 int action_run(Graph g, char *act_name)
 {
@@ -238,16 +258,17 @@ int action_done(Graph g, char *act_name)
 {
 	Node n;
 	Node child;
-	int i;
+	int i,num_successors;
 
 	n = find_node(g,act_name);
 	if(n != NULL)
 	{
 		STATE(n) = ACT_DONE;
-		for(i = 0; i < ListSize(n -> successors); i++)
+		num_successors = ListSize(n -> successors);
+		for(i = 0; i < num_successors; i++)
 		{
 			child = (Node) ListIndex(n -> successors, i);
-			if(child -> type == JOIN)
+			if((child -> type == JOIN) && (num_successors == 1))
 			{
 			propogate_join_done(child);
 			}
@@ -257,9 +278,12 @@ int action_done(Graph g, char *act_name)
 			}
 			else
 			{
+			if(num_successors == 1)	
 			set_rendezvous_state(child);
 			}	
 		}
+		if (num_successors == 1)
+			set_process_state(g);
 	}
 	else
 	{
@@ -428,6 +452,14 @@ int update_context(Graph g, peos_context_t *context)
                    }
                  }
             }
+	    else
+	    {
+	      if(n->type == PROCESS)
+	      {
+		      if (STATE(n) == ACT_DONE)
+			      context -> status = PEOS_DONE;
+	      }
+	    }
           }
        }
 
