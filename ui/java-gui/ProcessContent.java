@@ -360,6 +360,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 			Object[] options = {"OK", "Cancel"};
                         String[] resourceToBind=outline.getRRName(map.getCurrentAction(pidNum));
                         String[] values=new String[resourceToBind.length];
+                        LinkNode currActionNode = map.getCurrentLink(pidNum);
                         for (int i=0; i<resourceToBind.length; i++)
                         {
                             String inputValue = (String)JOptionPane.showInputDialog(
@@ -392,14 +393,14 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                             outline.bindResource(resourceToBind[i],values[i],pidNum);
                         }
                         
-                        // if not all resources are set, action will not be started                        
-                        map.getActionByName(pidNum,currActionName);
-                        if ( outline.doesStartNeedValue(map.getCurrentAction(pidNum)) == 0 )                            
-                            outline.start(map.getCurrentAction(pidNum), pidNum);						
+                        // if not all resources are set, action will not be started                                         
+                        if ( outline.doesStartNeedValue(currActionNode.getElement()) == 0 )                            
+                            outline.start(currActionNode.getElement(), pidNum);						
 				
-			map.getActionByName(pidNum,currActionName);
-			LinkNode n = map.getCurrentLink(pidNum);
-			String currentPage = n.getElement().getAttribute("name");
+			
+			LinkNode n = currActionNode;
+                        map.getActionByName(pidNum,currActionName);
+			String currentPage = n.getElement().getAttribute("name");                        
                         createTextPane(n,currentPage);
 			return;
 		}		
@@ -423,6 +424,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 	                
                     String[] resourceToBind=outline.getPRName(map.getCurrentAction(pidNum));
                     String[] values=new String[resourceToBind.length];
+                    LinkNode currActionNode = map.getCurrentLink(pidNum);
                     for (int i=0; i<resourceToBind.length; i++)
                     {
                         String inputValue = (String)JOptionPane.showInputDialog(
@@ -455,13 +457,15 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                     }
                 
                  
-                    map.getActionByName(pidNum,currActionName);                 
-                    if ( outline.doesFinishNeedValue(map.getCurrentAction(pidNum)) == 0 )
-                        outline.finish(map.getCurrentAction(pidNum),pidNum);		                     
-                    map.getActionByName(pidNum,currActionName);
+                  
+                    if ( outline.doesFinishNeedValue(currActionNode.getElement()) == 0 )
+                        outline.finish(currActionNode.getElement(),pidNum);		                                         
                     
-                 LinkNode n = map.getCurrentLink(pidNum);
+                    
+                 LinkNode n = currActionNode; //map.getCurrentLink(pidNum);
                  String currentPage = n.getElement().getAttribute("name");
+                 //use getActionByName to reset linklist current to the appropriate action
+                 map.getActionByName(pidNum,currActionName);
                  createTextPane(n,currentPage);			
                 }
                 

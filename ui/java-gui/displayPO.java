@@ -11,7 +11,7 @@ public class displayPO{
 	// Parsing Flags
  	private boolean selectionFlag=false;
         private boolean branchFlag=false;
-	private boolean sequenceFlag=false;
+	private boolean sequenceFlag=false;        
 	public Element testElement;
 	private ActionMap actions = new ActionMap();
 	private ResourceMap resources = new ResourceMap();
@@ -56,7 +56,7 @@ public class displayPO{
 	{
             try{
                 
-                try{
+                try{                    
                     xmlStream = new DOMParser();
                     xmlStream.parse(new InputSource(xmlInput));
                     Document doc = xmlStream.getDocument();

@@ -65,12 +65,10 @@ public class ActionMap{
                     root.add(pids[i]);                
                     LinkNode curr=this.getCurrentLink(i);
                     this.reset(i);
-                    System.out.println("lalala");
                     LinkNode probe = this.getCurrentLink(i);
                 
                     while (probe != null)
                     {
-                        System.out.print("test");
                         Element payload = probe.getElement();                    
                         if ( payload.getAttribute("state") != null )
                         {
@@ -82,11 +80,11 @@ public class ActionMap{
                                 DefaultMutableTreeNode leaf = 
                                     new DefaultMutableTreeNode(payload.getAttribute("name"));
                                 pids[i].add(leaf);
-                                System.out.println("wtf mates");
                             }
                         }
                         probe = probe.getNext();
                     }
+                    this.setCurrent(i,curr);
                 }
                 
             }
