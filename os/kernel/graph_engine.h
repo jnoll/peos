@@ -50,7 +50,7 @@ extern vm_exit_code handle_action_change(int pid , char *act_name, vm_act_state)
 
 extern vm_exit_code update_process_state(int pid);
 
-extern void initialize_graph(Graph g, int pid);
+extern void initialize_graph(Graph g, int pid) INIT_SECTION;
 
 extern char *get_script_graph(Graph g, char * act_name);
 

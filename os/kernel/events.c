@@ -43,6 +43,8 @@ char **peos_list_models()
 	Int16 i,dbc;
 
 	dbc = DmNumDatabases(0);
+	if (dbc == 0)
+		return NULL;
 	/* need to use palm memhandles*/
 	list = malloc( dbc * sizeof(char *));
 
@@ -55,8 +57,8 @@ char **peos_list_models()
 		list[i]=malloc(sizeof(nameP));
 		list[i]=strdup(nameP);		
 	}
-
-	return list; 
+	return NULL;
+//	return list; 
 }
 #else
 char **peos_list_models()

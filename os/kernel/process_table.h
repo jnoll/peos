@@ -2,12 +2,16 @@
 #define _PROCESS_TABLE_H
 #include "action.h"
 #include "pmlheaders.h"
+#include <pml/features.h>
 //#include "tclinterp.h"
 
 #define PEOS_MAX_PID (10)
 
 #ifdef PALM
 #define PATH_MAX 256
+#define PROC_SECTION  // __attribute__ ((section ("proc")))
+#else
+#define PROC_SECTION 
 #endif
 
 #ifdef UNIT_TEST
@@ -34,35 +38,35 @@ typedef struct peos_context_tag {
   //  peos_tcl* interpreter;	/* tcl interpreter for this process */
 } peos_context_t;
 
-extern int get_lock(int filedes);
+extern int get_lock(int filedes) ;
 
-extern int release_lock(int filedes);
-extern void peos_set_loginname(char *loginname);
+extern int release_lock(int filedes) ;
+extern void peos_set_loginname(char *loginname) ;
 
 char *login_name;
 
-extern void set_process_table_filename(char *filename);
+extern void set_process_table_filename(char *filename) ;
 
-char *get_script(int pid, char *act_name);
-int peos_get_pid(peos_context_t *context);
-peos_context_t *peos_get_context(int pid);
-int peos_create_instance(char *model,peos_resource_t *resources,int num_resources);
-char **peos_list_instances();
-peos_action_t *peos_list_actions(int pid, int *num_actions);
+char *get_script(int pid, char *act_name) ;
+int peos_get_pid(peos_context_t *context) ;
+peos_context_t *peos_get_context(int pid) ;
+int peos_create_instance(char *model,peos_resource_t *resources,int num_resources) INIT_SECTION ; 
+char **peos_list_instances() ;
+peos_action_t *peos_list_actions(int pid, int *num_actions) ;
 
 
-void peos_set_process_table_file(char *file_name);
+void peos_set_process_table_file(char *file_name) ;
 
-int set_resource_binding(int pid, char *resource_name, char *resource_value);
+int set_resource_binding(int pid, char *resource_name, char *resource_value) ;
 
-char *get_resource_binding(int pid, char *resource_name);
+char *get_resource_binding(int pid, char *resource_name) ;
 
-char *get_resource_qualifier(int pid, char *resource_name);
+char *get_resource_qualifier(int pid, char *resource_name) ;
 
 #ifndef PALM
 int load_process_table();
 int save_process_table();
 #endif
 
-int delete_entry(int pid);
+int delete_entry(int pid) ;
 #endif 

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.53 2005/02/21 19:49:27 sbeeby Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.54 2005/02/28 07:23:52 sbeeby Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -158,6 +158,7 @@ void peos_set_loginname(char *loginname)
 
 int set_resource_binding(int pid, char *resource_name, char *resource_value)
 {
+#ifndef PALM
     int i;
 
     peos_resource_t *resources;
@@ -183,11 +184,15 @@ int set_resource_binding(int pid, char *resource_name, char *resource_value)
 	}
     }	
     return -1;
+#else 
+return 0;
+#endif
 }
 
 
 char *get_resource_binding(int pid, char *resource_name)
 {
+#ifndef PALM
     int i;
     int num_resources;
 
@@ -204,6 +209,9 @@ char *get_resource_binding(int pid, char *resource_name)
 	}
     }
     return NULL;
+#else
+return NULL;
+#endif
 }
 
 
@@ -231,6 +239,7 @@ char *get_resource_qualifier(int pid, char *resource_name)
 /* XXX remove this - it's just as easy to use the graph directly. */
 int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_other_node_t **other_nodes, int *num_other_nodes)
 { 
+#ifndef PALM
     Node n;
     int num_act = 0;
     int num_nodes = 0;
@@ -283,6 +292,9 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 	free(node_array);
         return -1;
     }
+#else
+return 0;
+#endif
 }
 	    
 
@@ -453,6 +465,7 @@ int load_proc_table(char *file)
 
 int save_context(int pid, peos_context_t *context, FILE *out)
 {
+#ifndef PALM
     int i;
     int num_actions = 0;
     int num_other_nodes = 0;
@@ -486,6 +499,9 @@ int save_context(int pid, peos_context_t *context, FILE *out)
       
     fprintf(out, "\n\n"); 
     return 1;
+#else
+return 0;
+#endif
 }
 
 #ifndef PALM
@@ -528,6 +544,7 @@ int save_process_table()
 
 void print_after_escaping(char *str, FILE *fp)
 {
+#ifndef PALM
     int i;
     if(str!=NULL) {
         for(i=0; i<strlen(str); i++) {
@@ -546,11 +563,13 @@ void print_after_escaping(char *str, FILE *fp)
 	}
     }
     else fprintf(fp, "(null)");
+#endif
 }
 
 
 void print_action_node(Node n, FILE *fp)
 {
+#ifndef PALM
     int num_req_resources;
     int num_prov_resources;
     int i;
@@ -588,12 +607,14 @@ void print_action_node(Node n, FILE *fp)
     }
 	
     fprintf(fp, "</action>\n");
+#endif
 }
 
    
 
 void print_graph(Graph g, FILE *fp)
 {
+#ifndef PALM
     Node n, child, parent;
     int i;
 
@@ -647,11 +668,13 @@ void print_graph(Graph g, FILE *fp)
 	    }		
         }
     }
+#endif
 }
 
 
 int save_proc_table_xml()
 {
+#ifndef PALM
     int i;
     Graph g;
     FILE *fp;
@@ -675,6 +698,9 @@ int save_proc_table_xml()
     fprintf(fp, "</process_table>\n");
     fclose(fp);
     return 0;
+#else
+return 0;
+#endif
 }
 
 	
