@@ -49,6 +49,7 @@ enum { ACTIVE, DELETED };     /* record active-deleted flags */
 
 /* STRUCTURE DEFINITIONS ************************************/
 
+#if defined __GLIBC__ && (__GLIBC__ > 2)
 /* The following from the semctl man page, which however incorrectly 
    states that the GNU library defines semun in sem.h. -jn */
 /* according to X/OPEN we have to define it ourselves */
@@ -58,7 +59,7 @@ union semun {
         unsigned short int *array;  /* array for GETALL, SETALL */
         struct seminfo *__buf;      /* buffer for IPC_INFO */
 };
-
+#endif
 
 /* database open modes */
 typedef enum { APPEND, TRUNCATE }pml_mode_t;
