@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.4 2003/07/04 08:12:56 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.5 2003/07/09 20:31:57 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Thu Jul  3 21:39:27 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Sun Jul  6 17:07:26 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -66,17 +66,86 @@ char** add_inst(char **inst_array, char *inst, int num, int *size)
     return inst_array;		/* So realloc can be captured. */
 }
 
+char *read_field_data(char *input, int *len)
+{
+    char *s = input, *p;
+    int l;
+    s += strspn(input, " \t"); /* Skip whitespace. */
+    if (*s != '{') return NULL;
+    s++; 
+    s += strspn(input, " \t"); /* Skip whitespace. */
+    l = strcspn(s, "}\n\0"); 
+    p = s+l;
+    if (*p == '}') {
+	p--;
+	while (*p == ' ' || *s == '\t') {
+	    p--; l--;
+	}
+    }
+    *len = l;
+    return s;
+}
+
 peos_action_t *add_act(peos_action_t *act_array, char *act, int num, int *size)
 {
     int len;
+    char *s;
     if (num == *size) {
 	*size += INST_ARRAY_INCR;
 	act_array = (peos_action_t *) realloc(act_array, *size * sizeof(peos_action_t));
     }
-    len = strcspn(act, " \t\n");
+    len = strcspn(act, " \t\n\0"); /* action name */
     strncpy(act_array[num].name, act, len);
     act_array[num].name[len] = '\0';
     act_array[num].state = ACT_NONE;
+    act_array[num].script = NULL;
+
+    /* Fields. */
+    s = act + len; 
+    while (*s != '\0' && *s != '\n') {
+	s += strspn(s, " \t");
+	if (strncmp(s, "type", strlen("type")) == 0) {
+	    s += strcspn(s, " \t\n");
+	    s += strspn(s, " \t");
+	    /* Get type, break if not action. */
+	    if (strncmp(s, "action", strlen("action")) != 0) {
+		break;
+	    }
+	    s += strcspn(s, " \t\n");
+	} else if (strncmp(s, "mode", strlen("mode")) == 0) {
+	    s += strcspn(s, " \t\n");
+	    s += strspn(s, " \t");
+	    /* Skip over mode. */
+	    s += strcspn(s, " \t\n");
+	} else if (strncmp(s, "requires", strlen("requires")) == 0) {
+	    s += strcspn(s, " \t\n");
+	    read_field_data(s, &len);
+	    s += len;
+	} else if (strncmp(s, "provides", strlen("requires")) == 0) {
+	    s += strcspn(s, " \t\n");
+	    read_field_data(s, &len);
+	    s += len;
+	} else if (strncmp(s, "agent", strlen("agent")) == 0) {
+	    s += strcspn(s, " \t\n");
+	    read_field_data(s, &len);
+	    s += len;
+	} else if (strncmp(s, "tool", strlen("tool")) == 0) {
+	    s += strcspn(s, " \t\n");
+	    read_field_data(s, &len);
+	    s += len;
+	} else if (strncmp(s, "script", strlen("script")) == 0) {
+	    s += strcspn(s, " \t\n");
+	    s = read_field_data(s, &len);
+	    if (s) {
+		act_array[num].script = (char *)calloc(len+1, sizeof(char));
+		strncpy(act_array[num].script, s, len);
+	    }
+	    s += len;
+	} else {
+	    /* Just skip word, whatever it is. */
+	    s += strcspn(s, " \t");
+	}
+    }
     return act_array;		/* So realloc can be captured. */
 }
 
@@ -97,8 +166,8 @@ int load_instructions(char *file, char ***inst, int *num_inst,
 	i = 0;
 	while (fgets(buf, BUFSIZ, in)) {
 	    s = buf;
-	    s += strcspn(buf, " \t\n");
-	    s += strspn(s, " \t\n");
+	    s += strcspn(buf, " \t\n");	/* skip number */
+	    s += strspn(s, " \t\n"); /* skip whitespace */
 	    inst_array = add_inst(inst_array, strdup(s), i, &isize);
 	    if (strncmp(s, "start", strlen("start")) == 0) {
 		*num_actions = i;
@@ -131,7 +200,15 @@ load_context(FILE *in, peos_context_t *context)
 {
     int i, start;
 
-    if (fscanf(in, "pid: %d\nmodel: %s\n", &context->pid, context->model) != 2) return 0;
+    if (fscanf(in, "pid: %d\n", &context->pid) != 1) {
+	return 0;
+    }
+    if (fscanf(in, "model: %s\n", context->model) != 1) {
+	return 0;
+    }
+    if (strcmp(context->model, "none") == 0) {
+	context->model[0] = '\0';
+    }
     if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
 
     /* Load instructions and actions first, to initialize context. */
@@ -178,8 +255,8 @@ load_context(FILE *in, peos_context_t *context)
     if (fscanf(in, "\n") < 0) return 0; 
 
     if (fscanf(in, "actions: ") < 0) return 0; 
+
     if (fscanf(in, "%d ", &context->num_actions) != 1) return 0;
-    context->actions = (peos_action_t *)calloc(context->num_actions, sizeof(peos_action_t));
     for (i = 0; i < context->num_actions; i++) {
 	if (fscanf(in, "%s %d", context->actions[i].name, 
 		   (int *)&context->actions[i].state) != 2) {
@@ -217,7 +294,8 @@ int save_context(int pid, peos_context_t *context, FILE *out)
 {
     int i;
 
-    fprintf(out, "pid: %d\nmodel: %s\n", pid, context->model);
+    fprintf(out, "pid: %d\n", pid);
+    fprintf(out, "model: %s\n", context->model[0] ? context->model : "none");
     fprintf(out, "status: %d\n", context->status);
     fprintf(out, "PC: %d\nSP: %d\nA: %d\n", context->vm_context.PC, 
 	    context->vm_context.SP, context->vm_context.A);
@@ -281,13 +359,12 @@ int find_start(char *inst_array[], int size)
 
 char **peos_list_instances()
 {
-    static char result[256], *p[1];
+    static char *result[PEOS_MAX_PID+1];
     int i;
     for (i = 0; i <= PEOS_MAX_PID; i++) {
-	strcpy(result, process_table[i].model);
+	result[i] = process_table[i].model;
     }
-    p[0] = result;
-    return p;
+    return result;
 }
 
 int delete_entry(int pid)

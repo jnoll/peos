@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: shell.c$
-* Version:      $Id: shell.c,v 1.4 2003/07/04 08:12:56 jnoll Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.5 2003/07/09 20:31:57 jnoll Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
-* Modified:     Fri Jul  4 00:58:36 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Sun Jul  6 16:51:47 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -50,7 +50,7 @@ list_instances()
 
 print_action(peos_action_t *action, char *state) 
 {
-    printf("  %2d    %-6s (%s)\n", action->pid, action->name, state);
+    printf("  %2d    %-6s (%s) %s\n", action->pid, action->name, state, action->script ? action->script : "no script");
 }
 
 list_actions()
@@ -120,7 +120,7 @@ create_process(int argc, char *argv[])
 
 run_action(int argc, char *argv[])
 {
-    char *action, *pid_string;
+    char *action, *pid_string, *script;
     int pid; 
     vm_exit_code status;
 
@@ -135,6 +135,14 @@ run_action(int argc, char *argv[])
     if ((status = peos_run_action(pid, action)) == VM_ERROR 
 	|| status == VM_INTERNAL_ERROR) {
 	printf("process executed an illegal instruction and has been terminated\n");
+    } else {
+	script = get_field(pid, action, ACT_SCRIPT);
+	if (script) {
+	    printf(script);
+	    printf("\n");
+	} else {
+	    printf("(no script)\n");
+	}
     }
 }
 

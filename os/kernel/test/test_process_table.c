@@ -28,6 +28,89 @@ START_TEST(test_get_pid_last)
 }
 END_TEST
 
+START_TEST(test_read_field_data) 
+{
+    char *field, buf[BUFSIZ], *contents = "these are the field contents";
+    int len;
+
+    sprintf(buf, " { %s } \n", contents);
+    field = read_field_data(buf, &len);
+    fail_unless(len == strlen(contents), "field length");
+    fail_unless(strncmp(field, contents, strlen(contents)) == 0, "field contents");
+    
+}
+END_TEST
+
+START_TEST(test_add_act)
+{
+    int size, num = 0;
+    peos_action_t *actions;
+    char buf[BUFSIZ], *name = "an_action";
+    /* Pre: action array exists, buffer loaded with action. */
+    size = 0;
+    actions = (peos_action_t *)calloc(size, sizeof(peos_action_t));
+    /* The buffer already has line numbers stripped. */
+    sprintf(buf, "%s type action mode manual", name);
+
+    /* Action. */
+    actions = add_act(actions, buf, num, &size);
+
+    /* Post: a new action at location num. */
+    fail_unless(strcmp(actions[num].name, name) == 0, "action name"); 
+    fail_unless(actions[num].state == ACT_NONE, "action state");
+    fail_unless(size >= num, "array size");
+}
+END_TEST
+
+START_TEST(test_add_act_realloc)
+{
+    int i, size, num = 0;
+    peos_action_t *actions;
+    char buf[BUFSIZ], *name = "an_action";
+    /* Pre: action array exists, buffer loaded with action. */
+    size = 9;
+    num = size + 1;
+    actions = (peos_action_t *)calloc(size+1, sizeof(peos_action_t));
+    
+    for (i = 0;  i < num; i++) {
+	/* The buffer already has line numbers stripped. */
+	sprintf(buf, "%s type action mode manual", name);
+
+	/* Action. */
+	actions = add_act(actions, buf, i, &size);
+	/* Post: a new action at location num. */
+	fail_unless(strcmp(actions[i].name, name) == 0, "action name"); 
+	fail_unless(actions[i].state == ACT_NONE, "action state");
+	fail_unless(size >= i, "array size");
+    }
+}
+END_TEST
+
+START_TEST(test_add_act_script)
+{
+    int size, num = 0;
+    peos_action_t *actions;
+    char buf[BUFSIZ], *name = "an_action",
+	*script = "add enough ice to shaker so that the gin will just barely cover it.";
+
+    /* Pre: action array exists, buffer loaded with action. */
+    size = 0;
+    actions = (peos_action_t *)calloc(size, sizeof(peos_action_t));
+    /* The buffer already has line numbers stripped. */
+    sprintf(buf, "%s type action mode manual script { %s }", name, script);
+
+    /* Action. */
+    actions = add_act(actions, buf, num, &size);
+
+    /* Post: a new action at location num. */
+    fail_unless(strcmp(actions[num].name, name) == 0, "action name"); 
+    fail_unless(actions[num].state == ACT_NONE, "action state");
+    fail_unless(size >= num, "array size");
+    fail_unless(strcmp(actions[num].script, script) == 0, "script");
+}
+END_TEST
+
+
 START_TEST(test_load_instructions)
 {
     int i, num_inst, num_actions;
@@ -176,9 +259,9 @@ START_TEST(test_load_proc_table)
     peos_context_t ctx;
     FILE *f;
     char *p_txt = \
-	"0 an_action0 type action mode manual requires { a } provides { a }\n\
-1 an_action1 type action mode manual requires { a } provides { a }\n\
-2 an_action2 type action mode manual requires { a } provides { a }\n\
+"0 an_action0 type action mode manual requires { a } provides { a } script { test script }\n\
+1 an_action1 type action mode manual requires { a } provides { a } script { test script }\n\
+2 an_action2 type action mode manual requires { a } provides { a } script { test script }\n\
 3 start\n\
 4 end\n";
 
@@ -234,6 +317,7 @@ START_TEST(test_load_proc_table)
 	for (i = 0; i < context->num_actions; i++) {
 	    sprintf(context->actions[i].name, "an_action%d", i);
 	    context->actions[i].state = ACT_NONE;
+	    context->actions[i].script = "test script";
 	    fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
 	}
 	fprintf(f, "\n\n"); 
@@ -245,7 +329,7 @@ START_TEST(test_load_proc_table)
     mark_point();
 
     /* Load_proc_table requires a real model file to load actions from. */
-    f = fopen("test.txt", "w");
+    f = fopen(model, "w");
     fprintf(f, "%s", p_txt);
     fclose(f);
 
@@ -284,6 +368,7 @@ START_TEST(test_load_proc_table)
 	    fail_unless(strncmp(context->actions[i].name, "an_action", strlen("an_action")) == 0, "act name");
 	    fail_unless(context->actions[i].pid == j, "action pid");
 	    fail_unless(context->actions[i].state == ACT_NONE, "act state");
+	    fail_unless(strcmp(context->actions[i].script, "test script") == 0, "act script");
 	}
     }
 
@@ -530,6 +615,15 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_get_pid);
     tcase_add_test(tc, test_get_pid_last);
+
+    tc = tcase_create("add act");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_read_field_data);
+    tcase_add_test(tc, test_add_act);
+    tcase_add_test(tc, test_add_act_realloc);
+    tcase_add_test(tc, test_add_act_script);
+
+
 
     tc = tcase_create("table io");
     suite_add_tcase(s, tc);

@@ -54,10 +54,11 @@ int p1_num_act = 0;
 int p1_size = sizeof(p1);
 
 /* This is the text of simple.cpml. */
+
 char *test_proc[] = {
-    "act_0 type action mode manual requires { a } provides { a }",
-    "act_1 type action mode manual requires { a } provides { a }",
-    "act_2 type action mode manual requires { a } provides { a }",
+    "act_0 type action mode manual requires { a } provides { a } script { test script }",
+    "act_1 type action mode manual requires { a } provides { a } script { test script }",
+    "act_2 type action mode manual requires { a } provides { a } script { test script }",
     "start",
     "call select &&id==$a",
     "pop",

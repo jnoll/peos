@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.4 2003/07/04 08:12:55 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.5 2003/07/09 20:31:57 jnoll Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
-* Modified:     Thu Jul  3 20:30:34 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Sun Jul  6 15:11:56 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -68,6 +68,26 @@ char *act_state_name(vm_act_state state)
 	break;
     }
 }
+
+char *get_field(int pid, char *act, peos_field_t field)
+{
+    peos_context_t *context = peos_get_context(pid);
+    peos_action_t *p;
+    for (p = context->actions; p - context->actions < context->num_actions; p++) {
+	if (strcmp(p->name, act) == 0) {
+	    switch(field) {
+	    case ACT_SCRIPT:
+		return p->script;
+		break;
+	    default: 
+		return NULL;
+		break;
+	    }
+	}
+    }
+    return NULL;
+}
+
 /*
  * Return 0 if call blocks waiting for act state change.
  */
@@ -123,7 +143,6 @@ int handle_system_call(vm_context_t *context, peos_action_t *actions,
     default:
 	break;
     }
-
     return status;
 }
 
@@ -246,10 +265,14 @@ int peos_create_instance(char *model_file)
 				   &(context->actions), 
 				   &(context->num_actions))) >= 0) 
 	{
+	    int i, pid = peos_get_pid(context);
 	    init_context(&(context->vm_context), start);
 	    strcpy(context->model, model_file);
 	    context->status = PEOS_READY;
-	    return (peos_get_pid(context)); 
+	    for (i = 0; i < context->num_actions; i++) {
+		context->actions[i].pid = pid;
+	    }
+	    return (pid); 
 	}
     return -1;
 }

@@ -25,7 +25,7 @@ peos_context_t *peos_get_context(int pid)
 
 peos_context_t *find_free_entry()
 {
-    return &(process_table[0]);	/* XXX This is a single threaded system now. */
+    return &(process_table[0]);
 }
 
 int execute(vm_context_t *context) 
@@ -115,7 +115,7 @@ END_TEST
    mostly from process_table.c. */
 START_TEST(test_create_instance)
 {
-    int pid;
+    int pid, i;
     char *model = TEST_PROC_NAME;
     peos_context_t *context;
 
@@ -130,6 +130,12 @@ START_TEST(test_create_instance)
     fail_unless(context->vm_context.num_inst == test_proc_size, "num_inst wrong");
     fail_unless(context->actions != NULL, "actions null");
     fail_unless(context->num_actions == test_proc_num_act, "num_actions wrong");
+    for (i = 0; i < context->num_actions; i++) {
+	char buf[256];
+	sprintf(buf, "act_%d", i);
+	fail_unless(strcmp(context->actions[i].name, buf) == 0, "act name");
+	fail_unless(context->actions[i].pid == pid, "act pid");
+    }
 }
 END_TEST
 
@@ -593,6 +599,46 @@ START_TEST(test_resume_bound2)
 }
 END_TEST
 
+void setup_get_field_test(int act_num, char *script)
+{
+    /* Pre: a process is loaded; some action is RUNNING,
+     * the process is waiting for the action to become DONE.
+     */
+    peos_context_t *context = &process_table[0];
+    context->num_actions = 10;
+    context->actions = make_actions(context->num_actions, ACT_NONE);
+    context->actions[act_num].script = script;
+}
+
+/* Action field accessor. */
+START_TEST(test_get_field_first)
+{
+    char *expected = "This is the script.", *actual;
+    setup_get_field_test(0, expected);
+    actual = get_field(0, "act_0", ACT_SCRIPT);
+    fail_unless(strcmp(actual, expected) == 0, "script contents");
+}
+END_TEST
+
+/* Action field accessor. */
+START_TEST(test_get_field_last)
+{
+    char *expected = "This is the script.", *actual;
+    setup_get_field_test(9, expected);
+    actual = get_field(0, "act_9", ACT_SCRIPT);
+    fail_unless(strcmp(actual, expected) == 0, "script contents");
+}
+END_TEST
+
+/* Action field accessor. */
+START_TEST(test_get_field_none)
+{
+    char *expected = "This is the script.", *actual;
+    setup_get_field_test(9, expected);
+    actual = get_field(0, "No_action", ACT_SCRIPT);
+    fail_unless(actual == NULL, "script contents");
+}
+END_TEST
 
 
 int
@@ -638,6 +684,11 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_run_action_nowait);
     tcase_add_test(tc, test_run_action_nowait2);
 
+    tc = tcase_create("action accessors");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_get_field_first);
+    tcase_add_test(tc, test_get_field_last);
+    tcase_add_test(tc, test_get_field_none);
 
     sr = srunner_create(s);
 
