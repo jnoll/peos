@@ -1,16 +1,24 @@
+#these lines are for modification.
 images= ./images/
 path= ./bin/peos
 help= ./help/
 pml= ./testfiles/ 
 XERCES_PATH=./include/
-XERCES_INCLUDE=${XERCES_PATH}/xercesImpl.jar:${XERCES_PATH}/xmlParserAPIs.jar
 JUNIT_PATH=./include/
 JUNIT_INCLUDE=${JUNIT_PATH}/junit.jar
+
+#these lines are used by the makefile. Do not modify.
+XERCES_INCLUDE=${XERCES_PATH}/xercesImpl.jar:${XERCES_PATH}/xmlParserAPIs.jar
 JAVAGUI_JAR=./include/java-gui.jar
 java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JUNIT_INCLUDE}:${JAVAGUI_JAR}:.
 
 
-all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class DisabledPreferencesFactory.class Help.class
+all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class \
+	DisabledPreferencesFactory.class Help.class ActionMap.class LinkedList.class LinkNode.class \
+	SetupPath.class MyFileFilter.class 
+	
+	jar cf java-gui.jar *.class
+	mv java-gui.jar ./bin
 
 jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.class testSFASJU.class \
 	testPOJU.class testCRJU.class
@@ -59,9 +67,30 @@ clean:
 	rm -f event.log
 	rm -f proc_table*
 
-script: 
-	echo "xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >runpeos
-	echo "java ${java} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml} PeosApp" >>runpeos
+script:
+	echo "runApp=0" >runpeos
+	echo "test -w ." >>runpeos
+	echo 'if test $$? -eq 1'>>runpeos
+	echo "then" >>runpeos
+	echo "	echo Working directory must have write-permission.">>runpeos
+	echo "	runApp=1;" >>runpeos
+	echo "fi" >>runpeos
+	echo "test -x ${path}" >>runpeos
+	echo 'if test $$? -eq 1' >>runpeos
+	echo "then" >>runpeos
+	echo "	echo PEOS does not have execute permissions or does not exist." >>runpeos
+	echo "	runApp=1" >>runpeos
+	echo "fi" >>runpeos
+	echo "test -r ${pml}">>runpeos
+	echo 'if test $$? -eq 1' >>runpeos
+	echo "then" >>runpeos
+	echo "echo '<Warning>Default PML directory is not readable or does not exist.'" >>runpeos
+	echo "fi" >>runpeos
+	echo 'if test $$runApp -eq 0' >>runpeos
+	echo "then" >>runpeos
+	echo "	xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >>runpeos
+	echo "java -classpath :./include//xercesImpl.jar:./include//xmlParserAPIs.jar:./include//junit.jar:./include/java-gui.jar:. -Dpeos.images=./images/ -Dpeos.path=./bin/peos -Dpeos.help=./help/ -Dpeos.pml=./testfiles/  PeosApp" >>runpeos
+	echo "fi" >>runpeos
 	chmod 700 runpeos
 
 %.class : %.java
