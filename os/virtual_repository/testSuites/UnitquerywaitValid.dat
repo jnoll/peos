@@ -1,0 +1,4 @@
+ID EQ file://vrepo.c 
+ID EQ file://vrepo.c AND DATE EQ 02/02/2002
+ID EQ file://vrepo.c AND DATE LT 05/05/2003
+ID EQ file://vrepo.c AND DATE LT 05/05/2003 OR DATE GT 0508/2003

@@ -20,7 +20,8 @@ testFSsearchSeek \
 testFSsearchInvalid \
 testFSsearchEmpty \
 testUNITandResult \
-testUNITorResult
+testUNITorResult \
+testUnitquerywait
 #testEmail
 
 FS_ACTUAL_RESULT_FILES = \
@@ -31,6 +32,7 @@ FSsearchInvalidActualResult.txt \
 FSsearchEmptyActualResult.txt\
 UNITandResultActualResult.txt \
 UNITorResultActualResult.txt \
+UnitquerywaitInvalidActualResult.txt \
 testEmailActualResult.txt
 
 FS_EXPECTED_RESULT_FILES = \
@@ -40,6 +42,7 @@ FSsearchInvalidExpectedResult.txt \
 FSsearchEmptyExpectedResult.txt\
 UNITandResultExpectedResult.txt \
 UNITorResultExpectedResult.txt \
+UnitquerywaitInvalidExpectedResult.txt \
 testEmailExpectedResult.txt
 			 
 FS_QUERY_FILES = \
@@ -80,6 +83,9 @@ test:	$(TESTS)
 	
 	testUNITorResult > UNITorResultActualResult.txt
 	diff UNITorResultExpectedResult.txt UNITorResultActualResult.txt
+	
+	testUnitquerywait > UnitquerywaitInvalidActualResult.txt
+	diff UnitquerywaitInvalidActualResult.txt UnitquerywaitInvalidActualResult.txt 
 
 #	diff testEmailExpectedResult.txt testEmailActualResult.txt
 #	testEmail > testEmailActualResult.txt
