@@ -14,11 +14,33 @@ the Makefile using the command "make".
 
 (2) How to Install
 
-  a) In order to run the PEOS program you first need to locate the programs dependencies and download the tarballs from the      sites that are listed into your home directory.
+  a) In order to run the PEOS program you first need to locate the programs dependencies and download the tarballs from the sites that are listed into your home directory.  If you are doing a manual install then you must uncomment the manual make and comment out the system make in the Makefile.
 
 Presupposotion: >= gnome-1.1 with libcapplet-1.5.0 installed: If gnome-1.1 is not installed then ask permission from administrator to install the package.
-libcapplet-1.5.0 can be downloaded at http://mirrors.geekbone.org/gnome/sources/libcapplet/1.5/libcapplet-1.5.0.tar.gz
+gtkhtml-1.1.10 installation depends on the following packages:
 
+These packages must be installed in the system's directories using root privelage.
+Package >=                              Location
+-----------------------------------------------------------------------------------------------------
+
+libcapplet-1.5.0                http://mirrors.geekbone.org/gnome/sources/libcapplet/1.5/libcapplet-1.5.0.tar.gz
+gdk-pixbuf-1.0                  http://ftp.acc.umu.se/pub/gnome/sources/gdk-pixbuf/0.8/gdk-pixbuf-0.8.0.tar.gz
+gnome-print-0.36                http://ftp.acc.umu.se/pub/gnome/sources/gnome-print/0.36/gnome-print-0.36.tar.gz
+gal-0.24                        http://ftp.acc.umu.se/pub/gnome/sources/gal/0.24/gal-0.24.tar.gz
+
+In order to build PEOS the following packages are needed:
+
+These packages must be installed in the system's directories using root privelage.  Also, these packages must be installed in any directory using the following command: ./configure --prefix/usr && make && make install
+Pacage >=                               Location
+-----------------------------------------------------------------------------------------------------
+
+GConf-1.2.1                     http://ftp.gnome.org/pub/gnome/desktop/2.6/2.6.0/sources/GConf-2.6.0.tar.gz
+gnome-libs-1.4.2                http://ftp.acc.umu.se/pub/gnome/sources/gnome-libs/1.4/gnome-libs-1.4.2.tar.gz
+glib-2.0.0                      ftp://ftp.gtk.org/pub/gtk/v2.0/glib-2.0.0.tar.gz
+pango-1.0.0                     ftp://ftp.gtk.org/pub/gtk/v2.0/pango-1.0.0.tar.gz
+ORBit-0.1                       http://ftp.acc.umu.se/pub/gnome/sources/ORBit/0.1/ORBit-0.1.tar.gz
+
+Thes packages are to be installed into your home directory.
 Package >=				Location                 
 -----------------------------------------------------------------------------------------------------
 
@@ -26,13 +48,8 @@ libxml2-2.6.0                   ftp://xmlsoft.org/libxml2-2.6.0.tar.gz
 gtk-1.2.10                      ftp://ftp.gtk.org/pub/gtk/v1.2/gtk+-1.2.10.tar.gz
 pkgconfig-0.15.0                http://ftp.gnome.org/pub/gnome/desktop/2.6/2.6.2/sources/pkgconfig-0.15.0.tar.gz
 gtkhtml-1.1.10                  http://www.zentek-international.com/mirrors/gnome/sources/gtkhtml/1.1/gtkhtml-1.1.10.tar.gz 
-GConf-1.2.1                     http://ftp.gnome.org/pub/gnome/desktop/2.6/2.6.0/sources/GConf-2.6.0.tar.gz
-glib-2.0.0                      ftp://ftp.gtk.org/pub/gtk/v2.0/glib-2.0.0.tar.gz
-pango-1.0.0                     ftp://ftp.gtk.org/pub/gtk/v2.0/pango-1.0.0.tar.gz
 (>= libart-2.0)
 libart_lgpl-2.3.5               http://ftp.acc.umu.se/pub/gnome/sources/libart_lgpl/2.3/libart_lgpl-2.3.5.tar.gz
-gnome-print-0.36                http://ftp.acc.umu.se/pub/gnome/sources/gnome-print/0.36/gnome-print-0.36.tar.gz
-gnome-libs-1.4.2                http://ftp.acc.umu.se/pub/gnome/sources/gnome-libs/1.4/gnome-libs-1.4.2.tar.gz
 
 
   b) If you are doing a manual install then it is best to follow these steps exactly. 

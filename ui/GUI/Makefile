@@ -1,4 +1,4 @@
-# required symbols
+#required symbols
 #
 SHELL= /bin/sh
 
@@ -33,43 +33,53 @@ CC_WARN= -Wall -Werror
 #MISC_CC= -M
 MISC_CC= 
 
-XML2_CONFIG_CFLAGS= ${XML2_CONFIG} --cflags
-XML2_CONFIG_LDFLAGS= ${XML2_CONFIG} --libs
-
 #System Make
 XML2_CONFIG= xml2-config
 GTK_CONFIG= gtk-config
 PKG_CONFIG= pkg-config
-GNOME_CONFIG_CFLAGS= ${GTK_CONFIG} --cflags gtk
-GNOME_CONFIG_LDFLAGS= ${GTK_CONFIG} --libs gtk
 
 #Manual Make
-#XML2_CONFIG= xml2new-config
-#GTK_CONFIG= gtknew-config
-#PKG_CONFIG= pkgnew-config
 #GNOME_CONFIG_CFLAGS= ${GTK_CONFIG} --cflags
 #GNOME_CONFIG_LDFLAGS= ${GTK_CONFIG} --libs
+#XML2_CONFIG= xml2new-config
+#GTK_CONFIG= gtknew-config
+#PKG_CONFIG= pkgnew-config --cflags gtk
+#LIBART_CONFIG= libartnew-config 
+#GCONF_CONFIG= gconftool-2
 
+GNOME_CONFIG_CFLAGS= ${GTK_CONFIG} --cflags gtk 
+GNOME_CONFIG_LDFLAGS= ${GTK_CONFIG} --libs gtk 
+XML2_CONFIG_CFLAGS= ${XML2_CONFIG} --cflags 
+XML2_CONFIG_LDFLAGS= ${XML2_CONFIG} --libs
+LIBART_CONFIG_CFLAGS= ${LIBART_CONFIG} --cflags
+LIBART_CONFIG_LDFLAGS= ${LIBART_CONFIG} --libs
 PKG_CONFIG_CFLAGS= ${PKG_CONFIG} --cflags gtkhtml-1.1
 PKG_CONFIG_LDFLAGS= ${PKG_CONFIG} --libs gtkhtml-1.1
 
+#System Make
 CFLAGS=	`${XML2_CONFIG_CFLAGS}` `${GNOME_CONFIG_CFLAGS}` `${PKG_CONFIG_CFLAGS}` \
 	${OPT_DEBUG} ${CC_WARN} ${MISC_CC}
 LDFLAGS= `${XML2_CONFIG_LDFLAGS}` `${GNOME_CONFIG_LDFLAGS}` `${PKG_CONFIG_LDFLAGS}` \
  	 ${OPT_DEBUG}
 
+#Manual Make
+#CFLAGS=	`${XML2_CONFIG_CFLAGS}` `${GNOME_CONFIG_CFLAGS}` `${LIBART_CONFIG_CFLAGS}` `${PKG_CONFIG_CFLAGS}` \
+	${OPT_DEBUG} ${CC_WARN} ${MISC_CC}
+#LDFLAGS= `${XML2_CONFIG_LDFLAGS}` `${GNOME_CONFIG_LDFLAGS}` `${LIBART_CONFIG_LDFLAGS}` `${PKG_CONFIG_LDFLAGS}` \
+ 	 ${OPT_DEBUG}
+
 # our source
 #
 H_SRC= buttonimages.h callbacks.h ctrlimages.h deletemenu.h \
-	engine.h glo.h html.h htmllinkage.h images.h interface.h \
-	menu.h menuimages.h notebook.h parse.h support.h text.h \
+	engine.h glo.h html.h images.h interface.h \
+	menu.h menuimages.h htmllinkage.h notebook.h parse.h support.h text.h \
 	tree.h treeimages.h viewmenu.h
-C_SRC=	main.c interface.c callbacks.c engine.c \
-	glo.c parse.c tree.c html.c viewmenu.c  \
-	deletemenu.c htmllinkage.c notebook.c
-C_OBJ=	main.o interface.o callbacks.o engine.o \
-	glo.o parse.o tree.o html.o viewmenu.o  \
-	deletemenu.o htmllinkage.o notebook.o
+C_SRC=	main.c interface.c html.c htmllinkage.h callbacks.c engine.c \
+	glo.c parse.c tree.c viewmenu.c  \
+	deletemenu.c notebook.c
+C_OBJ=	main.o interface.o html.o htmllinkage.o callbacks.o engine.o \
+	glo.o parse.o tree.o viewmenu.o  \
+	deletemenu.o notebook.o
 
 # build location
 #
