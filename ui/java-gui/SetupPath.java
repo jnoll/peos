@@ -1,21 +1,21 @@
 import java.io.*;
+import java.util.Properties;
+
 
 public class SetupPath{
-	private static FileWriter output;
+//	private static FileWriter output;
 	public static String getPeos()
 	{
 		try {
-			BufferedReader getPath = 
-			new BufferedReader(new FileReader("./PeosApp.cfg"));
-			String blah;
-			blah = getPath.readLine();
-			return blah;
+			Properties peosSrc = new Properties();
+			peosSrc.load(new FileInputStream("peos.properties"));
+			return peosSrc.getProperty("path");
 		}
-		catch(IOException e)
+		catch(Exception e)
 		{
 			System.err.println(e);
 		}
-		return "whee";
+		return "Error";
 	}
 
 	public static String getCurrDir() throws IOException
@@ -63,7 +63,7 @@ public class SetupPath{
 		File f1;
 		try
 		{	
-			output = new FileWriter("./PeosApp.cfg");
+			Properties peosSrc=new Properties();
 			do{
 				System.out.println("Please enter pathname for PEOS.");
 				BufferedReader stdin = 
@@ -72,12 +72,11 @@ public class SetupPath{
 				f1 = new File(newPath);
 			}while(f1.canRead() == false);
 
-			output.write(newPath);
-			output.write(" \n"); 
-			output.close();
+			peosSrc.setProperty("path", newPath);
+			peosSrc.store(new FileOutputStream("peos.properties"), "PeosGUI Properties");
 		}
 
-		catch(IOException err)
+		catch(Exception err)
 		{
 			System.err.println(err);
 		}
