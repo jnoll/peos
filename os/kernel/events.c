@@ -39,8 +39,9 @@ char **peos_list_models()
 {
 	LocalID db_id;
 	char **list;
-	char *nameP;
+	char nameP[33]; //fixed size
 	Int16 i,dbc;
+	UInt32 creator;
 
 	dbc = DmNumDatabases(0);
 	if (dbc == 0)
@@ -53,12 +54,12 @@ char **peos_list_models()
 		db_id = DmGetDatabase(0,i); 
 		
 		/* get database name info*/
-		DmDatabaseInfo(0, i, nameP, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL/*type*/,NULL);
+		DmDatabaseInfo(0,db_id,nameP, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL/*type*/,NULL);
 		list[i]=malloc(sizeof(nameP));
 		list[i]=strdup(nameP);		
 	}
-	return NULL;
-//	return list; 
+//	return NULL;
+	return list; 
 }
 #else
 char **peos_list_models()
