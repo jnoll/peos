@@ -1,3 +1,9 @@
 ID EQ file://vrepo.c AND
 ID EQ file://vrepo.c AND DATE
 ID EQ file://vrepo.c AND DATE EQ
+ID GT file://vrepo.c
+ID LT file://vrepo.c
+ID ~ file://vrepo.c
+NAME GT vrepo.c
+NAME LT vrepo.c
+ID GT email://vrepo.c

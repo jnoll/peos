@@ -2,3 +2,7 @@ ID EQ file://vrepo.c
 ID EQ file://vrepo.c AND DATE EQ 02/02/2002
 ID EQ file://vrepo.c AND DATE LT 05/05/2003
 ID EQ file://vrepo.c AND DATE LT 05/05/2003 OR DATE GT 05/08/2003
+ID EQ email://message2.test.case.12345@school.engr.scu.edu
+ID EQ email://message2.test.case.12345@school.engr.scu.edu AND DATE EQ 09/19/2002
+NAME ~ vrepo
+NAME ~ Friday OR DATE LT 04/07/2003

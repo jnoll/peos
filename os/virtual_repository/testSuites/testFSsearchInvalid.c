@@ -40,7 +40,7 @@ int main( void )
 	
 	expectedResultInvalidFile = fopen ( "FSsearchInvalidExpectedResult.txt", "w" ) ;
 	_assert( __FILE__, __LINE__, expectedResultInvalidFile ) ;
-	setInvalidResult( 5, expectedResultInvalidFile ) ;
+	setInvalidResult( 9, expectedResultInvalidFile ) ;
 	fclose( expectedResultInvalidFile ) ;	
 	
 	testInputInvalid = fopen ( "FSsearchInvalid.dat", "r" ) ;

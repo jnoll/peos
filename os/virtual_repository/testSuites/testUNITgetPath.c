@@ -39,47 +39,7 @@ int main( void )
 	getPath(myPath2,"MAILBOX");
 	printf("%s\n",myPath2);
 	
-	/*expectedResultFile = fopen ( "UNITgetPathExpectedResult.txt", "w" ) ;
 	
-	if( ( configFile = fopen( "vr.rc", "r" ) ) != NULL  || (configFile = fopen(strcat(home,"/vr.rc"),"r") )!= NULL)
-	{	
-		
-		while( fgets( oneLine, 500, configFile ) != NULL)
-   		{
-   			
-   			word = strtok( oneLine, "=" ) ;
-   			
-			_assert( __FILE__, __LINE__, word ) ;
-			
-					
-			if( strcmp( "SEARCHDIR", word ) == 0 )
-    			{
-       				
-       				word = strtok( NULL, "\n" ) ;
-       				_assert( __FILE__, __LINE__, word ) ;
-   				strcpy( searchBox, word ) ;
-   				fwrite( searchBox, sizeof( char ), strlen( searchBox ), expectedResultFile ) ;
-   				fwrite( "\n", sizeof( char ), strlen( "\n" ), expectedResultFile ) ;
-   				
-			}
-			
-			else if( strcmp( "MAILBOX", word ) == 0 )
-    			{
-       				
-       				word = strtok( NULL, "\n" ) ;
-       				_assert( __FILE__, __LINE__, word ) ;
-   				strcpy( searchBox, word ) ;
-   				fwrite( searchBox, sizeof( char ), strlen( searchBox ), expectedResultFile ) ;
-   				fwrite( "\n", sizeof( char ), strlen( "\n" ), expectedResultFile ) ;
-   				
-   				
-			}
-	    	}
-        	fclose( configFile ) ;
-        	
-        	
-	}*/
-		
 	return 0 ;
 }
 

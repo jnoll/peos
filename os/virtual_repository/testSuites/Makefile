@@ -104,6 +104,7 @@ test:	$(TESTS)
 	testUNITquerywait > UNITquerywaitActualResult.txt
 	diff UNITquerywaitExpectedResult.txt UNITquerywaitActualResult.txt
 		
+	cp testvr.rc vr.rc
 	testUNITgetPath > UNITgetPathActualResult.txt
 	cp vr.rc $(HOME)
 	testUNITgetPath >> UNITgetPathActualResult.txt

@@ -236,15 +236,18 @@ bool isValidOperator( char *op, char *attr )
 {
 	int i ;							// used in for loop
 	char *operators[4] = { "EQ", "~", "LT", "GT" } ;	// array that stores repository operators
-	
+		
 	if( op == NULL )
 		return false;
+	else if (  (strcmp( "ID", attr ) == 0) && ( strcmp( operators[1], op ) == 0 ) )  
+		return false ;
+	else if ( ( strcmp ( "ID", attr ) == 0 ) || ( strcmp ( attr, "NAME" ) == 0 ) )
+		if ( ( strcmp( operators[2], op ) == 0 ) || ( strcmp( operators[3], op ) == 0 ) )
+			return false;
 		
 	for( i = 0 ; i < 4 ; i++ )
-	{
 		if( ( strcmp( operators[i], op ) == 0 ) )
 			return true ;
-	}
 	return false;
 }
 
@@ -261,7 +264,6 @@ bool isValidValue( char *val )
 		return false ;
 	return true ;
 }
-
 
 /************************************************************************
  * Function:	isValidConjecture					*

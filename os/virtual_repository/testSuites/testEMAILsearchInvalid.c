@@ -41,7 +41,7 @@ int main( void )
 	
 	expectedResultInvalidFile = fopen ( "EMAILsearchInvalidExpectedResult.txt", "w" ) ;
 	_assert( __FILE__, __LINE__, expectedResultInvalidFile ) ;
-	setInvalidResult( 11, expectedResultInvalidFile ) ;
+	setInvalidResult( 15, expectedResultInvalidFile ) ;
 	setEmptyResult( 10, expectedResultInvalidFile ) ;
 	fclose( expectedResultInvalidFile ) ;	
 	

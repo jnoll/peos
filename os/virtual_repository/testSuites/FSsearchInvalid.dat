@@ -3,3 +3,7 @@ ID EQ
 ID Q
 ID ,
 ID .
+ID GT
+ID LT
+NAME GT
+NAME LT
