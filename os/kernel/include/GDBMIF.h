@@ -19,7 +19,8 @@ public:
 			      string& procName,
 			      string& errorMsg );
 
-	bool  InitProcessState( const string& procName,
+	bool  InitProcessState( const string& modelName,
+				const string& procName,
 			        const string& parentName,
 			        int startPC,
 		                string& errorMsg );

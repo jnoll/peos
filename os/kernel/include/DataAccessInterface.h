@@ -14,10 +14,15 @@ public:
 		                      const string& userName,
 				      string& procName,
 				      string& errorMsg ) = 0;
-	virtual bool  InitProcessState( const string& procName,
+	virtual bool  InitProcessState( const string& modelName,
+					const string& procName,
 			                const string& parentName,
 			                int startPC,
 		                        string& errorMsg ) = 0;
+	bool  InitProcessState( const string& procName,
+			                const string& parentName,
+			                int startPC,
+		                        string& errorMsg );
 	virtual vector<string> QueryActions( const string& userName, int state ) = 0;
 
         virtual vector<string> GetCreatedProcs( const string& userName ) = 0;

@@ -13,39 +13,42 @@ class DataAccessInterface;
 class UIMessageHandler : OSThread
 {
 public:
-	UIMessageHandler( bool useRepositoryIF = false );
-	UIMessageHandler( int soc, bool useRepositoryIF = false );
-	virtual ~UIMessageHandler();
-	virtual void Init();
+    UIMessageHandler( bool useRepositoryIF = false );
+    UIMessageHandler( int soc, bool useRepositoryIF = false );
+    virtual ~UIMessageHandler();
+    virtual void Init();
 
-	void SetSocket( int soc ) { socket = soc; }
-	int  GetSocket() const { return socket; }
+    void SetSocket( int soc ) { socket = soc; }
+    int  GetSocket() const { return socket; }
 
-	bool IsActive();
+    bool IsActive();
 
-	static int GetSessionCount() { return sessionCount; }
+    static int GetSessionCount() { return sessionCount; }
 
 protected:
-	bool DoneAction( const string& procName, const string& actionName );
-	bool RunAction( const string& procName, const string& actionName );
-        bool SuspendAction( const string& procName, const string& actionName );
-        bool AbortProcess( const string& procName );
-	void Main();
+    bool DoneAction( const string& procName, const string& actionName );
+    bool RunAction( const string& procName, const string& actionName );
+    bool SuspendAction( const string& procName, const string& actionName );
+    bool AbortProcess( const string& procName );
+    void Main();
 
-	bool CreateProcess( const string& modelName, const string& parentName, int startPC );
-	bool SendHelp();
-	bool SendMessage( const string& message );
-	bool ListModels();
-	bool Login();
-	bool QueryActions( Event event );
-	bool Authenticate( const string& uname, const string& passwd );
+    bool CreateProcess( const string& modelName, const string& parentName, int startPC );
+    bool SendHelp();
+    bool SendMessage( const string& message );
+    bool ListModels();
+    bool Login();
+    bool QueryActions( Event event );
+    bool Authenticate( const string& uname, const string& passwd );
+    bool CheckPrivilege( const string& model, const string& action );
+
 private:
-	int			socket;
-	string			userName;
-	string			password;
-	set<string>		processNames;
-	static int		sessionCount;
-	DataAccessInterface*	dataAccessIF;
+    int	                    socket;
+    string                  userName;
+    string                  password;
+    set<string>	            processNames;
+    list<string>            roles;
+    static int              sessionCount;
+    DataAccessInterface*    dataAccessIF;
 	
 };
 

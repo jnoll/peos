@@ -29,7 +29,7 @@ void main( int argc, char** argv )
             uinfo->pw_passwd = crypt(argv[2], salt);         
     }
 
-    if((password_file = fopen("../peos_passwd", "a")) == NULL) {
+    if((password_file = fopen("./peos_passwd", "a")) == NULL) {
         cerr << "Could not find password file\n";
         exit(1);
     }

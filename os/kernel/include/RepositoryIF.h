@@ -18,10 +18,11 @@ public:
 				      string& procName,
 				      string& errorMsg );
 
-	bool  InitProcessState( const string& procName,
-			                const string& parentName,
-			                int startPC,
-		                        string& errorMsg );
+	bool  InitProcessState( const string& modelName,
+                                const string& procName,
+			        const string& parentName,
+			        int startPC,
+		                string& errorMsg );
 
 	vector<string> QueryActions( const string& userName, int state );
 
