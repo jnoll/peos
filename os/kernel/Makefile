@@ -16,7 +16,7 @@ LDFLAGS = -g -L../../lib
 
 # objects
 OBJS = \
-$(PALM_CORE_OBJS)
+$(CORE_OBJS)
 
 PALM_CORE_OBJS = \
 action.o \

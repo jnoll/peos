@@ -2,7 +2,7 @@
 CC = m68k-palmos-gcc
 
 
-CFLAGS = -DPALM -g -I../.. -Wall
+CFLAGS = -DPALM -g -I../palm -I../.. -I/usr/m68k-palmos -Wall
 #CFLAGS = -g -I../.. -Wall
 
 # keep track of dependencies automatically
@@ -10,7 +10,7 @@ CFLAGS = -DPALM -g -I../.. -Wall
 
 # lib
 LIBRARY = libpeos.a
-LIBS = $(LIBRARY) ../../pml/libpml.a 
+LIBS = $(LIBRARY) ../../pml/libpalmpml.a 
 PARSER = ../../pml/
 
 CORE_LIBS = -ltcl
@@ -29,14 +29,6 @@ graph_engine.o \
 process_table.o \
 process.o \
 resources.o 
-
-PARSER_PALM_OBJS= \
-${PARSER}/graph.o \
-${PARSER}/list.o \
-${PARSER}/parser.o \
-${PARSER}/scannerPalm.o \
-${PARSER}/tree.o \
-${PARSER}/palmfunctions.o 
 
 # sources
 SOURCES = $(OBJS:.o=.c)
