@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: uiConfig.tcl,v 1.1 1999/05/06 04:24:54 jneuder Exp $
+## File Information: $Id: uiConfig.tcl,v 1.2 1999/05/06 18:50:16 jneuder Exp $
 #######################################################################
 
 #######################################################################
@@ -12,7 +12,7 @@
 package provide uiConfig 1.0
 
 namespace eval ::uiConfig:: {
-       
+
      variable UsrCfg
      variable DebugOn 0
      variable ModuleName "uiConfig\:\:"
@@ -21,12 +21,13 @@ namespace eval ::uiConfig:: {
 #
 # Attempt to set a default config file
 #
-     if {[file exists "$env(PWD)/.pmlrc"]} then {
-         set UsrCfg(ConfigFile) "$env(PWD)/.pmlrc"
+     if {![string compare $tcl_platform(platform) "unix"] && \
+	 [file exists "$env(PWD)/.pmlrc"]} then {
+	 set UsrCfg(ConfigFile) "$env(PWD)/.pmlrc"
      } elseif {[file exists "$env(HOME)/.pmlrc"]} then {
-         set UsrCfg(ConfigFile) "$env(HOME)/.pmlrc"
+	 set UsrCfg(ConfigFile) "$env(HOME)/.pmlrc"
      } else {
-         set UsrCfg(ConfigFile) ""
+	 set UsrCfg(ConfigFile) ""
      }
 #
 # Clear the Engine Port and Host Name
@@ -55,10 +56,10 @@ namespace eval ::uiConfig:: {
 
 #######################################################################
 # Function name:  ::uiConfig::TurnDebugOn
-# Precondition:   ::uiConfig namepace must be loaded       
+# Precondition:	  ::uiConfig namepace must be loaded
 # Postcondition:  variable Debug is Set to 1
-# Description:    Turns on Debugging Feature of Module
-# Arguments:      None.
+# Description:	  Turns on Debugging Feature of Module
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::TurnDebugOn {} {
 
@@ -68,8 +69,8 @@ proc ::uiConfig::TurnDebugOn {} {
     set DebugOn 1
 
     if {$DebugOn} then {
-        puts stdout [format "%s Turning Debug On" \
-                         $ModuleName]
+	puts stdout [format "%s Turning Debug On" \
+			 $ModuleName]
     }
 
     return 1
@@ -77,19 +78,19 @@ proc ::uiConfig::TurnDebugOn {} {
 
 #######################################################################
 # Function name:  ::uiConfig::TurnDebugOff
-# Precondition:   ::uiConfig namepace must be loaded       
+# Precondition:	  ::uiConfig namepace must be loaded
 # Postcondition:  variable Debug is Set to 0
-# Description:    Turns off Debugging Feature of Module
-# Arguments:      None.
+# Description:	  Turns off Debugging Feature of Module
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::TurnDebugOff {} {
 
     variable DebugOn
     variable ModuleName
-  
+
     if {$DebugOn} then {
-        puts stdout [format "%s Turning Debug Off." \
-                         $ModuleName]
+	puts stdout [format "%s Turning Debug Off." \
+			 $ModuleName]
     }
 
     set DebugOn 0
@@ -99,42 +100,42 @@ proc ::uiConfig::TurnDebugOff {} {
 
 #######################################################################
 # Function name:  ::uiConfig::Init
-# Precondition:   ::uiConfig namepace must be loaded and the uiConfig
-#                 module has not yet been initialized.       
+# Precondition:	  ::uiConfig namepace must be loaded and the uiConfig
+#		  module has not yet been initialized.
 # Postcondition:  The command-line is parsed for arguments. The config
-#                 file is parsed if specified.
-# Description:    Initializes the UsrCfg array with information 
-#                 provided in the command-line.
-# Arguments:      None.
+#		  file is parsed if specified.
+# Description:	  Initializes the UsrCfg array with information
+#		  provided in the command-line.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::Init {} {
 
     variable DebugOn
     variable ModuleName
-  
+
     if {$DebugOn} then {
-        puts stdout [format "%s Initializing Module" \
-                         $ModuleName]
+	puts stdout [format "%s Initializing Module" \
+			 $ModuleName]
     }
- 
-    ::uiConfig::ParseCommandLine 
+
+    ::uiConfig::ParseCommandLine
     ::uiConfig::LoadConfigFile
-  
+
     if {$DebugOn} then {
-        puts stdout [format "%s Module Initialization Complete" \
-                         $ModuleName]
+	puts stdout [format "%s Module Initialization Complete" \
+			 $ModuleName]
     }
-    
+
     return 1
 }
 
 #######################################################################
 # Function name:  ::uiConfig::PrintCmdLineOptions
-# Precondition:   ::uiConfig module has been loaded and the -h or -help
-#                 option has been specified.       
+# Precondition:	  ::uiConfig module has been loaded and the -h or -help
+#		  option has been specified.
 # Postcondition:  Prints Command-line arguments and then exits.
-# Description:    Prints Command-line arguments and then exits.
-# Arguments:      None.
+# Description:	  Prints Command-line arguments and then exits.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::PrintCmdLineOptions {} {
 
@@ -157,16 +158,16 @@ proc ::uiConfig::PrintCmdLineOptions {} {
 
     exit
 }
-    
+
 #######################################################################
 # Function name:  ::uiConfig::SetConfigFile
-# Precondition:   ::uiConfig namespace must be loaded. Configuration
-#                 FileName must be set      
+# Precondition:	  ::uiConfig namespace must be loaded. Configuration
+#		  FileName must be set
 # Postcondition:  UsrCfg ConfigFile array field is set to passed in
-#                 configuartion file.
-# Description:    Checks to see if the config file passed in exists.
-#                 If it is set according to the Postcondition above.
-# Arguments:      configFile --> Name of UI Configuration File
+#		  configuartion file.
+# Description:	  Checks to see if the config file passed in exists.
+#		  If it is set according to the Postcondition above.
+# Arguments:	  configFile --> Name of UI Configuration File
 #######################################################################
 proc ::uiConfig::SetConfigFile {configFile} {
 
@@ -175,17 +176,17 @@ proc ::uiConfig::SetConfigFile {configFile} {
     variable ModuleName
 
     if {$DebugOn} then {
-        puts stdout [format "%s Setting Config File To %s" \
-                         $ModuleName $configFile]
+	puts stdout [format "%s Setting Config File To %s" \
+			 $ModuleName $configFile]
     }
 
     if {[file exists $configFile]} then {
-        set UsrCfg(ConfigFile) $configFile
+	set UsrCfg(ConfigFile) $configFile
     } else {
-        ::uiErrorHandler::SendMsg \
-            [format "%s Config File\: %s Does Not Exist" \
-                 $ModuleName $configFile]
-        return 0
+	::uiErrorHandler::SendMsg \
+	    [format "%s Config File\: %s Does Not Exist" \
+		 $ModuleName $configFile]
+	return 0
     }
 
     return 1
@@ -193,14 +194,14 @@ proc ::uiConfig::SetConfigFile {configFile} {
 
 #######################################################################
 # Function name:  ::uiConfig::GetConfigFile
-# Precondition:   ::uiConfig namespace must be loaded. Configuration
-#                 FileName must be set      
+# Precondition:	  ::uiConfig namespace must be loaded. Configuration
+#		  FileName must be set
 # Postcondition:  Config File name is returned
-# Description:    Returns Config File Name.
-# Arguments:      None.
+# Description:	  Returns Config File Name.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::GetConfigFile {} {
-    
+
     variable UsrCfg
 
     return $UsrCfg(ConfigFile)
@@ -208,14 +209,14 @@ proc ::uiConfig::GetConfigFile {} {
 
 #######################################################################
 # Function name:  ::uiConfig::SetEngineHost
-# Precondition:   ::uiConfig namespace must be loaded. Valid Engine
-#                 Engine Host Name.      
+# Precondition:	  ::uiConfig namespace must be loaded. Valid Engine
+#		  Engine Host Name.
 # Postcondition:  The EngineHost field of the UsrCfg Array is set to
-#                 the host passed in.
-# Description:    The EngineHost field of the UsrCfg Array is set to
-#                 the host passed in.
-# Arguments:      engineHost --> String containing the Hostname of the
-#                 Engine.
+#		  the host passed in.
+# Description:	  The EngineHost field of the UsrCfg Array is set to
+#		  the host passed in.
+# Arguments:	  engineHost --> String containing the Hostname of the
+#		  Engine.
 #######################################################################
 proc ::uiConfig::SetEngineHost {engineHost} {
 
@@ -224,8 +225,8 @@ proc ::uiConfig::SetEngineHost {engineHost} {
     variable ModuleName
 
     if {$DebugOn} then {
-        puts stdout [format "%s Setting Engine Host To %s" \
-                         $ModuleName $engineHost]
+	puts stdout [format "%s Setting Engine Host To %s" \
+			 $ModuleName $engineHost]
     }
 
     set UsrCfg(EngineHost) $engineHost
@@ -235,14 +236,14 @@ proc ::uiConfig::SetEngineHost {engineHost} {
 
 #######################################################################
 # Function name:  ::uiConfig::GetEngineHost
-# Precondition:   ::uiConfig namespace must be loaded. Valid Engine
-#                 Engine Host Name.      
+# Precondition:	  ::uiConfig namespace must be loaded. Valid Engine
+#		  Engine Host Name.
 # Postcondition:  The host name of the Engine is returned.
-# Description:    Returns the hostname of the Engine Host.
-# Arguments:      None.
+# Description:	  Returns the hostname of the Engine Host.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::GetEngineHost {} {
-    
+
     variable UsrCfg
 
     return $UsrCfg(EngineHost)
@@ -250,14 +251,14 @@ proc ::uiConfig::GetEngineHost {} {
 
 #######################################################################
 # Function name:  ::uiConfig::SetEnginePort
-# Precondition:   ::uiConfig namespace must be loaded. Valid Engine
-#                 Engine Port Number.      
+# Precondition:	  ::uiConfig namespace must be loaded. Valid Engine
+#		  Engine Port Number.
 # Postcondition:  The EnginePort field of the UsrCfg Array is set to
-#                 the port number passed in.
-# Description:    The EnginePort field of the UsrCfg Array is set to
-#                 the port number passed in.
-# Arguments:      enginePort --> String containing the Port Number of
-#                 the Engine.
+#		  the port number passed in.
+# Description:	  The EnginePort field of the UsrCfg Array is set to
+#		  the port number passed in.
+# Arguments:	  enginePort --> String containing the Port Number of
+#		  the Engine.
 #######################################################################
 proc ::uiConfig::SetEnginePort {enginePort} {
 
@@ -266,8 +267,8 @@ proc ::uiConfig::SetEnginePort {enginePort} {
     variable ModuleName
 
     if {$DebugOn} then {
-        puts stdout [format "%s Setting Engine Port To %s" \
-                         $ModuleName $enginePort]
+	puts stdout [format "%s Setting Engine Port To %s" \
+			 $ModuleName $enginePort]
     }
 
     set UsrCfg(EnginePort) $enginePort
@@ -277,11 +278,11 @@ proc ::uiConfig::SetEnginePort {enginePort} {
 
 #######################################################################
 # Function name:  ::uiConfig::GetEnginePort
-# Precondition:   ::uiConfig namespace must be loaded. Valid Engine
-#                 Engine Port Number
+# Precondition:	  ::uiConfig namespace must be loaded. Valid Engine
+#		  Engine Port Number
 # Postcondition:  The port number of the engine is returned.
-# Description:    Returns the port number of the Engine Host.
-# Arguments:      None.
+# Description:	  Returns the port number of the Engine Host.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::GetEnginePort {} {
 
@@ -292,13 +293,13 @@ proc ::uiConfig::GetEnginePort {} {
 
 #######################################################################
 # Function name:  ::uiConfig::SetWebBrowser
-# Precondition:   ::uiConfig namespace must be loaded. Valid Web Browser
-#                 command must be passed in.      
+# Precondition:	  ::uiConfig namespace must be loaded. Valid Web Browser
+#		  command must be passed in.
 # Postcondition:  The WebBrowser field of the UsrCfg Array is set to
-#                 the web browser command passed in.
-# Description:    The WebBrowser field of the UsrCfg Array is set to
-#                 the web browser in.
-# Arguments:      webBrowser --> Web Browser Command.
+#		  the web browser command passed in.
+# Description:	  The WebBrowser field of the UsrCfg Array is set to
+#		  the web browser in.
+# Arguments:	  webBrowser --> Web Browser Command.
 #######################################################################
 proc ::uiConfig::SetWebBrowser {webBrowser} {
 
@@ -307,8 +308,8 @@ proc ::uiConfig::SetWebBrowser {webBrowser} {
     variable ModuleName
 
     if {$DebugOn} then {
-        puts stdout [format "%s Setting Web Browser Command To %s" \
-                         $ModuleName $webBrowser]
+	puts stdout [format "%s Setting Web Browser Command To %s" \
+			 $ModuleName $webBrowser]
     }
 
     set UsrCfg(WebBrowser) $webBrowser
@@ -318,14 +319,14 @@ proc ::uiConfig::SetWebBrowser {webBrowser} {
 
 #######################################################################
 # Function name:  ::uiConfig::GetWebBrowser
-# Precondition:   ::uiConfig namespace must be loaded. A valid web
-#                 browser must be set in the UsrCfg array. 
+# Precondition:	  ::uiConfig namespace must be loaded. A valid web
+#		  browser must be set in the UsrCfg array.
 # Postcondition:  Returns the name of the Web Browser command.
-# Description:    Returns the name of the Web Browser command.
-# Arguments:      None.
+# Description:	  Returns the name of the Web Browser command.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::GetWebBrowser {} {
-    
+
     variable UsrCfg
 
     return $UsrCfg(WebBrowser)
@@ -333,11 +334,11 @@ proc ::uiConfig::GetWebBrowser {} {
 
 #######################################################################
 # Function name:  ::uiConfig::ParseCommandLine
-# Precondition:   ::uiConfig namespace must be loaded.
-# Postcondition:  The UsrCfg array has its fields set based on 
-#                 parameters provided on the command-line.
-# Description:    Loads arguments passed in on the command-line.
-# Arguments:      None.
+# Precondition:	  ::uiConfig namespace must be loaded.
+# Postcondition:  The UsrCfg array has its fields set based on
+#		  parameters provided on the command-line.
+# Description:	  Loads arguments passed in on the command-line.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::ParseCommandLine {} {
 
@@ -349,33 +350,33 @@ proc ::uiConfig::ParseCommandLine {} {
     variable TempEnginePort ""
     variable TempConfigFile ""
     variable Temp
-    variable Temp2 
+    variable Temp2
     variable Temp3
 
     if {$DebugOn} then {
-        puts stdout [format "%s Starting to Parse Command Line" \
-                         $ModuleName]
+	puts stdout [format "%s Starting to Parse Command Line" \
+			 $ModuleName]
     }
 
     if {[regexp -nocase {([^ ]+):([0-9]+)} \
-             $::argv Temp TempEngineHost TempEnginePort]} then {
-        ::uiConfig::SetEngineHost $TempEngineHost
-        ::uiConfig::SetEnginePort $TempEnginePort
-        set HostSet 1
-        set PortSet 1
+	     $::argv Temp TempEngineHost TempEnginePort]} then {
+	::uiConfig::SetEngineHost $TempEngineHost
+	::uiConfig::SetEnginePort $TempEnginePort
+	set HostSet 1
+	set PortSet 1
     }
     if {[regexp -nocase {(^|[ ]+)-f[ ]+([^\-][^ ]*)} \
-             $::argv Temp Temp2 TempConfigFile]} then {
+	     $::argv Temp Temp2 TempConfigFile]} then {
 
-        ::uiConfig::SetConfigFile $TempConfigFile
+	::uiConfig::SetConfigFile $TempConfigFile
     }
     if {[regexp -nocase {(^|[ ]+)-h(elp)?} $::argv]} then {
 
-        ::uiConfig::PrintCmdLineOptions
+	::uiConfig::PrintCmdLineOptions
     }
 
     if {[regexp -nocase {(^|[ ]+)-debug} $::argv]} then {
-     
+
        ::parser::TurnDebugOn
        ::generator::TurnDebugOn
        ::uiEngConn::TurnDebugOn
@@ -383,26 +384,26 @@ proc ::uiConfig::ParseCommandLine {} {
     }
 
     if {$DebugOn} then {
-        puts stdout [format "%s Completed Command Line Parsing" \
-                         $ModuleName]
-    }    
-   
+	puts stdout [format "%s Completed Command Line Parsing" \
+			 $ModuleName]
+    }
+
     return 1
 }
 
 #######################################################################
 # Function name:  ::uiConfig::LoadConfigFile
-# Precondition:   ::uiConfig namespace must be loaded. A valid config
-#                 file name in the UserCfg(ConfigFile) field.
+# Precondition:	  ::uiConfig namespace must be loaded. A valid config
+#		  file name in the UserCfg(ConfigFile) field.
 # Postcondition:  The Config file is loaded and if the parameter were
-#                 not already set on the command-line they are filled
-#                 into the UsrCfg Array from information in the config 
-#                 file.
-# Description:    The Config file is loaded and if the parameter were
-#                 not already set on the command-line they are filled
-#                 into the UsrCfg Array from information in the config 
-#                 file.
-# Arguments:      None.
+#		  not already set on the command-line they are filled
+#		  into the UsrCfg Array from information in the config
+#		  file.
+# Description:	  The Config file is loaded and if the parameter were
+#		  not already set on the command-line they are filled
+#		  into the UsrCfg Array from information in the config
+#		  file.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::LoadConfigFile {} {
 
@@ -413,61 +414,61 @@ proc ::uiConfig::LoadConfigFile {} {
      variable HostSet
 
      if {$UsrCfg(ConfigFile) == ""} then {
-         puts stdout [format "%s No Config File Specified" \
-                          $ModuleName]
-         return 0
+	 puts stdout [format "%s No Config File Specified" \
+			  $ModuleName]
+	 return 0
      } elseif {![file exists $UsrCfg(ConfigFile)]} then {
-         ::uiErrorHandler::SendMsg \
-             [format "%s Config File\: %s Does Not Exist" \
-                  $ModuleName $configFile]
-         return 0
+	 ::uiErrorHandler::SendMsg \
+	     [format "%s Config File\: %s Does Not Exist" \
+		  $ModuleName $configFile]
+	 return 0
      }
 
      if {$DebugOn} then {
-         puts stdout [format "%s Loading Config File %s" \
-                          $ModuleName $UsrCfg(ConfigFile)]
-     } 
+	 puts stdout [format "%s Loading Config File %s" \
+			  $ModuleName $UsrCfg(ConfigFile)]
+     }
 
      set configFd [open $UsrCfg(ConfigFile) r]
 
      while {[gets $configFd aCfgLine] >= 0} {
 
-         if {[regexp {([^ ]+):[ \x9]+([^ ]+)} \
-                  $aCfgLine Temp elementName elementValue]} then {
+	 if {[regexp {([^ ]+):[ \x9]+([^ ]+)} \
+		  $aCfgLine Temp elementName elementValue]} then {
 
-             if {![string compare $elementName "EnginePort"]  && \
-                      $PortSet || \
-                     ![string compare $elementName "EngineHost"] \
-                     && $HostSet} then {
-                 continue
-             } 
+	     if {![string compare $elementName "EnginePort"]  && \
+		      $PortSet || \
+		     ![string compare $elementName "EngineHost"] \
+		     && $HostSet} then {
+		 continue
+	     }
 
-             set UsrCfg($elementName) $elementValue
-         }
+	     set UsrCfg($elementName) $elementValue
+	 }
      }
-         
+
      set HostSet 0
      set PortSet 0
 
      close $configFd
 
      if {$DebugOn} then {
-         puts stdout [format "%s Completed Loading Config File %s" \
-                          $ModuleName $UsrCfg(ConfigFile)]
-     } 
+	 puts stdout [format "%s Completed Loading Config File %s" \
+			  $ModuleName $UsrCfg(ConfigFile)]
+     }
 
      return 1
 }
 
 #######################################################################
 # Function name:  ::uiConfig::SaveConfigFile
-# Precondition:   ::uiConfig namespace must be loaded. A valid config
-#                 file name must be passed in.
+# Precondition:	  ::uiConfig namespace must be loaded. A valid config
+#		  file name must be passed in.
 # Postcondition:  Information in the UsrCfg array is saved into the
-#                 Configuration File specified as an input parameter.   
-# Description:    Information in the UsrCfg array is saved into the
-#                 Configuration File specified as an input parameter.
-# Arguments:      configFile --> valid configuration filename.
+#		  Configuration File specified as an input parameter.
+# Description:	  Information in the UsrCfg array is saved into the
+#		  Configuration File specified as an input parameter.
+# Arguments:	  configFile --> valid configuration filename.
 #######################################################################
 proc ::uiConfig::SaveConfigFile {configFile} {
 
@@ -476,8 +477,8 @@ proc ::uiConfig::SaveConfigFile {configFile} {
      variable ModuleName
 
      if {$DebugOn} then {
-         puts stdout [format "%s Saving Config File %s" \
-                          $ModuleName $configFile]
+	 puts stdout [format "%s Saving Config File %s" \
+			  $ModuleName $configFile]
      }
 
      set configFd [open $configFile w]
@@ -485,8 +486,8 @@ proc ::uiConfig::SaveConfigFile {configFile} {
 
      while {[array anymore UsrCfg $configId]} {
 
-         set usrField [array nextelement UsrCfg $configId]
-         puts $configFd "$usrField\: $UsrCfg($usrField)"
+	 set usrField [array nextelement UsrCfg $configId]
+	 puts $configFd "$usrField\: $UsrCfg($usrField)"
      }
 
      array donesearch UsrCfg $configId
@@ -494,22 +495,22 @@ proc ::uiConfig::SaveConfigFile {configFile} {
      close $configFd
 
      if {$DebugOn} then {
-         puts stdout [format "%s Completed Saving Config File %s" \
-                          $ModuleName $UsrCfg(ConfigFile)]
-     } 
+	 puts stdout [format "%s Completed Saving Config File %s" \
+			  $ModuleName $UsrCfg(ConfigFile)]
+     }
 
      return 1
 }
 
 #######################################################################
 # Function name:  ::uiConfig::ConfigPopup
-# Precondition:   ::uiConfig namespace must be loaded. A valid mode
-#                 must be passed in (either "Open" or "Save")
+# Precondition:	  ::uiConfig namespace must be loaded. A valid mode
+#		  must be passed in (either "Open" or "Save")
 # Postcondition:  A configuration file is opened or saved depending
-#                 on the passed in mode.   
-# Description:    Displays the file dialog boxes for opening and saving
-#                 configuration files.
-# Arguments:      mode --> one of two modes: "Open" or "Save"
+#		  on the passed in mode.
+# Description:	  Displays the file dialog boxes for opening and saving
+#		  configuration files.
+# Arguments:	  mode --> one of two modes: "Open" or "Save"
 #######################################################################
 proc ::uiConfig::ConfigPopup {{ mode Open }} {
 
@@ -518,13 +519,13 @@ proc ::uiConfig::ConfigPopup {{ mode Open }} {
      variable ModuleName
 
      if {$DebugOn} then {
-         puts stdout [format "%s Displaying %s Config Popup" \
-                          $ModuleName $mode]
+	 puts stdout [format "%s Displaying %s Config Popup" \
+			  $ModuleName $mode]
      }
 
      set configFileTypes {
-         { "Default Config File" { .cfg} }
-         { "All Files" * }
+	 { "Default Config File" { .cfg} }
+	 { "All Files" * }
      }
 
      set tempFileName ""
@@ -533,32 +534,32 @@ proc ::uiConfig::ConfigPopup {{ mode Open }} {
 
      if {$mode == "Open"} then {
 
-         set tempFileName [tk_getOpenFile \
-                               -initialdir $::env(PWD) \
-                               -filetypes $configFileTypes \
-                               -title $title \
-                               -initialfile ".pmlrc" \
-                               -parent .]
-     
-         if {[string compare $tempFileName ""] && \
-                 [file exists $tempFileName]} then {
-         set UsrCfg(ConfigFile) $tempFileName
-             ::uiConfig::LoadConfigFile
-         }
+	 set tempFileName [tk_getOpenFile \
+			       -initialdir $::env(PWD) \
+			       -filetypes $configFileTypes \
+			       -title $title \
+			       -initialfile ".pmlrc" \
+			       -parent .]
+
+	 if {[string compare $tempFileName ""] && \
+		 [file exists $tempFileName]} then {
+	 set UsrCfg(ConfigFile) $tempFileName
+	     ::uiConfig::LoadConfigFile
+	 }
 
      } elseif {$mode == "Save"} then {
 
-         set tempFileName [tk_getSaveFile \
-                               -initialdir $::env(PWD) \
-                               -defaultextension ".cfg" \
-                               -filetypes $configFileTypes \
-                               -title $title  \
-                               -initialfile ".pmlrc" \
-                               -parent .]
+	 set tempFileName [tk_getSaveFile \
+			       -initialdir $::env(PWD) \
+			       -defaultextension ".cfg" \
+			       -filetypes $configFileTypes \
+			       -title $title  \
+			       -initialfile ".pmlrc" \
+			       -parent .]
 
-         if {[string compare $tempFileName ""]} then {
-             ::uiConfig::SaveConfigFile $tempFileName
-         }
+	 if {[string compare $tempFileName ""]} then {
+	     ::uiConfig::SaveConfigFile $tempFileName
+	 }
      }
 
      return 1
@@ -566,13 +567,13 @@ proc ::uiConfig::ConfigPopup {{ mode Open }} {
 
 #######################################################################
 # Function name:  ::uiConfig::OptionsPopup
-# Precondition:   ::uiConfig namespace must be loaded. Valid options
-#                 should be stored in the UsrCfg array.
+# Precondition:	  ::uiConfig namespace must be loaded. Valid options
+#		  should be stored in the UsrCfg array.
 # Postcondition:  UsrCfg entries are set based off on information
-#                 set by the user through the popup.   
-# Description:    UsrCfg entries are set based off on information
-#                 set by the user through the popup.   
-# Arguments:      None.
+#		  set by the user through the popup.
+# Description:	  UsrCfg entries are set based off on information
+#		  set by the user through the popup.
+# Arguments:	  None.
 #######################################################################
 proc ::uiConfig::OptionsPopup {} {
 
@@ -583,8 +584,8 @@ proc ::uiConfig::OptionsPopup {} {
      variable fieldPadding 5
 
 # created a nested namespace for callbacks
-    
-     namespace  eval ::uiConfig::OptionsPopup::Callbacks {
+
+     namespace	eval ::uiConfig::OptionsPopup::Callbacks {
 
      }
 
@@ -592,21 +593,21 @@ proc ::uiConfig::OptionsPopup {} {
 
      proc ::uiConfig::OptionsPopup::Callbacks::resetOpts {} {
 
-         .uiOptions.optFields.webBrowserCommand delete 0 \
-             $::uiConfig::entryWidth
-         .uiOptions.optFields.engineHostName delete 0 \
-             $::uiConfig::entryWidth
-         .uiOptions.optFields.enginePortNumber delete 0 \
-             $::uiConfig::entryWidth
+	 .uiOptions.optFields.webBrowserCommand delete 0 \
+	     $::uiConfig::entryWidth
+	 .uiOptions.optFields.engineHostName delete 0 \
+	     $::uiConfig::entryWidth
+	 .uiOptions.optFields.enginePortNumber delete 0 \
+	     $::uiConfig::entryWidth
 
-         .uiOptions.optFields.webBrowserCommand insert 0 \
-             [::uiConfig::GetWebBrowser]
-         .uiOptions.optFields.engineHostName insert 0 \
-             [::uiConfig::GetEngineHost]
-         .uiOptions.optFields.enginePortNumber insert 0 \
-             [::uiConfig::GetEnginePort]
+	 .uiOptions.optFields.webBrowserCommand insert 0 \
+	     [::uiConfig::GetWebBrowser]
+	 .uiOptions.optFields.engineHostName insert 0 \
+	     [::uiConfig::GetEngineHost]
+	 .uiOptions.optFields.enginePortNumber insert 0 \
+	     [::uiConfig::GetEnginePort]
 
-         return 1
+	 return 1
      }
 
 # save settings in the popup into the UsrCfg array when
@@ -614,22 +615,22 @@ proc ::uiConfig::OptionsPopup {} {
 
      proc ::uiConfig::OptionsPopup::Callbacks::saveOpts {} {
 
-         ::uiConfig::SetEngineHost \
-             [.uiOptions.optFields.engineHostName get]
+	 ::uiConfig::SetEngineHost \
+	     [.uiOptions.optFields.engineHostName get]
 
-         ::uiConfig::SetEnginePort \
-             [.uiOptions.optFields.enginePortNumber get]
+	 ::uiConfig::SetEnginePort \
+	     [.uiOptions.optFields.enginePortNumber get]
 
-          ::uiConfig::SetWebBrowser \
-             [.uiOptions.optFields.webBrowserCommand get]
+	  ::uiConfig::SetWebBrowser \
+	     [.uiOptions.optFields.webBrowserCommand get]
 
-         return 1
+	 return 1
      }
 
 
      if {$DebugOn} then {
-         puts stdout [format "%s Displaying Options Popup" \
-                          $ModuleName]
+	 puts stdout [format "%s Displaying Options Popup" \
+			  $ModuleName]
      }
 
 # Create top level popup window
@@ -640,7 +641,7 @@ proc ::uiConfig::OptionsPopup {} {
 
      frame .uiOptions.optFields
      pack .uiOptions.optFields -expand yes -fill both \
-         -padx $fieldPadding -pady $fieldPadding
+	 -padx $fieldPadding -pady $fieldPadding
 
 # Create a separator of aesthetics
 
@@ -649,9 +650,9 @@ proc ::uiConfig::OptionsPopup {} {
 
 # Create a frame to place buttons
 
-     frame .uiOptions.optControls 
+     frame .uiOptions.optControls
      pack .uiOptions.optControls -fill x \
-         -padx $fieldPadding -pady $fieldPadding
+	 -padx $fieldPadding -pady $fieldPadding
 
 # Create Web Browser option field
 
@@ -659,54 +660,54 @@ proc ::uiConfig::OptionsPopup {} {
      entry .uiOptions.optFields.webBrowserCommand -width $entryWidth
 
 # Create Engine Host option field
- 
+
      label .uiOptions.optFields.engineHostLabel -text "Engine Host Name: "
      entry .uiOptions.optFields.engineHostName -width $entryWidth
 
 # Create Engine Port Option field
-        
+
      label .uiOptions.optFields.enginePortLabel -text "Engine Port Number: "
      entry .uiOptions.optFields.enginePortNumber -width $entryWidth
 
 # Create Save, Reset and Cancel buttons
 
      button .uiOptions.optControls.saveButton -text "Save" \
-         -command {::uiConfig::OptionsPopup::Callbacks::saveOpts}
+	 -command {::uiConfig::OptionsPopup::Callbacks::saveOpts}
      button .uiOptions.optControls.resetButton -text "Reset" \
-         -command {::uiConfig::OptionsPopup::Callbacks::resetOpts}
+	 -command {::uiConfig::OptionsPopup::Callbacks::resetOpts}
      button .uiOptions.optControls.cancelButton -text "Cancel" \
-         -command {destroy .uiOptions}
+	 -command {destroy .uiOptions}
 
 # Place fields and buttons onto popup
 
      grid .uiOptions.optFields.webBrowserLabel -row 0 -col 0 -sticky e \
-          -padx $fieldPadding -pady $fieldPadding
+	  -padx $fieldPadding -pady $fieldPadding
      grid .uiOptions.optFields.webBrowserCommand -row 0 -col 1 -sticky w \
-          -padx $fieldPadding -pady $fieldPadding
+	  -padx $fieldPadding -pady $fieldPadding
 
      grid .uiOptions.optFields.engineHostLabel -row 1 -col 0 -sticky e \
-          -padx $fieldPadding -pady $fieldPadding         
+	  -padx $fieldPadding -pady $fieldPadding
      grid .uiOptions.optFields.engineHostName -row 1 -col 1 -sticky w \
-          -padx $fieldPadding -pady $fieldPadding
+	  -padx $fieldPadding -pady $fieldPadding
 
      grid .uiOptions.optFields.enginePortLabel -row 2 -col 0 -sticky e \
-         -padx $fieldPadding -pady $fieldPadding
+	 -padx $fieldPadding -pady $fieldPadding
      grid .uiOptions.optFields.enginePortNumber -row 2 -col 1 -sticky w \
-         -padx $fieldPadding -pady $fieldPadding
+	 -padx $fieldPadding -pady $fieldPadding
 
      grid .uiOptions.optControls.saveButton -row 0 -col 0 \
-         -padx $fieldPadding -pady $fieldPadding
+	 -padx $fieldPadding -pady $fieldPadding
      grid .uiOptions.optControls.resetButton -row 0 -col 1 \
-         -padx $fieldPadding -pady $fieldPadding
+	 -padx $fieldPadding -pady $fieldPadding
      grid .uiOptions.optControls.cancelButton -row 0 -col 2 \
-         -padx $fieldPadding -pady $fieldPadding
+	 -padx $fieldPadding -pady $fieldPadding
 
-# initalize option entries to current settings         
+# initalize option entries to current settings
 
      ::uiConfig::OptionsPopup::Callbacks::resetOpts
 
 # display window title and wait for users input
-    
+
      wm title .uiOptions "PML UI Options"
      tkwait window .uiOptions
 
