@@ -21,9 +21,8 @@ testFSsearchInvalid \
 testFSsearchEmpty \
 testUNITandResult \
 testUNITorResult \
-testUnitquerywait \
+testUNITquerywait \
 testUpdateTestSite
-#testEmail
 
 FS_ACTUAL_RESULT_FILES = \
 VRsetupActualResult.txt \
@@ -33,8 +32,7 @@ FSsearchInvalidActualResult.txt \
 FSsearchEmptyActualResult.txt\
 UNITandResultActualResult.txt \
 UNITorResultActualResult.txt \
-UnitquerywaitActualResult.txt \
-testEmailActualResult.txt
+UNITquerywaitActualResult.txt \
 
 FS_EXPECTED_RESULT_FILES = \
 FSsearchEnd2EndExpectedResult.txt \
@@ -43,14 +41,9 @@ FSsearchInvalidExpectedResult.txt \
 FSsearchEmptyExpectedResult.txt\
 UNITandResultExpectedResult.txt \
 UNITorResultExpectedResult.txt \
-UnitquerywaitExpectedResult.txt \
-testEmailExpectedResult.txt
-			 
-FS_QUERY_FILES = \
-FSsearchEnd2EndQuery.dat \
-FSsearchSeekQuery.dat
+UNITquerywaitExpectedResult.txt \
 
-all: $(TESTS) copyvr
+all: $(TESTS)
 
 $(LIB): $(OBJECTS)
 	$(MAKE) -C ..
@@ -65,11 +58,10 @@ test%: test%.o $(LIB)
 %.o: ../%.c
 	$(CC) $(CFLAGS) $<
 
-copyvr:
-	cp ../vr.rc .
-
 test:	$(TESTS)
 
+	cp ../vr.rc .
+	
 	testUpdateTestSite
 	
 	testFSsearchEnd2End > FSsearchEnd2EndActualResult.txt
@@ -90,8 +82,8 @@ test:	$(TESTS)
 	testUNITorResult > UNITorResultActualResult.txt
 	diff UNITorResultExpectedResult.txt UNITorResultActualResult.txt
 	
-	testUnitquerywait > UnitquerywaitActualResult.txt
-	diff UnitquerywaitExpectedResult.txt UnitquerywaitActualResult.txt
+	testUNITquerywait > UNITquerywaitActualResult.txt
+	diff UNITquerywaitExpectedResult.txt UNITquerywaitActualResult.txt
 
 #	diff testEmailExpectedResult.txt testEmailActualResult.txt
 #	testEmail > testEmailActualResult.txt
@@ -101,5 +93,4 @@ clean:
 	-rm core*
 	-rm $(FS_ACTUAL_RESULT_FILES)
 	-rm $(FS_EXPECTED_RESULT_FILES)
-	-rm $(FS_QUERY_FILES)
 	-rm $(TESTS)

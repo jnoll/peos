@@ -126,7 +126,6 @@ queryList* FSqueryTool( queryList *listpointer )
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
 						tempResults = orResult( tempResults, nameResults ) ;
 				}
-				
 			}
 			
 		}
@@ -225,7 +224,9 @@ void attributeNAME( )
 	char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configuration file
 	getSearchPath( searchPath ) ;	
 	
-	_debug( __FILE__, __LINE__, 5, "queryName is %s", queryName ) ;	
+	_debug( __FILE__, __LINE__, 5, "attributeNAME( ) : queryName is %s", queryName ) ;
+	_debug( __FILE__, __LINE__, 5, "attributeNAME( ) : searchPath is %s", searchPath ) ;	
+	
 	ftw( searchPath, getFile, 5 ) ;
 }
 
@@ -313,8 +314,10 @@ int getFile( const char *filename, const struct stat *statptr, int flag )
     				strcat( theFileName, "file://" ) ;
     				
     				if( strcmp( operatorType, "~" ) == 0 )
-    				{	    											
-					if( strstr(target,queryName ) != NULL )
+    				{	    	
+    					_debug( __FILE__, __LINE__, 5, "queryName is %s", queryName ) ;
+    					_debug( __FILE__, __LINE__, 5, "target is %s", target ) ;										
+					if( strstr( target, queryName ) != NULL )
 					{
 						strcat( theFileName, filename ) ;
 						nameResults = addResultItem ( nameResults, theFileName );

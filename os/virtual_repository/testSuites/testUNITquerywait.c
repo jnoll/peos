@@ -1,7 +1,7 @@
 /************************************************************************
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
- * Filename : testUnitquerywait.c					*
+ * Filename : testUNITquerywait.c					*
  ************************************************************************/
 
 /************************************************************************
@@ -37,7 +37,7 @@ int main( void )
 	
 	//set expectedResultInvalidFile
 	
-	testInputInvalid = fopen ( "UnitquerywaitInvalid.dat", "r" ) ;
+	testInputInvalid = fopen ( "UNITquerywaitInvalid.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputInvalid ) ;
 	numQueries = 0;
 	while ( !feof( testInputInvalid ) ) 
@@ -53,14 +53,14 @@ int main( void )
 	}
 	fclose( testInputInvalid ) ;
 
-	expectedResultFile = fopen ( "UnitquerywaitExpectedResult.txt", "w" ) ;
+	expectedResultFile = fopen ( "UNITquerywaitExpectedResult.txt", "w" ) ;
 	_assert( __FILE__, __LINE__, expectedResultFile ) ;
 	setInvalidResult( numQueries, expectedResultFile ) ;
 	
 	printQueryList(myQueries);
 	fwrite( "\nqueue list is empty!\n\n", sizeof( char ), strlen("\nqueue list is empty!\n\n"), expectedResultFile ) ;
 	
-	testInputEmpty = fopen ( "UnitquerywaitEmpty.dat", "r" ) ;
+	testInputEmpty = fopen ( "UNITquerywaitEmpty.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputEmpty ) ;
 	numQueries = 0;
 	while ( !feof( testInputEmpty ) ) 
@@ -81,7 +81,7 @@ int main( void )
 	fwrite( "\nqueue list is empty!\n\n\n", sizeof( char ), strlen("\nqueue list is empty!\n\n\n"), expectedResultFile ) ;
 	
 	
-	testInputValid = fopen ( "UnitquerywaitValid.dat", "r" ) ;
+	testInputValid = fopen ( "UNITquerywaitValid.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputValid) ;
 	numQueries = 0;
 	while ( !feof( testInputValid ) ) 
@@ -94,14 +94,12 @@ int main( void )
 			fwrite( "query is ", sizeof( char ), strlen("query is "), expectedResultFile ) ;
 			fwrite( tempString, sizeof ( char ), strlen( tempString ), expectedResultFile ) ;
 			queryString[0] = '\0' ;
-			numQueries++;
-						
-		}
+			numQueries++;		}
 	}
 	fclose( testInputValid ) ;
 	
 	printQueryList(myQueries);
-	fwrite( "\n", sizeof ( char ), strlen( "\n" ), expectedResultFile ) ;	
+	//fwrite( "\n", sizeof ( char ), strlen( "\n" ), expectedResultFile ) ;	
 	fclose( expectedResultFile ) ;
 	
 	

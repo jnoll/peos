@@ -56,6 +56,7 @@ int main( void )
 	fclose( sampleFile ) ;
 	
 	setTestData( myQueries ) ;
+	
 	setExpectedResult( ) ;	
 	
 	poll_vr( ) ;
@@ -73,7 +74,7 @@ void setExpectedResult ( )
 	char cwd[BUFFER_SIZE] = { '\0' } ;
 					
 	if( getcwd ( cwd , BUFFER_SIZE ) == NULL )
-		_debug( __FILE__, __LINE__, 5, "error in getcwd" ) ;
+		_debug( __FILE__, __LINE__, 0, "error in getcwd" ) ;
 	else
 	{
 		FILE *expectedResultFile ;
@@ -85,7 +86,7 @@ void setExpectedResult ( )
 	
 		// test for ID attribute
 	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testfile1.c\n\n" ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 	
 		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/FSsearchEnd2End.dat\n\n" ) ;
@@ -96,9 +97,13 @@ void setExpectedResult ( )
 	
 		// test for AND conjecture - ID && DATE( EQ, LT, GT )
 		
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testfile1.c\n\n" ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE2.c\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
+		
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE3.c\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
@@ -106,12 +111,66 @@ void setExpectedResult ( )
 	
 		// test for AND conjecture - ID && NAME( EQ, ~ )
 	
-		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testfile1.c\n\n" ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME3.c\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		strcat( expectedString, oneResult ) ;
 	
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;		
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		// test for OR conjecture - ID || ID || ID
 	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID3.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+	
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		// test for DATE - LT
+	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		
+		// test for DATE - EQ
+	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME2.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE2.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+	
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		// test for NAME - EQ
+	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+	
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;	
+		
+		// test for OR conjecture - NAME ~ OR DATE EQ
+	
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testID1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testNAME1.c\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "file://", cwd, "/testDir/testDATE1.c\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+	
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
 		fclose( expectedResultFile ) ;	
 	}
 }
@@ -127,7 +186,7 @@ void setTestData( queryList *listpointer )
 	{
 		char testString[BUFFER_SIZE] = { '\0' } ;		
 		char valueString[BUFFER_SIZE] = { '\0' } ;
-		
+
 		for( numClauses = 0 ; numClauses <= tempQueries -> oneQuery -> numClauses ; numClauses++ )
 		{
 			strcpy( valueString, tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
@@ -138,15 +197,20 @@ void setTestData( queryList *listpointer )
 				{
 					char cwd[BUFFER_SIZE] = { '\0' } ;
 					
+					_debug( __FILE__, __LINE__, 5, "numClauses is %d", numClauses ) ;
+					_debug( __FILE__, __LINE__, 5, "attribute is %s", tempQueries -> oneQuery -> myClauses[numClauses].attribute ) ;
+					_debug( __FILE__, __LINE__, 5, "operator is %s", tempQueries -> oneQuery -> myClauses[numClauses].operator ) ;
+					_debug( __FILE__, __LINE__, 5, "value is %s", tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
+					
 					if( getcwd ( cwd , BUFFER_SIZE ) == NULL )
-						_debug( __FILE__, __LINE__, 5, "error in getcwd" ) ;
+						_debug( __FILE__, __LINE__, 0, "error in getcwd" ) ;
 					else
 					{		
 						char *token, *value ;
 						char tempQuery[BUFFER_SIZE] = { '\0' } ;
-							
+						
 						strcpy( tempQuery, valueString ) ;
-						_debug( __FILE__, __LINE__, 5, "tempQuery is %s", tempQuery ) ;
+						_debug( __FILE__, __LINE__, 5, "valueString is %s", valueString ) ;
 						
 						token = strtok( tempQuery, ":" ) ;
 						_assert( __FILE__, __LINE__, token  ) ;
@@ -166,6 +230,8 @@ void setTestData( queryList *listpointer )
 				
 				free( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
 				tempQueries -> oneQuery -> myClauses[numClauses].value = strdup( testString ) ;	
+				_debug( __FILE__, __LINE__, 5, "testString is %s", testString ) ;
+				testString[0] = '\0' ;
 			}
 		}
 		tempQueries = ( queryList* ) tempQueries -> link ;
