@@ -131,7 +131,11 @@ Graph stub_makegraph(char *file)
    act_0 -> name = "act_0";
    act_0 -> data = (void *) malloc (sizeof (struct data));
    act_0 -> script = "test script";
-   MARKED(act_0) = 0;
+   MARKED_0(act_0) = 0;
+   MARKED_1(act_0) = 0;
+   MARKED_2(act_0) = 0;
+   MARKED_3(act_0) = 0;
+   MARKED_4(act_0) = 0;
    STATE(act_0) = ACT_NONE;
 			  
    
@@ -139,7 +143,12 @@ Graph stub_makegraph(char *file)
    act_1 -> name = "act_1";
    act_1 -> data = (void *) malloc (sizeof (struct data));
    act_1 -> script = "test script";
-   MARKED(act_1) = 0;
+   MARKED_0(act_1) = 0;
+   MARKED_1(act_1) = 0;
+   MARKED_2(act_1) = 0;
+   MARKED_3(act_1) = 0;
+   MARKED_4(act_1) = 0;
+	       
    STATE(act_1) = ACT_NONE;
 
   

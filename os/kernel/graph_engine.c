@@ -28,7 +28,6 @@ int  annotate_graph(Graph g, peos_context_t *context)
                                                                         
   for(node = g -> source; node != NULL; node = node -> next)
      {
-       MARKED(node) = FALSE;
        if (node -> type == ACTION)
         {
            STATE(node) = get_act_state(node -> name,context -> actions, context->num_actions);
@@ -58,7 +57,12 @@ void sanitize(Graph g)
 	Node n;
 	for(n = g -> source; n != NULL; n = n -> next)
 	{
-		MARKED(n) = FALSE;
+		
+		MARKED_0(n) = FALSE;
+		MARKED_1(n) = FALSE;
+		MARKED_2(n) = FALSE;
+		MARKED_3(n) = FALSE;
+		MARKED_4(n) = FALSE;
 	}
 }
 
@@ -96,24 +100,24 @@ void mark_for_iteration(Graph g)
 	 Node node,parent,child;
 	 int i,k;
 
-	 MARKED(g -> source) = TRUE;
+	 MARKED_0(g -> source) = TRUE;
 	 for(node = g -> source->next; node != NULL; node = node -> next)
          {
             for(i = 0; i < ListSize(node -> predecessors); i++)
               {
                   parent = (Node) ListIndex(node -> predecessors,i);
-                  if (MARKED(parent) == FALSE)
+                  if (MARKED_0(parent) == FALSE)
 	             {
 			     ITER_START(node) = TRUE;
 		     }
 	      }
 
-	    MARKED(node) = TRUE;
+	    MARKED_0(node) = TRUE;
 
 	    for(k = 0; k < ListSize(node -> successors); k++)
               {
                   child = (Node) ListIndex(node -> successors,k);
-                  if(MARKED(child) == TRUE)
+                  if(MARKED_0(child) == TRUE)
                      {
 			     ITER_END(node) = TRUE;
 		     }
@@ -127,7 +131,7 @@ void add_iteration_lists(Graph g)
 	Node node,child,parent,child1,child2;
 	int i,j,k,l;
 
-	MARKED(g -> source) = TRUE;
+	MARKED_1(g -> source) = TRUE;
 
 	for(node = g -> source->next; node != NULL; node = node -> next)
 	{
@@ -135,29 +139,29 @@ void add_iteration_lists(Graph g)
 	  for(i = 0; i < ListSize(node -> predecessors); i++)
 	   {
 	     parent = (Node) ListIndex(node -> predecessors,i);
-	     if (MARKED(parent) == FALSE)
+	     if (MARKED_1(parent) == FALSE)
 	     {
 	        for(j=0; j < ListSize(parent -> successors); j++) 
 	        {
 		   child = (Node) ListIndex(parent->successors,j);
-		   if((strcmp(child->name,node->name) != 0) && (ITER_START(child) == FALSE))
+		  if((strcmp(child->name,node->name) != 0) && (ORDER(child) > ORDER(parent)))
 		   {
                      ListPut(ITER_END_NODES(node),child);
 		   }
 		}
 	     }
 	   }
-	  MARKED(node) = TRUE;
+	  MARKED_1(node) = TRUE;
 
 	  for(k = 0; k < ListSize(node -> successors); k++)
 	  {
             child1 = (Node) ListIndex(node -> successors,k);
-	    if(MARKED(child1) == TRUE)
+	    if(MARKED_1(child1) == TRUE)
 	    {
 	      for(l = 0; l < ListSize(node -> successors); l++)
 	      {
 	        child2 = (Node) ListIndex(node -> successors,l);
-		if (MARKED(child2) == FALSE)
+		if (MARKED_1(child2) == FALSE)
 		{
 		  ListPut(ITER_START_NODES(child2),child1);
 		}
@@ -426,10 +430,47 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
 }
 
 
+void set_iter_none(Node n, Node original)
+{
+	Node iter_start_node,iter_end_node;
+	int i;
+	
+        for(i = 0; i < ListSize(ITER_START_NODES(n)); i++)
+        {
+         iter_start_node = (Node) ListIndex(ITER_START_NODES(n),i);
+         if((iter_start_node->type == SELECTION) || (iter_start_node->type == BRANCH) ||(iter_start_node->type == ACTION))
+           {
+	      if((strcmp(iter_start_node -> name, original -> name) != 0) && (MARKED_2(iter_start_node) == FALSE))
+	      {
+	      MARKED_2(iter_start_node) = TRUE;
+              mark_successors(iter_start_node,ACT_NONE);
+              set_iter_none(iter_start_node,original);
+	      }
+           }
+        }
+
+
+	for(i = 0; i < ListSize(ITER_END_NODES(n)); i++)
+	{
+	 iter_end_node = (Node) ListIndex(ITER_END_NODES(n),i);
+	 if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION))
+	   {
+	     if((strcmp(iter_end_node -> name, original -> name) != 0) && (MARKED_2(iter_end_node) == FALSE))
+	     {	     
+	     MARKED_2(iter_end_node) = TRUE;
+	     mark_successors(iter_end_node,ACT_NONE);
+	     set_iter_none(iter_end_node,original);
+	     }
+	   }
+	}
+	
+}
+
+
 void mark_iter_nodes(Node n)
 {
-	Node iter_start_node,iter_end_node,iter_node;
-	int i,j;
+	Node iter_end_node;
+	int i;
 
 	if(STATE(n) == ACT_READY)
 	{
@@ -446,31 +487,7 @@ void mark_iter_nodes(Node n)
 	{
 	if(STATE(n) == ACT_RUN)
 	{
-	  for(i = 0; i < ListSize(ITER_END_NODES(n)); i++)
-	   {
-	    iter_end_node = (Node) ListIndex(ITER_END_NODES(n),i);
-	    if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION))
-	       {
-	         mark_successors(iter_end_node,ACT_NONE);
-	       }
-	   }
-           
-	  for(i = 0; i < ListSize(ITER_START_NODES(n)); i++)
-	   {
-	    iter_start_node = (Node) ListIndex(ITER_START_NODES(n),i);
-	    if((iter_start_node->type == SELECTION) || (iter_start_node->type == BRANCH) ||(iter_start_node->type == ACTION))
-	      {
-	       for(j = 0; j < ListSize(ITER_END_NODES(iter_start_node)); j++)
-	       {
-	         iter_node = (Node) ListIndex(ITER_END_NODES(iter_start_node),j);
-		 if(strcmp(iter_node->name,n->name) != 0)
-		 {
-			 mark_successors(iter_node,ACT_NONE);
-		 }
-	       }
-	       mark_successors(iter_start_node,ACT_NONE);
-	      }
-	   }
+	 set_iter_none(n,n);
 	}
        }
 }
@@ -606,10 +623,10 @@ void handle_selection(Node n)
  Node parent;
  Node child;
  
- if ((n -> predecessors == NULL) || (MARKED(n) == TRUE))
+ if ((n -> predecessors == NULL) || (MARKED_3(n) == TRUE))
         return;
 		                                                                         
- MARKED(n) = TRUE;
+ MARKED_3(n) = TRUE;
  
  for(i = 0; i < ListSize(n -> predecessors); i++)
    {
@@ -635,7 +652,7 @@ void handle_selection(Node n)
 		  mark_iter_nodes(parent);
 		  STATE(parent->matching) = ACT_RUN;
 	  }
-    if(ORDER(n) < ORDER(parent))  
+      if(ORDER(n) >  ORDER(parent))  
       handle_selection(parent);
   }
  return;
@@ -689,7 +706,11 @@ void initialize_graph(Graph g)
 	{
  
 	    n -> data = (void *) malloc (sizeof (struct data));
-            MARKED(n) = FALSE;
+            MARKED_0(n) = FALSE;
+	    MARKED_1(n) = FALSE;
+	    MARKED_2(n) = FALSE;
+	    MARKED_3(n) = FALSE;
+	    MARKED_4(n) = FALSE;
             STATE(n) = ACT_NONE;
 	    ORDER(n) = i;
 	    i++;

@@ -1,7 +1,11 @@
 #include "pmlheaders.h"
 
 
-# define MARKED(n) (((Data) (n) -> data) -> marked)
+# define MARKED_0(n) (((Data) (n) -> data) -> marked[0])
+# define MARKED_1(n) (((Data) (n) -> data) -> marked[1])
+# define MARKED_2(n) (((Data) (n) -> data) -> marked[2])
+# define MARKED_3(n) (((Data) (n) -> data) -> marked[3])
+# define MARKED_4(n) (((Data) (n) -> data) -> marked[4])
 # define STATE(n) (((Data) (n) -> data) -> state)
 # define ITER_START(n) (((Data) (n) -> data) -> iter_start)
 # define ITER_END(n) (((Data) (n) -> data) -> iter_end)
@@ -12,7 +16,7 @@
 
 typedef struct data
 {
-int  marked;
+int  marked[5];
 int iter_start;
 int iter_end;
 int order;

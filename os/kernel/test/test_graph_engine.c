@@ -798,8 +798,16 @@ START_TEST(test_initialize_graph)
 
 	fail_unless(STATE(act_0) == ACT_READY, "act 0 not ready");
 	fail_unless(STATE(act_1) == ACT_NONE, "act 1 not none");
-	fail_unless(MARKED(act_0) == FALSE, "act 0 not marked false");
-	fail_unless(MARKED(act_1) == FALSE, "act 1 not marked false");
+	fail_unless(MARKED_0(act_0) == FALSE, "act 0 not marked false");
+	fail_unless(MARKED_1(act_0) == FALSE, "act 0 not marked false");
+	fail_unless(MARKED_2(act_0) == FALSE, "act 0 not marked false");
+	fail_unless(MARKED_3(act_0) == FALSE, "act 0 not marked false");
+	fail_unless(MARKED_4(act_0) == FALSE, "act 0 not marked false");
+	fail_unless(MARKED_0(act_1) == FALSE, "act 1 not marked false");
+	fail_unless(MARKED_1(act_1) == FALSE, "act 0 not marked false");
+	fail_unless(MARKED_2(act_1) == FALSE, "act 0 not marked false");
+	fail_unless(MARKED_3(act_1) == FALSE, "act 0 not marked false");
+	fail_unless(MARKED_4(act_1) == FALSE, "act 0 not marked false");
 
 
 }
