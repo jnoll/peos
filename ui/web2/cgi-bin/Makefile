@@ -17,7 +17,8 @@ KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
 	$(KERNEL_DIR)/graph.o \
 	$(KERNEL_DIR)/resources.o \
 
-OBJECTS = html.o
+OBJECTS = html.o \
+	  proc_graph.o
 
 TESTS = test_main.sh \
 	test_action_page.sh \

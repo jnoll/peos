@@ -1,16 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <kernel/events.h>
 #include <kernel/action.h>
 #include <kernel/process_table.h>
+#include "proc_graph.h"
 
+extern Graph make_graph(char *file);
+extern void makedot(Node n, char *filename, char *action, char *state);
 void print_resource(int pid, char *action);
 
 int main()
 {
     char *input, *temp, *action, *state;
+    char *gifname, **instances, *fname;
     int pid;
+    Graph graph_name;
+
 
     input = getenv("QUERY_STRING");
 
@@ -46,6 +53,22 @@ int main()
 
     printf("<br><br><br><br>\n");
     printf("<table width=\"90%%\" align=\"center\">\n");
+    printf("<tr>\n");
+    
+    instances = peos_list_instances();
+    gifname = (char *)calloc(strlen(instances[pid]) + 1, sizeof(char));
+    fname = (char *)calloc(strlen(instances[pid]) + 1, sizeof(char));
+    strcpy(fname, instances[pid]);
+    graph_name = make_graph(fname); 
+    gifname = strchr(fname, '/');
+    gifname++;
+    makedot(graph_name->source, fname, action, state);
+    strtok(gifname, ".");
+    strcat(gifname, ".gif");
+    printf("<img src=%s>", gifname); 
+    printf("<br><br><br>\n");
+    printf("</tr>\n");
+    
     printf("<tr>\n");
 
     if(strcmp(state,"active") == 0) {
@@ -87,7 +110,6 @@ int main()
 
     printf("</body>\n");
     printf("</html>\n");
-    save_proc_table("proc_table.dat");
 
     return 0;
 }

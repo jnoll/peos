@@ -3,7 +3,11 @@
  * $ID$
  */
 //#include <kernel/vm.h>
+#include <stdio.h>
 #include <kernel/action.h>
+#include <kernel/events.h>
+#include <kernel/process_table.h>
+
 void
 print_header(char *title)
 {
@@ -60,7 +64,7 @@ void print_resource(int pid, char *action)
     char temp[256], * p;
     peos_resource_t *resources;
 
-    resources = (peos_resource_t *) get_resource_list_action(pid, action, &num_resources);
+    resources = (peos_resource_t *) peos_get_resource_list_action(pid, action, &num_resources);
     if(resources){
 	for(i=0; i<num_resources; i++){
 	    printf("<a href=\"%s\">", resources[i].value);
