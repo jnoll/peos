@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: persistentWidgets.tcl,v 1.1 1999/05/06 04:24:54 jneuder Exp $
+## File Information: $Id: persistentWidgets.tcl,v 1.2 1999/05/06 20:55:37 jneuder Exp $
 #######################################################################
 
 # persistentWidgets script
@@ -12,11 +12,12 @@ namespace eval ::persistentWidgets {
 }
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: makeLeftFrame
+## Precondition: the widget manager has been invoked
+## Postcondition: the left side frame and text labels have been created
+## Description: a frame is created and accompanying text labels are
+##		drawn and placed
+## Arguments: none
 ##
 #####################################################################
 
@@ -57,11 +58,11 @@ proc ::persistentWidgets::makeLeftFrame {} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: makeRightFrame
+## Precondition: the widget manager has been invoked
+## Postcondition: the right side frame has been created
+## Description: a frame is created drawn and placed
+## Arguments: none
 ##
 #####################################################################
 
@@ -76,11 +77,12 @@ proc  ::persistentWidgets::makeRightFrame {} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: redrawRightFrame
+## Precondition: right frame exists
+## Postcondition: right frame has been cleared and redrawn
+## Description: the right frame and all children widgets are first
+##		destroyed and then the default right frame is redrawn
+## Arguments: none
 ##
 #####################################################################
 
@@ -92,11 +94,12 @@ proc ::persistentWidgets::redrawRightFrame {} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: redrawLeftFrame
+## Precondition: left frame exists
+## Postcondition: left frame has been cleared and redrawn
+## Description: the left frame and all children widgets are first
+##		destroyed and then the default left frame is redrawn
+## Arguments: none
 ##
 #####################################################################
 
@@ -108,11 +111,12 @@ proc ::persistentWidgets::redrawLeftFrame {} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: makeStatusbar
+## Precondition: UI has been invoked
+## Postcondition: a status bar area and text label have been created
+## Description: a status bar is created and placed at bottom of main
+##		window
+## Arguments: none
 ##
 #####################################################################
 
@@ -129,10 +133,10 @@ proc ::persistentWidgets::makeStatusbar {} {
 
 ####################################################################
 ## Procedure Name:configProcess
-## Precondition:        Process name label exists in left frame 
-## Postcondition:       Process name label is set
-## Description:
-## Arguments:
+## Precondition:  Process name label exists in left frame
+## Postcondition: Process name label is set
+## Description: sets the process text string in the left frame
+## Arguments: the string to be placed in the text label
 ##
 #####################################################################
 
@@ -143,11 +147,11 @@ proc  ::persistentWidgets::configProcess {string} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: configTaskName
+## Precondition:  Task name label exists in left frame
+## Postcondition: Task name label is set
+## Description: sets the task name text string in the left frame
+## Arguments: the string to be placed in the text label
 ##
 #####################################################################
 
@@ -157,11 +161,11 @@ proc ::persistentWidgets::configTaskName {string} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: configTaskState
+## Precondition:  Task state label exists in left frame
+## Postcondition: Task state label is set
+## Description: sets the task state text string in the left frame
+## Arguments: the string to be placed in the text label
 ##
 #####################################################################
 
@@ -171,11 +175,11 @@ proc ::persistentWidgets::configTaskState {string} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: configActionName
+## Precondition:  Action name label exists in left frame
+## Postcondition: Action name label is set
+## Description: sets the action name text string in the left frame
+## Arguments: the string to be placed in the text label
 ##
 #####################################################################
 
@@ -185,11 +189,11 @@ proc ::persistentWidgets::configActionName {string} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: configActionStep
+## Precondition:  Action step label exists in left frame
+## Postcondition: Action step label is set
+## Description: sets the action step text string in the left frame
+## Arguments: the string to be placed in the text label
 ##
 #####################################################################
 
@@ -200,11 +204,11 @@ proc ::persistentWidgets::configActionStep {string} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: configStatusbar
+## Precondition:  Statusbar label exists
+## Postcondition: Statusbar label is set
+## Description: sets the statusbar text string
+## Arguments: the string to be placed in the text label
 ##
 #####################################################################
 
@@ -219,11 +223,12 @@ proc ::persistentWidgets::configStatusbar {string} {
 #
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:       
-## Description: 
-## Arguments:
+## Procedure Name: CreateMenuBar
+## Precondition: makeMenu has been called
+## Postcondition: menubar associated with top level window has been
+##		  created
+## Description: menu is declared
+## Arguments: toplevel window name and name of menu to create
 ##
 #####################################################################
 
@@ -241,11 +246,12 @@ proc ::persistentWidgets::CreateMenubar { toplevel menubar } {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: CreateMenu
+## Precondition: makeMenu has been called
+## Postcondition: menu item has been created
+## Description: menu item is added to existing menu
+## Arguments: parent menubar, name of base menu, text to display and
+##	      letter to underline
 ##
 #####################################################################
 
@@ -270,11 +276,12 @@ proc ::persistentWidgets::CreateMenu { menubar basename text mnemonic } {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: makeMenu
+## Precondition: UI has been invoked and called fro menu creation
+## Postcondition: menu has been created and populated
+## Description: creates menu bar and then adds items and associted
+##		commands
+## Arguments: none
 ##
 #####################################################################
                                  
@@ -307,11 +314,11 @@ proc ::persistentWidgets::makeMenu {} {
 
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: makeLoginWindow
+## Precondition: UI has been invoked, connection with engine established
+## Postcondition: user name has beed determined
+## Description: creates a login window and reads user entry
+## Arguments: none
 ##
 #####################################################################
 
@@ -356,11 +363,11 @@ proc ::persistentWidgets::makeLoginWin {} {
 }
 
 ####################################################################
-## Procedure Name: 
-## Precondition:
-## Postcondition:
-## Description:
-## Arguments:
+## Procedure Name: makeAboutWin
+## Precondition: none
+## Postcondition: about window created and displayed
+## Description: a dialog box is created and text string is attached
+## Arguments: none
 ##
 #####################################################################
 
@@ -369,3 +376,4 @@ proc ::persistentWidgets::makeAboutWin {} {
     tk_messageBox -icon info -title "About PML" \
         -message [format "PML Version 0.01"]
 }
+

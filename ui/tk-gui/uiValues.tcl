@@ -1,6 +1,10 @@
 #######################################################################
-## File Information: $Id: uiValues.tcl,v 1.1 1999/05/06 04:24:54 jneuder Exp $
+## File Information: $Id: uiValues.tcl,v 1.2 1999/05/06 20:55:37 jneuder Exp $
 #######################################################################
+
+# uiValues script
+# original code by Erik Koskinen, April 1999
+# UI group from UCD CSC 5728 (Sofware Engin.) Spring 1999, Dr. Noll
 
 namespace eval ::uiValues {
        
@@ -64,13 +68,34 @@ namespace eval ::uiValues {
         variable output ""
 }
 
+## the following reset variables are not used in the initial implementation
+## where variables are reset in the parser. These are left to be used as
+## needed in the future
+
+####################################################################
+## Procedure Name: resetCommonVariables
+## Precondition: none
+## Postcondition: variables are set to blank - ""
+## Description: the procedure sets the variables to ""
+## Arguments: none
+##
+#####################################################################
 
 proc ::uiValues::resetCommonVariables {} {
         # common variables
         variable userName ""
         variable processName "N/A"
 }
-        
+
+####################################################################
+## Procedure Name: resetProcessSelectVariables
+## Precondition: none
+## Postcondition: variables are set to blank - ""
+## Description: the procedure sets the variables to ""
+## Arguments: none
+##
+#####################################################################
+     
 proc ::uiValues::resetProcessSelectVariables {} {
         # process Select variables
         variable resumeList ""
@@ -78,12 +103,30 @@ proc ::uiValues::resetProcessSelectVariables {} {
         variable processType ""
 }
 
+####################################################################
+## Procedure Name: resetChoiceListVariables
+## Precondition: none
+## Postcondition: variables are set to blank - ""
+## Description: the procedure sets the variables to ""
+## Arguments: none
+##
+#####################################################################
+
 proc ::uiValues::resetChoiceListVariables {} {
         # choice list variables
         variable choiceList ""
         variable choiceType ""
         variable choiceName ""
 }
+
+####################################################################
+## Procedure Name: resetActionVariables
+## Precondition: none
+## Postcondition: variables are set to blank - ""
+## Description: the procedure sets the variables to ""
+## Arguments: none
+##
+#####################################################################
 
 proc ::uiValues::resetActionVariables {} {      
         # action message variables
@@ -107,6 +150,15 @@ proc ::uiValues::resetActionVariables {} {
         variable actionField "" 
 }
 
+####################################################################
+## Procedure Name: resetIterationCompleteVariables
+## Precondition: none
+## Postcondition: variables are set to blank - ""
+## Description: the procedure sets the variables to ""
+## Arguments: none
+##
+#####################################################################
+
 proc ::uiValues::resetIterationCompleteVariables {} {
         # iteration complete variables
         variable iterComp ""    
@@ -114,11 +166,29 @@ proc ::uiValues::resetIterationCompleteVariables {} {
         variable iterValue ""
 }
 
+####################################################################
+## Procedure Name: resetInfoVariables
+## Precondition: none
+## Postcondition: variables are set to blank - ""
+## Description: the procedure sets the variables to ""
+## Arguments: none
+##
+#####################################################################
+
 proc ::uiValues::resetInfoVariables {} {
         # info message variables
         variable infoText ""
         variable infoResponse ""
 }
+
+####################################################################
+## Procedure Name: resetErrorVariables
+## Precondition: none
+## Postcondition: variables are set to blank - ""
+## Description: the procedure sets the variables to ""
+## Arguments: none
+##
+#####################################################################
 
 proc ::uiValues::resetErrorVariables {} {
         # error message variables
@@ -126,7 +196,17 @@ proc ::uiValues::resetErrorVariables {} {
         variable errorResponse ""
 }
 
+####################################################################
+## Procedure Name: resetOutputVariables
+## Precondition: none
+## Postcondition: variables are set to blank - ""
+## Description: the procedure sets the variables to ""
+## Arguments: none
+##
+#####################################################################
+
 proc ::uiValues::resetOutputVariables {} {
         # message response variables
         variable output ""
 }
+

@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: dynamicWidgets.tcl,v 1.1 1999/05/06 04:24:54 jneuder Exp $
+## File Information: $Id: dynamicWidgets.tcl,v 1.2 1999/05/06 20:55:37 jneuder Exp $
 #######################################################################
 
 package provide dynamicWidgets 1.0
@@ -7,7 +7,6 @@ package provide dynamicWidgets 1.0
 # dynamicWidgets script
 # original code by Erik Koskinen, April 1999
 # UI group from UCD CSC 5728 (Sotware Engin.) Spring 1999, Dr. Noll
-
 
 namespace eval ::dynamicWidgets {
 
