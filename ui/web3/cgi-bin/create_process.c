@@ -8,8 +8,6 @@
 #include "html.h" 
 
 
-char *process_filename;
-
 
 int main()
 {
@@ -20,8 +18,12 @@ int main()
     char *model;
     peos_resource_t *resources;
     int num_resources;
-    
+    char *process_filename; 
 
+
+//    char *query = getenv("QUERY_STRING");
+//    printf("Content-Type: text/plain\n\n") ;
+//    printf("Query=%s", query);
     /** First, get the CGI variables into a list of strings         **/
     cgivars = getcgivars();
  
@@ -39,10 +41,12 @@ int main()
         exit(0);  
     }
     
+ //   printf("Content-Type: text/plain\n\n") ;
+    printf("Location: action_list.cgi?process_filename=%s&start=false\r\n\r\n", process_filename);
+
     for (i=0; cgivars[i]; i++) free(cgivars[i]);
-    free(cgivars) ;
-    
-    printf("Location: action_listing.cgi?process_filename=%s&start=false\n\n",process_filename);
+        free(cgivars) ;
+	
     exit(0);
 
 
