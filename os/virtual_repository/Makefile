@@ -1,14 +1,16 @@
 CC = gcc
 CFLAGS = -g -c
-OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o vrepo.o search.o
+OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o search.o
 search: $(OBJECTS)
 	$(CC) -o search $(OBJECTS)
 search.o: search.c vrepo.o FSseeker.o
 	$(CC) $(CFLAGS) search.c
 vrepo.o: vrepo.c vrepo.h FSseeker.o resultLinkedList.o queryLinkedList.o
 	$(CC) $(CFLAGS) vrepo.c
+setup_repositories.o: setup_repositories.c setup_repositories.h FSseeker.o
+	$(CC) $(CFLAGS) setup_repositories.c
 FSseeker.o: FSseeker.c FSseeker.h resultLinkedList.o queryLinkedList.o
-	$(CC) $(CFLAGS) FSseeker.c
+	$(CC) $(CFLAGS) FSseeker.c 
 resultLinkedList.o: resultLinkedList.c resultLinkedList.h
 	$(CC) $(CFLAGS) resultLinkedList.c
 queryLinkedList.o: queryLinkedList.c queryLinkedList.h resultLinkedList.o

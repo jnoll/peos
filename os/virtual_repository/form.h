@@ -38,4 +38,10 @@ typedef struct
 	struct queryList *link ;
 }	queryList ;
 
+struct repos
+{
+	queryList* ( *queryTool )( queryList * );
+ 	char *name ;
+} repos_list[20]	;
+
 #endif

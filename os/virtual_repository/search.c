@@ -7,6 +7,7 @@
 #include "form.h"
 #include "variables.h"
 #include "vrepo.h"
+#include "setup_repositories.h"
 #include <sys/time.h> 
 #include <sys/types.h> 
 #include <stdio.h> 
@@ -20,7 +21,9 @@
 int main( void )
 {	
 	void selectLoop( )  ;
-		
+	
+	repos_ctr = 0;
+	setup_fs( );	
 	while( 1 )
 		selectLoop( ) ;
 	
