@@ -31,10 +31,9 @@ void pe_perform_predicate_eval(Tree t);
 
 int
 pe_get_resource_list_action_requires(int pid, char *act_name, int
-		*total_resources);
-int
-pe_make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier);
-int pe_is_requires_eval_true(int pid, char *act_name);
+		*total_resources, int t);
+int pe_make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier);
+int pe_is_requires_eval_true(int pid, char *act_name, int t);
 
 int is_requires_true(int pid, char *act_name);
 

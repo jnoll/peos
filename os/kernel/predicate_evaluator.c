@@ -23,6 +23,10 @@ typedef int PE_METHOD;
 #define PE_COND_FILE 2 /* Node is a file */
 #define PE_METH_FILE_EXISTS 1 /* File Exists */
 
+#define PE_RESOURCE_PROVIDES 100
+#define PE_RESOURCE_REQUIRES 200
+#undef OLD
+
 
 extern char *act_state_name(vm_act_state state);
 
@@ -172,7 +176,7 @@ int pe_perform_predicate_eval(Tree t)
 int
 pe_make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier)
 {
-    char *qual = qualifier;	
+//    char *qual = qualifier;	
     peos_resource_t *resource_list = *rlist;
 #ifdef PE_DEBUG
     int fnd =0;
@@ -278,56 +282,64 @@ eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list, nu
 
 int
 pe_get_resource_list_action_requires(int pid, char *act_name, int
-		*total_resources)
+		*total_resources, int t)
 {
-    char* result_str=NULL;
-    Graph g;
-    Node n;
-    int i,j;
-    int rsize = 256;
-    int num_resources = 0;
-    peos_context_t *context = peos_get_context(pid);
-    peos_resource_t *proc_resources = context -> resources;
-    int num_proc_resources = context -> num_resources;
-    peos_resource_t *act_resources;
-    if(!result_str){
-       result_str = (char*)malloc(sizeof(char)*(255));
-    }
-    g = context -> process_graph;   
-    if(g != NULL) {
-        n = find_node(g,act_name);
-        if(n == NULL) {
-            fprintf(stderr,"get_resource_list_action :cannot find action");
-            return 0;
-        }
-
+	char* result_str=NULL;
+	Graph g;
+	Node n;
+//	int i,j;
+	int rsize = 256;
+	int num_resources = 0;
+	peos_context_t *context = peos_get_context(pid);
+//	peos_resource_t *proc_resources = context -> resources;
+//	int num_proc_resources = context -> num_resources;
+	peos_resource_t *act_resources;
+	if(!result_str){
+		result_str = (char*)malloc(sizeof(char)*(255));
+	}
+	g = context -> process_graph;   
+	if(g != NULL) {
+		n = find_node(g,act_name);
+		if(n == NULL) {
+			fprintf(stderr,"get_resource_list_action :cannot find action");
+			return 0;
+			}
 	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-	return pe_make_resource_list(n -> requires, &act_resources, &num_resources, &rsize, "\0");
-	if(result_str) free(result_str);
-    }else{
-        if(result_str) free(result_str);
-        return 0;
-    }
+	if(t == PE_RESOURCE_REQUIRES)
+		return pe_make_resource_list(n -> requires, &act_resources, &num_resources, &rsize, "\0");
+	else if (t == PE_RESOURCE_PROVIDES)
+		return pe_make_resource_list(n -> provides, &act_resources, &num_resources, &rsize, "\0");
+	else return 0;
+	}
+	if(result_str) 
+		free(result_str);
+	return 0;
 }
-int pe_is_requires_eval_true(int pid, char *act_name)
+int pe_is_requires_eval_true(int pid, char *act_name, int t)
 {
-    peos_resource_t *resources;
     int num_resources;
-    int i;
-    return  pe_get_resource_list_action_requires(pid,act_name,&num_resources);  
+    return  pe_get_resource_list_action_requires(pid,act_name,&num_resources, t);  
 }
 
 int is_requires_true(int pid, char *act_name)
+{
+	return pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_REQUIRES);
+}
+
+int is_provides_true(int pid, char *act_name)
+{
+	return pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_PROVIDES);
+}
+#ifdef OLD
+int is_requires_true_old(int pid, char *act_name)
 {
     peos_resource_t *resources;
     int num_resources;
     int i;
 
     resources = get_resource_list_action_requires(pid,act_name,&num_resources);
-    return pe_is_requires_eval_true(pid,act_name);
-    
     if (num_resources == 0) {
-        return pe_is_requires_eval_true(pid,act_name);
+        return 1;
     }
     else {
         struct stat buf;
@@ -350,11 +362,11 @@ int is_requires_true(int pid, char *act_name)
 	    }
 	   else printf("abstract %s\n",resources[i].value);
 	}
-        return pe_is_requires_eval_true(pid,act_name);
+        return 1;
     }
      
 }
-int is_provides_true(int pid, char *act_name)
+int is_provides_true_old(int pid, char *act_name)
 {
     peos_resource_t *resources;
     int num_resources;
@@ -384,8 +396,7 @@ int is_provides_true(int pid, char *act_name)
         return 1;
     }
 }
-
-
+#endif
 //----------------------
 
 #ifdef UNIT_TEST
