@@ -29,10 +29,19 @@ HFILES = pmlevent.h vm.h
 SRCS = pmlvm.c events.c vm.c
 
 # Compile the program
+all: pmlvm testvm dump_state query_state
+
 pmlvm: $(OBJS)
 	   $(CC) -o $@ $(OBJS) $(LIBS) -g
 
 testvm: testvm.o
-	$(CC) -o $@  testvm.o $(LIBS) -g
+	$(CC) -o $@  $^ $(LIBS) -g
+
+dump_state: dump_state.o
+	$(CC) -o $@  $^ $(LIBS) -g
+
+query_state: query_state.o
+	$(CC) -o $@  $^ $(LIBS) -g
+
 clean:
 	rm *.o
