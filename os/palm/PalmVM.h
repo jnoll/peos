@@ -10,5 +10,3 @@ typedef enum {
   PROC_ERROR,
   INTERN_ERROR
 } VM_state;
-
-VM_state execute();
