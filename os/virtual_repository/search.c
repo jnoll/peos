@@ -8,6 +8,7 @@
 #include "variables.h"
 #include "vrepo.h"
 #include "setup_repositories.h"
+#include "debug.h"
 #include <sys/time.h> 
 #include <sys/types.h> 
 #include <stdio.h> 
@@ -18,12 +19,19 @@
 
 #define STDIN 0 
 
-int main( void )
-{	
-	void selectLoop( )  ;
-	
+int main(int argc, char *argv[])
+{
+	void selectLoop( ) ;
 	repos_ctr = 0;
 	myQueries = NULL;
+
+	if (argv[1] != NULL)
+	{
+		debug_level = atoi(argv[1]);
+		
+	}
+	
+	
 	
 	setup_fs( );	
 	while( 1 )
@@ -55,7 +63,7 @@ void selectLoop( )
 
 	if ( FD_ISSET( STDIN, &readfds ) )
 	{
-		printf( "\nreceiving...\n\n" ) ;		
+		_debug(__FILE__,__LINE__, "receiving..." ) ;		
 		fgets( queryString, sizeof( queryString), stdin ) ;
 		if ( strcmp ( "test\n", queryString ) == 0 )
 		{
@@ -80,7 +88,7 @@ void selectLoop( )
 	}
 	else
 	{
-		printf( "\ntimed out....\n\n" ) ;
+		_debug(__FILE__,__LINE__, "timed out...." ) ;
 		poll_vr( ) ;
 		tempQueries = myQueries ;
 		while( tempQueries != NULL )
@@ -95,7 +103,7 @@ void selectLoop( )
 
 void callback( int size, resultList *listpointer, int *data )
 {	
-	printf( "calling back...\n" ) ;
+	_debug(__FILE__,__LINE__,"calling back..." ) ;
 	printf( "%d record(s) found!\n", size ) ;
 	printResultList( listpointer ) ;
 }

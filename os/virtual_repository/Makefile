@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -c
-OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o search.o
+OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o debug.o search.o
 TEST_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_search.o
 TEST_INVALID_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_searchInvalid.o
 TEST_EMPTY_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_searchEmpty.o
@@ -36,6 +36,9 @@ test_searchEmpty: $(TEST_EMPTY_OBJECTS)
 	$(CC) -o test_searchEmpty $(TEST_EMPTY_OBJECTS)
 test_searchEmpty.o: test_searchEmpty.c vrepo.o FSseeker.o
 	$(CC) $(CFLAGS) test_searchEmpty.c
+debug.o: debug.c debug.h 
+	$(CC) $(CFLAGS) debug.c
+
 test:	
 	make test_search 
 	make test_searchInvalid
