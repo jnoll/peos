@@ -66,7 +66,9 @@ Do the same exact steps as in step1 but with gtk and replace the gtk-config with
 Step3:
 cd ~
 mkdir pkg-build
-Do the same exact steps as in step1 but with pkg  and replace the pkg-config with pkgnew-config in ~/bin.
+Do the same exact steps as in step1 but with pkg and replace the pkg-config with pkgnew-config in ~/bin.
+This is the only package that may require this one more step.  
+Type this while in your cwd: export PKG_CONFIG_PATH=/home/jmontana/gtkhtml-build/gtkhtml-1.1.10
 
 Step4:
 For the remaining package you will follow the exact steps except that there will be no [package]-config for you 
