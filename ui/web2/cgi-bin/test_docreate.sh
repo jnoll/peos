@@ -2,7 +2,7 @@
 echo -n "."
 
 rm proc_table.dat
-export QUERY_STRING="model_list=test_action"
+export QUERY_STRING="model=test_action&test_resource=my_resource&test_provide=my_provide"
 
 do_create.cgi > /dev/null
 
@@ -10,6 +10,18 @@ if !(grep test_action.pml proc_table.dat > /dev/null)
 then
   echo
   echo Failed create process.
+  echo
+fi
+if !(grep  my_resource proc_table.dat > /dev/null)
+then
+  echo
+  echo Failed resource value input.
+  echo
+fi
+if !(grep  my_provide proc_table.dat > /dev/null)
+then
+  echo
+  echo Failed provide value input.
   echo
 fi
 
