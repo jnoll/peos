@@ -16,7 +16,7 @@ fi
 # Another test - overflow model_name buffer.
 export QUERY_STRING="model_list=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
-if !(do_create.cgi |grep -i "not found" > /dev/null)
+if !(do_create.cgi |grep -i "couldn't create" > /dev/null)
 then
   echo
   echo Failed create non-existent process.
