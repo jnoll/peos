@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,18 +17,10 @@
 #include "tclinterp.h"
 
 
-typedef int PE_CONDITION;
-typedef int PE_METHOD;
 #undef PE_DEBUG
 #undef PE_DEBUG_A
-#define PE_DEBUG_B
-#define PE_COND_RA_RA 1 /* Resource-Attrib, Resource-Attrib */
-#define PE_COND_FILE 2 /* Node is a file */
-#define PE_COND_RA_R 3 /* Resource-Attrib, Resource-Attrib */
-
-#define PE_METH_FILE_TIMESTAMP 1 /* Will compare file time stamps */
-#define PE_METH_FILE_EXISTS 2 /* File Exists */
-#define PE_METH_FUNCTION 3 /* File Exists */
+#undef PE_DEBUG_B
+#undef PE_DEBUG_LITERAL
 
 
 #define PE_RESOURCE_PROVIDES 100
@@ -42,7 +35,9 @@ int pe_timestamp(char* file1, char*file2)
 	peos_tcl* interpreter;
 	char* result_str=NULL;
 	char* args=NULL;
-	printf("pe_t called!\n");
+#ifdef PE_DEBUG_B
+	printf("pe_timestamp called!\n");
+#endif
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return 0;
@@ -55,11 +50,8 @@ int pe_timestamp(char* file1, char*file2)
 	}
 	sprintf(args, "timestamp %s %s", file1, file2);
 #ifdef PE_DEBUG_B
-	//printf("Is this what i want? %s\n", args);
+	printf("Is this what i want? %s\n", args);
 #endif
-	//peos_tcl_eval(interpreter,"path1", file1, result_str );
-	//peos_tcl_eval(interpreter,"path2", file2, result_str );
-
 	peos_tcl_script(interpreter, "tclf_timestamp.tcl");
 	Tcl_Eval(interpreter->interp, args);
 	if(result_str) free (result_str);
@@ -76,7 +68,9 @@ int pe_spellcheck(char* filename)
 	peos_tcl* interpreter;
 	char* result_str=NULL;
 	char* args=NULL;
+#ifdef PE_DEBUG_B
 	printf("pe_spellcheck called!\n");
+#endif
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return 0;
@@ -87,14 +81,10 @@ int pe_spellcheck(char* filename)
 	if(!args){
 		args = (char*)malloc(sizeof(char)*(255));
 	}
-	//sprintf(args, "expr [spellcheck %s]", filename);
 	sprintf(args, "spellcheck %s", filename);
 #ifdef PE_DEBUG_B
-	//printf("Is this what i want? %s\n", args);
+	printf("Is this what i want? %s\n", args);
 #endif
-	//
-	peos_tcl_eval(interpreter,"filename", filename, result_str );
-	printf("result%s\n",result_str);
 	peos_tcl_script(interpreter, "tclf_spellcheck.tcl");
 	Tcl_Eval(interpreter->interp, args);
 	if(result_str) free (result_str);
@@ -103,8 +93,93 @@ int pe_spellcheck(char* filename)
 	printf("Result for pe_spellcheck(%s): %s\n", filename, interpreter->interp->result);
 #endif
 	peos_tcl_delete(interpreter);
-	return 1;
+	return strcmp(interpreter->interp->result,"") ? 0 : 1;
 }
+
+int pe_file_size(char* filename)
+{
+	peos_tcl* interpreter;
+	char* result_str=NULL;
+	char* args=NULL;
+	int return_val=0, digits=1, i=0;
+	
+	fprintf(stderr,"pe_filesize called!\n");
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return 0;
+	}
+	if(!result_str){
+		result_str = (char*)malloc(sizeof(char)*(255));
+	}
+	if(!args){
+		args = (char*)malloc(sizeof(char)*(255));
+	}
+	sprintf(args, "file_size %s", filename);
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"Is this what i want? %s\n", args);
+#endif
+	peos_tcl_script(interpreter, "tclf_size.tcl");
+	Tcl_Eval(interpreter->interp, args);
+	if(result_str) free (result_str);
+	if(args) free (args);
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"Result for pe_file_size(%s): %s\n", filename, interpreter->interp->result);
+#endif
+   
+	for(i = 0; i < strlen(interpreter->interp->result); i++){
+		if(!isdigit(interpreter->interp->result[i])){
+			digits =0;
+			break;
+		}
+	}
+	if(digits){
+	        return_val = atoi (interpreter->interp->result);
+		peos_tcl_delete(interpreter);
+		return return_val;
+	}else{
+		peos_tcl_delete(interpreter);
+		return 0;
+	}
+	
+}
+
+int pe_file_exists(char* filename)
+{
+	peos_tcl* interpreter;
+	char* result_str=NULL;
+	char* args=NULL;
+	int return_val=0;
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"pe_file_exists called!\n");
+#endif
+	if(!strcmp(filename,"$$")) return 0;
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return 0;
+	}
+	if(!result_str){
+		result_str = (char*)malloc(sizeof(char)*(255));
+	}
+	if(!args){
+		args = (char*)malloc(sizeof(char)*(255));
+	}
+	sprintf(args, "file_exists %s", filename);
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"Is this what i want? %s\n", args);
+#endif
+	peos_tcl_script(interpreter, "tclf_exists.tcl");
+	Tcl_Eval(interpreter->interp, args);
+	if(result_str) free (result_str);
+	if(args) free (args);
+#ifdef PE_DEBUG_B
+	fprintf(stderr,"Result for pe_file_exists(%s): %s\n", filename, interpreter->interp->result);
+#endif
+	if(!strcmp ("1", interpreter->interp->result))
+		return_val = 1;
+	peos_tcl_delete(interpreter);
+	return return_val;
+}
+
 
 char* pe_get_resval(int pid,char* resource_name)
 {
@@ -130,7 +205,7 @@ char* pe_get_resval(int pid,char* resource_name)
 	for(j = 0; j < num_proc_resources; j++) {
 #ifdef PE_DEBUG_A
 	printf("loop =>\n");
-#endif"spellcheck myreport.doc"
+#endif
 		peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
 #ifdef PE_DEBUG_A
 	printf("<=\n");
@@ -150,136 +225,7 @@ char* pe_get_resval(int pid,char* resource_name)
 	
 }
 
-/****************************************************************
-*  Purpose: Compare the resources according to the condition and
-*	the resource attributes
-*  Precondition: Valid condition type, and method (timestamp..etc),
-*	Valid tree (for now, non-TCL)
-*  Postcondition: Returns 1,0,-1 if the condition evaluates to
-*	true, false, and error, respectively.
-****************************************************************/
-int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
-{
-	struct stat buf1;
-	struct stat buf2;
-/*	
-	if(cond_type == PE_COND_RA_RA && meth_type == PE_METH_FILE_TIMESTAMP){
-		if(stat(pe_get_resval(pid, TREE_ID(t->left->left)), &buf1) == -1) {
-	            if(errno == ENOENT) { // If stat failed because file didn't exist 
-#ifdef PE_DEBUG
-		    	fprintf(stderr, "error 1 ENOENT \n");
-#endif
-	                return -1;
-	            }
-	            else {
-		        return -1;
-	            }
-	        }
-		if(stat(pe_get_resval(pid, TREE_ID(t->right->left)), &buf2) == -1) {
-	            if(errno == ENOENT) { // If stat failed because file didn't exist 
-#ifdef PE_DEBUG
-		        fprintf(stderr, "error 2 ENOENT \n");
-#endif
-	                return -1;
-	            }
-	            else {
-		        return -1;
-	            }
-	        }
-		switch TREE_OP(t){
-			case EQ: 
-				return buf1.st_mtime == buf2.st_mtime ? 1 : 0;
-				break;
-			case NE:
-				return buf1.st_mtime != buf2.st_mtime ? 1 : 0;
-				break;
-			case GE:
-				return buf1.st_mtime >= buf2.st_mtime ? 1 : 0;
-				break;
-			case LE:
-				return buf1.st_mtime <= buf2.st_mtime ? 1 : 0;
-				break;
-			case LT:
-				return buf1.st_mtime < buf2.st_mtime ? 1 : 0;
-				break;
-			case GT: 
-				return buf1.st_mtime > buf2.st_mtime ? 1 : 0;
-				break;
-			default:
-				return -1;
-		}
-		
-		
-		
-	}
-*/
-	if(cond_type == PE_COND_RA_RA && meth_type == PE_METH_FILE_TIMESTAMP){
-		if(stat(pe_get_resval(pid, TREE_ID(t->left->left)), &buf1) == -1) {
-	            if(errno == ENOENT) { // If stat failed because file didn't exist 
-#ifdef PE_DEBUG
-		    	fprintf(stderr, "error 1 ENOENT \n");
-#endif
-	                return -1;
-	            }
-	            else {
-		        return -1;
-	            }
-	        }
-		if(stat(pe_get_resval(pid, TREE_ID(t->right->left)), &buf2) == -1) {
-	            if(errno == ENOENT) { // If stat failed because file didn't exist 
-#ifdef PE_DEBUG
-		        fprintf(stderr, "error 2 ENOENT \n");
-#endif
-	                return -1;
-	            }
-	            else {
-		        return -1;
-	            }
-	        }
-		return pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
-	}
-	else if(cond_type == PE_COND_FILE && meth_type == PE_METH_FILE_EXISTS){
-		if(stat(pe_get_resval(pid, TREE_ID(t)), &buf1) == -1) {
-	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
-#ifdef PE_DEBUG
-		    	fprintf(stderr, "error 4 ENOENT %s\n",pe_get_resval(pid, TREE_ID(t)));
-#endif
-	                return -1;
-	            }
-	            else {
-		        return -1;
-	            }
-	        }
-		return 1;
-	}
-	else if(cond_type == PE_COND_RA_R && meth_type == PE_METH_FUNCTION){
-#ifdef PE_DEBUG
-	fprintf(stderr,"---  SPELLCHECKING --- %s\n", TREE_ID(t->left->left));
-#endif
-		/* This is where a pe_get_resval will call one of functions
-		defined in TCL.. 
-		such as Spellcheck 
-		instead of returning a value to stat()
-		*/
-		if(stat(pe_get_resval(pid, TREE_ID(t->left->left)), &buf1) == -1) {
-#ifdef PE_DEBUG
-		fprintf(stderr,"--- SPELLCHECKING -2- \n");
-#endif
-	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
-#ifdef PE_DEBUG
-		    	fprintf(stderr, "error 5 ENOENT \n");
-#endif
-	                return -1;
-	            }
-	            else {
-		        return -1;
-	            }
-	        }
-		return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));
-	}
-	//fprintf(stderr, "No Condition Match found!\n");
- 	return -1;
-}
+
 /****************************************************************
 *  Purpose: Make sure the tree is valid, only then pass it to 
 *	pe_eval. Also determine what type of attribute comparison
@@ -291,80 +237,39 @@ int pe_perform_predicate_eval(int pid, Tree t)
 {
 	int res= 0;
 	if (IS_ID_TREE(t)){
-		if(strlen(TREE_ID(t))>0){
-			if (TREE_ID(t)[0]=='\"') 
-			{
-#ifdef PE_DEBUG
-				fprintf(stderr,"-LITERAL: %s\n", TREE_ID(t));
+		if(strlen(TREE_ID(t))>0)
+			if (TREE_ID(t)[0]=='\"') {
+				if (	!strcmp(TREE_ID(t), "\"True\"")   || 
+					!strcmp(TREE_ID(t), "\"Passed\"") || 
+					!strcmp(TREE_ID(t), "\"1\"")      ){
+#ifdef PE_DEBUG_LITERAL
+					fprintf(stderr,"Literal Eval: True\n");
 #endif
-	    			return 1;
+					return 1;	
+				}else if(!strcmp(TREE_ID(t), "\"False\"") || 
+					!strcmp(TREE_ID(t), "\"Failed\"") || 
+					!strcmp(TREE_ID(t), "\"0\"")      ){
+#ifdef PE_DEBUG_LITERAL
+					fprintf(stderr,"Literal Eval: False\n");
+#endif
+					return 0;
+				}	
+#ifdef PE_DEBUG_LITERAL
+				fprintf(stderr,"Literal Eval: defaulted TREE_ID(t)=%s\n", TREE_ID(t));
+#endif
+				
 			}
-#ifdef PE_DEBUG
-			else fprintf(stderr,"-NOT A LITERAL: %s\n", TREE_ID(t));
-#endif
-		}
-		if((res = pe_eval(pid, PE_COND_FILE, PE_METH_FILE_EXISTS, t))==1){
-#ifdef PE_DEBUG
-			fprintf(stderr,"pe_perform_predicate_eval: File Exists? says TRUE!\n");
-#endif
-			return 1;
-		}
-		else if(res == 0){
-#ifdef PE_DEBUG
-			fprintf(stderr,"pe_perform_predicate_eval: File Exists? says FALSE!\n");
-#endif
-			return 0;
-		}else{
-#ifdef PE_DEBUG
-			fprintf(stderr,"pe_perform_predicate_eval: File Exists? says ERROR!\n");
-#endif
-			return 0;
-		}
-	}else if(TREE_OP(t) >= EQ && TREE_OP(t) <= GT){
-#ifdef PE_DEBUG
- 	fprintf(stderr,"====? %s %s\n", TREE_ID(t->left), TREE_ID(t->right));
-#endif        
+		return pe_file_exists(pe_get_resval(pid, TREE_ID(t)));
+	}else if(TREE_OP(t) >= EQ && TREE_OP(t) <= GT){    
 		if(TREE_OP(t->left) == DOT && TREE_OP(t->right) == DOT){
 			if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->right->right))){
- 				if((res = pe_eval(pid, PE_COND_RA_RA, PE_METH_FILE_TIMESTAMP, t))==1){
-#ifdef PE_DEBUG
- 					fprintf(stderr,"pe_perform_predicate_eval: Timestamp? says TRUE!\n");
-#endif
-					return 1;
-				}
- 				else if(res == 0){
-#ifdef PE_DEBUG
-					fprintf(stderr,"pe_perform_predicate_eval: Timestamp?  says FALSE!\n");
-#endif
-					return 0;
-				}else{
-#ifdef PE_DEBUG
-					fprintf(stderr,"pe_perform_predicate_eval: Timestamp?  says ERROR!\n");
-#endif
-					return 0;
-				}
+ 				return pe_file_exists(pe_get_resval(pid, TREE_ID(t))) && pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
 			}
 		}
 		else if(TREE_OP(t->left) == DOT){
-			if(!strcmp("spellchecked", TREE_ID(t->left->right))/* && !strcmp("\"True\"", (TREE_ID(t->right)))*/){
- 				if((res = pe_eval(pid, PE_COND_RA_R, PE_METH_FUNCTION, t))==1){
-#ifdef PE_DEBUG
- 					fprintf(stderr,"pe_perform_predicate_eval: Spellchecked? says TRUE!\n");
-#endif
-					return 1;
-				}
- 				else if(res == 0){
-#ifdef PE_DEBUG
-					fprintf(stderr,"pe_perform_predicate_eval: Spellchecked? says FALSE!\n");
-#endif
-					return 0;
-				}else{
-#ifdef PE_DEBUG
-					fprintf(stderr,"pe_perform_predicate_eval: Spellchecked? says ERROR!\n");
-#endif
-					return 0;
-				}
-			}
+			if(!strcmp("spellchecked", TREE_ID(t->left->right)) ==
+			   pe_perform_predicate_eval(pid, t->right))
+ 				return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));	
 		}
 	}
 	
