@@ -232,7 +232,8 @@ public class PeosApp extends JFrame implements ActionListener
                             }
                                 
                         }
-			
+                        if (this.currentViewMode==1)
+                            this.switchToProcessView();
 		}
 		else if ("active".equals(e.getActionCommand()))
 		{
@@ -250,6 +251,8 @@ public class PeosApp extends JFrame implements ActionListener
 				tabbedPane.setSelectedIndex(findTabIndex(getPidNum(((JRadioButtonMenuItem)e.getSource()).getText())));
 				currPagePID = getPidNum(((JRadioButtonMenuItem)e.getSource()).getText());
 			}
+                        if (this.currentViewMode==1)
+                            this.switchToProcessView();
 		}	
 		else if ("delete".equals(e.getActionCommand()) || "deleteShortCut".equals(e.getActionCommand()))
 		{
@@ -289,7 +292,8 @@ public class PeosApp extends JFrame implements ActionListener
 
 			if (tabbedPane.getTabCount() == 0)
 				deleteB.setEnabled(false);
-                        
+                        if (this.currentViewMode==1)
+                            this.switchToProcessView();
 
 		}	
 		else if("online".equals(e.getActionCommand()))
