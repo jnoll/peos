@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "htmllinkage.h"
 
-void glist(xmlNode *action, int pid)
+void 
+glist(xmlNode *action, int pid)
 {
 
   xmlNode *child = NULL;
@@ -26,7 +27,8 @@ void glist(xmlNode *action, int pid)
 
 }
 
-void set_glist(xmlNode *child, int pid)
+void 
+set_glist(xmlNode *child, int pid)
 {
 
   resource *element;
@@ -78,7 +80,8 @@ void set_glist(xmlNode *child, int pid)
 }
 
 /* need to modify in main */
-void set_glist_NULL()
+void
+set_glist_NULL()
 {
   int i;
 
@@ -88,7 +91,8 @@ void set_glist_NULL()
 }
 
 /* need to modify */
-void destroy_glist()
+void
+destroy_glist()
 {
   int i;
   GList *temp;
@@ -108,7 +112,8 @@ void destroy_glist()
 }
 
 /* at this point we're in html.c and have the cur_pid */
-void set_html_links(xmlNode *action, char * buf1)
+void 
+set_html_links(xmlNode *action, char * buf1)
 {
   char /**content,*/ *new_content;
   char id[256];
@@ -152,20 +157,26 @@ void set_html_links(xmlNode *action, char * buf1)
   }
 }
 
-int lookup_rsc_name(char * name)
+int
+lookup_rsc_name(char * name)
 {
 
   guint i;
   guint length;
   GList * glist;
   resource *element;
+  
   length = g_list_length(table[cur_pid].res);
 
   for(i = 0; i < length; i++) {
   	/* try to locate the string in the glist */
   	glist = g_list_nth( table[cur_pid].res, (gint) i);
-	if (glist) element = (resource *) glist->data;
-	if(glist && (strcmp(element->name, name) == 0))
+	if (glist != NULL) {
+		element = (resource *) glist->data;
+
+		
+	}	
+	if((name != NULL) && (glist != NULL) && (strcmp(element->name, name) == 0))
 	{
 	        return i;
 	}
@@ -174,7 +185,8 @@ int lookup_rsc_name(char * name)
 
 }
 
-char *set_contents(char * content)
+char *
+set_contents(char * content)
 {
 
   int i;
@@ -204,17 +216,19 @@ char *set_contents(char * content)
 
 }
 
-void set_href(char *buf1, GList* glist)
+int 
+set_href(char *buf1, GList* glist)
 {
 
-  guint glist_index, length = 0;
+  int length = -1;
   resource *element;
   char *temp;
   int size;
 
   length = g_list_length(table[cur_pid].res);
+  if(glist == NULL) return 1; 
 
-  if ((glist != NULL) && (glist_index >= 0) && (glist_index <= length)) {
+  if ((glist != NULL) && (length > 0))  {
   	element = (resource *)glist->data;
 	size = 			sizeof("<a href=\"file:") +
 			        strlen(cwd) +
@@ -236,4 +250,5 @@ void set_href(char *buf1, GList* glist)
 	free(temp);
 	temp = NULL;
   }
+  return 0;
 }

@@ -18,6 +18,6 @@ void destroy_glist();
 void set_html_links(xmlNode *action, char * buf1);
 int lookup_rsc_name(char * name);
 char *set_contents(char * content);
-void set_href(char * buf1, GList *glist);
+int set_href(char * buf1, GList *glist);
 
 #endif

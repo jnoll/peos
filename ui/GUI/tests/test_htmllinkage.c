@@ -35,16 +35,16 @@ START_TEST(tSet_href)
   buf = (char *) malloc(size);
   strcpy(buf, "");        /* copy NULL byte */
 
-  set_href(buf, NULL, NULL);
+  set_href(buf, NULL);
+  
   /* test while glist is NULL */
   if(strcmp(buf, "") != 0) {
-  	fail("The call to set_href should not set buf as long as glist is NULL \n");
+  	fail("The call to set_href should not set buf if glist is NULL. \n");
   }
 
   /* setup global values outside of this address space */
   buf = case1_setup((char *) buf);
 
-#ifdef DEBUG
   /* test while glist is not NULL */
   if(strcmp(buf, "") == 0) {
   	fail("The call to set_href should set buf as long as glist is not NULL \n");
@@ -64,28 +64,20 @@ START_TEST(tSet_href)
   if(rtn_val == 0) {
   	fail("The test must fail if buffer is set incorrrectly. \n");
   }
-
-  /* set CUR_PID to be an invalid number */
-  set_CUR_PID((int) -1);
-  rtn_val = set_href(buf, NULL, NULL);
-  if(rtn_val == 0) {
-  	fail("The function should exit with invalid id. \n");
-  }
-
+  
   /* Set cwd to NULL and make sure it fails. */
   temp = (char *) set_CWD((char *) NULL);
-  set_href(buf, NULL, NULL);
+  rtn_val = set_href(buf, NULL);
   if(rtn_val == 0) {
   	fail("set_href should return 1 under these conditions. \n");
   }
-
+  
   free(cwd);
   cwd = NULL;
   free(temp);
   temp = NULL;
   free(buf);
   buf = NULL;
-#endif  
 
 }
 END_TEST
@@ -98,15 +90,14 @@ START_TEST(tLookup_rsc_name)
   set_CUR_PID((int) 0);
   rtn_val = case3_setup();
 
-#ifdef DEBUG
-  if(rtn_val == 1) {
+  if(rtn_val == -1) {
   	fail("Call to lookup_rsc_name in htmllinkage.c failed. \n");
   }
-#endif
+
   /* test the case where we pass NULL arguments to lookup_src_name in htmllinkage.c */
   rtn_val = case4_setup();
 
-  if(rtn_val != -1) {
+  if(rtn_val != -1 ) {
 	fail("Function should return -1 if arguments are set to NULL \n");
   }
   

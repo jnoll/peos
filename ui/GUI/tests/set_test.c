@@ -27,6 +27,7 @@ case1_setup(char *buf)
   guint glist_index = -1;
 
   cwd = get_current_dir_name();
+  //table[cur_pid].res = (GList *) malloc(sizeof(GList));
    
   element = g_new (resource, 1);  /* GTK MALLOC */
   size = 0; size = strlen("testName") + 1;
@@ -40,9 +41,11 @@ case1_setup(char *buf)
   table[cur_pid].res = g_list_append(table[cur_pid].res, (gpointer) element);
   
   /* To test the function in htmllinkage if buffer is being set. */
-  set_href((char *)buf, (GList *) table[cur_pid].res, element);
+  set_href((char *)buf, (GList *) table[cur_pid].res);
 
   g_list_free((GList *) table[cur_pid].res);
+  free(table[cur_pid].res);
+  table[cur_pid].res = NULL;
 
   return buf;
 
@@ -97,14 +100,24 @@ case3_setup()
 
   temp = g_new (resource, 1);
   size = strlen("testName") + 1;
-  temp->name = (char *) malloc(size);
+  temp->name = (char *) malloc(size*sizeof(char));
   strcpy(temp->name, "testName");
 
-  glist = g_list_append(glist, temp);
-  if(glist != NULL) glist_index = lookup_rsc_name((GList *) glist, (char *) temp->name);
+  table[cur_pid].res = g_list_append(table[cur_pid].res, (gpointer) temp);
+  
+  if(table[cur_pid].res != NULL) {
+  	glist_index = lookup_rsc_name((char *) temp->name);
+
+  }	
   g_list_free((GList *) glist);
   
-  if(glist_index == -1) return 1;
+  if(glist_index == -1) {
+  	return 1;
+  }	
+
+  g_list_free((GList *) table[cur_pid].res);
+  free(table[cur_pid].res);
+  table[cur_pid].res = NULL;
 
   return 0;
 }
@@ -116,7 +129,7 @@ case4_setup()
   int glist_index = -1;
 
   /* just want to pass in NULL */
-  glist_index = lookup_rsc_name(NULL, NULL);
+  glist_index = lookup_rsc_name(NULL);
 
   return glist_index;
 }

@@ -4,7 +4,8 @@ SHELL=/bin/sh
 CC=gcc
 GNOME_CONFIG=gnome-config
 PKG_CONFIG=pkg-config
-OPT_DEBUG=-g3
+#OPT_DEBUG=-g3
+OPT_DEBUG=
 CC_WARN=-Wall
 
 GNOME_CONFIG_CFLAGS=$(GNOME_CONFIG) --cflags xml2
@@ -14,6 +15,7 @@ PKG_CONFIG_LDFLAGS=$(PKG_CONFIG) --libs gtkhtml-1.1
 
 CFLAGS_DIR=-I/home/jnoll/include -I./ -I../
 LDFLAGS_DIR=-g -L/home/jnoll/lib
+#LDFLAGS_DIR= -L/home/jnoll/lib
 
 CFLAGS=	$(CFLAGS_DIR) `$(GNOME_CONFIG_CFLAGS)` `$(PKG_CONFIG_CFLAGS)` \
 
@@ -56,7 +58,7 @@ all:	test #output
 
 
 .c.o:
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -g -c $<
 
 test:	unit_tests
 
@@ -72,6 +74,9 @@ test_engine:	test_engine.o $(TEST_OBJS)
 		$(CC) $(LDFLAGS) $(OPT_DEBUG) -o \
 		$@ $< $(TEST_OBJS) \
 	        $(TEST_LIBS)	
+
+gdb:  	test_htmllinkage
+	gdb ./test_htmllinkage
 		
 test_htmllinkage:	test_htmllinkage.o $(TEST_OBJS)
 			$(CC) $(LDFLAGS) $(OPT_DEBUG) -o $@ \
