@@ -88,51 +88,84 @@ void setExpectedResult ( )
 		_assert( __FILE__, __LINE__, expectedResultFile ) ;
 		
 		/* test for ID attribute */
+		
+		/* test : ID EQ email:///message1@dc.engr.scu.edu */
 	
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
 		
+		/* test : ID EQ email://200210081925.MAA28947@hpux31.dc.engr.scu.edu */
+
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/200210081925.MAA28947@hpux31.dc.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
 		
-		/* test for AND conjecture - ID && DATE( EQ, LT, GT ) */
+		/* test for AND conjecture - ID && DATE( EQ, LT, LE, GT, GE ) */
+		/* test :   ID EQ email:///message3.test.case.12345@server.engr.scu.edu AND DATE EQ 09/19/2002-17:35:00
+			    ID EQ email:///message3.test.case.12345@server.engr.scu.edu AND DATE LT 09/19/2002-17:35:01
+			    ID EQ email:///message3.test.case.12345@server.engr.scu.edu AND DATE LE 09/19/2002-17:35:02
+			    DATE GT 09/19/2002-17:34:59 AND ID EQ email:///message3.test.case.12345@server.engr.scu.edu
+			    DATE GE 09/19/2002-17:34:59 AND ID EQ email:///message3.test.case.12345@server.engr.scu.edu */
+
 		
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message3.test.case.12345@server.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		strcat( expectedString, oneResult ) ;
 		strcat( expectedString, oneResult ) ; 
+		strcat( expectedString, oneResult ) ; 
+		strcat( expectedString, oneResult ) ; 	
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
 		
 		/* test for AND conjecture - ID && NAME( EQ, ~ ) */
-	
+		
+		/* test : NAME ~ Friday */
+		
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message2.test.case.12345@school.engr.scu.edu\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
-				
+		
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message3.test.case.12345@server.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
 				
+		/* test : NAME EQ Reminder */ 
+		
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message7@server.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ; 
 				
-		/* test for OR conjecture - ID || DATE( EQ, LT, GT ) */
-	
+		/* test for OR conjecture - ID || DATE( EQ, GE ) */
+		
+		/* test : ID EQ email:///message5.test.case@aol.com.br OR DATE EQ 12/05/2002-05:52:26 */
+		
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
+		
+		/* test : ID EQ email:///message5.test.case@aol.com.br OR DATE GE 12/05/2002-05:52:25 */
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message4@home.testing.com\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message7@server.engr.scu.edu\n\n" ) ;
+		strcat( expectedString, oneResult ) ;
+		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
+		expectedString[0] = '\0' ;
+		
+		/* test : DATE EQ 12/05/2002-05:52:26 OR ID EQ email:///message5.test.case@aol.com.br */
 				
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n" ) ;
 		strcat( expectedString, oneResult ) ;
@@ -141,66 +174,20 @@ void setExpectedResult ( )
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
 		
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message7@server.engr.scu.edu\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n\n" ) ;
+		/* test : NAME ~ Reminder OR DATE EQ 04/07/2003-04:32:14 */
+		
+		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message7@server.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
 		
-		/* test for OR conjecture - ID, NAME, DATE( EQ, LT, GT ) */
+		/* test : ID EQ email:///message5.test.case@aol.com.br AND DATE EQ 04/07/2003-04:32:14 OR NAME ~ Returned */
 		
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n" ) ;
-		strcat( expectedString, oneResult ) ;
 		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/200210081925.MAA28947@hpux31.dc.engr.scu.edu\n\n" ) ;
 		strcat( expectedString, oneResult ) ;
 		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
 		expectedString[0] = '\0' ;
 
-		
-		/* testing the IDs */
-		
-			/* Double slashes email://MessageID */
-		
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message3.test.case.12345@server.engr.scu.edu\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-	
-	
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
-		/***************************************************/
-			/* Triple Slashes email:///MessageID */
-	
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/200210081925.MAA28947@hpux31.dc.engr.scu.edu\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message1@dc.engr.scu.edu\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message3.test.case.12345@server.engr.scu.edu\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
-		sprintf( oneResult ,"%s%s%s", "email://", mailPath, "/message5.test.case@aol.com.br\n\n" ) ;
-		strcat( expectedString, oneResult ) ;
-		fwrite( expectedString, sizeof( char ), strlen( expectedString ), expectedResultFile ) ;
-		expectedString[0] = '\0' ;
-		
 		fclose( expectedResultFile ) ;	
 	}
 }

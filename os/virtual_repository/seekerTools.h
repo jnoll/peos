@@ -7,6 +7,7 @@
 resultList* andResult( resultList*, resultList* ) ;
 resultList* orResult( resultList*, resultList* ) ;
 resultList* sortResult( resultList* ) ;
-void getPath(char *, char *) ;
+void formatTimeStamp( char *, char * ) ;
+void getPath( char *, char * ) ;
 
 

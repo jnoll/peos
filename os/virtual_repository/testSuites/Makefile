@@ -15,7 +15,6 @@ OBJECTS = \
 ../debug.o
 
 TESTS = \
-VRsetup \
 testFSsearchEnd2End \
 testFSsearchSeek \
 testFSsearchInvalid \
@@ -24,14 +23,13 @@ testUNITandResult \
 testUNITorResult \
 testUNITsortResult \
 testUNITquerywait \
+testUNITgetPath \
 testUpdateTestSite \
 testEMAILsearchEnd2End \
 testEMAILsearchInvalid \
-testUNITquerywait \
-testUNITgetPath 
+testEMAILsearchEmpty 
 
 FS_ACTUAL_RESULT_FILES = \
-VRsetupActualResult.txt \
 FSsearchEnd2EndActualResult.txt \
 FSsearchSeekActualResult.txt \
 FSsearchInvalidActualResult.txt \
@@ -42,6 +40,7 @@ UNITsortResultActualResult.txt \
 UNITquerywaitActualResult.txt \
 UNITgetPathActualResult.txt  \
 EMAILsearchEnd2EndActualResult.txt \
+EMAILsearchEmptyActualResult.txt \
 EMAILsearchInvalidActualResult.txt
 
 FS_EXPECTED_RESULT_FILES = \
@@ -54,6 +53,7 @@ UNITorResultExpectedResult.txt \
 UNITsortResultExpectedResult.txt \
 UNITquerywaitExpectedResult.txt \
 EMAILsearchEnd2EndExpectedResult.txt \
+EMAILsearchEmptyExpectedResult.txt \
 EMAILsearchInvalidExpectedResult.txt 
 	 
 all: $(TESTS)
@@ -94,6 +94,9 @@ test:	$(TESTS)
 	
 	testEMAILsearchInvalid > EMAILsearchInvalidActualResult.txt
 	diff EMAILsearchInvalidExpectedResult.txt EMAILsearchInvalidActualResult.txt
+	
+	testEMAILsearchEmpty > EMAILsearchEmptyActualResult.txt
+	diff EMAILsearchEmptyExpectedResult.txt EMAILsearchEmptyActualResult.txt
 	
 	testUNITandResult > UNITandResultActualResult.txt
 	diff UNITandResultExpectedResult.txt UNITandResultActualResult.txt

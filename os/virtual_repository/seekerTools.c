@@ -234,3 +234,173 @@ void getPath(char *pathBuffer, char *attribute)
         	strcpy( pathBuffer, searchBox ) ;
 	}
 }
+
+/************************************************************************
+ * Function:	formatTimeStamp						*
+ *									*
+ * Description:	sets date and time value in variable newTimeStamp	*
+ *		in the form of	yyyy/mm/dd hh:mm:ss given a text string	*
+ *		of date and year					*
+ ************************************************************************/
+
+void formatTimeStamp( char *newTimeStamp, char *oldTimeStamp )
+{
+	void formatTime( char *, char * ) ;
+	void formatDate( char *, char * ) ;
+	
+	char *word, *toParse, *date, *time ;
+	char formattedTime[9] = { '\0' } ;
+	char formattedDate[11] = { '\0' } ;
+	char oldTime[9] = { '\0' } ;
+	char oldDate[11] = { '\0' } ;
+	int numParses ;
+		
+	numParses = 0 ;	
+	word = toParse = date = time = NULL ;
+	toParse = strdup( oldTimeStamp ) ;
+	
+	_debug( __FILE__, __LINE__, 5, "oldTimeStamp is %s", oldTimeStamp ) ;
+	
+	word = strtok( toParse, "-" ) ;
+	
+	while( word != NULL )
+	{
+		switch( numParses )
+		{
+			case 0	: 	_debug( __FILE__, __LINE__, 5, "date to change is %s", word ) ;
+					strcpy( oldDate, word ) ;					
+					break ;
+								
+			case 1	: 	_debug( __FILE__, __LINE__, 5, "time to change is %s", word ) ;
+					strcpy( oldTime, word ) ;
+					break ;
+		}	
+		numParses++ ;
+		word = strtok( NULL, "-" ) ;
+	}
+	
+	_debug( __FILE__, __LINE__, 5, "oldDate is %s", oldDate ) ;
+	_debug( __FILE__, __LINE__, 5, "oldTime is %s", oldTime ) ;
+	
+	formatDate( formattedDate, oldDate ) ;
+	date = strdup( formattedDate ) ;
+	
+	_debug( __FILE__, __LINE__, 5, "formattedDate is %s", formattedDate ) ;
+					
+	formatTime( formattedTime, oldTime ) ;
+	time = strdup( formattedTime ) ;
+	
+	//_debug( __FILE__, __LINE__, 5, "formattedTime is %s", formattedTime ) ;
+	
+	sprintf( newTimeStamp,"%s %s", date, time ) ;	
+	
+	_debug( __FILE__, __LINE__, 5, "newTimeStamp is %s", newTimeStamp ) ;	
+		
+	free( date ) ;
+	free( time ) ;
+	free( toParse ) ;
+}
+
+/************************************************************************
+ * Function:	formatTime						*
+ *									*
+ * Description:	sets time value in variable newTime in the form of	*
+ *		hh:mm:ss given a text string of date and year		*
+ ************************************************************************/
+
+void formatTime( char *newTime, char *oldTime )
+{
+	char *word, *toParse, *hours, *minutes, *seconds ;
+	int numParses ;
+		
+	numParses = 0 ;	
+	word = toParse = hours = minutes = seconds = NULL ;
+	toParse = strdup( oldTime ) ;
+	
+	_debug( __FILE__, __LINE__, 5, "oldTime is %s", oldTime ) ;
+	
+	word = strtok( toParse, ":" ) ;
+	
+	while( word != NULL )
+	{
+		switch( numParses )
+		{
+			case 0	: 	_debug( __FILE__, __LINE__, 5, "hours is %s", word ) ;
+					hours = strdup( word ) ;
+					break ;
+								
+			case 1	: 	_debug( __FILE__, __LINE__, 5, "minutes is %s", word ) ;
+					minutes = strdup( word ) ;
+					break ;
+					
+			case 2	: 	_debug( __FILE__, __LINE__, 5, "seconds is %s", word ) ;
+					seconds = strdup( word ) ;
+					break ;
+			
+		}	
+		numParses++ ;
+		word = strtok( NULL, ":" ) ;
+	}
+	
+	sprintf( newTime,"%s:%s:%s", hours, minutes, seconds ) ;
+	
+	_debug( __FILE__, __LINE__, 5, "newTime is %s", newTime ) ;
+	_debug( __FILE__, __LINE__, 5, "hours is %s", hours ) ;
+	_debug( __FILE__, __LINE__, 5, "minutes is %s", minutes ) ;	
+	_debug( __FILE__, __LINE__, 5, "seconds is %s", seconds ) ;	
+	
+	free( hours ) ;
+	free( minutes ) ;
+	free( seconds ) ;
+	free( toParse ) ;
+}
+
+/************************************************************************
+ * Function:	formatDate						*
+ *									*
+ * Description:	sets date value in variable newDate in the form of	*
+ *		yyyy/mm/dd given a text string of date and year		*
+ ************************************************************************/
+ 
+void formatDate( char *newDate, char *oldDate )
+{
+	char *word, *toParse, *year, *month, *day ;
+	int numParses ;
+	
+	numParses = 0 ;
+	word = toParse = year = month = day = NULL ;
+	
+	toParse = strdup( oldDate ) ;
+	
+	word = strtok( toParse, "/" ) ;
+
+	while( word != NULL )
+	{
+		switch( numParses )
+		{
+			case 0	: 	month = strdup( word ) ;
+					break ;
+								
+			case 1	: 	day = strdup( word ) ;
+					break ;
+								
+			case 2	: 	year = strdup( word ) ;
+					break ;
+		}
+		numParses++ ;
+		word = strtok( NULL, "/" ) ;
+	}
+
+	sprintf( newDate,"%s/%s/%s", year, month, day ) ;
+	
+	_debug( __FILE__, __LINE__, 5, "year is %s", year ) ;
+	_debug( __FILE__, __LINE__, 5, "month is %s", month ) ;
+	_debug( __FILE__, __LINE__, 5, "day is %s", day ) ;
+	_debug( __FILE__, __LINE__, 5, "newDate is %s", newDate ) ;	
+	
+	free( month ) ;
+	free( day ) ;
+	free( year ) ;
+	free( toParse ) ;
+}
+

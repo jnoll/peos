@@ -8,8 +8,8 @@
  * Description:	Contains function declaration for EMAILseeker.c		*
  ************************************************************************/
 
-
 queryList* EMAILqueryTool( queryList *listpointer );
+int EMAILqueryValidator( char * ) ;
 
 
 

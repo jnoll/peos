@@ -32,7 +32,7 @@ time_t mailQueryTime ;
 
 queryList* EMAILqueryTool( queryList *listpointer )
 {
-	int is_email(char *value);
+	int isEMAILQuery(char *value);
 	void getMailPath(char *mailPath, char *value, queryList *tempQueries  );
 
 	resultList* EMAILmsgTokenizer( char *mailPath, char *value, int attributeType );
@@ -70,10 +70,11 @@ queryList* EMAILqueryTool( queryList *listpointer )
    				_debug( __FILE__, __LINE__, 5, "DATE value is %s", tempQueries -> oneQuery ->myClauses[numClauses].value ) ;
    				strcpy ( operatorType , tempQueries -> oneQuery ->myClauses[numClauses].operator ) ;
    				getPath(mailPath,"MAILBOX");
-   				_debug( __FILE__, __LINE__, 5, "mailPath is ", mailPath) ;
+   				_debug( __FILE__, __LINE__, 5, "mailPath is %s", mailPath) ;
    				attributeType = 2 ;
    				if( numClauses == 0 )
 					tempResults = EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ;
+
 				else
 				{
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
@@ -124,7 +125,7 @@ queryList* EMAILqueryTool( queryList *listpointer )
 				_debug( __FILE__, __LINE__, 5, "id value is %s", tempQueries -> oneQuery ->myClauses[numClauses].value ) ;
 				attributeType = 1 ;
 
-				if( is_email( tempQueries -> oneQuery ->myClauses[numClauses].value) )
+				if( isEMAILQuery( tempQueries -> oneQuery ->myClauses[numClauses].value) )
 
 				{
 
@@ -170,7 +171,7 @@ queryList* EMAILqueryTool( queryList *listpointer )
 }
 
 /************************************************************************
- * Function:	is_email						*
+ * Function:	isEMAILQuery						*
  *									*
  * Description:	Takes in the Value from the query andchecks whether it	*
  *		is to be satisfied by the email repository. If the	*
@@ -178,7 +179,7 @@ queryList* EMAILqueryTool( queryList *listpointer )
  *		returns 1 else it returns 0.				*
  ************************************************************************/
 
-int is_email(char *value)
+int isEMAILQuery(char *value)
 {
 	char *repository ;		// a token that defines the repository type of the query request
 	char tempValue[BUFFER_SIZE] ;
@@ -193,7 +194,6 @@ int is_email(char *value)
 	else
 		return 0;
 }
-
 
 /************************************************************************
  * Function:	getMailPath						*
@@ -213,10 +213,8 @@ void getMailPath(char *mailPath, char *value, queryList *tempQueries )
 	char searchBox[BUFFER_SIZE] = { '\0' } ;
 	int numslash = 1;
    	
-	
 	strcpy( tempValue, value + 6) ;
-	
-	
+		
 	while( strncmp( tempValue+numslash, "/", 1 ) == 0 )
 		numslash++;
 			
@@ -309,8 +307,8 @@ resultList* msgTokenizer( FILE *mailFile, char *queryValue, char *mailPath, int 
 	while( ( fgets( oneLine, 500, mailFile ) != NULL ) && ( !msgResult ) ) 
 	{
 		lineNumber++ ;
-		_debug( __FILE__, __LINE__, 1, "numAttributes before oneline is %d", numAttributes) ;
-		_debug( __FILE__, __LINE__, 1, "oneLine is %s\n", oneLine ) ;
+		_debug( __FILE__, __LINE__, 5, "numAttributes before oneline is %d", numAttributes) ;
+		_debug( __FILE__, __LINE__, 5, "oneLine is %s\n", oneLine ) ;
 		
 		strcpy( testLine, oneLine ) ;
 		
@@ -354,6 +352,7 @@ resultList* msgTokenizer( FILE *mailFile, char *queryValue, char *mailPath, int 
 									_debug( __FILE__, __LINE__, 5, "dateLine is %s",  dateLine ) ;
 									
 									msgResult = EMAILdateCompare ( queryValue, dateLine ) ;
+									
 									//numAttributes = readSubjectLine = 0 ;
 									break ;
 					
@@ -510,54 +509,68 @@ int EMAILdateCompare ( char *queryValue, char *dateLine )
 {
 	void getMailDate( char *value, char *dateLine ) ;
 		
-	char mailDate[11] ;
-	char queryDate[11] ;
+	char mailDate[22] = { '\0' } ;
+	char queryDate[22] = { '\0' } ;
+	time_t mailTimeStamp, queryTimeStamp ;	
+	int x = 9 ;
 	
-	_debug( __FILE__, __LINE__, 5, "IN DATE COMPARE FUNCTION1" ) ;
-	
-	getMailDate( mailDate, dateLine ) ;
-	
-	_debug( __FILE__, __LINE__, 5, "IN DATE COMPARE FUNCTION2" ) ;
+	_debug( __FILE__, __LINE__, 5, "x is %d ", x ) ;	
+	_debug( __FILE__, __LINE__, 5, "dateLine is %s, queryValue is %s ", dateLine, queryValue ) ;
 		
+	getMailDate( mailDate, dateLine ) ;
+	formatTimeStamp( queryDate, queryValue ) ;
+	
+	_debug( __FILE__, __LINE__, 5, "queryDate is %s", queryDate ) ;
+	
+	mailTimeStamp = parsedate( mailDate, NULL ) ;
+	queryTimeStamp = parsedate( queryDate, NULL) ;
+	
 	_debug( __FILE__, __LINE__, 5, "mailDate is %s, queryDate is %s", mailDate, queryValue ) ;
+	_debug( __FILE__, __LINE__, 5, "subjectLine for operator LT is %s",  dateLine ) ;
+	_debug( __FILE__, __LINE__, 5, "mailDate %s",  ctime( &mailTimeStamp ) ) ;
+	_debug( __FILE__, __LINE__, 5, "queryDate %s",  ctime( &queryTimeStamp )  ) ;
 	
 	if ( strcmp ( operatorType, "EQ" ) == 0 )
-		{
-			_debug( __FILE__, __LINE__, 5, "dateLine for operator EQ is %s", dateLine ) ;
-
-			if( difftime( parsedate(queryValue,NULL),parsedate( mailDate,NULL )) == 0 )
-				return 1 ;
-			else
-				return 0 ;
-		}
+	{
+		if ( difftime( mailTimeStamp, queryTimeStamp ) == 0 ) 
+			return 1 ;
+		else
+			return 0 ;
+	}
 	
 	else if ( strcmp ( operatorType, "LT" ) == 0 )
-		{
-			time_t m, q;
-			m = parsedate( mailDate,NULL );
-			q = parsedate(queryValue,NULL);
-			
-			_debug( __FILE__, __LINE__, 5, "subjectLine for operator LT is %s",  dateLine ) ;
-			_debug( __FILE__, __LINE__, 5, "mailDate %s",  ctime(&m ) ) ;
-			_debug( __FILE__, __LINE__, 5, "queryValue %s",  ctime(&q )  ) ;
-			
-			if( difftime( parsedate( mailDate,NULL ), parsedate(queryValue,NULL)) < 0 )
-				return 1 ;
-				
-			else
-				return 0 ;
-			_debug( __FILE__, __LINE__, 1, "difftime is %d", difftime( parsedate( mailDate,NULL ), parsedate(queryValue,NULL))) ;
-		}
+	{
+		if( difftime( mailTimeStamp, queryTimeStamp ) < 0 )
+			return 1 ;
+		else
+			return 0 ;
+	}
 		
+	else if( strcmp( operatorType, "LE" ) == 0 )
+	{
+		if( ( difftime( mailTimeStamp, queryTimeStamp ) == 0 ) ||
+		    ( difftime( mailTimeStamp, queryTimeStamp ) < 0 ) )
+			return 1 ;
+		else
+			return 0 ;
+	}
+	
 	else if ( strcmp ( operatorType, "GT" ) == 0 )
-		{
-			_debug( __FILE__, __LINE__, 5, "subjectLine for operator GT is %s",  dateLine ) ;
-			
-			if( difftime( parsedate( mailDate,NULL ), parsedate(queryValue,NULL)) > 0 )
-				return 1 ;
-			else
-				return 0 ;
-		}			
+	{
+		if( difftime( mailTimeStamp, queryTimeStamp ) > 0 )
+			return 1 ;
+		else
+			return 0 ;
+	}
+	
+	else if( strcmp( operatorType, "GE" ) == 0 )
+	{
+		if( ( difftime( mailTimeStamp, queryTimeStamp ) == 0 ) ||
+		    ( difftime( mailTimeStamp, queryTimeStamp ) > 0 ) )
+			return 1 ;
+		else
+			return 0 ;
+	}
 }
 
 /************************************************************************
@@ -607,13 +620,16 @@ int EMAILsubjectCompare ( char *queryValue, char *subjectLine )
 void getMailDate( char *value, char *dateLine )
 {
 	char* convertMonth( char * ) ;
-	char *word, *toParse, *year, *month, *day ;
+	char *word, *toParse, *year, *month, *day, *time ;
+	char dateValue[1000] = {'\0'} ;
 	int numParses ;
 		
 	numParses = 0 ;
 	word = toParse = NULL ;
 	
-	word = strtok( dateLine, " " ) ;
+	strcpy ( dateValue, dateLine ) ;
+	word = strtok( dateValue, " " ) ;
+//	word = strtok( dateLine, " " ) ;
 	
 	_debug( __FILE__, __LINE__, 5, "word is %s", word ) ;
 	
@@ -637,22 +653,65 @@ void getMailDate( char *value, char *dateLine )
 					year = strdup( word ) ;
 					_debug( __FILE__, __LINE__, 5, "new Year is %s", year ) ;
 					break ;
+			case 6	:	_debug( __FILE__, __LINE__, 5, "time is %s", time ) ;
+					time = strdup( word ) ;
+					_debug( __FILE__, __LINE__, 5, "new time is %s", time ) ;
+					break ;
+			
 		}
 		word = strtok( NULL, " " ) ;
 		_debug( __FILE__, __LINE__, 5, "word in at bottom is while is %s", word ) ;
 	}
 	
 	if( strlen( day ) == 1 )
-		sprintf( value,"%s/%s/0%s", year, month, day ) ;
+		sprintf( value, "%s/%s/0%s %s", year, month, day ) ;
 	else
-		sprintf( value,"%s/%s/%s", year, month, day ) ;
+		sprintf( value, "%s/%s/%s %s", year, month, day, time ) ;
 	
 	free( month ) ;
 	free( day ) ;
 	free( year ) ;
+	free( time ) ;	
 		
 	_debug( __FILE__, __LINE__, 5, "value is %s", value ) ;
 }
+
+
+
+int EMAILqueryValidator( char *value )
+{
+	char testValue[BUFFER_SIZE] = {'\0'} ;
+	int numslash = 1 ;
+	int slashResult = 0 ;
+   	
+	strcpy( testValue, value + 6 ) ;
+	while( strncmp( testValue + numslash, "/", 1 ) == 0 )
+		numslash++ ;
+		
+	_debug( __FILE__, __LINE__, 5, "testValue is %s", testValue ) ;	
+	_debug( __FILE__, __LINE__, 5, "testValue + numslash is %s", testValue + numslash ) ;	
+	switch( numslash )
+	{
+		case 2: 	_debug( __FILE__, __LINE__, 5, "strlen( testValue + numslash ) is %d", strlen( testValue + numslash ) ) ;	
+				if( strlen( testValue + numslash ) )
+					slashResult = 2 ;
+				else
+					slashResult = 0 ;
+				break ;
+
+		case 3:		_debug( __FILE__, __LINE__, 5, "strlen( testValue + numslash ) is %d", strlen( testValue + numslash ) ) ;	
+				if( strlen( testValue + numslash ) )
+					slashResult = 3 ;
+				else
+					slashResult = 0 ;
+				break ;
+	
+		default: 	slashResult = 0 ;
+				break ;
+	}
+	return slashResult ;
+}
+
 
 /*void getMailQueryDate( char *value, char *queryValue )
 {

@@ -23,7 +23,6 @@
 int doneDirectoryPath = 0 ;		// boolean-like sentinel for the extracting of directoryPath
 char operatorType[3] ;
 char searchFile[BUFFER_SIZE] ;		// the value of the query request
-char queryDate[11] ;
 char queryName[BUFFER_SIZE] ;
 time_t fileQueryTime;
 char directoryPath[BUFFER_SIZE] ;	 //the path of the local user
@@ -40,7 +39,6 @@ resultList *nameResults ;
 queryList* FSqueryTool( queryList *listpointer )
 {
 	void getDirectoryPath( ) ;
-	void getFSQueryDate( char * ) ;
 	void attributeDATE( ) ;
 	void attributeNAME( ) ;
 	resultList* attributeID( query *, int ) ;
@@ -55,6 +53,8 @@ queryList* FSqueryTool( queryList *listpointer )
   	
 	tempQueries = listpointer ;
 	tempResults = NULL ;
+	
+	_debug( __FILE__, __LINE__, 5, "entering FSqueryTool" ) ;
 	
 	while( tempQueries != NULL )
 	{
@@ -87,10 +87,15 @@ queryList* FSqueryTool( queryList *listpointer )
 	
 			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "DATE" ) == 0 )
 			{
+				char fileTime[22] = { '\0' } ;
 				_debug( __FILE__, __LINE__, 5, "attribute is DATE" ) ;
 				dateResults = NULL;
-				getFSQueryDate( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
-				fileQueryTime = parsedate( tempQueries -> oneQuery -> myClauses[numClauses].value, NULL) ;	
+				
+				_debug( __FILE__, __LINE__, 5, "oldFileTime is %s", tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
+				formatTimeStamp( fileTime, tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
+				_debug( __FILE__, __LINE__, 5, "newFileTime is %s", fileTime ) ;
+				fileQueryTime = parsedate( fileTime, NULL) ;	
+				
 				strcpy( operatorType, tempQueries -> oneQuery -> myClauses[numClauses].operator ) ;
 				attributeDATE( ) ;
 				if( numClauses == 0 )
@@ -140,8 +145,11 @@ queryList* FSqueryTool( queryList *listpointer )
 		tempQueries = ( queryList* ) tempQueries -> link ;
 	}
 	
+	_debug( __FILE__, __LINE__, 5, "exiting FSqueryTool" ) ;
+	
 	return listpointer ;	
 }
+
 
 /************************************************************************
  * Function:	attributeID						*
@@ -161,12 +169,11 @@ resultList* attributeID( query *oneQuery, int numClauses )
 	{		
 		char tempPath[BUFFER_SIZE] = {'\0'} ;
 		char resultPath[BUFFER_SIZE] = {'\0'} ;
-		int numslash = 1 ;
+		int numslash = 0 ;
    	
+		numslash = FSqueryValidator( oneQuery -> myClauses[numClauses].value ) ;
 		strcpy( searchFile, ( oneQuery -> myClauses[numClauses].value ) + 5 ) ;
-		while( strncmp( searchFile + numslash, "/", 1 ) == 0 )
-			numslash++ ;
-			
+		
 		switch( numslash )
 		{
 			case 2: 	strcpy( tempPath, directoryPath ) ;
@@ -199,13 +206,11 @@ resultList* attributeID( query *oneQuery, int numClauses )
 			
 void attributeDATE( )
 {
-	int getDate( const char *filename, const struct stat *statptr, int flag ) ;
-	
+	int getDate( const char *filename, const struct stat *statptr, int flag ) ;	
 	
 	char searchPath[BUFFER_SIZE] = { '\0' } ;	// the value of SEARCHDIR in the configuration file
 	getPath( searchPath,"SEARCHDIR" ) ;	
 	
-	_debug( __FILE__, __LINE__, 5, "queryDate is %s", queryDate ) ;
 	_debug( __FILE__, __LINE__, 5, "searchPath is %s", searchPath ) ;
 	ftw( searchPath, getDate, 5 ) ;
 }
@@ -231,62 +236,6 @@ void attributeNAME( )
 	
 
 	ftw( searchPath, getFile, 5 ) ;
-}
-
-/************************************************************************
- * Function:	getDate							*
- *									*
- * Description:	Returns filenames of DATES that matches their		*
- *		corresponding operators of EQ, LT, GT.			*
- ************************************************************************/
-
-int getDate( const char *filename, const struct stat *statptr, int flag )
-{
-	void getFileDate( char * , char * ) ;
-
-	char theFileName[BUFFER_SIZE] = { '\0' } ;
-	char fileDate[11] ;
-		
-	switch ( flag )
-	{
-		case FTW_F : 	_debug( __FILE__, __LINE__, 5, "FTW file is %s", filename ) ;
-				_debug( __FILE__, __LINE__, 5, "statptr -> st_mtime is %s", ctime(  &statptr -> st_mtime  ) ) ;
-				_debug( __FILE__, __LINE__, 5, "fileQueryTime is %s", ctime(  &fileQueryTime  ) ) ;
-				getFileDate( fileDate, ctime(  &statptr -> st_mtime  ) ) ;
-				
-				strcat( theFileName, "file://" ) ;
-				
-				if( strcmp( operatorType, "EQ" ) == 0 )
-    				{	    											
-					if( difftime( parsedate( fileDate,NULL ), fileQueryTime ) == 0 )
-					{
-						strcat( theFileName, filename ) ;
-						dateResults = addResultItem( dateResults, theFileName ) ;
-					}
-				}
-				else if( strcmp( operatorType, "LT" ) == 0 )
-				{
-					if( difftime( parsedate( fileDate,NULL ), fileQueryTime ) < 0 )
-					{
-						strcat( theFileName, filename ) ;
-						dateResults = addResultItem( dateResults, theFileName ) ;
-					}
-				}
-				else if( strcmp( operatorType, "GT" ) == 0 )
-				{
-					if( difftime( parsedate( fileDate,NULL ), fileQueryTime ) > 0 )
-					{
-						strcat( theFileName, filename ) ;
-						dateResults = addResultItem( dateResults, theFileName ) ;
-					}
-				}
-				
-				_debug( __FILE__, __LINE__, 5, "getDate theFileName is %s", theFileName ) ;				
-				
-				break ;
-	}
-	
-	return 0 ;
 }
 
 /************************************************************************
@@ -346,113 +295,145 @@ int getFile( const char *filename, const struct stat *statptr, int flag )
 }
 
 /************************************************************************
- * Function:	getFSQueryDate						*
+ * Function:	getDate							*
  *									*
- * Description:	sets a date value in variable queryDate in the form of	*
- *		yyyy/mm/dd given a text string of date and year		*
+ * Description:	Returns filenames of DATEs that matches their		*
+ *		corresponding operators of EQ, LT, LE, GT, GE.		*
  ************************************************************************/
- 
-void getFSQueryDate( char *dateValue )
+
+int getDate( const char *filename, const struct stat *statptr, int flag )
 {
-	char *word, *value, *toParse, *year, *month, *day ;
-	int numParses ;
-	
-	numParses = 0 ;
-	word = NULL ;
-	
-	value = ( char * ) malloc( sizeof( char ) ) ;
-	toParse = strdup( dateValue ) ;
-	
-	word = strtok( toParse, "/" ) ;
+	void getFileTimeStamp( char * , char * ) ;
 
-	while( word != NULL )
+	char theFileName[BUFFER_SIZE] = { '\0' } ;
+	char fileDate[20] = { '\0' } ;
+	
+	time_t fileDateTime ;
+		
+	switch ( flag )
 	{
-		numParses++ ;
-		switch( numParses )
-		{
-			case 1	: 	month = strdup( word ) ;
-					break ;
+		case FTW_F : 	getFileTimeStamp( fileDate, ctime(  &statptr -> st_mtime  ) ) ;
+				_debug( __FILE__, __LINE__, 5, "fileDate is %s", fileDate ) ;
+				
+				fileDateTime = parsedate( fileDate, NULL ) ;
+				
+				_debug( __FILE__, __LINE__, 5, "FTW file is %s", filename ) ;
+				_debug( __FILE__, __LINE__, 5, "statptr -> st_mtime is %s", ctime(  &statptr -> st_mtime  ) ) ;
+				_debug( __FILE__, __LINE__, 5, "fileQueryTime is %s", ctime(  &fileQueryTime ) ) ;
+				_debug( __FILE__, __LINE__, 5, "fileDateTime is %s", ctime(  &fileDateTime ) ) ;
 								
-			case 2	: 	day = strdup( word ) ;
-					break ;
-								
-			case 3	: 	year = strdup( word ) ;
-					break ;
-		}
-		word = strtok( NULL, "/" ) ;
+				strcat( theFileName, "file://" ) ;
+				
+				if( strcmp( operatorType, "EQ" ) == 0 )
+    				{	    											
+					if( difftime( fileDateTime, fileQueryTime ) == 0 )
+					{
+						strcat( theFileName, filename ) ;
+						dateResults = addResultItem( dateResults, theFileName ) ;
+					}
+				}
+				else if( strcmp( operatorType, "LT" ) == 0 )
+				{
+					if( difftime( fileDateTime, fileQueryTime ) < 0 )
+					{
+						strcat( theFileName, filename ) ;
+						dateResults = addResultItem( dateResults, theFileName ) ;
+					}
+				}
+				else if( strcmp( operatorType, "LE" ) == 0 )
+				{
+					if( ( difftime( fileDateTime, fileQueryTime ) == 0 ) ||
+					    ( difftime( fileDateTime, fileQueryTime ) < 0 ) )
+					{
+						strcat( theFileName, filename ) ;
+						dateResults = addResultItem( dateResults, theFileName ) ;
+					}
+				}
+				else if( strcmp( operatorType, "GT" ) == 0 )
+				{
+					if( difftime( fileDateTime, fileQueryTime ) > 0 )
+					{
+						strcat( theFileName, filename ) ;
+						dateResults = addResultItem( dateResults, theFileName ) ;
+					}
+				}
+				else if( strcmp( operatorType, "GE" ) == 0 )
+				{
+					if( ( difftime( fileDateTime, fileQueryTime ) == 0 ) ||
+					    ( difftime( fileDateTime, fileQueryTime ) > 0 ) )
+					{
+						strcat( theFileName, filename ) ;
+						dateResults = addResultItem( dateResults, theFileName ) ;
+					}
+				}
+				
+				_debug( __FILE__, __LINE__, 5, "getDate theFileName is %s", theFileName ) ;				
+				
+				break ;
 	}
-
-	sprintf( value,"%s/%s/%s", year, month, day ) ;	
-	strcpy( queryDate, value ) ;
 	
-	free( month ) ;
-	free( day ) ;
-	free( year ) ;
-	free( toParse ) ;
-	free( value ) ;	
+	return 0 ;
 }
 
 /************************************************************************
- * Function:	getFileDate						*
+ * Function:	getFileTimeStamp					*
  *									*
- * Description:	sets a date value in variable value in the form of	*
- *		yyyy/mm/dd given a text string of date and year. This	*
- *		is for the purpose of modified time variable of the	*
- *		Linux system						*
+ * Description:	Sets the time stamp of a file into yyyy/mm/dd hh:mm:ss 	*
+ *		format							*
  ************************************************************************/
 
-void getFileDate( char *value, char *fileTime )
+void getFileTimeStamp( char *newFileTime, char *oldFileTime )
 {
 	char* convertMonth( char * ) ;
-	char *word, *toParse, *year, *month, *day ;
+	char *word, *toParse, *year, *month, *day, *time ;
 	int numParses ;
 		
 	numParses = 0 ;
 	word = toParse = NULL ;
 	
-	_debug( __FILE__, __LINE__, 5, "fileTime is %s", fileTime ) ;
+	_debug( __FILE__, __LINE__, 5, "oldFileTime is %s", oldFileTime ) ;
 	
-	toParse = strtok( fileTime, "\n" ) ;
+	toParse = strtok( oldFileTime, "\n" ) ;
 	if( toParse != NULL )
 		word = strtok( toParse, " " ) ;
 	
-
-	_debug( __FILE__, __LINE__, 5, "word is %s", word ) ;
 	while( word != NULL )
 	{
-		_debug( __FILE__, __LINE__, 5, "word is %s", word ) ;
-		numParses++ ;
-		_debug( __FILE__, __LINE__, 5, "numParses is %d", numParses ) ;
+		_debug( __FILE__, __LINE__, 5, "word is %s, numParses is %d", word, numParses ) ;
 		switch( numParses )
 		{
-			case 2	: 	_debug( __FILE__, __LINE__, 5, "Month is %s", word ) ;
-					month = strdup( convertMonth ( word ) ) ;
-					_debug( __FILE__, __LINE__, 5, " new Month is %s", month ) ;
+			case 1	: 	month = strdup( convertMonth ( word ) ) ;
 					break ;
 								
-			case 3	: 	_debug( __FILE__, __LINE__, 5, "Date is %s", word ) ;
-					day = strdup( word ) ;
-					_debug( __FILE__, __LINE__, 5, "new Date is %s", day ) ;
+			case 2	: 	day = strdup( word ) ;
+					break ;
+			
+			case 3	: 	time = strdup( word ) ;
 					break ;
 								
-			case 5	: 	_debug( __FILE__, __LINE__, 5, "Year is %s", word ) ;
-					year = strdup( word ) ;
-					_debug( __FILE__, __LINE__, 5, "new Year is %s", year ) ;
+			case 4	: 	year = strdup( word ) ;
 					break ;
 		}
-		word = strtok( NULL, " " ) ;
+		numParses++ ;
+		word = strtok( NULL, " " ) ;		
 	}
 	
+	_debug( __FILE__, __LINE__, 5, "year is %s", year ) ;
+	_debug( __FILE__, __LINE__, 5, "month is %s", month ) ;
+	_debug( __FILE__, __LINE__, 5, "date is %s", day ) ;
+	_debug( __FILE__, __LINE__, 5, "time is %s", time ) ;
+	
 	if( strlen( day ) == 1 )
-		sprintf( value,"%s/%s/0%s", year, month, day ) ;
+		sprintf( newFileTime,"%s/%s/0%s %s", year, month, day, time ) ;
 	else
-		sprintf( value,"%s/%s/%s", year, month, day ) ;
+		sprintf( newFileTime,"%s/%s/%s %s", year, month, day, time ) ;
 	
 	free( month ) ;
 	free( day ) ;
-	free( year ) ;
+	free( time ) ;
+	free( year ) ;	
 		
-	_debug( __FILE__, __LINE__, 5, "value is %s", value ) ;
+	_debug( __FILE__, __LINE__, 5, "newFileTime is %s", newFileTime ) ;
 }
 
 /************************************************************************
@@ -508,14 +489,59 @@ int isFileQuery( char *value )
 	
 	strcpy( searchFile, value ) ;
 	repository = strtok( searchFile , ":" ) ;
-	_assert( __FILE__, __LINE__, repository ) ;	
+	_assert( __FILE__, __LINE__, repository ) ;
+	
+	_debug( __FILE__, __LINE__, 5, "repository is %s", repository ) ;
+	_debug( __FILE__, __LINE__, 5, "strcmp( ) is %d", strcmp( "file", repository ) ) ;		
 					
 	if( ( strcmp( "file", repository ) == 0 ) )
 		return 1 ;
 	else
 		return 0 ;
 }
+
+/************************************************************************
+ * Function:	FSqueryValidator					*
+ *									*
+ * Description:	Determines if the query is a file query			*
+ *									*
+ *		Returns 1 if a file query, otherwise returns 0		*
+ ************************************************************************/
+ 
+int FSqueryValidator( char *value )
+{
+	char testValue[BUFFER_SIZE] = {'\0'} ;
+	int numslash = 1 ;
+	int slashResult = 0 ;
+   	
+	strcpy( testValue, value + 5 ) ;
+	while( strncmp( testValue + numslash, "/", 1 ) == 0 )
+		numslash++ ;
 		
+	_debug( __FILE__, __LINE__, 5, "testValue is %s", testValue ) ;	
+	_debug( __FILE__, __LINE__, 5, "testValue + numslash is %s", testValue + numslash ) ;	
+	switch( numslash )
+	{
+		case 2: 	_debug( __FILE__, __LINE__, 5, "strlen( testValue + numslash ) is %d", strlen( testValue + numslash ) ) ;	
+				if( strlen( testValue + numslash ) )
+					slashResult = 2 ;
+				else
+					slashResult = 0 ;
+				break ;
+
+		case 3:		_debug( __FILE__, __LINE__, 5, "strlen( testValue + numslash ) is %d", strlen( testValue + numslash ) ) ;	
+				if( strlen( testValue + numslash ) )
+					slashResult = 3 ;
+				else
+					slashResult = 0 ;
+				break ;
+				break ;
+	
+		default: 	slashResult = 0 ;
+				break ;
+	}
+	return slashResult ;
+}
 
 
 /************************************************************************

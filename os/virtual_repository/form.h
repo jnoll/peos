@@ -46,7 +46,7 @@ typedef struct
 struct repos
 {
 	queryList* ( *queryTool )( queryList * ) ;	// pointer to a query tool
- 	char *name ;					// name of the query tool
+ 	char *queryToolType ;				// name of the query tool
 }	repos_list[20]	;
 
 #endif

@@ -68,7 +68,7 @@ resultList* removeResultItem( resultList *listpointer )
 
 
 /************************************************************************
- * Function:	printResultList						*
+ * Function:	addResultItem						*
  *									*
  * Description:	Adds the data at the end of the resultList.		*
  ************************************************************************/

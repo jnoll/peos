@@ -1,12 +1,12 @@
 /************************************************************************
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
- * Filename : testFSsearchInvalid.c					*
+ * Filename : testEMAILsearchInvalid.c					*
  ************************************************************************/
 
 /************************************************************************
  * Description:	Test the implementation of Virtual Repository for the	*
- 		Unix file system with invalid queries			*
+ 		mail box with invalid and empty queries			*
  ************************************************************************/
 
 #include "form.h"
@@ -20,43 +20,46 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#define BUFFER_SIZE 1000
+
 int main( void )
 {	
 	void callback( int size, resultList *listPointer , int *data ) ;
 	void ( *call )( int, resultList *, int * data ) ;
-	void setInvalidResult( int, FILE * ) ;
+	void setEmptyResult( int, FILE * ) ;
 	
-	char queryString[1000] ;
+	char queryString[BUFFER_SIZE] ;
 	char *testString ;
-	int *d, index, numQueries ;
+	int *d, index, numEmptyQueries ;
 	queryList *tempQueries ;
-	FILE *expectedResultInvalidFile, *testInputInvalid ;
+	FILE *expectedResultEmptyFile, *testInputEmpty ;
 
 	repos_ctr = 0;
 	myQueries = NULL;
 	
-	setup_fs( );	
+	setup_email( );	
 	call = callback ;
 	
-	testInputInvalid = fopen ( "FSsearchInvalid.dat", "r" ) ;
-	_assert( __FILE__, __LINE__, testInputInvalid ) ;
-	numQueries = 0 ;
-	while ( !feof( testInputInvalid ) ) 
+	testInputEmpty = fopen ( "EMAILsearchEmpty.dat", "r" ) ;
+	_assert( __FILE__, __LINE__, testInputEmpty ) ;
+	
+	numEmptyQueries = 0 ;
+	while ( !feof( testInputEmpty ) ) 
 	{
-		fgets ( queryString, sizeof ( queryString ), testInputInvalid ) ;
+		fgets ( queryString, sizeof ( queryString ), testInputEmpty ) ;
 		if( strlen( queryString ) )
 		{
 			query_wait( queryString, call, d ) ;
 			queryString[0] = '\0' ;
-			numQueries++ ;
+			numEmptyQueries++ ;
 		}
 	}
-	fclose( testInputInvalid ) ;
+	fclose( testInputEmpty ) ;
 	
-	expectedResultInvalidFile = fopen ( "FSsearchInvalidExpectedResult.txt", "w" ) ;
-	_assert( __FILE__, __LINE__, expectedResultInvalidFile ) ;
-	setInvalidResult( numQueries, expectedResultInvalidFile ) ;
-	fclose( expectedResultInvalidFile ) ;
+	expectedResultEmptyFile = fopen ( "EMAILsearchEmptyExpectedResult.txt", "w" ) ;
+	_assert( __FILE__, __LINE__, expectedResultEmptyFile ) ;
+	setEmptyResult( numEmptyQueries, expectedResultEmptyFile ) ;
+	fclose( expectedResultEmptyFile ) ;	
 
 	poll_vr( ) ;
 
@@ -68,13 +71,12 @@ void callback( int size, resultList *listpointer, int *data )
 	printResultList( listpointer ) ;	
 }
 
-void setInvalidResult( int invalids, FILE *expectedResultInvalidFile )
+void setEmptyResult( int emptys, FILE *FSexpectedResultEmptyFile )
 {
 	int i ;
-	char invalidString[] = "invalid query...\n" ;
+	char emptyString[] = "empty query...\n" ;
 	
-	for( i = 0 ; i < invalids ; i++ )
-		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultInvalidFile ) ;
+	for( i = 0 ; i < emptys ; i++ )
+		fwrite( emptyString, sizeof( char ), strlen( emptyString ), FSexpectedResultEmptyFile ) ;
 		
 }
-

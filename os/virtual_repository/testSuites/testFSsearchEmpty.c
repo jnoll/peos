@@ -28,7 +28,7 @@ int main( void )
 	
 	char queryString[1000] ;
 	char *testString ;
-	int *d, index ;
+	int *d, index, numQueries ;
 	queryList *tempQueries ;
 	FILE *FSexpectedResultEmptyFile, *testInputEmpty ;
 
@@ -38,13 +38,9 @@ int main( void )
 	setup_fs( );	
 	call = callback ;
 	
-	FSexpectedResultEmptyFile = fopen ( "FSsearchEmptyExpectedResult.txt", "w" ) ;
-	_assert( __FILE__, __LINE__, FSexpectedResultEmptyFile ) ;
-	setEmptyResult( 5, FSexpectedResultEmptyFile ) ;
-	fclose( FSexpectedResultEmptyFile ) ;	
-	
 	testInputEmpty = fopen ( "FSsearchEmpty.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputEmpty ) ;
+	numQueries = 0 ;
 	while ( !feof( testInputEmpty ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), testInputEmpty ) ;
@@ -52,10 +48,16 @@ int main( void )
 		{
 			query_wait( queryString, call, d ) ;
 			queryString[0] = '\0' ;
+			numQueries++ ;
 		}
 	}
 	fclose( testInputEmpty ) ;
 
+	FSexpectedResultEmptyFile = fopen ( "FSsearchEmptyExpectedResult.txt", "w" ) ;
+	_assert( __FILE__, __LINE__, FSexpectedResultEmptyFile ) ;
+	setEmptyResult( numQueries, FSexpectedResultEmptyFile ) ;
+	fclose( FSexpectedResultEmptyFile ) ;	
+	
 	poll_vr( ) ;
 
 	return 0 ;

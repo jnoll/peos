@@ -16,6 +16,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define BUFFER_SIZE 1000
+
 /************************************************************************
  * Function:	query_wait						*
  *									*
@@ -30,8 +32,10 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 	bool isValidAttribute( char * ) ; 
 	bool isValidOperator( char *, char * ) ; 
 	bool isValidValue( char * ) ;
-	bool isValidConjecture( char *) ;
+	bool isValidConjecture( char * ) ;
+	int isValidQuery( query *, int ) ;
 	
+	int validated ;
 	char *word, *toParse ; 			// tokens during string tokenizations 	
 	int numParses, numClauses, numTokens ;	// keeps track of the token in the tokenizing phase
 						// numClauses stores the number of clauses in the queryString
@@ -64,7 +68,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].attribute = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__,2, "Attribute is %s", word ) ;
+						_debug( __FILE__, __LINE__, 5, "Attribute is %s", word ) ;
 					}
 					break ;
 						
@@ -73,7 +77,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].operator = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 2, "Operator is %s", word ) ;
+						_debug( __FILE__, __LINE__, 5, "Operator is %s", word ) ;
 					}						
 					break ;
 					
@@ -81,7 +85,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].value = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 2, "Value is %s", word ) ;
+						_debug( __FILE__, __LINE__, 5, "Value is %s", newQuery -> myClauses[numClauses].value ) ;
 					}
 					break ;
 			
@@ -89,21 +93,27 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].conjecture = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 2, "Conjecture is %s", word ) ;
+						_debug( __FILE__, __LINE__, 5, "Conjecture is %s", word ) ;
 					}
-					else
-					{
-						_debug(__FILE__,__LINE__,2,"invalid conjecture");
-					}
+
 					break ;
 		}
 		
-		_debug(__FILE__,__LINE__,5,"parsing word %s number of parses is : %d number of tokens: %d",word,numParses,numTokens);
 		word = strtok( NULL, " " ) ;
 	}
 	
+	_debug( __FILE__, __LINE__, 5, "numClauses is %d, numParses is %d, numTokens is %d, calculated numTokens is %d", 
+					numClauses, numParses, numTokens, ( numClauses * 4 + numParses ) ) ;	
+	
+	validated = 0 ;	
 	if( ( ( numClauses * 4 + numParses ) == numTokens ) && ( numParses == 3 ) )
-	{
+	{		
+		validated = isValidQuery( newQuery, numClauses ) ;	
+		_debug( __FILE__, __LINE__, 5, "validated is %d", validated ) ;
+	}
+	
+	if( validated )
+	{	
 		_debug( __FILE__, __LINE__, 5, "Storing Clause" ) ;
 		newQuery -> callback = cback;
 		newQuery -> data = d ;
@@ -152,9 +162,43 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 		else
 			printf( "empty query...\n" ) ;			
 	}
+	_debug( __FILE__, __LINE__, 5, "exiting query_wait( )" ) ;
 }
 
-
+int isValidQuery( query *theQuery, int numClauses )
+{
+	int i ;
+	int validateTimeStamp(char *timeStamp);
+	char testValue[BUFFER_SIZE] = { '\0' } ;
+	int validResult = 1 ;
+	
+	_debug( __FILE__, __LINE__, 5, "numClauses is %d", numClauses ) ;
+	for( i = 0 ; i <= numClauses ; i++ )
+	{
+		if( strcmp( "ID", theQuery -> myClauses[i].attribute ) == 0 ) 
+		{
+			strcpy ( testValue ,theQuery -> myClauses[i].value ) ;
+			_debug( __FILE__, __LINE__, 5, "query Value is %s : %d", theQuery -> myClauses[i].value, strlen( theQuery -> myClauses[i].value ) ) ;
+			_debug( __FILE__, __LINE__, 5, "testValue is %s : %d", testValue, strlen( testValue ) ) ;
+			if( isFileQuery( testValue ) )
+				validResult = FSqueryValidator ( testValue ) ;
+			else if( isEMAILQuery( testValue ) )
+				validResult = EMAILqueryValidator ( testValue ) ;
+			else
+				validResult = 0 ;
+		}
+		
+		else if( strcmp( "DATE", theQuery -> myClauses[i].attribute ) == 0 ) 
+		{
+			
+			validResult = validateTimeStamp(theQuery -> myClauses[i].value);
+			
+		}
+			
+	}
+	return validResult ;
+}
+	
 /************************************************************************
  * Function:	poll_vr							*
  *									*
@@ -169,6 +213,8 @@ void poll_vr( )
 	int tag = 0 ;			// tag is one if a query is satisfied in myQueries
 	int i=0;			// used in for loop
 
+	_debug( __FILE__, __LINE__, 5, "entering poll_vr( )" ) ;
+	
 	if( myQueries != NULL )
 	{
 		
@@ -200,6 +246,7 @@ void poll_vr( )
 			myQueries = filterQueryList( myQueries ) ;
 	
 	}
+	_debug( __FILE__, __LINE__, 5, "exiting poll_vr( )" ) ;
 }
 
 /************************************************************************
@@ -235,19 +282,39 @@ bool isValidAttribute( char *attr )
 bool isValidOperator( char *op, char *attr )
 {
 	int i ;							// used in for loop
-	char *operators[4] = { "EQ", "~", "LT", "GT" } ;	// array that stores repository operators
-		
+	
+			
 	if( op == NULL )
 		return false;
-	else if (  (strcmp( "ID", attr ) == 0) && ( strcmp( operators[1], op ) == 0 ) )  
-		return false ;
-	else if ( ( strcmp ( "ID", attr ) == 0 ) || ( strcmp ( attr, "NAME" ) == 0 ) )
-		if ( ( strcmp( operators[2], op ) == 0 ) || ( strcmp( operators[3], op ) == 0 ) )
-			return false;
 		
-	for( i = 0 ; i < 4 ; i++ )
-		if( ( strcmp( operators[i], op ) == 0 ) )
-			return true ;
+	if( strcmp( "ID", attr ) == 0 )
+	{
+		char *operators[1] = { "EQ" } ;	
+		for( i = 0 ; i < 1 ; i++ )
+		{
+			if( ( strcmp( operators[i], op ) == 0 ) )
+				return true ;
+		}
+	}
+	else if( strcmp ( "NAME", attr ) == 0 )
+	{
+		char *operators[2] = { "EQ", "~" } ;
+		for( i = 0 ; i < 2 ; i++ )
+		{
+			if( ( strcmp( operators[i], op ) == 0 ) )
+				return true ;
+		}
+	}
+	else  if( strcmp ( "DATE", attr ) == 0 )
+	{
+		char *operators[5] = { "EQ", "LT", "LE", "GT", "GE" } ;
+		for( i = 0 ; i < 5 ; i++ )
+		{
+			if( ( strcmp( operators[i], op ) == 0 ) )
+				return true ;
+		}
+	}
+	
 	return false;
 }
 
@@ -288,3 +355,17 @@ bool isValidConjecture( char *con )
 	}
 	return false ;
 }
+
+int validateTimeStamp(char *temp)
+{
+	
+	
+	_debug(__FILE__,__LINE__,5,"(temp+2)[0] == %c && (temp+5)[0] == %c && 
+				    (temp+10)[0] == %c && (temp+13)[0] == %c && 
+				    (temp+16)[0]  == %c && (temp+19)[0]  == %c ",(temp+2)[0],(temp+5)[0], (temp+10)[0],(temp+13)[0],(temp+16)[0] , (temp+19)[0]);
+	if( (temp+2)[0] =='/' && (temp+5)[0] == '/' && (temp+10)[0] == '-' && (temp+13)[0] == ':' && (temp+16)[0]  == ':' && (temp+19)[0]  == '\0')
+		return 1;
+	else 
+		return 0;
+}
+	

@@ -9,4 +9,5 @@
  ************************************************************************/
 
 queryList* FSqueryTool( queryList * ) ;
+int FSqueryValidator( char * ) ;
 

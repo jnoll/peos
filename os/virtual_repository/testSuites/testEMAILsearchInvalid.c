@@ -20,6 +20,8 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#define BUFFER_SIZE 1000
+
 int main( void )
 {	
 	void callback( int size, resultList *listPointer , int *data ) ;
@@ -27,9 +29,9 @@ int main( void )
 	void setInvalidResult( int, FILE * ) ;
 	void setEmptyResult( int, FILE * ) ;
 	
-	char queryString[1000] ;
+	char queryString[BUFFER_SIZE] ;
 	char *testString ;
-	int *d, index ;
+	int *d, index, numInvalidQueries ;
 	queryList *tempQueries ;
 	FILE *expectedResultInvalidFile, *testInputInvalid ;
 
@@ -39,14 +41,10 @@ int main( void )
 	setup_email( );	
 	call = callback ;
 	
-	expectedResultInvalidFile = fopen ( "EMAILsearchInvalidExpectedResult.txt", "w" ) ;
-	_assert( __FILE__, __LINE__, expectedResultInvalidFile ) ;
-	setInvalidResult( 15, expectedResultInvalidFile ) ;
-	setEmptyResult( 10, expectedResultInvalidFile ) ;
-	fclose( expectedResultInvalidFile ) ;	
-	
 	testInputInvalid = fopen ( "EMAILsearchInvalid.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputInvalid ) ;
+	
+	numInvalidQueries = 0 ;
 	while ( !feof( testInputInvalid ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), testInputInvalid ) ;
@@ -54,9 +52,15 @@ int main( void )
 		{
 			query_wait( queryString, call, d ) ;
 			queryString[0] = '\0' ;
+			numInvalidQueries++ ;
 		}
 	}
 	fclose( testInputInvalid ) ;
+	
+	expectedResultInvalidFile = fopen ( "EMAILsearchInvalidExpectedResult.txt", "w" ) ;
+	_assert( __FILE__, __LINE__, expectedResultInvalidFile ) ;
+	setInvalidResult( numInvalidQueries, expectedResultInvalidFile ) ;
+	fclose( expectedResultInvalidFile ) ;	
 
 	poll_vr( ) ;
 
@@ -75,15 +79,5 @@ void setInvalidResult( int invalids, FILE *expectedResultInvalidFile )
 	
 	for( i = 0 ; i < invalids ; i++ )
 		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultInvalidFile ) ;
-		
-}
-
-void setEmptyResult( int emptys, FILE *FSexpectedResultEmptyFile )
-{
-	int i ;
-	char emptyString[] = "empty query...\n" ;
-	
-	for( i = 0 ; i < emptys ; i++ )
-		fwrite( emptyString, sizeof( char ), strlen( emptyString ), FSexpectedResultEmptyFile ) ;
 		
 }

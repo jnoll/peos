@@ -13,13 +13,3 @@ ID EQ email:///message3.test.case.12345@server.engr.scu.edu and DATE lt 09/19/20
 DATE LT 10/30/2002 AND ID eq email:///message3.test.case.12345@server.engr.scu.edu 
 DATE lt 09/30/2002
 DATE gt 09/30/2002
-Id
-I
-EQ
-
-id
-Name
-~
-LT
-GT
-N
