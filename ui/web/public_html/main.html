@@ -74,11 +74,26 @@ if (userType==3 || userType==1) {
     document.write("<p><A href=\"stub.html\">monitor a process </a>");
     document.write("<p><A href=\"stub.html\">actions </a>");
 }
+
 </SCRIPT>
 </TD>
 
 <TD VALIGN="TOP" WIDTH="100%" HEIGHT="100%">
-<p> feature not implemented yet!
+<SCRIPT LANGUAGE="JavaScript" TYPE="TEXT/JAVASCRIPT">
+document.write("<p>" + userName + ", welcome to the Web-based Enactment UI for PEOS!");
+document.write("<p> your are type " + userType + " user ");
+if(userType==3){
+    document.write("(general user)");
+}
+else if(userType==2){
+    document.write("(system administrator)");
+}
+else{
+    document.write("(power user)");
+}
+
+</SCRIPT>
+
 </TD>
 </TR>
 </TABLE>

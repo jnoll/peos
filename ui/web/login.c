@@ -62,18 +62,10 @@ int main() {
         printf("<p>You can email us at <A HREF=\"mailto:5728-dl@oslab-server.cudenver.edu\">
                 5728-dl@oslab-server.cudenver.edu</A> to report this problem</P>\n");
     }
-    else if(isPasswordRight == 1){
-        printf("<body onLoad=\"window.location='main_1.html';\">\n") ;
+    else if(isPasswordRight == 1 || isPasswordRight == 2 || isPasswordRight == 3){
+        printf("<body onLoad=\"window.location='main.html';\">\n") ;
         setCookie();
-    }  
-    else if(isPasswordRight == 2){
-        printf("<body onLoad=\"window.location='main_2.html';\">\n") ;
-        setCookie();
-    }  
-    else if(isPasswordRight == 3){
-        printf("<body onLoad=\"window.location='main_3.html';\">\n") ;
-        setCookie();
-    }  
+    }
     else{
         printf("<body>\n") ;
         printf("The user name and password failed to authenticate\n");	
@@ -142,6 +134,7 @@ int setCookie(){
     printf("<SCRIPT LANGUAGE=\"JavaScript\">\n");
     printf("document.cookie=\"userName=%s\";\n", name);
     printf("document.cookie=\"userType=%i\";\n", isPasswordRight);
+    printf("document.cookie=\"password=%i\";\n", pass);
     printf("</SCRIPT>\n");
 }
 
