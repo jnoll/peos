@@ -25,35 +25,35 @@ extern List ListConcat (
     List		/* head */,
     List		/* tail */
 # endif
-);
+) ;
 
 
 extern List ListCopy (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-);
+) ;
 
 
 extern List ListCreate (
 # ifdef ANSI_PROTOTYPES
     void		/* none */
 # endif
-);
+) ;
 
 
 extern void ListDestroy (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-);
+) ;
 
 
 extern Item ListGet (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-);
+) ;
 
 
 extern Item ListIndex (
@@ -61,7 +61,7 @@ extern Item ListIndex (
     List		/* list  */,
     int			/* index */
 # endif
-);
+) ;
 
 
 extern Item ListInsert (
@@ -70,21 +70,21 @@ extern Item ListInsert (
     int			/* index */,
     Item		/* item  */
 # endif
-);
+) ;
 
 
 extern Item ListPop (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-);
+) ;
 
 
 extern Item ListPull (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-);
+) ;
 
 
 extern Item ListPush (
@@ -92,7 +92,7 @@ extern Item ListPush (
     List		/* list */,
     Item		/* item */
 # endif
-);
+) ;
 
 
 extern Item ListPut (
@@ -100,14 +100,14 @@ extern Item ListPut (
     List		/* list */,
     Item		/* item */
 # endif
-);
+) ;
 
 
 extern int ListSize (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-);
+) ;
 
 END_PROTOTYPES
 

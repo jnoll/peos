@@ -9,7 +9,7 @@
 # define GRAPH_H
 # include <pml/list.h>
 # include <pml/tree.h>
-
+# include <pml/features.h>
 
 /* Type and variable declarations */
 
@@ -49,14 +49,14 @@ extern Graph GraphCreate (
     Node		/* source */,
     Node		/* sink   */
 # endif
-);
+) ;
 
 
 extern void GraphDestroy (
 # ifdef ANSI_PROTOTYPES
     Graph		/* graph */
 # endif
-);
+) ;
 
 
 extern void GraphInsert (
@@ -64,7 +64,7 @@ extern void GraphInsert (
     Graph		/* outer */,
     Graph		/* inner */
 # endif
-);
+) ;
 
 
 extern void GraphLink (
@@ -72,7 +72,7 @@ extern void GraphLink (
     Graph		/* predecessor */,
     Graph		/* successor   */
 # endif
-);
+) ;
 
 
 extern Node NodeCreate (
@@ -81,7 +81,7 @@ extern Node NodeCreate (
     int			/* type */,
     int			/* line */
 # endif
-);
+) ;
 
 
 extern void NodeLink (
@@ -89,7 +89,7 @@ extern void NodeLink (
     Node		/* predecessor */,
     Node		/* successor   */
 # endif
-);
+) ;
 
 END_PROTOTYPES
 

@@ -23,14 +23,14 @@ extern void yyerror (
 # ifdef ANSI_PROTOTYPES
     String		/* message */
 # endif
-);
+) INIT_SECTION ;
 
 
 extern int yylex (
 # ifdef ANSI_PROTOTYPES
     void		/* none */
 # endif
-);
+) INIT_SECTION; 
 
 END_PROTOTYPES
 

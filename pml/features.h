@@ -13,6 +13,12 @@ typedef char *String;
 # define ANSI_PROTOTYPES
 # endif
 
+#ifdef PALM
+#define INIT_SECTION __attribute__ ((section ("init")))
+#else
+#define INIT_SECTION
+#endif
+
 # if defined (__cplusplus)
 # define BEGIN_PROTOTYPES extern "C" {
 # define END_PROTOTYPES }
