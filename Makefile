@@ -29,6 +29,7 @@ update:
 commit: 
 	cvs commit $(SUBDIRS) Makefile
 
+# Dist depends on all but may not be ready for it yet!
 #dist:   all
 dist: 
 	${V}rm -rf ${TREEBUILD}/${TREETOP}
@@ -63,9 +64,12 @@ dist:
 	${V}rm -rf ${TREEBUILD}/${TREETOP}/ui/java-gui/test*
 	${V}cp -f ./README.dist ${TREEBUILD}/${TREETOP}/README
 	${V}cp -f ./INSTALL.dist ${TREEBUILD}/${TREETOP}/INSTALL
-	@#${V}cp -f ./configure.in ${TREEBUILD}/${TREETOP}/configure
-	${V}cp -f ./Makefile.in ${TREEBUILD}/${TREETOP}/Makefile
-	@#${V}cp -f ./Makefile.in ${TREEBUILD}/${TREETOP}/Makefile.in
+	${V}cp -f ./configure.in ${TREEBUILD}/${TREETOP}/configure
+	${V}cp -f ./install-sh.in ${TREEBUILD}/${TREETOP}/install-sh
+	${V}cp -f ./config.h.in ${TREEBUILD}/${TREETOP}/
+	${V}cp -f ./config.sub.in ${TREEBUILD}/${TREETOP}/config.sub
+	${V}cp -f ./config.guess.in ${TREEBUILD}/${TREETOP}/config.guess
+	${V}cp -f ./Makefile.in ${TREEBUILD}/${TREETOP}/Makefile.in
 	${V}cp -f ./pml/Makefile.in ${TREEBUILD}/${TREETOP}/pml
 	${V}cp -f ./os/Makefile.in ${TREEBUILD}/${TREETOP}/os
 	${V}cp -f ./os/kernel/Makefile.in ${TREEBUILD}/${TREETOP}/os/kernel
@@ -79,12 +83,15 @@ dist:
 	${TREEBUILD}/${TREETOP}/os \
 	${TREEBUILD}/${TREETOP}/os/kernel \
 	${TREEBUILD}/${TREETOP}/models ${TREEBUILD}/${TREETOP}/os \
-	${TREEBUILD}/${TREETOP}/pml 
-	@#${TREEBUILD}/${TREETOP}/configure
+	${TREEBUILD}/${TREETOP}/pml ${TREEBUILD}/${TREETOP}/configure \
+	${TREEBUILD}/${TREETOP}/install-sh \
+	${TREEBUILD}/${TREETOP}/config.sub \
+	${TREEBUILD}/${TREETOP}/config.guess
+	
 	${V}chmod 0644 ${TREEBUILD}/${TREETOP}/ui/java-gui/*.java \
 		${TREEBUILD}/${TREETOP}/ui/java-gui/*.in \
-		${TREEBUILD}/${TREETOP}/Makefile
-		@#${TREEBUILD}/${TREETOP}/Makefile.in
+		${TREEBUILD}/${TREETOP}/Makefile.in
+
 	${V}chmod 0755 ${TREEBUILD}/${TREETOP}/ui/java-gui/bin \
 		${TREEBUILD}/${TREETOP}/ui/java-gui/help \
 		${TREEBUILD}/${TREETOP}/ui/java-gui/images \
@@ -93,7 +100,9 @@ dist:
 	${V}chmod 0644 ${TREEBUILD}/${TREETOP}/ui/java-gui/help/*.htm\
 		${TREEBUILD}/${TREETOP}/ui/java-gui/help/*.jpg\
 		${TREEBUILD}/${TREETOP}/ui/java-gui/help/*.doc\
-		${TREEBUILD}/${TREETOP}/ui/java-gui/help/*.db
+		${TREEBUILD}/${TREETOP}/ui/java-gui/help/*.db \
+		${TREEBUILD}/${TREETOP}/config.h.in
+
 		
 	${V}chmod 0644 ${TREEBUILD}/${TREETOP}/ui/java-gui/help/images/*.jpg \
 		${TREEBUILD}/${TREETOP}/ui/java-gui/help/images/*.gif \

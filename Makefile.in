@@ -4,8 +4,8 @@ SHELL= /bin/sh
 
 #.EXPORT_ALL_VARIABLES:
 
-export INSTALL_PREFIX= 
-export XERCES_PATH= 
+export INSTALL_PREFIX=@prefix@
+export XERCES_PATH=@xerces@
 export share=${INSTALL_PREFIX}/share/
 export peos_gui=${share}/peos_gui/
 export bin=${INSTALL_PREFIX}/bin/
@@ -20,8 +20,8 @@ export PEOS_HOME=${HOME}/.peos
 
 TREETOP= ../peos
 
-JAVA_PATH= ./ui/java-gui
-GTK_PATH= ./ui/gtk-gui
+JAVA_PATH= @JAVAPATH@
+GTK_PATH= @GTKPATH@
 
 GUI_PATH= ${JAVA_PATH} ${GTK_PATH}
 
@@ -33,19 +33,7 @@ MAKE= make
 
 SUBDIRS= pml os ui
 
-all: makefiles build
-
-makefiles: 
-	${V}# Generate Makefile rules for leaf and non-leaf subdirectories.
-	${V}for subdir in ${SUBDIRS}; \
-	do \
-		echo "...start generating Makefiles in $$subdir..." ; \
-		cd ./$$subdir && cp -u Makefile.in Makefile ; \
-		${MAKE} $@; \
-		cd ../ ; \
-		echo ".....end generating Makefiles in $$subdir..." ; \
-		echo "" ; \
-	done; 
+all: build
 
 build clean clobber:
 	${V}for subdir in ${SUBDIRS}; \
@@ -55,10 +43,12 @@ build clean clobber:
 		echo ".....end $@ing in $$subdir..."; \
 		echo "" ; \
 	done;	
-	${V}if [ -f ${INSTALL_PREFIX}/peos.tar.gz ]; then \
+	${V}if [ -f "${INSTALL_PREFIX}/peos.tar.gz" ]; then \
 		chmod -f 0444 ${INSTALL_PREFIX}/peos.tar.gz; fi; 	
 
 install: uninstall
+	${V}[ -d "${INSTALL_PREFIX}" ] || mkdir -p ${INSTALL_PREFIX}
+	${V}chmod 0755 ${INSTALL_PREFIX}
 	${V}for subdir in ${GUI_PATH}; \
 	do \
 		${MAKE} $@ -C $$subdir; \
@@ -79,4 +69,5 @@ uninstall:
 	done;	
 	${V}rm -rf ${peos_gui}
 	
-clobber-all: clean clobber	
+clobber-all: clean clobber
+	${V}rm -f config.cache config.h config.log config.status core.*
