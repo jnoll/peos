@@ -31,34 +31,34 @@ int main ( )
  *		matches. Otherwise returns 0.				*
  ************************************************************************/
  
-int EMAILidCompare ( char *mailQuery, char *mailMsg ) 
+int EMAILidCompare ( char *mailQuery, char *mailHeader ) 
 {
-	char testMsg[100] = { '\0' } ;
+	char testHeader[100] = { '\0' } ;
 	char msg[100] = { '\0' } ;
 	char *ptrMsg1, *ptrMsg2 , *id ;
 	int length ;
 	
-	strcpy ( msg, mailMsg ) ;
+	strcpy ( msg, mailHeader ) ;
 		
         id = strtok( msg, ":" );
 
 	if ( strcmp ( "Message-Id", id ) == 0 )
 	{
-		ptrMsg1 = strchr ( mailMsg, '<' ) ;
-		ptrMsg2 = strrchr ( mailMsg , '>' ) ;
+		ptrMsg1 = strchr ( mailHeader, '<' ) ;
+		ptrMsg2 = strrchr ( mailHeader , '>' ) ;
 		length = ptrMsg2 - ptrMsg1 ;
 	}
 	
-	strncpy ( testMsg, ptrMsg1 +1, length-1 ) ;
+	strncpy ( testHeader, ptrMsg1 +1, length-1 ) ;
 		
-	if ( strcmp ( mailQuery, testMsg ) == 0 )
+	if ( strcmp ( mailQuery, testHeader ) == 0 )
 	{
-		printf ( "found - %s\n", testMsg ) ;
+		printf ( "found - %s\n", testHeader ) ;
 		return 1 ;
 	}
 	else
 	{
-		printf ( "NOT found - %s\n", testMsg  ) ;
+		printf ( "NOT found - %s\n", testHeader  ) ;
 		return 0 ;
 	}
 }

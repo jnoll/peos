@@ -1,7 +1,7 @@
 /************************************************************************
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
- * Filename : emailparser.c						*
+ * Filename : EMAILurlParser.c						*
  ************************************************************************/
 
 #include <stdlib.h>
