@@ -1,5 +1,7 @@
 /************************************************************************
  * File:	main.c							*
+ *                                                                      *
+ * Version: $Revision: 1.2 $
  *									*
  * Description:	This file contains the public and private function and	*
  *		variable definitions for the application.		*
@@ -123,16 +125,16 @@ int main (argc, argv)
 	    yyin = stdin;
 
 	    if (yyparse ( ) == 0) {
-		DoLocalChecks (program);
-		DoGlobalChecks (program);
+		DoLocalChecks (program); 
+/* 		DoGlobalChecks (program); */
 		GraphDestroy (program);
 	    } else
 		status = EXIT_FAILURE;
 
 	} else if ((yyin = fopen (filename, "r")) != NULL) {
 	    if (yyparse ( ) == 0) {
-		DoLocalChecks (program);
-		DoGlobalChecks (program);
+		DoLocalChecks (program); 
+/* 		DoGlobalChecks (program); */
 		GraphDestroy (program);
 	    } else
 		status = EXIT_FAILURE;
@@ -149,3 +151,15 @@ int main (argc, argv)
 
     exit (status);
 }
+
+
+/************************************************************************
+ *
+ * $Log: main.c,v $
+ * Revision 1.2  2003/08/26 05:38:24  dweeks
+ * PMLCheck now compiles with new pml grammer.
+ * Local checks are performed.
+ * Global checks are not implemented (global.h, gloabl.c are not used)
+ *
+ *
+ ************************************************************************/

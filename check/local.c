@@ -1,5 +1,7 @@
 /************************************************************************
  * File:	local.c							*
+ *                                                                      *
+ * Version: $Revision: 1.2 $
  *									*
  * Description:	This file contains the public and private function	*
  *		definitions for the local data-flow checks.		*
@@ -60,10 +62,6 @@ static void CheckTree (tree, node)
 	    if (IsConsumed (TREE_ID (tree), node -> requires))
 		return;
 
-	if (node -> inputs != NULL)
-	    if (IsConsumed (TREE_ID (tree), node -> inputs))
-		return;
-
 	printf ("%s:%d: action ", filename, TREE_LINE (tree));
 	printf ("'%s' provides but does not require ", node -> name);
 	printf ("%s\n", TREE_ID (tree));
@@ -111,7 +109,7 @@ static int IsConsumed (name, tree)
 static int IsConsumer (node)
     Node node;
 {
-    return node -> inputs || node -> requires;
+    return node -> requires != NULL;
 }
 
 
@@ -125,7 +123,7 @@ static int IsConsumer (node)
 static int IsProducer (node)
     Node node;
 {
-    return node -> outputs || node -> creates || node -> provides;
+    return node -> provides != NULL;
 }
 
 
@@ -175,8 +173,18 @@ void DoLocalChecks (graph)
 	    if (node -> provides != NULL)
 		CheckTree (node -> provides, node);
 
-	    if (node -> outputs != NULL)
-		CheckTree (node -> outputs, node);
 	}
     }
 }
+
+
+/************************************************************************
+ *
+ * $Log: local.c,v $
+ * Revision 1.2  2003/08/26 05:38:24  dweeks
+ * PMLCheck now compiles with new pml grammer.
+ * Local checks are performed.
+ * Global checks are not implemented (global.h, gloabl.c are not used)
+ *
+ *
+ ************************************************************************/

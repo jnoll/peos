@@ -1,7 +1,7 @@
 CC	= gcc
 CFLAGS	= -I.. -g -Wall
 LIBS	= ../pml/libpml.a
-OBJS	= global.o local.o main.o
+OBJS	= local.o  main.o
 PROG	= pmlcheck
 
 
