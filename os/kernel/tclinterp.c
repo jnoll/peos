@@ -140,16 +140,18 @@ int peos_tcl_script(peos_tcl* ptcl, char* file_name)
     if(!query) query = (char*) malloc(sizeof(char)*256);
     if(!path || !query) return TCL_ERROR;
     if (TCLF_DIR == NULL){
-	Tcl_Eval(ptcl->interp, "exec find ./ -name tclf_*.tcl");
+	sprintf(query,"exec find ./ -name %s", file_name);
+	Tcl_Eval(ptcl->interp, query);
+	strcpy(query,"");
 	path[0]='\0';
 	while(!strcmp(ptcl->interp->result,"") && (max_depth-- > 0)){
 		path=strcat(path,"../");
 		sprintf(query,"exec find %s -name %s", path,file_name);;
         	Tcl_Eval(ptcl->interp, query);
 	}
-	if (max_depth<=0)
+	if (max_depth<=0){
 		sprintf(path,"./%s", file_name);
-	else{
+	}else{
 		sprintf(path,"%s", ptcl->interp->result);
 	}
     }else{
