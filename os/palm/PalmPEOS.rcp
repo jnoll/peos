@@ -5,7 +5,17 @@ USABLE
 SAVEBEHIND
 BEGIN
 	TITLE "Run Action(s)"
-	LABEL "--TIMESHEET Process --" ID ProcessNameLabel AT (10 30) USABLE FONT 7
 	BUTTON "Run" ID RunButton AT (20 120 36 12) USABLE LEFTANCHOR FRAME
 	BUTTON "Done" ID DoneButton AT (80 120 36 12) USABLE LEFTANCHOR FRAME
+	BUTTON "List Processes" ID ListProcessesButton AT (40 140 100 12) LEFTANCHOR FRAME
+
+END
+
+FORM ID SelectProcessForm AT (0 0 160 160)
+USABLE
+SAVEBEHIND
+BEGIN
+	TITLE "Process Selection"
+	LABEL "Select a process to run" ID ProcessNameLabel AT (10 30) USABLE FONT 7
+	LIST "Processes" ID ProcessList AT (10 60 50 AUTO) VISIBLEITEMS 5 FONT 10 
 END
