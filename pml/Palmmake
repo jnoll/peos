@@ -1,7 +1,7 @@
 CC	= m68k-palmos-gcc 
 CFLAGS	= -DPALM -I.. -I../os/palm -I/usr/m68k-palmos -g -Wall
 
-LIB = libpalmpml.a
+LIB = libpml.a
 
 OBJS	= graph.o list.o parser.o tree.o scanner.o
 SRCS	= parser.c scanner.c y.tab.h
