@@ -7,7 +7,7 @@ CFLAGS = -g -Wall -I. -I.. -I../../.. -I/home/jnoll/include
 .KEEP_STATE:
 
 # lib
-#LIBS = ../../../pml/libpml.a
+LIBS = ../../../pml/libpml.a
 TEST_LIBS = -lcheck 
 LDFLAGS = -g -L/home/jnoll/lib
 
@@ -22,7 +22,7 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 TESTS =  test_action test_events test_process test_process_table test_graph_engine
 
 
-all: test 
+all: test kernel_wrapper
 test: unit_tests 
 suite: unit_tests function accept
 
@@ -40,11 +40,15 @@ function:
 accept:
 	$(MAKE) -C accept_tests 
 
+
 test_action: test_action.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out action.o, $(TEST_OBJS)) $(TEST_LIBS) 
 
 test_%: test_%.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) $(TEST_LIBS) 
+
+kernel_wrapper: kernel_wrapper.o $(CORE_OBJS)
+	$(CC) $(LDFLAGS) -g -o $@ $< $(CORE_OBJS) $(LIBS) -lreadline -lhistory -ltermcap
 
 %.o: ../%.c test_%.c
 	$(CC) -c $(CFLAGS) $< 

@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.13 2003/09/12 21:10:09 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.14 2003/10/03 19:50:48 jnoll Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
-* Modified:     Sun Jul  6 16:51:47 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Wed Sep 10 18:14:39 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -15,6 +15,7 @@
 *
 *****************************************************************************
 */
+#include <stdlib.h>
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -32,7 +33,7 @@ typedef struct {
     char *doc;
 } COMMAND;
 
-list_models()
+void list_models()
 {
     int i;
     char **result = (char **) peos_list_models();
@@ -42,16 +43,16 @@ list_models()
     }
 }
 
-list_instances()
+void list_instances()
 {
-    int i, n;
+    int i;
     char ** result = peos_list_instances(result);
     for (i = 0; i <= PEOS_MAX_PID; i++) {
 	printf("%d %s\n", i, result[i]);
     }
 }
 
-print_action(peos_action_t *action, char *state) 
+void print_action(peos_action_t *action, char *state) 
 {
     peos_resource_t *resources;
     int num_resources;
@@ -73,10 +74,11 @@ print_action(peos_action_t *action, char *state)
     printf("  %2d    %-6s (%s) %s  resources:", action->pid, action->name, state, action->script ? action->script : "no script");
      
     if(num_resources == 0) printf("no resources");
-    for(i = 0; i < num_resources; i++)
-    {
-    printf(" %s",resources[i].name);
-    if(i != num_resources-1) printf(",");
+    for(i = 0; i < num_resources; i++) {
+	printf(" %s='%s'", resources[i].name, resources[i].value);
+	if(i != num_resources-1) {
+	    printf(",");
+	}
     }
     printf("\n");
 
@@ -103,7 +105,7 @@ print_action(peos_action_t *action, char *state)
 }
 
 
-list_actions()
+void list_actions()
 {
     peos_action_t **alist;
     int i;
@@ -128,7 +130,7 @@ list_actions()
     }
 }
 
-list(int argc, char *argv[])    
+void list(int argc, char *argv[])    
 {
     char *type;
 
@@ -149,7 +151,7 @@ list(int argc, char *argv[])
     }
 }
 
-create_process(int argc, char *argv[])
+void create_process(int argc, char *argv[])
 {
     int pid;
     int i;
@@ -165,7 +167,7 @@ create_process(int argc, char *argv[])
 
     model = argv[1];
 
-    // This is new code I have inserted
+    /* This is new code I have inserted. */
 
      model_file = (char *)find_model_file(model);
 	if (model_file == NULL)
@@ -176,10 +178,6 @@ create_process(int argc, char *argv[])
 	
 	resources = (peos_resource_t *) get_resource_list(model_file,&num_resources);
 
-	/* 
-	 * replace the code below to get resource values from user
-	 * 
-	 */
 
 	if (resources == NULL)
 	{
@@ -188,10 +186,8 @@ create_process(int argc, char *argv[])
 	}
 	for(i = 0; i < num_resources; i++)
 	{
-		//sprintf(resources[i].value,"value_%d",i);
 		printf("\nEnter binding for resource %s : ",resources[i].name);
-		scanf("%s", &resources[i].value);
-
+		scanf("%s", resources[i].value);
 	}
 
 	
@@ -206,9 +202,45 @@ create_process(int argc, char *argv[])
     }
 }
 
-run_action(int argc, char *argv[])
+void list_resources(int argc, char *argv[])
 {
-    char *action, *pid_string, *script;
+    int i;
+    char *model;
+    char *model_file;
+    int num_resources;
+    peos_resource_t *resources;
+
+    if (argc < 2) {
+	printf("usage: %s model\n", argv[0]);
+	return;
+    }
+
+    model = argv[1];
+    model_file = (char *)find_model_file(model);
+    if (model_file == NULL)
+	{
+	    printf("error: model file %s not found\n", model);
+	    return;
+	}
+	
+	
+    resources = (peos_resource_t *) get_resource_list(model_file,&num_resources);
+
+
+    if (resources == NULL)
+	{
+	    printf("error getting resources\n");
+	    return;
+	}
+    for(i = 0; i < num_resources; i++)
+	{
+	    printf("%s=%s\n", resources[i].name, resources[i].value) ;
+	}
+}
+
+void run_action(int argc, char *argv[])
+{
+    char *action, *script;
     int pid; 
     vm_exit_code status;
 
@@ -234,9 +266,9 @@ run_action(int argc, char *argv[])
     }
 }
 
-finish_action(int argc, char *argv[])
+void finish_action(int argc, char *argv[])
 {
-    char *action, *pid_string;
+    char *action;
     int pid; 
     vm_exit_code status;
 
@@ -253,7 +285,7 @@ finish_action(int argc, char *argv[])
     }
 }
 
-quit()
+void quit()
 {
     save_proc_table("proc_table.dat");
     exit(0);
@@ -264,6 +296,7 @@ COMMAND cmds[] = {
     { "models", list_models, "list models" },
     { "actions", list_actions, "list actions" },
     { "do", run_action, "perform a ready action" },
+    { "resources", list_resources, "list resources associated with model" },
     { "run", run_action, "perform a ready action" },
     { "select", run_action, "perform a ready action" },
     { "finish", finish_action, "finish a running action" },
@@ -289,7 +322,7 @@ COMMAND *find_command (char *name)
     return ((COMMAND *)NULL);
 }
 
-print_commands ()
+void print_commands ()
 {
     int i;
      
@@ -331,7 +364,7 @@ int parse_line(char *buf, char **argv)
 int
 main(int argc, char *argv[])
 {
-    int i, arg_c;
+    int arg_c;
     char *cmd, *line = NULL;
     char *arg_v[256];
     COMMAND *cmd_func;
@@ -351,14 +384,15 @@ main(int argc, char *argv[])
 	/* If the line has any text in it, save it on the history. */
 	if (line && *line) {
 	    add_history (line);
-	}
-	arg_c = parse_line(line, arg_v);
-	cmd = arg_v[0];
-	if (!(cmd_func = find_command(cmd))) {
-	    printf("no such command\n");
-	    print_commands();
-	} else {
-	(*(cmd_func->impl))(arg_c, arg_v);
+	    arg_c = parse_line(line, arg_v);
+	    cmd = arg_v[0];
+
+	    if (!(cmd_func = find_command(cmd))) {
+		printf("no such command\n");
+		print_commands();
+	    } else {
+		(*(cmd_func->impl))(arg_c, arg_v);
+	    }
 	}
     }    
 }

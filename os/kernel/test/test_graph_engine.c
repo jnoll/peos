@@ -16,6 +16,9 @@ extern Graph stub_makegraph(char *file);
 extern Item stub_ListIndex(List, int);
 extern Node make_node(char *, vm_act_state, int type);
 extern Tree make_tree(char *,int, Tree,Tree);
+extern Tree make_dot_tree(char *name, char* attr);
+extern Tree make_op_tree(Tree left, int op, char* value);
+extern Tree make_con_tree(Tree left, Tree right, int op, char* value);
 
 /* Globals. */
 int lineno = 1;
@@ -100,14 +103,14 @@ START_TEST(test_find_node_nonaction)
 {
   Node n;
   char *file = "file";
-			                                                                         
+
    /* Pre : Graph exists */
    Graph g = stub_makegraph(file);
-				                                                                         
+
    /* Action */
                                                              
    n = find_node(g,"p");
-					                                                                         
+
     /* Post */
     fail_unless(n == NULL, "non action node found");
                                                                      
@@ -371,7 +374,7 @@ START_TEST(test_action_run_selection)
   fail_unless(STATE(act_1) == ACT_NONE, "action 1 not set to none");
   fail_unless(STATE(sel) == ACT_RUN, "selection not run");
   fail_unless(STATE(join) == ACT_RUN, "join not run");
-							                                                                                      
+
 }
 END_TEST
 
@@ -669,11 +672,35 @@ START_TEST(test_mark_iter_nodes)
 }
 END_TEST
 
+/* Test growing resource list. */
+START_TEST(test_insert_resource)
+{
+    int num_resources = 0, rsize = 2, i, num_expected;
+    char rname[32];
+    /* Pre: a possibly empty resource list exists. */
+    peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize, sizeof(peos_resource_t));
+
+    /* Action: insert a number of resources into the list. */
+    num_expected = (32 * rsize) + 1;
+    for (i = 0; i < num_expected; i++) {
+	sprintf(rname, "%s_%d", "resource", i);
+	insert_resource(rname, &resource_list, &num_resources, &rsize);
+    }
+
+    /* Post: all resources have been inserted in order. */
+    fail_unless(num_resources == num_expected, "num_resources wrong");
+    for (i = 0; i < num_expected; i++) {
+	sprintf(rname, "%s_%d", "resource", i);
+	fail_unless(strcmp(resource_list[i].name, rname) == 0, "resource name wrong");
+    }
+}	
+END_TEST
+
 START_TEST(test_make_resource_list)
 {
-	int num_resources = 0;
+	int num_resources = 0, rsize = 256;
 	char *ptr = "y";
-	peos_resource_t *resource_list = (peos_resource_t *) calloc(256,sizeof(peos_resource_t));
+	peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 	
 	Tree t1 = make_tree("y",0,NULL,NULL);
 	Tree t2 = make_tree("modified",0,NULL,NULL);
@@ -681,14 +708,41 @@ START_TEST(test_make_resource_list)
 	Tree t4 = make_tree("true",0,NULL,NULL);
 	Tree t5 = make_tree(NULL,EQ,t3,t4);
 
-	make_resource_list(t5,resource_list,&num_resources);
+	make_resource_list(t5, &resource_list, &num_resources, &rsize);
 
 	fail_unless(num_resources == 1,"num_resources wrong");
     fail_unless(strcmp(resource_list[0].name,ptr) == 0,"resource name wrong");
 
 }	
 END_TEST
-	
+
+
+/* Test growing resource list. */
+START_TEST(test_make_resource_list_realloc)
+{
+    int num_resources = 0, rsize = 2, i, num_expected;
+    char rname[32];
+    peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+    Tree t[256];
+
+    num_expected = (32 * rsize) + 1;
+    for (i = 0; i < num_expected; i++) {
+	sprintf(rname, "%s_%d", "resource", i);
+	t[i] = make_tree(strdup(rname), 0, NULL, NULL);
+    }
+
+    for (i = 0; i < num_expected; i++) {
+	make_resource_list(t[i], &resource_list, &num_resources, &rsize);
+    }
+
+    fail_unless(num_resources == num_expected, "num_resources wrong");
+    for (i = 0; i < num_expected; i++) {
+	sprintf(rname, "%s_%d", "resource", i);
+	fail_unless(strcmp(resource_list[i].name, rname) == 0, "resource name wrong");
+    }
+}	
+END_TEST
+
 
 START_TEST(test_initialize_graph)
 {
@@ -1074,7 +1128,9 @@ main(int argc, char *argv[])
 
     tc = tcase_create("make resource list");
     suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_insert_resource);
     tcase_add_test(tc,test_make_resource_list);
+    tcase_add_test(tc,test_make_resource_list_realloc);
 
  
     tc = tcase_create("action done");

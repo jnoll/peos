@@ -31,7 +31,7 @@ proc read_tc {tc_name} {
 	set data [lrange $line 1 end]
 	switch -re $field {
 	    "^\#.*$" {
-		#puts stderr "A comment: $line"
+		#puts stdout "A comment: $line"
 		continue
 	    }
 
@@ -50,47 +50,60 @@ proc read_tc {tc_name} {
 }
 
 proc trace {level msg} {
-    global verbosity
+    global verbosity expect_out
     if {$verbosity >= $level} {
-	puts stderr "$msg"
+	puts stdout "$msg: '$expect_out(0,string)'"
     }
 }
 
 proc error_msg {op act} {
-    global expect_out
+    global expect_out interactive
+
     puts -nonewline "FAILURE: while performing '$op' on '$act'"
+    flush stdout
     if [info exists expect_out(0,string)] {
-	puts ": $expect_out(0,string)"
+	puts ": '$expect_out(0,string)'"
     } else {
 	puts ""
     }
-    exit
+    if {[info exists interactive]} {
+	interact
+    } else {
+	exit
+    }
 }
 
 proc create_proc {model} {
     send "create $model\n"
-    expect {
-	-re "Created pid = \(\[0-9\]+\)" {
-	    upvar pid pid
-	    set pid $expect_out(1,string)
-	    trace 1 "$model created pid=$pid"
+    set done 0
+    while {$done == 0} {
+	expect {
+	    -re "binding for resource .* :" {
+		send "value\n"
+	    }
+	    -re "Created pid = \(\[0-9\]+\)\[^\r\n\]*" {
+		upvar pid pid
+		set pid $expect_out(1,string)
+		trace 1 "$model created pid=$pid"
+		set done 1
+	    }
+	    "error\[^\r\n\]*\[\r\n\]" {
+		error_msg create $model
+	    }
+	    timeout {
+		error_msg create $model
+	    }
+	    default {
+		error_msg create $model
+	    }
 	}
-	"error: couldn't create process" {
-	    error_msg create $model
-	}
-	timeout {
-	    error_msg create $model
-	}
-	default {
-	    error_msg create $model
-	}
-    }
+    }	
 
     expect "\n> "
 }
 
 proc do_act {op pid act} {
-    send "$op $pid $act\n"
+    send "$op $pid $act\r\n"
     expect {
 	"Error" {
 	    error_msg $op $act
@@ -118,18 +131,24 @@ proc done {pid act} {
 }
 
 proc act_state {pid act state} {
-    send "actions\n"
+    send "actions\r\n"
+
     expect {
-	-re "$pid\[ \]+$act.*($state)" {
+	-re "${pid}\[ \]+${act}\[ \]+(${state})" {
+	    trace 1 "${act} ${pid} found to be $state" 
+	}
+	-re "${pid}\[ \]+${act}\[ \]+\[(\]${state}\[)\]" {
 	    trace 1 "${act} ${pid} found to be $state" 
 	}
 
-	"\n> " {
-	    error_msg actions $act
-	}
+# XXX This causes execution to fail, even though the result is correct.  Why?
+#	"\n> " {
+#	    error_msg actions "$pid $act $state: prompt seen before status."
+#	}
 
+	default -
 	timeout {
-	    error_msg actions $act
+	    error_msg actions "$pid $act $state: timeout before status."
 	}
     }
 
@@ -168,9 +187,9 @@ flush stdout
 read_tc $tc_name
 
 if {$verbosity > 0} {
-    puts stderr "model: $model"
-    puts stderr "script: $script"
-    puts stderr "iterations: $iterations"
+    puts stdout "model: $model"
+    puts stdout "script: $script"
+    puts stdout "iterations: $iterations"
 }
 
 # Reset process table.

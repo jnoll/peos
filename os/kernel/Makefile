@@ -1,7 +1,7 @@
 # compiler:
-CC = gcc -g
+CC = gcc
 
-CFLAGS = -g -I../..
+CFLAGS = -g -I../.. -Wall
 
 # keep track of dependencies automatically
 .KEEP_STATE:

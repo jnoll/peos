@@ -1,5 +1,4 @@
 HARNESS = ../kernel_harness.exp -- -verbosity 3
-RUNTESTS = -for f in *.tc ; do $(HARNESS) $$f 2> /dev/null ; done 
 CASES = $(wildcard *.tc)
 LOGS = $(CASES:tc=log)
 NUM_ACTS = 1 3 31 53 73 113 187 213 271 301
@@ -75,7 +74,7 @@ proc_table:
 # How to run tests.
 #
 %.log: %.tc
-	$(HARNESS) $<  > $@ 2>&1
+	-$(HARNESS) $<  > $@ 2>&1
 
 clean:
 	-rm *.tc *.pml *.log
