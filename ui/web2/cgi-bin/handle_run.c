@@ -7,6 +7,27 @@
 #include "kernel/process_table.h"
 #include "html.h" 
 
+void print_javascript()
+{
+    printf("<SCRIPT LANGUAGE=\"JavaScript\">");
+    printf("<!-- Begin\n");
+    printf("function validate() {\n");
+    printf("var i;\n");
+    printf("for (i = 0; i < document.pickform.elements.length; i++) {\n");
+    printf("if (document.pickform.elements[i].type == \"text\") {\n");
+    printf("if (document.pickform.elements[i].value == \" \") {\n");
+    printf("alert(\"Please enter all resource bindings\");");
+    printf("return false;");
+    printf("}\n");
+    printf("}\n");
+    printf("}\n");
+    printf("return true;");
+    printf("}\n");
+    printf(" //  End -->");
+    printf("</script>");
+
+    print_noscript();
+}
 
 
 int main()
@@ -75,18 +96,19 @@ int main()
 	
     else {
         print_header("Please Supply Resource Bindings");
-        printf("<form name=\"form\" action=\"bind_resources.cgi?pid=%d&process_filename=%s&act_name=%s&resource_type=%s\">",pid,process_filename,action_name,resource_type);
+	print_javascript();    
+        printf("<form name=\"pickform\" action=\"bind_resources.cgi?pid=%d&process_filename=%s&act_name=%s&resource_type=%s\">",pid,process_filename,action_name,resource_type);
         printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" width=\"100%\">");
         printf("<tbody>");
 	for(i=0;i < num_unbound_resources; i++) {
 	    printf("<tr>");
 	    printf("<td style=\"vertical-align: top;\">%s<br></td>",unbound_resource_list[i].name);
-	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\"><br></td>",unbound_resource_list[i].name);
+	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\" value=\" \"><br></td>",unbound_resource_list[i].name);
             printf("</tr>");
 	}
 
 	printf("<tr>");
-	printf("<td style=\"vertical-align: top;\" colspan=\"2\" align=\"center\"><input type=\"Submit\" name=\"Submit\" value=\"Submit\"><br></td>");
+	printf("<td style=\"vertical-align: top;\" colspan=\"2\" align=\"center\"><input type=\"Submit\" name=\"Submit\" value=\"Submit\" onclick=\"return validate()\"><br></td>");
         printf("</tr>");
 	printf("</tbody>");
 	printf("</table>");
@@ -98,13 +120,14 @@ int main()
 	printf("</body>");
 	printf("</html>");
 
-	if(unbound_resource_list) free(unbound_resource_list);
     }
      
     /** Free anything that needs to be freed **/
     for (i=0; cgivars[i]; i++)
     free(cgivars[i]) ;
     free(cgivars);
+
+    if(unbound_resource_list) free(unbound_resource_list);
 
     exit(0);    
 }	

@@ -8,6 +8,29 @@
 #include "html.h" 
 
 
+void print_javascript()
+{
+    printf("<SCRIPT LANGUAGE=\"JavaScript\">");
+    printf("<!-- Begin\n");
+    printf("function validate() {\n");
+    printf("var i;\n");
+    printf("for (i = 0; i < document.pickform.elements.length; i++) {\n");
+    printf("if (document.pickform.elements[i].type == \"text\") {\n");
+    printf("if (document.pickform.elements[i].value == \" \") {\n");
+    printf("alert(\"Please enter all resource bindings\");");
+    printf("return false;");
+    printf("}\n");
+    printf("}\n");
+    printf("}\n");
+    printf("return true;");
+    printf("}\n");
+    printf(" //  End -->");
+    printf("</script>");
+
+    print_noscript();
+}
+
+
 
 int main()
 {
@@ -87,18 +110,19 @@ int main()
 	
     else {
         print_header("Please Supply Resource Bindings");
-        printf("<form name=\"form\" action=\"multiple_done_bindings.cgi?\">");
+	print_javascript();
+        printf("<form name=\"pickform\" action=\"multiple_done_bindings.cgi?\">");
         printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" width=\"100%\">");
         printf("<tbody>");
 	for(i=0;i < num_unbound_resources; i++) {
 	    printf("<tr>");
 	    printf("<td style=\"vertical-align: top;\">%s<br></td>",unbound_resource_list[i].name);
-	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\"><br></td>",unbound_resource_list[i].name);
+	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\" value=\" \"><br></td>",unbound_resource_list[i].name);
             printf("</tr>");
 	}
 
 	printf("<tr>");
-	printf("<td style=\"vertical-align: top;\" colspan=\"2\" align=\"center\"><input type=\"Submit\" name=\"Submit\" value=\"Submit\"><br></td>");
+	printf("<td style=\"vertical-align: top;\" colspan=\"2\" align=\"center\"><input type=\"Submit\" name=\"Submit\" value=\"Submit\" onclick=\"return validate();\"><br></td>");
         printf("</tr>");
 	printf("</tbody>");
 	printf("</table>");
