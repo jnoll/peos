@@ -18,7 +18,6 @@ int main( int argc, char * argv[] )
 {	
 	void callback( int size, resultList *listPointer , int *data ) ;
 	void ( *call )( int, resultList *, int * data ) ;
-	void setInvalidResult( int, FILE * ) ;
 	void setExpectedResult ( char *, FILE * )  ;
 	void setTestData ( char *, FILE * ) ;
 	
@@ -49,8 +48,6 @@ int main( int argc, char * argv[] )
 	fclose( testQuery ) ;	
 	
 	expectedResultFile = fopen ( "expectedResult.txt", "w" ) ;
-	setInvalidResult( 5, expectedResultFile ) ;
-	
 	testFile = fopen ( "testQuery.dat", "r" ) ;
 	while ( !feof( testFile ) ) 
 	{
@@ -84,16 +81,6 @@ int main( int argc, char * argv[] )
 void callback( int size, resultList *listpointer, int *data )
 {	
 	printResultList( listpointer ) ;	
-}
-
-void setInvalidResult( int invalids, FILE *expectedResultFile )
-{
-	int i ;
-	char invalidString[] = "invalid query...\n" ;
-	
-	for( i = 0 ; i < invalids ; i++ )
-		fwrite( invalidString, sizeof( char ), strlen( invalidString ), expectedResultFile ) ;
-		
 }
 
 void setExpectedResult ( char *queryString, FILE *expectedResultFile ) 
