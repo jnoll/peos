@@ -8,7 +8,6 @@
 #include "html.h" 
 
 
-char *process_file_name;
 
 int main()
 {
@@ -18,7 +17,7 @@ int main()
     char *action_event;
     int pid;
     char *action_name;
-    
+    char *process_filename;
 
     /** First, get the CGI variables into a list of strings         **/
     cgivars = getcgivars();
@@ -26,20 +25,23 @@ int main()
     action_event = (char *) getvalue("action_event", cgivars);
     pid = atoi((char *) getvalue("pid", cgivars));
     action_name = (char *) getvalue("act_name", cgivars);
-    process_file_name = (char *) getvalue("process_filename", cgivars);
+    process_filename = (char *) getvalue("process_filename", cgivars);
     
-    peos_set_process_table_file(process_file_name);
+    peos_set_process_table_file(process_filename);
 
-    if(strcmp(action_event, "Run") == 0) {
-        peos_notify(pid, action, PEOS_EVENT_START);
+  
+
+    if(strcmp(action_event, "Abort") == 0) {
+        peos_notify(pid, action_name, PEOS_EVENT_ABORT);
+	printf("Location: action_list.cgi?process_filename=%s&start=false\r\n\r\n",process_filename);
     }
     
-    print_header("Action List");
-        
-    list_actions();
-    printf("</body>\n") ;
-    printf("</html>\n") ;
 
+    if(strcmp(action_event, "Suspend") == 0) {
+        peos_notify(pid, action_name, PEOS_EVENT_SUSPEND);
+	printf("Location: action_list.cgi?process_filename=%s&start=false\r\n\r\n",process_filename);
+    }
+    
     /** Free anything that needs to be freed **/
     for (i=0; cgivars[i]; i++) free(cgivars[i]) ;
     free(cgivars) ;
