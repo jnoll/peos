@@ -14,3 +14,6 @@ require valid-user
 AuthUserFile /webpages/jshah1/PEOS/cgi-bin/hidden/.htpasswd
  
 require valid-user
+AuthUserFile /webpages/jshah1/PEOS/cgi-bin/hidden/.htpasswd
+ 
+require valid-user

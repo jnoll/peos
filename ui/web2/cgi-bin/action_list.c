@@ -35,7 +35,7 @@ void list_actions()
     char ** result = peos_list_instances();
 
     printf("<form name=\"pickform\" action=\"multiple_dones.cgi\">");
-    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%%;\">");
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">");
     printf("<tbody>");
     printf("<tr>");
     printf("<td style=\"vertical-align: top;\">Process Id<br></td>");
@@ -61,7 +61,7 @@ void list_actions()
     printf("<td style=\"vertical-align: top;\"></td>");
     printf("<td style=\"vertical-align: top;\"></td>");
     printf("<td style=\"vertical-align: top;\"></td>");
-    printf("<td style=\"vertical-align: top;\"><input type=\"Submit\" name=\"Submit\" value=\"Submit Dones\" onclick=\"return validate(%d)\"><br></td></tr>",num_rows);
+    printf("<td style=\"vertical-align: top;\"><input type=\"Submit\" name=\"Submit\" value=\"Update State\" onclick=\"return validate(%d)\"><br></td></tr>",num_rows);
     printf("<input type=\"hidden\" name=\"process_filename\" value=\"%s\">",process_filename);
     printf("</tbody>");
     printf("</table>");

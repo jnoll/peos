@@ -54,7 +54,7 @@ int main()
 	    
     printf("<form name=\"actionform\" action=\"action_event.cgi\">");
 
-    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%%;\">");
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">");
     printf("<tbody>");
     printf("<tr>");
     printf("<td style=\"vertical-align: top;\">Name<br></td>");
@@ -148,7 +148,7 @@ int main()
     printf("</table>");
 
     
-    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%%;\">");
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">");
     printf("<tbody>");
     printf("<tr>");
     printf("<td style=\"vertical-align: top;\">");

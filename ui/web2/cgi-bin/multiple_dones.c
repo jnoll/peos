@@ -83,7 +83,7 @@ int main()
         resources = peos_get_resource_list_action_provides(pid, act_names[i], &num_resources);
 
 	if(resources == NULL) {
-	    goto_error_page(process_filename, "reslurce list null");
+	    goto_error_page(process_filename, "resource list null");
 	    for (i=0; cgivars[i]; i++)
 	        free(cgivars[i]) ;
 	    free(cgivars);
@@ -118,7 +118,7 @@ int main()
         print_header("Please Supply Resource Bindings");
 	print_javascript();
         printf("<form name=\"pickform\" action=\"multiple_done_bindings.cgi?\">");
-        printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" width=\"100%%\">");
+        printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" width=\"100%%\">");
         printf("<tbody>");
 	for(i=0;i < num_unbound_resources; i++) {
 	    printf("<tr>");
