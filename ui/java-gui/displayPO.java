@@ -14,6 +14,8 @@ public class displayPO{
 	public Element testElement;
 	private ActionMap actions = new ActionMap();
 	private ResourceMap resources = new ResourceMap();
+        private boolean validPIDs[] = new boolean[11];
+        
 	displayPO(String inputFileName) 
 	{
 		try{
@@ -37,9 +39,17 @@ public class displayPO{
 		retraverse(doc.getDocumentElement(), pid);
 		actions.setCurrent(pid,temp);
 	}
+        public boolean checkForPid(int pid) throws Exception
+        {
+            
+            xmlStream.parse(new InputSource(xmlInput));
+            Document doc = xmlStream.getDocument();
+            return checkPid(doc.getDocumentElement(), pid);
+            
+        }
 	public void convertDOM(int pid) throws IOException
 	{
-		Document doc = xmlStream.getDocument();
+                Document doc = xmlStream.getDocument();
 		this.actions.DeleteProcess(pid);
 		this.resources.DeleteProcess(pid);
 		traverse(doc.getDocumentElement(),-1, pid);
@@ -177,6 +187,48 @@ public class displayPO{
 		{
 			traverse(children.item(i),offset+1,pid);
 		}
+	}
+        public boolean checkPid(Node root, int pid) throws IOException 
+	{
+		String elemName;
+		if (root == null)
+		{
+			return false; 
+		}
+		int type=root.getNodeType();
+		if (type == root.DOCUMENT_NODE)
+		{
+			traverse(((Document)root).getDocumentElement(),0,pid); 
+		}
+		else if (type == root.ELEMENT_NODE)
+		{
+			elemName=root.getNodeName();
+			if (elemName.equals("process"))
+			{
+                                String str = ((Element)root).getAttribute("pid");
+                                int currPid = Integer.parseInt(str);
+				if (pid == currPid)
+                                {
+                                    System.out.println(pid + "=pid" + currPid + "=currPid");
+                                    System.out.println("process==pid");
+                                    return true;
+                                }
+			}
+                        else if (elemName.equals("process_table"))
+                        {
+                            System.out.println("past proc_table part");
+                        }
+                        else return false;
+			
+		}
+		NodeList children = root.getChildNodes();
+             
+		for (int i=0; i < children.getLength(); i++)
+		{
+			if (checkPid(children.item(i),pid) == true)
+                            return true;                      
+		}
+                return false; 
 	}
 	public String getScript(Element root, int pid)
 	{	

@@ -160,7 +160,26 @@ public class testPOJU extends TestCase{
 		//else
 			//return true;
 	}
-
+        public void testChkPid1()
+        {
+            try{
+                assertTrue(test1.checkForPid(0));
+            }
+            catch(Exception e)
+            {         
+                fail("Exception caught in testChkPid1");
+            }
+        }
+        public void testChkPid2()
+        {
+            try{
+                assertFalse(test1.checkForPid(1));
+            }
+            catch(Exception e)
+            {         
+                fail("Exception caught in testChkPid1");
+            }
+        }
 	public static void main(String args[])
 	{
 		junit.textui.TestRunner.run(suite());

@@ -18,7 +18,8 @@ public class PeosApp extends JFrame implements ActionListener
 	private File file;	
 	private String activePs[] = new String[11];
 	private boolean internalFrameOpen = false;
-	public ActionMap map;
+        private displayPO outline;
+        
 	public JMenu fileMenu;
 	public JMenuBar menuBar;
 	public JFrame confirmFrame;
@@ -106,6 +107,17 @@ public class PeosApp extends JFrame implements ActionListener
 	
 	public void actionPerformed(ActionEvent e) 
 	{
+                if (outline != null)
+                {
+                    try{ 
+                        System.out.println("Result of PidCheck" + outline.checkForPid(0));
+                    }
+                    catch(Exception ee)
+                    {
+                        System.err.println(ee);                  
+                    }
+                }
+                
 		if ("load".equals(e.getActionCommand()))
 		{
 			if (getNumCurrActive() >= 11)
@@ -230,8 +242,14 @@ public class PeosApp extends JFrame implements ActionListener
        	                active = new ActiveList();
                         actList = active.listOfActive();
 			
-			for(int i = 0; i<active.numActive(); i++) {
-				activeProcess("proc_table.dat.xml", getPidNum(actList[i]));
+                        int count = 0;
+			for(int i = 0; i< 11; i++){ //active.numActive(); i++) {
+                                System.out.println(i + ":" + actList[i]);
+                                if (actList[i] != null)     
+                                {   
+                                    activeProcess("proc_table.dat.xml", getPidNum(actList[i]), count);
+                                    count++;
+                                }
 			}
 		
                	} catch (IOException error) {       
@@ -251,10 +269,13 @@ public class PeosApp extends JFrame implements ActionListener
 	{
 		int pid;
 		String sPid = null;
-		sPid = selectedAction.substring(0,selectedAction.indexOf(' '));
-		pid = Integer.parseInt(sPid);
+                
+                sPid = selectedAction.substring(0,selectedAction.indexOf(' '));
+                pid = Integer.parseInt(sPid);
+                
+                return pid;	
+                
 		
-		return pid;	
 	}
 	
 	/*=========================================== LOAD PROCESS ===============================================*/	
@@ -356,21 +377,34 @@ public class PeosApp extends JFrame implements ActionListener
 		return deleteMenu;
 	}	
 
-	protected void activeProcess(String xmlFilename, int pidNum)
+	protected void activeProcess(String xmlFilename, int pidNum, int placement)
 	{
 		ProcessContent content = new ProcessContent(xmlFilename,pidNum);
-		
-		tabbedPane.add(content.getSplitPanes(),pidNum);		
-		tabbedPane.setTitleAt(pidNum,content.getTabName());
-		tabbedPane.setToolTipTextAt(pidNum,"pid: " + pidNum);
+		outline = content.getOutline();
+		tabbedPane.add(content.getSplitPanes(),placement);		
+		tabbedPane.setTitleAt(placement,content.getTabName());
+		tabbedPane.setToolTipTextAt(placement,"pid: " + pidNum);
 	        tabbedPane.setVisible(true);
 		
-		tabbedPane.setSelectedIndex(pidNum);
+		tabbedPane.setSelectedIndex(placement);
 		getContentPane().add(tabbedPane,BorderLayout.CENTER);
 		show();
 		deleteB.setEnabled(true);
 	}
-
+        protected void activeProcess(String xmlFilename, int placement)
+	{
+		ProcessContent content = new ProcessContent(xmlFilename,placement);
+		outline = content.getOutline();
+		tabbedPane.add(content.getSplitPanes(),placement);		
+		tabbedPane.setTitleAt(placement,content.getTabName());
+		tabbedPane.setToolTipTextAt(placement,"pid: " + placement);
+	        tabbedPane.setVisible(true);
+		
+		tabbedPane.setSelectedIndex(placement);
+		getContentPane().add(tabbedPane,BorderLayout.CENTER);
+		show();
+		deleteB.setEnabled(true);
+	}
 	public JToolBar createToolBar() 
 	{
 	        ImageIcon openIcon = createImageIcon("images/open.jpg");
