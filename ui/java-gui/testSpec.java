@@ -69,6 +69,11 @@ public class testSpec extends TestCase {
             System.out.println("WTF MATES");
         assertEquals("time_sheet.doc", tester.getAttribute("value"));
     }
+    public void testBadSpecFile()
+    {
+        String test1="testfiles/oldtimec.res";
+        assertTrue(SpecLoader.LoadSpecFile(test1,dpo,pidNum)==3);
+    }
     public static void main(String args[])
     {
         setuptest();        	

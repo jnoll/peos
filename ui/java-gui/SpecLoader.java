@@ -41,23 +41,39 @@ public class SpecLoader {
     public static int LoadSpecFile(String path, displayPO dpo, int pidNum)      
     {
         String line;        
+        int colonCount;
         File f1 = new File(path);
         if (f1.canRead() == false)        
             return 1;
         
         try{
             BufferedReader reader = new BufferedReader(new FileReader(path));
-      //      int lineCount;
-        //    while (reader.readLine() != null)
-          //      lineCount++;
-                
-            while ((line = reader.readLine()) != null)
-            {            
-                String[] pair=line.split(":");                
-                if (pair.length > 2)                
-                    return 3;
-                dpo.bindResource(pair[0],pair[1],pidNum);
+            int lineCount=0;
+            reader.mark(65536);
+            while (reader.readLine() != null)
+                lineCount++;            
+            
+            String[][] pairs= new String[lineCount][5];          
+            
+            reader.reset();
+            int count=0;
+
+            while ((line=reader.readLine()) !=null)
+            {       
+                colonCount=0;
+                for (int i = 0; i<line.length(); i++)
+                {
+                    if (line.charAt(i) == ':')
+                        colonCount++;
+                    if (colonCount > 1)
+                        return 3;
+                }                
+                pairs[count]=line.split(":");                                
+                count++;
             }
+            
+            for (count=0; count < lineCount; count++)
+                dpo.bindResource(pairs[count][0],pairs[count][1],pidNum);
             return 0;            
         }
         catch(IOException oops)
