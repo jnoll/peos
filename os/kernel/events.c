@@ -114,17 +114,60 @@ vm_exit_code peos_notify(int pid, char *action, peos_event event)
 
 int peos_set_resource_binding(int pid, char *resource_name, char *value)
 {
-    return set_resource_binding(pid, resource_name, value);
+    int status;	
+
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    status = set_resource_binding(pid, resource_name, value);
+
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return status;
+    
 }    
 
 char *peos_get_resource_binding(int pid, char *resource_name)
 {
-    return get_resource_binding(pid, resource_name);
+    char *binding;	
+ 
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    binding = get_resource_binding(pid, resource_name);
+
+    
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    return binding;
 }
 
 char *peos_get_resource_qualifier(int pid, char *resource_name)
 {
-    return get_resource_qualifier(pid, resource_name);
+    char *qualifier;
+    
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    qualifier = get_resource_qualifier(pid, resource_name);
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    return qualifier;
 }
 
 peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
