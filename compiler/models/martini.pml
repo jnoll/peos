@@ -1,7 +1,7 @@
 process martini {
   iteration martini_loop {
     branch mix_and_pour {
-      task mix {
+      sequence mix {
 	action add_ice manual {
 	  requires {"ice"}
 	  requires {"shaker"}
