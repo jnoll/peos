@@ -8,7 +8,7 @@
 # include <stdarg.h>
 # include "debug.h"
 
-debug_level = 0 ; 	// 0 = silent-mode
+int debug_level = 0 ; 	// 0 = silent-mode
 			// 1 = tracing-mode
 			// 2 = debug-mode
 			// 3 = print-mode
