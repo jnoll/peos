@@ -116,8 +116,11 @@ public class LinkedList
 		curr = head;
 	}
 	public void setCurrToFirstAction()
-	{
+	{            
 		curr = head.getNext();
+                while(curr.getElement().getLocalName().equals("action") == false)
+                    curr = curr.getNext();
+                
 	}	
 	public Element getElement()
 	{

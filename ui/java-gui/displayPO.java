@@ -10,6 +10,7 @@ public class displayPO{
 	private String  xmlInput;
 	// Parsing Flags
  	private boolean selectionFlag=false;
+        private boolean branchFlag=false;
 	private boolean sequenceFlag=false;
 	public Element testElement;
 	private ActionMap actions = new ActionMap();
@@ -173,6 +174,14 @@ public class displayPO{
 				actions.AddAction(pid, ((Element)root), offset); 
                         }
 
+                        if (elemName.equals("branch"))
+       		       	{ 
+				if (branchFlag==false)
+					actions.AddAction(pid, ((Element) root), offset);
+				branchFlag=true;
+                        }
+			if (elemName.equals("/branch"))
+				branchFlag=false;
 			if (elemName.equals("sequence"))
        		       	{ 
 				if (sequenceFlag==false)
@@ -383,7 +392,8 @@ public class displayPO{
                     rr=nl.item(i);
                     if (rr.getLocalName() != null 
                         && rr.getLocalName().equals("req_resource"))
-                        rrCount++;
+                        if ( ((Element)rr).getAttribute("value").equals("$$") )
+                            rrCount++;
                 }
                 String[] rrList=new String[rrCount];
                 
@@ -394,8 +404,11 @@ public class displayPO{
                     if (rr.getLocalName() != null 
                             && rr.getLocalName().equals("req_resource"))
                     {
-                        rrList[countUp]= ( ((Element)rr).getAttribute("name") );
-                        countUp++;
+                        if ( ((Element)rr).getAttribute("value").equals("$$") )
+                        {
+                            rrList[countUp]= ( ((Element)rr).getAttribute("name") );
+                            countUp++;
+                        }
                     }
                 }
                 for (int i=0; i<rrList.length; i++)
@@ -415,7 +428,10 @@ public class displayPO{
                 {
                     rr=nl.item(i);
                     if (rr.getLocalName() != null && rr.getLocalName().equals("prov_resource"))
-                        prCount++;
+                    {
+                        if ( ((Element)rr).getAttribute("value").equals("$$") )                            
+                            prCount++;                       
+                    }
                 }
                 String[] prList=new String[prCount];
                 
@@ -425,8 +441,11 @@ public class displayPO{
                     rr=nl.item(i);
                     if (rr.getLocalName() != null && rr.getLocalName().equals("prov_resource"))
                     {
-                        prList[countUp]= ( ((Element)rr).getAttribute("name") );
-                        countUp++;
+                        if ( ((Element)rr).getAttribute("value").equals("$$") )
+                        {                        
+                            prList[countUp]= ( ((Element)rr).getAttribute("name") );                        
+                            countUp++;
+                        }
                     }
                 }
 		
@@ -722,10 +741,10 @@ public class displayPO{
 		displayPO dispTest=new displayPO("proc_table.dat.xml");
 		try{	
 			dispTest.convertDOM(0);
-			String blah = dispTest.getScript(dispTest.testElement,0);
-			blah = blah.concat(dispTest.getState(dispTest.testElement)+"\n");
-			blah = blah.concat(dispTest.getRR(dispTest.testElement) + "\n");
-			blah = blah.concat(dispTest.getPR(dispTest.testElement));
+			//String blah = dispTest.getScript(dispTest.testElement,0);
+			//blah = blah.concat(dispTest.getState(dispTest.testElement)+"\n");
+			//blah = blah.concat(dispTest.getRR(dispTest.testElement) + "\n");
+			//blah = blah.concat(dispTest.getPR(dispTest.testElement));
 			dispTest.getActions().numActiveProcesses();
 			dispTest.convertDOM(0);
 			dispTest.getActions().Print();

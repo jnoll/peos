@@ -1,6 +1,6 @@
 #these lines are for modification.
 images= ./images/
-path= ./bin/peos 
+path= ./bin/peos_pav 
 help= ./help/
 pml= ./testfiles/ 
 XERCES_PATH=./include/
@@ -18,6 +18,8 @@ all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class Disable
 	SetupPath.class MyFileFilter.class ResourceMap.class	
 	jar cf java-gui.jar *.class
 	mv java-gui.jar ./include
+disp:
+	java ${java} displayPO
 
 jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.class testSFASJU.class \
 	testPOJU.class testCRJU.class

@@ -345,8 +345,10 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                                 outline.bindResource(resourceToBind[i], inputValue,pidNum);
                             }
                         }
-
-			outline.start(map.getCurrentAction(pidNum), pidNum);						
+                        
+                        // if not all resources are set, action will not be started
+                        if ( outline.doesStartNeedValue(map.getCurrentAction(pidNum)) == 0 )                            
+                            outline.start(map.getCurrentAction(pidNum), pidNum);						
 				
 			map.getActionByName(pidNum,currActionName);
 			LinkNode n = map.getCurrentLink(pidNum);
@@ -386,8 +388,9 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                             outline.bindResource(resourceToBind[i], inputValue,pidNum);                                                        
                         }                        
                     }
-                            
-		 outline.finish(map.getCurrentAction(pidNum),pidNum);		
+                  
+                 //if ( outline.doesFinishNeedValue(map.getCurrentAction(pidNum)) == 0 )
+                    outline.finish(map.getCurrentAction(pidNum),pidNum);		
                  map.getActionByName(pidNum,currActionName);		
                  LinkNode n = map.getCurrentLink(pidNum);
                  String currentPage = n.getElement().getAttribute("name");
@@ -516,8 +519,8 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 				     currentPage + 
 				    "<br><br> State: " + outline.getState(n.getElement()) + 
 				    "<br><br> " + outline.getRR(n.getElement()) + 
-				    "<br><br> " + outline.getPR(n.getElement()) + 
-				    "<br><br> Script: " + "   " + script;
+				    "<br> " + outline.getPR(n.getElement()) + 
+				    "<br> Script: " + "   " + script;
 
 		TreePath path = tree.getNextMatch((String)map.printCurrentName(pidNum),0,Position.Bias.Forward);
                 tree.setSelectionPath(path);
