@@ -107,22 +107,22 @@ display_action_list(int pid, char *model)
 			       NONUMBERS,
 			       A_REVERSE,
 			       TRUE, TRUE);
+    if (scrollList == 0) {
+	/* Exit CDK. */
+	destroyCDKScreen (cdkscreen);
+	endCDK();
+
+	/* Print out a message and exit. */
+	printf ("Oops. Could not make scrolling list. Is the window too small?\n");
+	exit (1);
+    }
 
     bind_default_keys(scrollList);
 
+
     while (1) {
 	/* Redraw the CDK screen. */
-	refreshCDKScreen (cdkscreen);	
-	/* Is the scrolling list null? */
-	if (scrollList == 0) {
-	    /* Exit CDK. */
-	    destroyCDKScreen (cdkscreen);
-	    endCDK();
-
-	    /* Print out a message and exit. */
-	    printf ("Oops. Could not make scrolling list. Is the window too small?\n");
-	    exit (1);
-	}
+	refreshCDKScreen (cdkscreen); 
 
 	/* Activate the scrolling list. */
 	scroll_to_available(scrollList, alist, num_actions);

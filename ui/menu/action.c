@@ -160,86 +160,91 @@ bind_run_state(CDKSWINDOW *view, peos_action_t *action)
 }
 
 
+char *lookup_resource(char *name,  peos_resource_t *resources, int num)
+{
+    int i;
+    for (i = 0; i < num; i++) {
+	if (strcmp(name, resources[i].name) == 0) {
+	    return resources[i].value;
+	}
+    }
+    return NULL;
+}
+/*
+ * Write script to file, replacing substrings like  $resource_name  with
+ * bound value.
+ */
+int format_script(char *script, peos_resource_t *resources, int num_resources,
+		  FILE *out)
+{
+    char *start, *end, *value, *data = strdup(script);;
+
+    end = start = data;
+    while (end) {
+	/* Look for begin character. */
+	start = strsep(&end, "$");
+	/* Write out leading text. */
+	fwrite(start, sizeof(char), strlen(start), out);
+	/* Look for end of token. */
+	if (end && (start = strsep(&end, " \t\n~!@#$%^&*()-+={}[]\\|\":;,.<>?/"))) {
+	    if ((value = lookup_resource(start, resources, num_resources)) != NULL) {
+		fprintf(out, value);
+	    } else {
+		/* Not found? write resource name. */
+		fwrite(start, sizeof(char), end - start, out);
+		fprintf(out, "(unbound)");
+	    }
+	}
+    }
+}
+
 void display_action(int pid, int index)
 {
     peos_action_t *alist, action;
-    char *hint, title[BUFSIZ];;
-    CDKSWINDOW *view;
+    char  title[BUFSIZ],  cmd[BUFSIZ], *script;
+    int tempfd;
+    FILE *tempfile;
+    int i, num_actions, num_resources;
+    peos_resource_t *resources;
 
-    char *info[5];
-    char *loginName;
-    char *script, **script_lines;
-    int selection, b, num_actions;
+    sprintf(title, "peos_actXXXXXX");
+    tempfd = mkstemp(title);
+    tempfile = fdopen(tempfd, "w");
 
+    if ((alist = peos_list_actions(pid, &num_actions)) == NULL) {
+	display_msg("Unable to retrieve action list.");
+	quit();
+    }
 
-    while (1) {
-	if ((alist = peos_list_actions(pid, &num_actions)) == NULL) {
-	    display_msg("Unable to retrieve action list.");
-	    quit();
+    action = alist[index];
+	
+    /* Create the view. */
+    fprintf (tempfile, "<html><head><title>%20s</title></head>\n",
+	     action.name);
+    fprintf (tempfile, "<body><h1>Action: %20s</h1>\n", 
+	     action.name);
+
+    /* Get the script and install as window text. */
+    script = peos_get_script(action.pid, action.name);
+    resources = peos_get_resource_list_action(action.pid, action.name, &num_resources);
+    for (i = 0; i < num_resources; i++) {
+	if ((strlen(resources[i].value) == 0) 
+	    || (strcmp(resources[i].value, "%unbound") == 0)) 
+	{
+	    strcpy(resources[i].value, 
+		   "http://www.cse.scu.edu/~jnoll/286/projects");
 	}
-
-	action = alist[index];
-
-	/* Create the view. */
-	sprintf (title, "<C>Action: </K>%20s<!K>", action.name);
-	view = newCDKSwindow (cdkscreen,
-			      CENTER, TOP,
-			      -4, 0,
-			      title,
-			      1024,
-			      TRUE, FALSE);
+    }
+    if (script) {
+	format_script(script, resources, num_resources, tempfile);
+	fprintf (tempfile, "</body>\n</html>"); 
 
 
-	switch (action.state) {
-	case ACT_READY:
-	case ACT_AVAILABLE:
-	case ACT_BLOCKED:
-	    bind_ready_state(view, &action);
-	    break;
-	case ACT_RUN:
-	    bind_run_state(view, &action);
-	    break;
-	case ACT_SUSPEND:
-	    bind_suspend_state(view, &action);
-	    break;
-	default:
-	    bind_default_keys(view);
-	    break;
-	}
-
-
-	/* Could we create the viewer widget? */
-	if (view == 0) {
-	    /* Exit CDK. */
-	    destroyCDKScreen (cdkscreen);
-	    endCDK();
-
-	    /* Print out a message and exit. */
-	    printf ("Oops. Can't seem to create viewer. Is the window too small?\n");
-	    exit (0);
-	}
-
-
-	/* Get the script and install as window text. */
-	script = peos_get_script(action.pid, action.name);
-	script_lines = CDKsplitString(script, '\n');
-	setCDKSwindow(view, script_lines, CDKcountStrings(script_lines), TRUE);
+	fclose(tempfile);
 
 	/* Activate the viewer widget. */
-	activateCDKSwindow (view, 0);
-
-
-	/* Check how the person exited from the widget.*/
-	if (view->exitType == vESCAPE_HIT) {
-	    /* Return to action list. */
-	    destroyCDKViewer(view);
-	    refreshCDKScreen(cdkscreen);
-	    break;
-	}
-
-	/* Clean up. */
-	CDKfreeStrings(script_lines);
-	destroyCDKViewer(view);
-	refreshCDKScreen(cdkscreen);
+	sprintf(cmd, "lynx -force_html %s", title);
+	system(cmd);
     }
+    refreshCDKScreen (cdkscreen);
 }
