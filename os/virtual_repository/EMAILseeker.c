@@ -10,6 +10,7 @@
 #include "debug.h"
 #include "resultLinkedList.h"
 #include "queryLinkedList.h"
+#include "seekerTools.h"
 #include "EMAILseeker.h"
 #include <ftw.h>
 #include <stdlib.h>
@@ -32,8 +33,6 @@ queryList* EMAILqueryTool( queryList *listpointer )
 	void getMailBox( char *mailPath ) ;
 	resultList* EMAILmsgTokenizer( char *mailPath, char *value, int attributeType );
 	void getMAilDate ( char * ) ;
-	resultList* andMailResult( resultList* tempResults, resultList* newResults ) ;
-	resultList* orMailResult( resultList* tempResults, resultList* newResults ) ;
 	
 	int doneSearchBox,msgResult, numClauses, dateResult, attributeType ;
 	struct stat statBuffer ;	
@@ -66,22 +65,19 @@ queryList* EMAILqueryTool( queryList *listpointer )
    				getMailBox( mailPath ) ;
    				attributeType = 2 ;
    				if( numClauses == 0 )
-				{
 					tempResults = EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ;
-					//printResultList( tempResults ) ;
-				}						
 				else
 				{
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
 					{
 						_debug( __FILE__, __LINE__, 5, "conjecture is AND") ;
-						tempResults = andMailResult( tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
+						tempResults = andResult( tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
 					}
 
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
 					{
 						_debug( __FILE__, __LINE__, 5, "conjecture is OR") ;
-						tempResults = orMailResult(tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
+						tempResults = orResult(tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
 					}
 				}	
 			} 
@@ -97,21 +93,19 @@ queryList* EMAILqueryTool( queryList *listpointer )
 					if( mailPath != NULL )
    					{
 						if( numClauses == 0 )
-						{
 							tempResults = EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ;
-						}						
 						else
 						{
 							if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
 							{
 								_debug( __FILE__, __LINE__, 5, "conjecture is AND") ;
-								tempResults = andMailResult( tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
+								tempResults = andResult( tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
 							}
 
 							if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
 							{
 								_debug( __FILE__, __LINE__, 5, "conjecture is OR") ;
-								tempResults = orMailResult(tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
+								tempResults = orResult(tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
 							}
 						}
 					}
@@ -128,7 +122,6 @@ queryList* EMAILqueryTool( queryList *listpointer )
 		}
 		tempQueries = ( queryList* ) tempQueries -> link ;
 	}
-	
 	return listpointer ;
 }
 
@@ -307,121 +300,69 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 	resultList *tempResults ;
 	
 	tempResults = NULL ;
-	fromStage = numAttributes = blankLine = fromLine = msgResult = 0 ;	
-	msgStage = lineNumber = 1 ; // first message is without blank
+	numAttributes = blankLine = fromLine = msgResult = 0 ;	
+	msgStage = lineNumber = 0 ; // first message is without blank
 		
 	while( ( fgets( oneLine, 500, mailFile ) != NULL ) && ( !msgResult ) )
 	{
-		_debug( __FILE__, __LINE__, 2, "oneLine is %s\n", oneLine ) ;
+		_debug( __FILE__, __LINE__, 5, "oneLine is %s\n", oneLine ) ;
 		
 		strcpy( testLine, oneLine ) ;
 		
-		switch( msgStage )
-		{
-			case 0 : 	_debug( __FILE__, __LINE__, 2, "case 0") ;
-					if( ( strlen( testLine ) == 1 ) && ( strcmp( "\n", testLine ) == 0 ) )
-					{
-						blankLine = lineNumber ;
-						msgStage++ ;
-					}
-					break ;
-						
-			/*case 1 :	_debug( __FILE__, __LINE__, 2, "case 1") ;
-					token = strtok( testLine , " " ) ;
-					_assert( __FILE__, __LINE__, token ) ;
+		if( ( strlen( testLine ) == 1 ) && ( strcmp( "\n", testLine ) == 0 ) )
+			blankLine = lineNumber ;
+		else
+		{		
+			token = strtok( testLine , " " ) ;
+			_assert( __FILE__, __LINE__, token ) ;
+			_debug( __FILE__, __LINE__, 5, "token is %s", token ) ;
 					
+			if( strcmp( fromHeader, token ) == 0 )
+			{
+				fromLine = lineNumber ;
+				_debug( __FILE__, __LINE__, 5, "fromLine is %d", fromLine) ;
+				_debug( __FILE__, __LINE__, 5, "blankLine is %d", blankLine) ;
+				if( fromLine - blankLine == 1 )
+				{
+					if( numAttributes != 0 )
+						numAttributes = 0 ;
+				}
+			}
+
+			if( ( strcmp( "Message-Id:", token ) == 0 ) ||
+			    ( strcmp( "Message-ID:", token ) == 0 ) ||
+			    ( strcmp( "Message-id:", token ) == 0 ) )
+			{
+				oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
+			    	strcpy( messageLine, oneLine ) ;
+			    	_debug( __FILE__, __LINE__, 5, "messageLine is %s\n", messageLine ) ;
+			    	numAttributes++ ;
+			    	_debug( __FILE__, __LINE__, 5, "message numAttributes is %d\n", numAttributes ) ;
+			}
 					
-					if( strcmp( fromHeader, token ) == 0 )
-					{
-						fromLine = lineNumber ;
-						if( fromLine - blankLine == 1 )
-							msgStage++ ;
-						else	
-							numAttributes = msgStage = 0 ;
-					}
-					else
-					{
-						if( ( strlen( testLine ) == 1 ) && ( strcmp( "\n", testLine ) == 0 ) )
-							blankLine = lineNumber ;
-						else
-							numAttributes = msgStage = 0 ;
-					}
-					break ;*/
-						
-			case 1 :	_debug( __FILE__, __LINE__, 2, "case 1") ;
-					token = strtok( testLine , " " ) ;
-					_assert( __FILE__, __LINE__, token ) ;
-					_debug( __FILE__, __LINE__, 2, "token is %s", token ) ;
-					
-					if( strcmp( fromHeader, token ) == 0 )
-					{
-						fromLine = lineNumber ;
-						_debug( __FILE__, __LINE__, 2, "a") ;
-						if( fromLine - blankLine == 1 )
-						{
-							fromStage++ ;
-							_debug( __FILE__, __LINE__, 2, "fromStage is %d", fromStage ) ;
-							_debug( __FILE__, __LINE__, 2, "numAttributes is %d", numAttributes ) ;
-							if( ( fromStage == 2 ) && ( numAttributes != 0 ) )
-							{
-								numAttributes = msgStage = 0 ;
-								_debug( __FILE__, __LINE__, 2, "b") ;
-							}
-						}
-						else	
-							numAttributes = msgStage = 0 ;
-					}
-					/*else
-					{
-						if( ( strlen( testLine ) == 1 ) && ( strcmp( "\n", testLine ) == 0 ) )
-							blankLine = lineNumber ;
-						else
-							numAttributes = msgStage = 0 ;
-					}
-					break ;*/
-										
-					if( ( strcmp( "Message-Id:", token ) == 0 ) ||
-					    ( strcmp( "Message-ID:", token ) == 0 ) ||
-					    ( strcmp( "Message-id:", token ) == 0 ) )
-					{
-						oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
-					    	strcpy( messageLine, oneLine ) ;
-					    	_debug( __FILE__, __LINE__, 2, "messageLine is %s\n", messageLine ) ;
-					    	numAttributes++ ;
-					    	_debug( __FILE__, __LINE__, 2, "message numAttributes is %d\n", numAttributes ) ;
-					}
-					
-					if( strcmp( "Date:", token ) == 0 )
-					{
-						oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
-						strcpy( dateLine, oneLine ) ;
-						_debug( __FILE__, __LINE__, 2, "dateLine is %s\n", dateLine ) ;
-						numAttributes++ ;
-						_debug( __FILE__, __LINE__, 2, "date numAttributes is %d\n", numAttributes ) ;
-					}
-					
-					/*if( strcmp( "--END+PSEUDO--\n", token ) == 0 )
-					{
-						numAttributes = msgStage = 0 ;
-						_debug( __FILE__, __LINE__, 5, "numAttributes is %d, msgStage is %d\n", numAttributes, msgStage ) ;
-					}*/
-					break ;
-			
-			default	:	numAttributes = msgStage = 0 ;	
-					break ;				
+			if( strcmp( "Date:", token ) == 0 )
+			{
+				oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
+				strcpy( dateLine, oneLine ) ;
+				_debug( __FILE__, __LINE__, 5, "dateLine is %s\n", dateLine ) ;
+				numAttributes++ ;
+				_debug( __FILE__, __LINE__, 5, "date numAttributes is %d\n", numAttributes ) ;
+			}
 		}
 		
 		if( numAttributes == 2 )
 		{	
+			_debug( __FILE__, __LINE__, 5, "with 2 numAttributes" ) ;
 			getMessageID( messageID, messageLine ) ;				
 			switch ( attributeType ) 					
 			{
 				case 1:	msgResult = EMAILidCompare ( queryValue, messageID );
+				_debug( __FILE__, __LINE__, 5, "attributeType is %d", attributeType ) ;
 					numAttributes = msgStage = 0 ;
 					break ;
 							
 				case 2:	msgResult = EMAILdateCompare ( queryValue, dateLine ) ;
-					_debug( __FILE__, __LINE__, 5, "EMAILdateCompare msgResult is %d\n", msgResult ) ;
+					_debug( __FILE__, __LINE__, 5, "attributeType is %d", attributeType ) ;
 					numAttributes = msgStage = 0 ;
 					break ;
 			}
@@ -429,12 +370,15 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 		
 		if( msgResult )
 		{
+			_debug( __FILE__, __LINE__, 5, "with msgResult" ) ;
 			tempResults = addResultItem( tempResults, messageID ) ;
 			msgResult = 0 ;
 		}
 		
 		lineNumber++ ;
+
 	}							
+	
 	return tempResults ;
 }
 
@@ -594,48 +538,5 @@ void getMailQueryDate( char *value, char *queryValue )
 	free( day ) ;
 	free( year ) ;
 	free( toParse ) ;
-}
-
-resultList* andMailResult( resultList* tempResults, resultList* newResults )
-{
-	resultList *andResultList = NULL ;	
-	while ( newResults != NULL )
-	{
-		while ( tempResults != NULL )
-		{
-			if( strcmp( tempResults -> oneResult, newResults -> oneResult ) == 0 )
-				andResultList = addResultItem( andResultList, tempResults -> oneResult ) ;
-			tempResults = ( resultList* ) tempResults -> link ;
-		}
-		newResults = ( resultList* ) newResults -> link ;
-	}
-	
-	return andResultList ;
-}
-
-resultList* orMailResult( resultList* tempResults, resultList* newResults )
-{
-	int found ;
-	resultList *orResultList, *listpointer ; 
-	orResultList = listpointer = tempResults ;
-
-	found = 0 ;
-	
-	while ( newResults != NULL )
-	{
-		tempResults = listpointer ;
-		while ( tempResults != NULL && !found )
-		{
-			if( strcmp( tempResults -> oneResult, newResults -> oneResult ) == 0 )
-				found = 1 ;
-			tempResults = ( resultList* ) tempResults -> link ;
-		}
-		if( !found )
-			orResultList = addResultItem( orResultList, newResults -> oneResult ) ;
-	
-		newResults = ( resultList* ) newResults -> link ;
-	}
-	
-	return orResultList ;
 }
 

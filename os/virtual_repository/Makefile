@@ -3,6 +3,7 @@ CC = gcc
 OBJECTS = \
 queryLinkedList.o \
 resultLinkedList.o \
+seekerTools.o \
 FSseeker.o \
 EMAILseeker.o \
 setup_repositories.o \

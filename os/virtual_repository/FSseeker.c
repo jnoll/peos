@@ -9,6 +9,7 @@
 #include "variables.h"
 #include "resultLinkedList.h"
 #include "queryLinkedList.h"
+#include "seekerTools.h"
 #include <ftw.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,8 +41,6 @@ queryList* FSqueryTool( queryList *listpointer )
 	void getDirectoryPath( ) ;
 	resultList* attributeID( query *, int ) ;
 	void attributeDATE( char*, int ) ;
-	resultList* andResult( resultList* , resultList* ) ;
-	resultList* orResult( resultList* , resultList* ) ;
 	
    	char oneLine[BUFFER_SIZE] ;	// one line from the an opened file
    	char *word ;			// a token during string tokenization
@@ -63,23 +62,21 @@ queryList* FSqueryTool( queryList *listpointer )
 			_debug( __FILE__, __LINE__, 5, "numClauses count is %d", numClauses ) ;
 			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "DATE" ) == 0 )
 			{
-				dateResults = NULL;
-				_debug( __FILE__, __LINE__, 5, "attribute is DATE") ;
+				_debug( __FILE__, __LINE__, 2, "attribute is DATE" ) ;
+				dateResults = NULL;				
 				attributeDATE( tempQueries -> oneQuery -> myClauses[numClauses].value, numClauses ) ;
 				if( numClauses == 0 )
-				{
 					tempResults = dateResults ;
-				}
 				else
 				{
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
 					{
-						_debug( __FILE__, __LINE__, 5, "conjecture is AND") ;
+						_debug( __FILE__, __LINE__, 2, "conjecture is AND") ;
 						tempResults = andResult( tempResults, dateResults ) ;
 					}
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
 					{
-						_debug( __FILE__, __LINE__, 5, "conjecture is OR") ;
+						_debug( __FILE__, __LINE__, 2, "conjecture is OR") ;
 						tempResults = orResult( tempResults, dateResults ) ;
 					}
 				}
@@ -87,22 +84,20 @@ queryList* FSqueryTool( queryList *listpointer )
 	
 			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "ID" ) == 0 )
 			{
-				_debug( __FILE__, __LINE__, 5, "attribute is ID") ;
+				_debug( __FILE__, __LINE__, 2, "attribute is ID") ;
 				if( numClauses == 0 )
-				{
 					tempResults = attributeID( tempQueries -> oneQuery, numClauses ) ;
-				}
 				else
 				{
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
 					{
-						_debug( __FILE__, __LINE__, 5, "conjecture is AND") ;
+						_debug( __FILE__, __LINE__, 2, "conjecture is AND") ;
 						tempResults = andResult( tempResults, attributeID( tempQueries -> oneQuery, numClauses ) ) ;
 					}
 
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
 					{
-						_debug( __FILE__, __LINE__, 5, "conjecture is OR") ;
+						_debug( __FILE__, __LINE__, 2, "conjecture is OR") ;
 						tempResults = orResult(tempResults, attributeID( tempQueries -> oneQuery, numClauses ) ) ;
 					}
 				}
@@ -395,55 +390,12 @@ void getDirectoryPath( )
   	{
   		if ( getcwd( directoryPath, BUFFER_SIZE ) == NULL )
 		{
-			printf( "error getting directory path...\n" ) ;
+			_debug( __FILE__, __LINE__, 0, "error getting directory path" ) ;
 			exit( 0 ) ;
 		}
 		else
 			doneDirectoryPath = 1 ;
   	}
-}
-
-resultList* andResult( resultList* tempResults, resultList* newResults )
-{
-	resultList *andResultList = NULL ;	
-	while ( newResults != NULL )
-	{
-		while ( tempResults != NULL )
-		{
-			if( strcmp( tempResults -> oneResult, newResults -> oneResult ) == 0 )
-				andResultList = addResultItem( andResultList, tempResults -> oneResult ) ;
-			tempResults = ( resultList* ) tempResults -> link ;
-		}
-		newResults = ( resultList* ) newResults -> link ;
-	}
-	
-	return andResultList ;
-}
-
-resultList* orResult( resultList* tempResults, resultList* newResults )
-{
-	int found ;
-	resultList *orResultList, *listpointer ; 
-	orResultList = listpointer = tempResults ;
-
-	found = 0 ;
-	
-	while ( newResults != NULL )
-	{
-		tempResults = listpointer ;
-		while ( tempResults != NULL && !found )
-		{
-			if( strcmp( tempResults -> oneResult, newResults -> oneResult ) == 0 )
-				found = 1 ;
-			tempResults = ( resultList* ) tempResults -> link ;
-		}
-		if( !found )
-			orResultList = addResultItem( orResultList, newResults -> oneResult ) ;
-	
-		newResults = ( resultList* ) newResults -> link ;
-	}
-	
-	return orResultList ;
 }
 
 /************************************************************************

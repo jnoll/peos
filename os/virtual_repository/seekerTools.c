@@ -2,13 +2,42 @@
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
  * Filename : seekerTools.c						*
+ ************************************************************************/
 
-************************************************************************/
-
-
+#include "form.h"
+#include "debug.h"
+#include "variables.h"
+#include "resultLinkedList.h"
+#include "queryLinkedList.h"
 #include "seekerTools.h"
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
 
 resultList* andResult( resultList* tempResults, resultList* newResults )
+{
+	resultList *andResultList = NULL ;
+	resultList *tempOftempResults = NULL ;
+		
+	while ( newResults != NULL )
+	{
+		tempOftempResults = tempResults ;
+		while ( tempOftempResults != NULL )
+		{
+			//_debug( __FILE__, __LINE__, 2, "tempOftempResults -> oneResult is %s", tempOftempResults -> oneResult ) ;
+			//_debug( __FILE__, __LINE__, 2, "newResults -> oneResult is %s", newResults -> oneResult ) ;
+			if( strcmp( tempOftempResults -> oneResult, newResults -> oneResult ) == 0 )
+				andResultList = addResultItem( andResultList, tempOftempResults -> oneResult ) ;
+			tempOftempResults = ( resultList* ) tempOftempResults -> link ;
+		}
+		newResults = ( resultList* ) newResults -> link ;
+	}
+	
+	return andResultList ;
+}
+
+/*resultList* andResult( resultList* tempResults, resultList* newResults )
 {
 	resultList *andResultList = NULL ;	
 	while ( newResults != NULL )
@@ -23,7 +52,7 @@ resultList* andResult( resultList* tempResults, resultList* newResults )
 	}
 	
 	return andResultList ;
-}
+}*/
 
 resultList* orResult( resultList* tempResults, resultList* newResults )
 {
