@@ -1,61 +1,70 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <crypt.h>
+#include <unistd.h>
 #include "getcgi.h"
 #include "kernel/events.h"
 #include "kernel/action.h"
 #include "kernel/process_table.h"
-#include "html.h" 
+#include "html.h"
+#include "xmlparse.h"
 
 
+char *process_filename = NULL;
+
+void list_models()
+{
+    int i;
+    char **result = (char **)peos_list_models();
+
+    printf("<h2 style=\"text-align: center;\">Create Process</h2>\n");
+    printf("<div style=\"text-align: center;\">\n");
+    printf("  [<a href=\"active_processes.cgi?action=continue&process_filename=%s\">Active Process</a>]\n", process_filename);
+    printf("</div><br><br>\n");
+
+    printf("<table border=\"1\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">\n");
+    printf("  <tbody>\n");
+    printf("    <tr>\n");
+    printf("      <td><br>\n");
+    printf("      <ul>\n");
+    for (i = 0; result && result[i]; i++)
+    {
+	printf("        <li><a href=\"active_processes.cgi?action=create&model=%s.pml&process_filename=%s\">%s</a></li>\n", result[i], process_filename, result[i]);
+    }
+    printf("      </ul>\n");
+    printf("      </td><br>\n");
+    printf("    </tr>\n");
+    printf("  </tbody>");
+    printf("</table><br>\n");
+}
 
 int main()
 {
     
-    char **cgivars;
+    char **cgivars, *filename;
     int i;
-    int pid;
-    char *model;
-    peos_resource_t *resources;
-    int num_resources;
-    char *process_filename; 
 
-
-    /** First, get the CGI variables into a list of strings         **/
+    /** First, get the CGI variables into a list of strings **/ 
     cgivars = getcgivars();
- 
-    model = (char *) getvalue("model", cgivars);
-    
-    process_filename = (char *) getvalue("process_filename", cgivars);
-    
-    peos_set_process_table_file(process_filename);
 
+    filename = (char *)getvalue("process_filename", cgivars);
+    process_filename = (char *)malloc(strlen(filename) * sizeof(char));
+    strcpy(process_filename, filename);
+
+    peos_set_process_table_file(process_filename);
     peos_set_loginname(process_filename);
     
+    print_header("Process Model List");
+    print_banner();
+ 
+    list_models();
 
-    
-    resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
-    if(resources == NULL) {
-        goto_error_page(process_filename, "resource list null");
-	exit(0);
-    }
-    
-    for(i=0; i < num_resources; i++) {
-        strcpy(resources[i].value,"$$");
-    }	
-    pid = peos_run(model, resources, num_resources);
-
-    if(pid < 0) {
-        goto_error_page(process_filename, "pid less than 0. Could not create process");
-	exit(0);
-    }
-    
-    printf("Location: action_list.cgi?process_filename=%s&start=false\r\n\r\n", process_filename);
-
+    /** Free anything that needs to be freed **/
     for (i=0; cgivars[i]; i++) free(cgivars[i]);
-        free(cgivars) ;
-	
-    exit(0);
+    free(cgivars) ;
 
+    print_footer();
 
-}	
+    exit(0); 
+}

@@ -3,11 +3,11 @@ KERNEL_DIR = $(OS_DIR)/kernel
 
 CC = gcc
 
-CFLAGS = -g -Wall -I$(OS_DIR) -I../../..
+CFLAGS = -g -Wall -I$(OS_DIR) -I../../.. -I/usr/include/libxml2
 
 LD = gcc
-LIBS = -lpml -lcrypt
-LDFLAGS = -g -L../../../pml
+LIBS = -lpml -lcrypt -lxml2 -lz -lm
+LDFLAGS = -g -L../../../pml -L/usr/lib
 
 
 KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
@@ -20,29 +20,23 @@ KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
 	$(KERNEL_DIR)/predicate_evaluator.o\
 
 OBJECTS = html.o \
+	  xmlparse.o \
 	  getcgi.o
 
-TESTS = test_delete_proc_table.sh \
-	test_process_listing.sh \
-	test_action_list.sh \
+TESTS = test_active_processes.sh \
+	test_create_process.sh \
 	test_action_page.sh \
-	test_action_page_fail.sh \
-        test_multiple_dones.sh \
-        test_handle_run.sh \
-	test_bind_resources.sh \
-	test_multiple_done_bindings.sh \
-	test_resource_bindings.sh \
-	test_change_resource_bindings.sh \
 
-CGI = action_list.cgi action_page.cgi create_process.cgi delete_proc_table.cgi process_listing.cgi action_event.cgi handle_run.cgi bind_resources.cgi multiple_dones.cgi multiple_done_bindings.cgi error_page.cgi resource_bindings.cgi change_resource_bindings.cgi
+CGI = active_processes.cgi create_process.cgi action_page.cgi
 SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)
 
-PML = test_action.pml readme.pml
+PML = test_action.pml readme.pml cvs_add_dir.pml
 
 all: test
 
 test: $(CGI) create_testtable
 	@for t in $(TESTS) ; do $$t ; done
+	rm event.log
 
 
 install: 

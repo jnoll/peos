@@ -1,122 +1,80 @@
 #!/bin/sh
+echo -n "Running testscript $0... "
 
-echo -n "$0..."
-
-export QUERY_STRING="pid=0&process_filename=test.dat&act_name=test1"
+# First time the user logs in with no data
+export QUERY_STRING="action=start"
 export REQUEST_METHOD=GET
+export REMOTE_USER=test
+active_processes.cgi > /dev/null
+# Invoke create process
+export QUERY_STRING="action=create&model=cvs_add_dir.pml&process_filename=dfZRuitU82fEY.dat"
+active_processes.cgi > /dev/null
 
-create_testtable
+# Create the action page
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=create_directory"
 action_page.cgi > output
 
-if !(grep '<h1>test1</h1>' output > /dev/null)
+# Test the table on the left hand side
+if !(grep '>Create Process</a>]' output > /dev/null)
 then
-  echo
-  echo Failed Page header.
-  echo
+  echo; echo "Create process link missing"
 fi
-if !(grep 'test1' output > /dev/null)
+if !(grep '>Active Process</a>]' output > /dev/null)
 then
-  echo
-  echo Failed action name.
-  echo
+  echo; echo "Active process link missing"
 fi
-if !(grep 'READY' output > /dev/null)
+if !(grep '<li>cvs_add_dir.pml (Pid: 0)</li>' output > /dev/null)
 then
-  echo
-  echo Failed action state.
-  echo
+  echo; echo "Model name & PID missing"
 fi
-if !(grep '>test_script<' output > /dev/null)
+if !(grep '<li>create_directory</li>' output > /dev/null)
 then
-  echo
-  echo Failed script.
-  echo
+  echo; echo "First action without link missing"
 fi
-if !(grep 'r1=\$\$' output > /dev/null)
+ACTIONS="add_directory commit_directory change_permissions"
+for i in $ACTIONS
+do
+  if !(grep ">$i</a></li>" output > /dev/null)
+  then
+    echo; echo "Action $i not found"
+  fi
+done
+
+# Test the table on the right hand side
+if !(grep '<h2>create_directory</h2>' output > /dev/null)
 then
-  echo
-  echo Failed Required Resources.
-  echo
+  echo; echo "Action heading missing"
 fi
-if !(grep 'r2=\$\$' output > /dev/null)
+if !(grep '<b>State:</b>' output > /dev/null)
 then
-  echo
-  echo Failed Provided Resources.
-  echo
+  echo; echo "State Row missing"
 fi
-
-
-export QUERY_STRING="pid=0&act_name=test2&resource_type=requires&r3=/initial/value&process_filename=test.dat"
-
-bind_resources.cgi | grep "Location: action_page.cgi" > /dev/null || (echo; echo "bind resources FAILED"; echo)
-
-export QUERY_STRING="pid=0&process_filename=test.dat&act_name=test2"
-action_page.cgi > output
-
-if !(grep '<h1>test2</h1>' output > /dev/null)
+if !(grep '<td>READY</td>' output > /dev/null)
 then
-  echo
-  echo Failed Page header.
-  echo
+  echo; echo "State value missing"
 fi
-if !(grep 'test2' output > /dev/null)
+if !(grep 'Required Resources' output > /dev/null)
 then
-  echo
-  echo Failed action name.
-  echo
+  echo; echo "Required Resources Row missing"
 fi
-# XXX Why is this RUN here?
-if !(grep 'RUN' output > /dev/null)
+if !(grep '<td>No resources required</td>' output > /dev/null)
 then
-  echo
-  echo Failed action state.
-  echo
+  echo; echo "Required Resources value missing"
 fi
-if !(grep '>test_script<' output > /dev/null)
+if !(grep '<b>Provided Resources:</b>' output > /dev/null)
 then
-  echo
-  echo Failed script.
-  echo
+  echo; echo "Provided Resources Row missing"
 fi
-if !(grep 'r3test.dat' output > /dev/null)
+if !(grep '<b>Script:</b>' output > /dev/null)
 then
-  echo
-  echo Failed Required Resources.
-  echo
+  echo; echo "Script Row missing"
 fi
-if !(grep 'r4=\$\$' output > /dev/null)
+if !(grep 'In your workspace, create the new directory' output > /dev/null)
 then
-  echo
-  echo Failed Provided Resources.
-  echo
+  echo; echo "Script value missing"
 fi
-
-
-
-# Test whether the symlink process really works.
-RVAL=`ls -l r3test.dat | awk '{print $11}'`
-[ "${RVAL}" = "/initial/value" ] || (echo; echo "Symlink failed."; echo)
-
-[ -f test.dat ] || (echo; echo "Symlink failed: process table missing."; echo)
-
-
-# Test whether unlink-symlink sequence (rebinding) works.
-export QUERY_STRING="process_filename=test.dat&pid=0&act_name=test2&resource_type=requires&r3=/new/value"
-export REQUEST_METHOD=GET
-
-change_resource_bindings.cgi | grep "Location: action_page.cgi" > /dev/null || (echo; echo "rebind resources FAILED"; echo)
-
-export QUERY_STRING="pid=0&process_filename=test.dat&act_name=test2"
-export REQUEST_METHOD=GET
-action_page.cgi > output
-
-RVAL=`ls -l r3test.dat | awk '{print $11}'`
-[ "${RVAL}" = "/new/value" ] || (echo; echo "Unlink-symlink failed."; echo)
-
-# This test 
 
 rm output
-rm r3test.dat
-rm test.dat
-
+rm dfZRuitU82fEY.dat*
 echo "done"
+
