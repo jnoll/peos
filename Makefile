@@ -1,4 +1,4 @@
-SUBDIRS=compiler os  ui vpml win-vpml 
+SUBDIRS = pml os/kernel ui/web2/cgi-bin
 
 all: dummy
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i; done
