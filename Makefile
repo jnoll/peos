@@ -16,11 +16,11 @@ clean:
 	rm  core *~
 
 update:
-	cvs update $(SUBDIRS)
+	cvs update $(SUBDIRS) Makefile
 
 # DO NOT USE THIS UNLESS YOUR ENVIRONMENT WILL SPAWN YOUR EDITOR FOR THE LOG MESSAGE!!!
 commit: 
-	cvs commit $(SUBDIRS)
+	cvs commit $(SUBDIRS) Makefile
 
 install: 
 	$(MAKE) -C ui/web2 install INSTALL_DIR=$(HTML_DIR)/PEOS
