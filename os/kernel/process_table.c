@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.38 2004/02/27 03:44:08 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.39 2004/04/03 05:22:33 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -28,10 +28,14 @@
 #include "graph.h"
 #include "process_table.h"
 #include "graph_engine.h"
+#include "resources.h"
+#include "process.h"
 
 
 /* Globals. */
 peos_context_t process_table[PEOS_MAX_PID+1];
+
+int save_proc_table_xml();
 
 char *process_table_filename = "proc_table.dat";
 
@@ -502,8 +506,124 @@ int load_process_table()
 
 int save_process_table()
 {
+    save_proc_table_xml();	
     return save_proc_table(process_table_filename);
 }
+
+
+void print_action_node(Node n, FILE *fp)
+{
+    int num_req_resources;
+    int num_prov_resources;
+    int i;
+    
+    peos_resource_t *req_resources;
+    peos_resource_t *prov_resources;    
+    
+    req_resources = get_resource_list_action_requires(PID(n), n->name, &num_req_resources);
+    prov_resources = get_resource_list_action_provides(PID(n), n->name, &num_prov_resources);
+    
+    fprintf(fp, "<action name=%s state=%s>\n",n->name,(char *)act_state_name(STATE(n)));
+    fprintf(fp, "<script>\n%s\n</script>\n",n->script);
+
+    for(i=0; i < num_req_resources; i++) {
+        fprintf(fp, "<req_resource name=%s value=%s></req_resource>\n", req_resources[i].name, req_resources[i].value);
+    }
+
+    for(i=0; i < num_prov_resources; i++) {
+        fprintf(fp, "<prov_resource name=%s value=%s></prov_resource>\n", prov_resources[i].name, prov_resources[i].value);
+    }
+
+    fprintf(fp, "</action>\n");
+}
+
+   
+
+void print_graph(Graph g, FILE *fp)
+{
+    Node n, child, parent;
+    int i;
+
+    for(n = g->source->next; n!=NULL; n = n->next) {
+	
+        for(i = 0; i < ListSize(n->predecessors); i++) {
+       	    parent = (Node) ListIndex(n->predecessors, i);
+	    if((parent->type == SELECTION) || (parent->type == BRANCH)) {
+	        fprintf(fp, "<sequence>\n");
+	    }		
+	}
+
+        for(i = 0; i < ListSize(n->predecessors); i++) {
+       	    parent = (Node) ListIndex(n->predecessors, i);
+            if(ORDER(parent) > ORDER(n)) {
+	        fprintf(fp, "<iteration>\n");
+	    }
+        }
+
+        if(n->type == ACTION) {
+            print_action_node(n,fp);
+        }
+
+        if(n->type == JOIN) {
+            fprintf(fp, "</selection>\n");
+        }
+
+        if(n->type == RENDEZVOUS) {
+            fprintf(fp, "</branch>\n");
+        }
+
+        if(n->type == SELECTION) {
+            fprintf(fp, "<selection>\n");
+	}
+
+	if(n->type == BRANCH) {
+            fprintf(fp, "<branch>\n");	
+	}
+
+        for(i = 0; i < ListSize(n->successors); i++) {
+       	    child = (Node) ListIndex(n->successors, i);
+            if(ORDER(child) < ORDER(n)) {
+	        fprintf(fp, "</iteration>\n");
+	    }
+	}
+
+        for(i = 0; i < ListSize(n->successors); i++) {
+       	    child = (Node) ListIndex(n->successors, i);
+	    if((child->type == JOIN) || (child->type == RENDEZVOUS)) {
+	        fprintf(fp, "</sequence>\n");
+	    }		
+        }
+    }
+}
+
+
+int save_proc_table_xml()
+{
+    int i;
+    Graph g;
+    FILE *fp;
+    char *xml_filename = (char *) malloc((strlen(process_table_filename)+strlen(".xml")+1) * sizeof(char));
+    strcpy(xml_filename, process_table_filename);
+    strcat(xml_filename, ".xml");
+    
+
+    fp = fopen(xml_filename, "w");
+    fprintf(fp, "<process_table>\n");
+
+    for(i=0; i <= PEOS_MAX_PID; i++) {
+        g = process_table[i].process_graph;
+	if(g != NULL) {
+	    fprintf(fp, "<process pid=%d model=%s status=%d>\n", i, process_table[i].model, process_table[i].status);
+	    print_graph(g, fp);
+	    fprintf(fp, "</process>\n");
+        }
+    }
+    fprintf(fp, "</process_table>\n");
+    fclose(fp);
+    return 0;
+}
+
+	
 
 char **peos_list_instances()
 {
@@ -603,6 +723,9 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
     
     return actions;
 }
+
+
+
 
 
 #ifdef UNIT_TEST

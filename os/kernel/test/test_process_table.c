@@ -28,6 +28,46 @@ void initialize_graph(Graph g, int pid)
 }
 
 
+char *act_state_name(vm_act_state s)
+{
+    return "READY";
+}
+
+
+peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *num_resources)
+{
+    peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
+    *num_resources = 2;
+
+    strcpy(resources[0].name, "r1");
+    strcpy(resources[0].value, "r1val");
+    strcpy(resources[0].qualifier, "abstract");
+    strcpy(resources[1].name, "r2");
+    strcpy(resources[1].value, "r2val");
+    strcpy(resources[1].qualifier, "\0");
+
+    return resources;
+}
+    
+    
+peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int *num_resources)
+{
+    peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
+    *num_resources = 2;
+
+    strcpy(resources[0].name, "r1");
+    strcpy(resources[0].value, "r1val");
+    strcpy(resources[0].qualifier, "abstract");
+    strcpy(resources[1].name, "r2");
+    strcpy(resources[1].value, "r2val");
+    strcpy(resources[1].qualifier, "\0");
+
+    return resources;
+}
+    
+
+
+
 
 START_TEST(test_get_pid)
 {
@@ -455,6 +495,7 @@ START_TEST(test_save_proc_table)
  
       unlink("proc_table1.dat");
       unlink("expected_proc_table.dat");
+      unlink("proc_table.dat.xml");
 }
 END_TEST
 
@@ -633,6 +674,303 @@ START_TEST(test_list_actions_0)
 END_TEST
 
 
+START_TEST(test_print_action_node)
+{
+    int abytes, nbytes;	
+    FILE *expected, *actual;	
+    char expectedmem[BUFSIZ], actualmem[BUFSIZ];
+    Node n = make_node("act_0", ACT_READY, ACTION, 3);
+    PID(n) = 0;
+
+    expected = fopen("expected.xml", "w");
+    fprintf(expected, "<action name=act_0 state=READY>\n");
+    fprintf(expected, "<script>\nscript\n</script>\n");
+    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
+    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
+    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "</action>\n");
+    fclose(expected);
+    mark_point();
+
+    expected = fopen("expected.xml", "r");
+    memset(expectedmem, 0, BUFSIZ);
+    nbytes = fread(expectedmem, sizeof(char), BUFSIZ, expected);
+    fclose(expected);
+    mark_point();
+ 
+    actual = fopen("actual.xml", "w");
+
+    print_action_node(n, actual);
+    fclose(actual);
+
+    mark_point();
+
+    actual = fopen("actual.xml", "r");
+    memset(actualmem, 0, BUFSIZ);
+    abytes = fread(actualmem, sizeof(char), BUFSIZ, actual);
+    fail_unless(abytes == nbytes, "file size");
+    fclose(actual);
+    mark_point();
+
+    fail_unless (strcmp(actualmem, expectedmem) == 0, "proc table contents differ");
+
+    unlink("expected.xml");
+    unlink("actual.xml");
+
+}
+END_TEST
+
+Graph create_xml_test_graph()
+{
+
+    Graph g = (Graph) malloc(sizeof(struct graph));
+    Node source, sink, sel, join, br, ren, act_0, act_1, act_2, act_3, act_4;
+
+    source = make_node("p", ACT_READY, PROCESS, 0);
+    PID(source) = 0;
+    sel = make_node("sel", ACT_READY, SELECTION, 1);
+    source -> next = sel;
+    PID(sel) = 0;
+    act_0 = make_node("act_0", ACT_READY, ACTION, 2);
+    PID(act_0) = 0;
+    sel -> next = act_0;
+    br = make_node("br", ACT_READY, BRANCH, 3);
+    PID(br) = 0;
+    act_1 = make_node("act_1", ACT_READY, ACTION, 4);
+    PID(act_1) = 0;
+    act_2 = make_node("act_2", ACT_READY, ACTION, 5);
+    PID(act_2) = 0;
+    ren = make_node("br", ACT_READY, RENDEZVOUS, 6);
+    PID(ren) = 0;
+    act_3 = make_node("act_3", ACT_READY, ACTION, 7);
+    PID(act_3) = 0;
+    act_4 = make_node("act_4", ACT_READY, ACTION, 8);
+    PID(act_4) = 0;
+    join = make_node("sel", ACT_READY, JOIN, 9);
+    PID(join) = 0;
+    sink = make_node("p", ACT_READY, PROCESS, 10);
+    PID(sink) = 0;
+
+    act_0 -> next = br;
+    br -> next = act_1;
+    act_1 -> next = act_2;
+    act_2 -> next = ren;
+    ren -> next = act_3;
+    act_3 -> next = act_4;
+    act_4 -> next = join;
+    join -> next = sink;
+    sink -> next = NULL;
+
+    source -> predecessors = NULL;
+    source -> successors = (List) make_list(sel,NULL,NULL,NULL,NULL);
+    
+    sel -> predecessors = (List) make_list(source,NULL,NULL,NULL,NULL);
+    sel -> successors = (List) make_list(act_0, br, act_3,NULL,NULL);
+    
+    act_0 -> predecessors = (List) make_list(sel, NULL,NULL,NULL,NULL);
+    act_0 -> successors = (List) make_list(join, NULL,NULL,NULL,NULL);
+    
+    br -> predecessors = (List) make_list(sel, NULL,NULL,NULL,NULL);
+    br -> successors = (List) make_list(act_1, act_2,NULL,NULL,NULL);
+
+    act_1 -> predecessors = (List) make_list(br, NULL,NULL,NULL,NULL);
+    act_1 -> successors = (List) make_list(ren, NULL,NULL,NULL,NULL);
+    
+    act_2 -> predecessors = (List) make_list(br, NULL,NULL,NULL,NULL);
+    act_2 -> successors = (List) make_list(ren, NULL, NULL,NULL,NULL);
+    
+    ren -> predecessors = (List) make_list(act_1, act_2,NULL,NULL,NULL);
+    ren -> successors = (List) make_list(join, NULL,NULL,NULL,NULL);
+    
+    act_3 -> predecessors = (List) make_list(sel, act_4,NULL,NULL,NULL);
+    act_3 -> successors = (List) make_list(act_4,NULL,NULL,NULL,NULL);
+    
+    act_4 -> predecessors = (List) make_list(act_3, NULL,NULL,NULL,NULL);
+    act_4 -> successors = (List) make_list(act_3,join,NULL,NULL,NULL);
+    
+    join -> predecessors = (List) make_list(act_0, ren, act_4,NULL,NULL);
+    join -> successors = (List) make_list(sink,NULL, NULL,NULL,NULL);
+    
+    sink -> predecessors = (List) make_list(join,NULL,NULL,NULL,NULL);
+    sink -> successors = ListCreate();
+
+    sel -> matching = join;
+    join -> matching = sel;
+
+    br -> matching = ren;
+    ren -> matching = br;
+
+    g -> source = source;
+    g -> sink = sink;
+
+    return g;
+
+}
+
+
+void print_expected_xml(FILE *expected)
+{
+	
+    fprintf(expected, "<selection>\n");
+    
+    fprintf(expected, "<sequence>\n");
+    fprintf(expected, "<action name=act_0 state=READY>\n");
+    fprintf(expected, "<script>\nscript\n</script>\n");
+    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
+    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
+    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "</action>\n");
+    fprintf(expected, "</sequence>\n");
+    
+    fprintf(expected, "<sequence>\n");
+    fprintf(expected, "<branch>\n");
+    fprintf(expected, "<sequence>\n");
+    fprintf(expected, "<action name=act_1 state=READY>\n");
+    fprintf(expected, "<script>\nscript\n</script>\n");
+    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
+    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
+    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "</action>\n");
+    fprintf(expected, "</sequence>\n");
+    fprintf(expected, "<sequence>\n");
+    fprintf(expected, "<action name=act_2 state=READY>\n");
+    fprintf(expected, "<script>\nscript\n</script>\n");
+    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
+    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
+    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "</action>\n");
+    fprintf(expected, "</sequence>\n");
+    fprintf(expected, "</branch>\n");
+    fprintf(expected, "</sequence>\n");
+    
+    fprintf(expected, "<sequence>\n");
+    fprintf(expected, "<iteration>\n");
+    fprintf(expected, "<action name=act_3 state=READY>\n");
+    fprintf(expected, "<script>\nscript\n</script>\n");
+    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
+    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
+    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "</action>\n");
+    fprintf(expected, "<action name=act_4 state=READY>\n");
+    fprintf(expected, "<script>\nscript\n</script>\n");
+    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
+    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
+    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "</action>\n");
+    fprintf(expected, "</iteration>\n");
+    fprintf(expected, "</sequence>\n");
+    
+    fprintf(expected, "</selection>\n");
+}
+    
+
+START_TEST(test_print_graph)
+{
+	
+    int abytes, nbytes;	
+    FILE *expected, *actual;	
+    char expectedmem[BUFSIZ], actualmem[BUFSIZ];
+    
+    Graph g = (Graph) create_xml_test_graph();
+
+    expected = fopen("expected.xml", "w");
+
+    print_expected_xml(expected);
+    
+
+    fclose(expected);
+    mark_point();
+
+    expected = fopen("expected.xml", "r");
+    memset(expectedmem, 0, BUFSIZ);
+    nbytes = fread(expectedmem, sizeof(char), BUFSIZ, expected);
+    fclose(expected);
+    mark_point();
+ 
+    actual = fopen("actual.xml", "w");
+
+    print_graph(g, actual);
+    fclose(actual);
+
+    mark_point();
+
+    actual = fopen("actual.xml", "r");
+    memset(actualmem, 0, BUFSIZ);
+    abytes = fread(actualmem, sizeof(char), BUFSIZ, actual);
+    fail_unless(abytes == nbytes, "file size");
+    fclose(actual);
+    mark_point();
+
+    fail_unless (strcmp(actualmem, expectedmem) == 0, "proc table xml contents differ");
+
+    unlink("expected.xml");
+    unlink("actual.xml");
+}
+END_TEST
+    
+START_TEST(test_save_proc_table_xml)
+{
+	
+    int abytes, nbytes;	
+    FILE *expected, *actual;	
+    char expectedmem[BUFSIZ], actualmem[BUFSIZ];
+    peos_context_t *context;
+    
+    Graph g = (Graph) create_xml_test_graph();
+
+    context = &(process_table[0]);
+    context->process_graph = g;
+    sprintf(context->model, "test.pml");
+    context->status = PEOS_RUNNING;
+    context = &(process_table[1]);
+    context -> process_graph = NULL;
+		    
+    
+    unlink("proc_table.dat.xml");
+    expected = fopen("expected.xml", "w");
+    fprintf(expected, "<process_table>\n");
+    fprintf(expected, "<process pid=0 model=test.pml status=4>\n");
+
+    print_expected_xml(expected);
+    
+    fprintf(expected, "</process>\n</process_table>\n");
+
+    fclose(expected);
+    mark_point();
+
+    expected = fopen("expected.xml", "r");
+    memset(expectedmem, 0, BUFSIZ);
+    nbytes = fread(expectedmem, sizeof(char), BUFSIZ, expected);
+    fclose(expected);
+    mark_point();
+ 
+
+    save_proc_table_xml();
+
+    mark_point();
+
+    actual = fopen("proc_table.dat.xml", "r");
+    memset(actualmem, 0, BUFSIZ);
+    abytes = fread(actualmem, sizeof(char), BUFSIZ, actual);
+    fail_unless(abytes == nbytes, "file size");
+    fclose(actual);
+    mark_point();
+
+    fail_unless (strcmp(actualmem, expectedmem) == 0, "proc table xml contents differ");
+
+    unlink("expected.xml");
+    unlink("proc_table.dat.xml");
+}
+END_TEST
+    
+
+
 /* Sets up a full table. */
 void setup_find_free_entry()
 {
@@ -784,6 +1122,12 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_find_free_entry_first);
     tcase_add_test(tc, test_find_free_entry_last);
     tcase_add_test(tc, test_find_free_entry_middle);
+
+    tc = tcase_create("xml file");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_print_action_node);
+    tcase_add_test(tc, test_print_graph);
+    tcase_add_test(tc, test_save_proc_table_xml);
 
     sr = srunner_create(s);
 

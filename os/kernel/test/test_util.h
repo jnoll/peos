@@ -18,4 +18,5 @@ extern peos_action_t *make_actions(int size, vm_act_state state);
 extern void free_actions(peos_action_t *actions, int size);
 extern void parse_args(int argc, char *argv[]);
 extern void make_pml_file(char *filename, char *text);
+extern List make_list(Item i1, Item i2, Item i3, Item i4, Item i5);
 #endif

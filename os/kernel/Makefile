@@ -34,7 +34,9 @@ HEADERS = $(wildcard *.h)
 
 all: test shell lib
 
-daemon: daemon
+peos: peos.o $(CORE_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) 
+
 
 daemon: enactment_daemon.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap

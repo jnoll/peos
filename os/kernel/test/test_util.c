@@ -54,6 +54,7 @@ Node make_node(char *name, vm_act_state state, int type,int order)
      n->name = name;
      STATE(n) = state;
      n->type = type;
+     n->script = "script";
      n -> predecessors = NULL;
      n -> successors = NULL;
      ITER_START(n) = 0;
