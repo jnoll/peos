@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
+#define NODE_PROCESS 0
+#define NODE_ITERATION 1
+#define NODE_BRANCH 2
+#define NODE_SELECTION 3
 
 typedef struct _process_list _process_list;
 struct _process_list {
@@ -89,7 +93,7 @@ _process_list *get_proc_details(xmlNode *node)
     return proct;
 }
 
-void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *act_name)
+void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *act_name, int parent)
 {
     char *tname, *tstate, *tscript, *tstr;
     xmlNodePtr inner;
@@ -157,7 +161,7 @@ void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *a
 		    (char *) malloc((strlen(temp1) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp1);
 	    apage->total_actions++;
-	    create_action_list(doc, node, apage, act_name);
+	    create_action_list(doc, node, apage, act_name, NODE_ITERATION);
 	    char *temp2 = "!!iteration!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
@@ -169,16 +173,39 @@ void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *a
 		    (char *) malloc((strlen(temp1) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp1);
 	    apage->total_actions++;
-	    create_action_list(doc, node, apage, act_name);
+	    create_action_list(doc, node, apage, act_name, NODE_SELECTION);
 	    char *temp2 = "!!selection!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp2);
 	    apage->total_actions++;
 	} else if (!xmlStrcmp(node->name, (const xmlChar *)"sequence")) {
-	    create_action_list(doc, node, apage, act_name);
+	    char *temp1 = "||sequenceb||";
+	    if (parent == NODE_SELECTION) temp1 = "||sequences||";
+	    apage->action_list[apage->total_actions] =
+		    (char *) malloc((strlen(temp1) + 1) * sizeof(char));
+	    strcpy(apage->action_list[apage->total_actions], temp1);
+	    apage->total_actions++;
+	    create_action_list(doc, node, apage, act_name, parent);
+	    char *temp2 = "!!sequenceb!!";
+	    if (parent == NODE_SELECTION) temp1 = "!!sequences!!";
+	    apage->action_list[apage->total_actions] =
+		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
+	    strcpy(apage->action_list[apage->total_actions], temp2);
+	    apage->total_actions++;
 	} else if (!xmlStrcmp(node->name, (const xmlChar *)"branch")) {
-	    create_action_list(doc, node, apage, act_name);
+	    /*char *temp1 = "||branch||";
+	    apage->action_list[apage->total_actions] =
+		    (char *) malloc((strlen(temp1) + 1) * sizeof(char));
+	    strcpy(apage->action_list[apage->total_actions], temp1);
+	    apage->total_actions++;
+	    create_action_list(doc, node, apage, act_name, NODE_BRANCH);
+	    char *temp2 = "!!branch!!";
+	    apage->action_list[apage->total_actions] =
+		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
+	    strcpy(apage->action_list[apage->total_actions], temp2);
+	    apage->total_actions++;*/
+	    create_action_list(doc, node, apage, act_name, NODE_BRANCH);
 	}
 	node = node->next;
     }
@@ -223,7 +250,7 @@ _action_page *get_action_page_details(char *filename, int pid, char *act_name)
 		apage->total_reqd_resources = 0;
 		apage->prov_resources = (_resource **) malloc(sizeof(_resource *) * 10);
 		apage->total_prov_resources = 0;
-		create_action_list(doc, cur, apage, act_name);
+		create_action_list(doc, cur, apage, act_name, NODE_PROCESS);
 	    }
 	}
 	cur = cur->next;

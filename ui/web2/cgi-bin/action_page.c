@@ -80,6 +80,22 @@ void add_action_list(_action_page *ap)
 	} else if (!strcmp(ap->action_list[i], "!!selection!!")) {
 	    indent(--h_sp);
 	    printf("</ul>\n");
+	} else if (!strcmp(ap->action_list[i], "||sequences||")) {
+	    indent(h_sp);
+	    printf("<li>Choice</li>\n");
+	    indent(h_sp++);
+	    printf("<ul>\n");
+	} else if (!strcmp(ap->action_list[i], "!!sequences!!")) {
+	    indent(--h_sp);
+	    printf("</ul>\n");
+	} else if (!strcmp(ap->action_list[i], "||sequenceb||")) {
+	    indent(h_sp);
+	    printf("<li>Path</li>\n");
+	    indent(h_sp++);
+	    printf("<ul>\n");
+	} else if (!strcmp(ap->action_list[i], "!!sequenceb!!")) {
+	    indent(--h_sp);
+	    printf("</ul>\n");
 	} else if (strcmp(ap->action_list[i], action_name)) {
 	    indent(h_sp);
 	    printf("<li><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">%s</a></li>\n", process_filename, pid, ap->action_list[i], ap->action_list[i]);
@@ -113,7 +129,7 @@ void write_content()
     ap = get_action_page_details(xml_data_filename, pid, action_name);
     for (i = 0; i < ap->total_actions; i++) {
 	if (strcmp(ap->action_list[i], action_name)) {
-	    if (!strcmp(ap->action_list[i], "||iteration||") || !strcmp(ap->action_list[i], "||selection||") || !strcmp(ap->action_list[i], "!!iteration!!") || !strcmp(ap->action_list[i], "!!selection!!")) { } else {
+	    if (!strcmp(ap->action_list[i], "||iteration||") || !strcmp(ap->action_list[i], "||selection||") || !strcmp(ap->action_list[i], "||sequence||") || !strcmp(ap->action_list[i], "||branch||") || !strcmp(ap->action_list[i], "!!iteration!!") || !strcmp(ap->action_list[i], "!!selection!!") || !strcmp(ap->action_list[i], "!!sequence!!") || !strcmp(ap->action_list[i], "!!branch!!")) { } else {
 		if (action_position == -1) {
 		    prevIndex = i;
 		} else if ((nextIndex == -1) && (i > action_position)) {
