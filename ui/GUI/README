@@ -13,8 +13,16 @@ the Makefile using the command "make".
 
 
 (2) How to Install
+Currently under modifications:
+a) In order to run the PEOS program you first need to locate the programs dependencies and download the tar balls from the sites that are listed.
+(Will list them when I know for sure they are working.)
 
-At the command prompt type "make manConf" to attrieve the Peos library dependencies. Then type "vi system_library_req" to attrieve the file with the list of library dependencies for Peos. These are the libraries that the Peos program depends upon. Without these libraries Peos cannot successfully executed.
+b) Install tar packages into your home directory. Presupposing that you know how to do this.
+
+c) Developer: Type the following make commands to search for libraries and headers :
+(We list these when I get back to the lab in a few hours.)
+
+d) After all the packages have been installed, then type: make dist to package atar ball for the user. The user will have a modified makefile and will include only user previlage commands. But this is sufficient after the developer has packaged it for the user.
 
 (3) How to Run the Program
 
