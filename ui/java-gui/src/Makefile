@@ -8,8 +8,8 @@ JAVA_CLASS_PATH=../out
 CLASSPATH=${JAVA_CLASS_PATH}
 
 all:
-	cd PML; make all
 	cd Utils; make all
+	cd PML; make all
 	cd Kernel; make all
 	cd Commands; make all
 	cd GUIComponents; make all
