@@ -4,8 +4,8 @@ extern char *get_current_dir_name(void);
 #include <stdlib.h>	/* EXIT_SUCCESS EXIT_FAILURE */
 #include <string.h>
 #include <check.h>
-#include "engine.h"
-#include "glo.h"
+#include "../engine.h"
+#include "../glo.h"
 
 
 START_TEST(trunPeos)

@@ -8,17 +8,17 @@ extern char *get_current_dir_name(void);
 #include <gtkhtml/gtkhtml.h>
 #include <gtkhtml/gtkhtml-stream.h>
 #include <gtk/gtk.h>
-#include "parse.h"
-#include "glo.h"
+#include "../parse.h"
+#include "../glo.h"
 #include "test_util.h"
 #include "set_globals.h"
 #include "set_test.h"
-#include "glo.h"
 
 
   GList *temp_glist = NULL, *list1 = NULL;
   resource *element = NULL;
   int size = 0;
+
 
 char *
 case1_setup(char *buf)
@@ -27,7 +27,6 @@ case1_setup(char *buf)
   guint glist_index = -1;
 
   cwd = get_current_dir_name();
-  //table[cur_pid].res = (GList *) malloc(sizeof(GList));
    
   element = g_new (resource, 1);  /* GTK MALLOC */
   size = 0; size = strlen("testName") + 1;
@@ -44,7 +43,6 @@ case1_setup(char *buf)
   set_href((char *)buf, (GList *) table[cur_pid].res);
 
   g_list_free((GList *) table[cur_pid].res);
-  free(table[cur_pid].res);
   table[cur_pid].res = NULL;
 
   return buf;
@@ -116,7 +114,6 @@ case3_setup()
   }	
 
   g_list_free((GList *) table[cur_pid].res);
-  free(table[cur_pid].res);
   table[cur_pid].res = NULL;
 
   return 0;

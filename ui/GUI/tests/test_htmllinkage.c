@@ -6,8 +6,8 @@
 #include <gtkhtml/gtkhtml-stream.h>
 #include <gtk/gtk.h>
 #include <check.h>
-#include "parse.h"
-#include "glo.h"
+#include "../parse.h"
+#include "../glo.h"
 #include "test_util.h"
 #include "set_globals.h"
 #include "set_test.h"
@@ -42,7 +42,6 @@ START_TEST(tSet_href)
   	fail("The call to set_href should not set buf if glist is NULL. \n");
   }
 
-#ifdef DEBUG
   /* setup global values outside of this address space */
   buf = case1_setup((char *) buf);
 
@@ -80,7 +79,6 @@ START_TEST(tSet_href)
   temp = NULL;
   free(buf);
   buf = NULL;
-#endif  
 
 }
 END_TEST
@@ -89,7 +87,7 @@ START_TEST(tLookup_rsc_name)
 {
   
   int rtn_val = -1;
-#ifdef DEBUG
+
   set_CUR_PID((int) 0);
   rtn_val = case3_setup();
 
@@ -103,7 +101,7 @@ START_TEST(tLookup_rsc_name)
   if(rtn_val != -1 ) {
 	fail("Function should return -1 if arguments are set to NULL \n");
   }
-#endif  
+  
 }
 END_TEST
 
