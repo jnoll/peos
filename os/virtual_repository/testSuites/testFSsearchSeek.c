@@ -35,32 +35,36 @@ int main( void )
 	queryList *tempQueries ;
 	FILE *sampleSeekFile, *testSeekQuery, *expectedResultSeekFile, *testInputSeek ;
 
+	_debug( __FILE__, __LINE__, 5, "sentinel" ) ;
 	repos_ctr = 0;
 	myQueries = NULL;
 	
-	setup_vr( );	
+	setup_vr( );
+	_debug( __FILE__, __LINE__, 5, "sentinel" ) ;	
 	call = callback ;
-	
+	_debug( __FILE__, __LINE__, 5, "sentinel" ) ;
 	testInputSeek = fopen ( "FSsearchSeek.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputSeek ) ;
 	
 	while ( !feof( testInputSeek ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), testInputSeek ) ;
+		_debug( __FILE__, __LINE__, 5, "queryString is %s", queryString ) ;
 		if( strlen( queryString ) )
 		{
-			query_wait( queryString, call, d ) ;
+			_debug( __FILE__, __LINE__, 5, "queryString is %s", queryString ) ;
+			query_wait( queryString, call, d ) ;			
 			queryString[0] = '\0' ;
 		}
 	}
 	
 	fclose( testInputSeek ) ;	
-	
+	_debug( __FILE__, __LINE__, 5, "sentinel" ) ;
 	poll_vr( ) ;
-
+	_debug( __FILE__, __LINE__, 5, "sentinel" ) ;
 	expectedResultSeekFile = fopen ( "FSsearchSeekExpectedResult.txt", "w" ) ;	
 	_assert( __FILE__, __LINE__, expectedResultSeekFile ) ;
-	
+	_debug( __FILE__, __LINE__, 5, "begin FSsearchSeekExpectedResult.txt" ) ;
 	tempQueries = myQueries ;
 	while( tempQueries != NULL )
 	{	
@@ -69,7 +73,7 @@ int main( void )
 		tempQueries = ( queryList * ) tempQueries -> link ;
 	}
 	fclose( expectedResultSeekFile ) ;
-
+	_debug( __FILE__, __LINE__, 5, "end FSsearchSeekExpectedResult.txt" ) ;
 	return 0 ;
 }
 
