@@ -69,7 +69,7 @@ tags:	$(SOURCES)
 	ctags $(SOURCES)
 
 clean:
-	-rm *.o core
+	-rm *.o core.*
 
 reallyclean: clean
 	-rm $(TESTS) test_assertions

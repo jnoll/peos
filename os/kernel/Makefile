@@ -49,7 +49,7 @@ ctags:	$(SOURCES)
 	ctags $(SOURCES)
 
 clean:
-	-rm *.o core
+	-rm *.o core.*
 
 reallyclean: clean
 

@@ -13,7 +13,7 @@
 
 # define ACTION 257
 # define BRANCH 259
-# define RENDEZVOUS 286
+# define RENDEZVOUS 288
 # define SELECTION 270
 # define JOIN 287
 # define PROCESS 266
@@ -112,6 +112,11 @@ void mark_successors(Node n, vm_act_state state)
 	else
 		if((n -> type == BRANCH) || (n -> type == SELECTION) || (n -> type == JOIN))
 		{
+			if((n->type == BRANCH) || (n->type == SELECTION))
+			{
+				STATE(n) = state;
+				STATE(n->matching) = state;
+			}
 			for(i = 0; i < ListSize(n -> successors); i++)
 			{
 				child = (Node) ListIndex(n -> successors, i);
@@ -122,6 +127,57 @@ void mark_successors(Node n, vm_act_state state)
 			return;
 }
 			       	
+void propogate_join_done(Node n)
+{
+	int i;
+	Node child;
+	if (n -> type == JOIN)
+	{
+		STATE(n) = ACT_DONE;
+		STATE(n -> matching) = ACT_DONE;
+		for(i = 0; i < ListSize(n->successors); i++)
+		{
+			child = (Node) ListIndex(n->successors,i);
+			propogate_join_done(child);
+		}
+	}
+	else
+		return;
+}
+		
+
+void set_rendezvous_state(Node n)
+{
+	int i;
+	Node child,parent;
+	int status = 1;
+
+	if (n -> type == RENDEZVOUS)
+	{
+	 for(i = 0; i < ListSize(n -> predecessors); i++)
+	 {
+		 parent = (Node) ListIndex(n -> predecessors,i);
+		 if (STATE(parent) != ACT_DONE)
+		 {
+			 status = 0;
+		 }
+	 }
+	 if (status == 1)
+	 {
+		 STATE(n) = ACT_DONE;
+		 STATE(n -> matching) = ACT_DONE;
+		 for(i = 0; i< ListSize(n -> successors); i++)
+		 {
+			 child = (Node) ListIndex(n -> successors,i);
+			 mark_successors(child,ACT_READY);
+			 set_rendezvous_state(child);
+		 }
+	 }
+	}
+	else
+		return;
+}
+	
 
 int action_run(Graph g, char *act_name)
 {
@@ -158,14 +214,22 @@ void handle_selection(Node n)
       parent = (Node) ListIndex(n -> predecessors,i);
       if ((parent -> type) == SELECTION)
         {
+	 STATE(parent) = ACT_RUN;
+         STATE(parent -> matching) = ACT_RUN;	 
          for(j=0; j < ListSize(parent -> successors); j++)                                {
-											    child = (Node) ListIndex(parent -> successors,j);
-											    if(strcmp((child->name),n->name) != 0)
-											     {
+           child = (Node) ListIndex(parent -> successors,j);
+           if(strcmp((child->name),n->name) != 0)
+            {
              mark_successors(child,ACT_NONE);
             }
 	 }
      }
+      else
+	  if (parent -> type == BRANCH)
+	  {
+		  STATE(parent) = ACT_RUN;
+		  STATE(parent->matching) = ACT_RUN;
+	  }
 										     handle_selection(parent);
 										   }
 }
@@ -183,7 +247,18 @@ int action_done(Graph g, char *act_name)
 		for(i = 0; i < ListSize(n -> successors); i++)
 		{
 			child = (Node) ListIndex(n -> successors, i);
+			if(child -> type == JOIN)
+			{
+			propogate_join_done(child);
+			}
+			if(child -> type != RENDEZVOUS)
+			{
 			mark_successors(child, ACT_READY);
+			}
+			else
+			{
+			set_rendezvous_state(child);
+			}	
 		}
 	}
 	else
