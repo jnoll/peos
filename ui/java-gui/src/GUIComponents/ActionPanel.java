@@ -22,7 +22,7 @@ class ActionPanel extends JPanel
 
     // Set the border for the Panel.
     setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Avaliable Actions"),
+                    BorderFactory.createTitledBorder("Available Actions"),
                     BorderFactory.createEmptyBorder(5,5,5,5)));
 
     // Create a list model for the list box.  This is used to manipulate

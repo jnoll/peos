@@ -15,7 +15,7 @@ class ProcessPanel extends JPanel
       MainFrame = frame;
 
       setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Avaliable Processes"),
+                    BorderFactory.createTitledBorder("Available Processes"),
                     BorderFactory.createEmptyBorder(5,5,5,5)));
 
       ProcessListModel = new DefaultListModel();
