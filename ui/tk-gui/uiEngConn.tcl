@@ -233,15 +233,15 @@ proc ::uiEngConn::EstablishConnection { enginePort engineHost } {
 #
     set socketCommand {set UIEngineSocket [socket $engunePort $engineHost]}
 
-    if {[catch $socketCommand commandResult] != 0} then {
+#    if {[catch $socketCommand commandResult] != 0} then {
 #
 # If socket connection cannot be established then with Engine send an
 # error message to the Error Handling module
 #
-	::uiErrorHandler::SendMsg \
-	    [format "%s Unable to establish a connection with Engine on Port %d on Host %s" \
+#	::uiErrorHandler::SendMsg \
+#	    [format "%s Unable to establish a connection with Engine on Port %d on Host %s" \
 		    $ModuleName $enginePort $engineHost]
-    } else {
+ #   } else {
 #
 # Configure the socket to call the ::uiEngConn::ReplyReady routine when
 # a message is ready to read from the engine daemon
@@ -253,7 +253,7 @@ proc ::uiEngConn::EstablishConnection { enginePort engineHost } {
 	    puts stdout [format "%s Configuring Socket Event Handler" \
 			$ModuleName]
 	}
-    }
+  #  }
 
     return $UIEngineSocket
 }

@@ -30,7 +30,7 @@ namespace eval ::uiConfig:: {
 #
 # Clear the Engine Port and Host Name
 #
-     set UsrCfg(EngineHost) "oslab-server.cudenver.edu"
+     set UsrCfg(EngineHost) "thalia.cudenver.edu"
      set UsrCfg(EnginePort) 14523
      set UsrCfg(WebBrowser) "netscape"
 #

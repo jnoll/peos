@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: persistentWidgets.tcl,v 1.6 2000/04/25 02:07:29 nmodi Exp $
+## File Information: $Id: persistentWidgets.tcl,v 1.7 2000/05/08 23:23:40 nmodi Exp $
 #######################################################################
 
 # persistentWidgets script
@@ -346,88 +346,89 @@ proc ::persistentWidgets::makeMenu {} {
 
 proc ::persistentWidgets::makeLoginWin {} {
 
-#    set entryWidth 20
-    toplevel .uiloginWin -class "Login Screen"
-    wm title .uiloginWin "PEOS - UI Module 	Login Screen"
-   wm geometry .uiloginWin 325x150+40+40
+    set entryWidth 20
+#    toplevel .uiloginWin -class "Login Screen"
+#    wm title .uiloginWin "PEOS - UI Module 	Login Screen"
+#   wm geometry .uiloginWin 325x150+40+40
+#
+  #  frame .uiloginWin.usrid
+ #   pack .uiloginWin.usrid
+#
+  #  frame .uiloginWin.pwd
+ #   pack .uiloginWin.pwd
+#
+#    pack .uiloginWin.pwd -after .uiloginWin.usrid 
 
-    frame .uiloginWin.usrid
-    pack .uiloginWin.usrid
-
-    frame .uiloginWin.pwd
-    pack .uiloginWin.pwd
-
-    pack .uiloginWin.pwd -after .uiloginWin.usrid 
-
-    frame .uiloginWin.but -bd 2 -relief groove
-    pack .uiloginWin.but -after .uiloginWin.pwd -side bottom
-
-    label .uiloginWin.usrid.userid  -text "UserId: "
-    entry .uiloginWin.usrid.userName -width 15 -bg WHITE
-    pack .uiloginWin.usrid.userid -side left -in .uiloginWin.usrid
-    pack .uiloginWin.usrid.userName -side left -in .uiloginWin.usrid
-
-    label .uiloginWin.pwd.password -text "Password: "
-
-     entry .uiloginWin.pwd.access -width 20 -bg WHITE
-     pack .uiloginWin.pwd.password -side left -in .uiloginWin.pwd
-     pack .uiloginWin.pwd.access  -side left  -in .uiloginWin.pwd
-
-    .uiloginWin.pwd.access configure -show *
-
-    button .uiloginWin.but.login -text LogIn \
-            -command {::inputValidator::getName \
-	    [.uiloginWin.usrid.userName get] .uiloginWin} 
+#    frame .uiloginWin.but -bd 2 -relief groove
+#    pack .uiloginWin.but -after .uiloginWin.pwd -side bottom
+#
+ #   label .uiloginWin.usrid.userid  -text "UserId: "
+ #   entry .uiloginWin.usrid.userName -width 15 -bg WHITE
+ #   pack .uiloginWin.usrid.userid -side left -in .uiloginWin.usrid
+ #   pack .uiloginWin.usrid.userName -side left -in .uiloginWin.usrid
+#
+#    label .uiloginWin.pwd.password -text "Password: "
+#
+    # entry .uiloginWin.pwd.access -width 20 -bg WHITE
+  #   pack .uiloginWin.pwd.password -side left -in .uiloginWin.pwd
+ #    pack .uiloginWin.pwd.access  -side left  -in .uiloginWin.pwd
+#
+ #   .uiloginWin.pwd.access configure -show *
+#
+  #  button .uiloginWin.but.login -text LogIn \
+ #           -command {::inputValidator::getName \
+#	    [.uiloginWin.usrid.userName get] .uiloginWin} 
 #	    -command {::uiProcess::uiProcessScreen}
 
-    button .uiloginWin.but.logout -text LogOut \
-            -command { exit }
+ #   button .uiloginWin.but.logout -text LogOut \
+ #           -command { exit }
 
-    button .uiloginWin.but.help -text Help \
-        -command {::uiHelp::uiLoginHelp}
-    pack .uiloginWin.but.login .uiloginWin.but.logout -ipadx 2 -pady 1 -ipady 1 -side left -in .uiloginWin.but
-    pack .uiloginWin.but.help -side right -in .uiloginWin.but
-    pack configure .uiloginWin.but.help -ipadx 2 -pady 1 -ipady 1
-    pack configure .uiloginWin.usrid .uiloginWin.pwd -padx 70  -pady 10
-    pack configure .uiloginWin.usrid .uiloginWin.pwd -anchor e
+ #   button .uiloginWin.but.help -text Help \
+ #       -command {::uiHelp::uiLoginHelp}
+ #   pack .uiloginWin.but.login .uiloginWin.but.logout -ipadx 2 -pady 1 -ipady 1 -side left -in
+#.uiloginWin.but
+ #   pack .uiloginWin.but.help -side right -in .uiloginWin.but
+ #   pack configure .uiloginWin.but.help -ipadx 2 -pady 1 -ipady 1
+ #   pack configure .uiloginWin.usrid .uiloginWin.pwd -padx 70  -pady 10
+ #   pack configure .uiloginWin.usrid .uiloginWin.pwd -anchor e
     
-    tkwait window .uiloginWin
+ #   tkwait window .uiloginWin
   
 
 	
-#    toplevel .loginWin -class "PML Login"
+   toplevel .loginWin -class "PML Login"
 
-#    frame .loginWin.userFrame
-#    pack .loginWin.userFrame -expand yes -fill both
-#
-#    frame .loginWin.loginSep -height 2 -borderwidth 1 -relief sun
-#    pack .loginWin.loginSep -fill x
+    frame .loginWin.userFrame
+    pack .loginWin.userFrame -expand yes -fill both
 
-#    frame .loginWin.loginControls
-#    pack .loginWin.loginControls -fill x
+    frame .loginWin.loginSep -height 2 -borderwidth 1 -relief sun
+    pack .loginWin.loginSep -fill x
 
-#    label .loginWin.userFrame.userLabel -text "User Name:"
-#    entry .loginWin.userFrame.userName -width $entryWidth
+    frame .loginWin.loginControls
+    pack .loginWin.loginControls -fill x
 
-#   button .loginWin.loginControls.buttonOK -text "OK" \
-#	-command {::inputValidator::getName \  
-#	     [.loginWin.userFrame.userName get] .loginWin}
-#    button .loginWin.loginControls.buttonCancel \
-#	-text "Cancel" -command {destroy .loginWin}
-#
-#    grid .loginWin.userFrame.userLabel -row 0 -col 0
-#    grid .loginWin.userFrame.userName  -row 0 -col 1
-#
-#    grid .loginWin.loginControls.buttonOK -row 0 -col 0
-#    grid .loginWin.loginControls.buttonCancel -row 0 -col 1
-#
-#   bind .loginWin.userFrame.userName <Return> \
-#	{::inputValidator::getName \ 
-#	     [.loginWin.userFrame.userName get] .loginWin}
+    label .loginWin.userFrame.userLabel -text "User Name:"
+    entry .loginWin.userFrame.userName -width $entryWidth
+
+   button .loginWin.loginControls.buttonOK -text "OK" \
+	-command {::inputValidator::getName \  
+	     [.loginWin.userFrame.userName get] .loginWin}
+    button .loginWin.loginControls.buttonCancel \
+	-text "Cancel" -command {destroy .loginWin}
+
+    grid .loginWin.userFrame.userLabel -row 0 -col 0
+    grid .loginWin.userFrame.userName  -row 0 -col 1
+
+    grid .loginWin.loginControls.buttonOK -row 0 -col 0
+    grid .loginWin.loginControls.buttonCancel -row 0 -col 1
+
+   bind .loginWin.userFrame.userName <Return> \
+	{::inputValidator::getName \ 
+	     [.loginWin.userFrame.userName get] .loginWin}
 
 
-#    wm title .loginWin "PML Login"
-#    tkwait window .loginWin
+    wm title .loginWin "PML Login"
+    tkwait window .loginWin
 }
 
 ####################################################################
