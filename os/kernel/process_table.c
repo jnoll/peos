@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.29 2003/12/04 23:39:21 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.30 2003/12/05 23:42:58 jntestuser Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -507,9 +507,21 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
     }
     
     *num_actions = 0;
-    if (process_table[pid].status & (PEOS_DONE | PEOS_NONE | PEOS_ERROR)) return NULL;
+    if (process_table[pid].status & (PEOS_DONE | PEOS_NONE | PEOS_ERROR)) {
+        if(save_process_table() < 0) {
+            fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	    exit(EXIT_FAILURE);
+        }
+        return NULL;
+    }
 
-    if(make_node_lists(process_table[pid].process_graph,&actions,&num_act,&other_nodes,&num_other_nodes) == -1) return NULL;
+    if(make_node_lists(process_table[pid].process_graph,&actions,&num_act,&other_nodes,&num_other_nodes) == -1) {
+        if(save_process_table() < 0) {
+            fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	    exit(EXIT_FAILURE);
+        }
+        return NULL;
+    }
     
     for (i = 0; i < num_act; i++) {
 	actions[i].pid = pid;
