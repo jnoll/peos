@@ -123,11 +123,24 @@ return handled;
 char ** list_models (UInt16 * size)
 {
 	UInt16 i;
-	char ** list = peos_list_models ();
+	char ** list;
+	char ** listElements2 = (char**) malloc (4*2);
+	(char*) listElements2 [0] = "process1";
+	(char*) listElements2 [1] = NULL;
+	list = listElements2;
+	
+	
+	//malloc last element to null
+	//char ** list = peos_list_models ();
 	for (i=0; list[i]; i++)
 	{
 		*size=i;
 	}
+	*size = i;
+	
+	if (i==10000)
+		peos_list_models();
+	
 	return list;
 }
 
@@ -188,11 +201,11 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 			list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1001));
 
 			//test 1:
-			//listElements2 = (char**) malloc (4*2);
-			//(char*) listElements2 [0] = "process1";
-			//(char*) listElements2 [1] = "proc";
-			//numChoices = ( 8 / sizeof (listElements2[0]));
-			
+			/*listElements2 = (char**) malloc (4*2);
+			(char*) listElements2 [0] = "process1";
+			(char*) listElements2 [1] = "proc";
+			numChoices = ( 8 / sizeof (listElements2[0]));
+			*/
 			//test2:  real
 			listElements2 = list_models (&numChoices);
 			
