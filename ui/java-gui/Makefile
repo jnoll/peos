@@ -1,23 +1,15 @@
-#these lines are for modification.
-PEOS_HOME=${HOME}/.peos
-INSTALL_PREFIX=${PEOS_HOME}
 # Path to peos binary.  Only change this if peos is not in users' PATH or
 # you want to use a specific instance of the binary.
-path=peos  
-images=${INSTALL_PREFIX}/images/
-help=${INSTALL_PREFIX}/help/
-pml=${INSTALL_PREFIX}/models/ 
-runpeos=${HOME}/bin/runpeos
-JAVAGUI_JAR=${INSTALL_PREFIX}/java-gui.jar
+# If you want to run the runpeos script in another directory, then you must specify the 
+# correct variables below and then type `make`.  It's better to install the whole project because
+# the install prefix is set for you.
 
-# these are obsolete.
-XERCES_PATH= ${PWD}/include/
-JUNIT_PATH= ${PWD}/include/
+path=../../os/kernel/peos  
+images=./images/
+help=./help/
+pml=../../models/ 
+JAVAGUI_JAR=./include/java-gui.jar
 
-
-#these lines are used by the makefile. Do not modify.
-XERCES_INCLUDE=${XERCES_PATH}/xercesImpl.jar:${XERCES_PATH}/xmlParserAPIs.jar
-JUNIT_INCLUDE=${JUNIT_PATH}/junit.jar
 JFLAGS=-classpath ${CLASSPATH}:include/java-gui.jar:.
 
 
@@ -88,25 +80,6 @@ clean:
 	rm -f proc_table*
 	rm -rf include/java-gui.jar
 
-# Note: doesn't uninstall models.
-uninstall: 
-	[ -d ${images} ] && rm -r ${images} 
-	[ -d ${help} ] && rm -r ${help} 
-	[ -f ${INSTALL_PREFIX}/runpeos ] && rm ${INSTALL_PREFIX}/runpeos
-	[ -f ${INSTALL_PREFIX}/java-gui.jar ] && rm ${INSTALL_PREFIX}/java-gui.jar
-
-
-install: script
-	[ -d ${pml} ] || mkdir ${pml} 
-	cp ./testfiles/*.pml ../../models/*.pml ${pml}
-	cp ./runpeos ${runpeos}
-	cp ./include/java-gui.jar ${INSTALL_PREFIX}
-	[ -d $(images) ] || mkdir $(images)
-	cp ./images/*.gif images/*.jpg ${images}
-	[ -d ${help} ] || mkdir ${help} 
-	cp ./help/*.* ${help}
-
-
 script:
 	echo "runApp=0" >runpeos
 	echo "test -w ." >>runpeos
@@ -128,7 +101,6 @@ script:
 	echo "fi" >>runpeos
 	echo 'if test $$runApp -eq 0' >>runpeos
 	echo "then" >>runpeos
-	echo "cd ${PEOS_HOME}" >>runpeos 
 	echo "	xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >>runpeos
 	echo "java -classpath $${CLASSPATH}:${JAVAGUI_JAR} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml}  PeosApp" >>runpeos
 	echo "fi" >>runpeos
