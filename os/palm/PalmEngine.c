@@ -16,8 +16,19 @@
 /* global variables */
 char palm_msg[512]; /* holder/buffer for msgs to sendUI */
 MemHandle actionsH; // handle to context.actions memory space
-MemHandle instrH; // handle to instructions array
-MemHandle inStrings[200]; //array of handles to instruction strings
+MemHandle actDefsH; // handle to actDefs array
+MemHandle actDefsStrings[100]; //array of handles to actDefs strings
+MemHandle instrH; // handle to instructions arry
+MemHandle inStrings[1000]; //array of handles to instruction strings
+char ** instr_array; /* dynamic array - filled by Engine */
+char ** actDefs;
+char inst_num[3]; /* a two-digit # w/ a terminating null */
+char inst_name[32]; /* process instance: 00timesheet, [inst_num][inst_name] */
+UInt16 stackIndex;
+UInt16  actAndStatesIndex;
+UInt16  contextIntsIndex;
+UInt16  scriptFieldIndex;
+UInt16  messageFieldIndex;
 
 /*
  * lists available processes
@@ -28,27 +39,33 @@ processNode listModels()
   processNode First; /* first element in the list */
   processNode *CurrentNode;
   MemHandle Handle, NextHandle;
-  Boolean newSearch=true;
   DmSearchStateType searchState;
   UInt16 cardNum;
   LocalID dbID;
   char modelName[MAX_DB_NAME];
+  Boolean newSearch = true;
+  UInt32 dbType;
 
   /* build the list */
   First.Next = MemHandleNew(sizeof(processNode));
   NextHandle = First.Next;
 
   while(DmGetNextDatabaseByTypeCreator
-	(newSearch,&searchState,NULL,'PEOS',false,&cardNum,&dbID) == errNone) {	      Handle = NextHandle;	
-	CurrentNode = MemHandleLock(Handle);
-	DmDatabaseInfo(cardNum,dbID,modelName,NULL,NULL,
-		       NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-	StrCopy(CurrentNode->process,modelName);
-	CurrentNode->Next = MemHandleNew(sizeof(processNode));
-	NextHandle = CurrentNode->Next;
-	MemHandleUnlock(Handle);
+	(newSearch,&searchState,'TEXt','PEOS',false,&cardNum,&dbID) != dmErrCantFind) {	      
 	
-	newSearch=false;
+	DmDatabaseInfo(cardNum,dbID,modelName,NULL,NULL,
+		       NULL,NULL,NULL,NULL,NULL,NULL,&dbType,NULL);
+	if(dbType == 'TEXt') 
+	{
+		Handle = NextHandle;	
+		CurrentNode = MemHandleLock(Handle);
+		StrCopy(CurrentNode->process,modelName);
+		CurrentNode->Next = MemHandleNew(sizeof(processNode));
+		NextHandle = CurrentNode->Next;
+		MemHandleUnlock(Handle);
+	
+		newSearch=false;
+	}
   }
   if (newSearch==false) { /* found at least one model file */
     CurrentNode = MemHandleLock(Handle);
@@ -63,6 +80,46 @@ processNode listModels()
   return First;
 }
 
+instanceNode listInstances()
+{
+  instanceNode First; /* first element in the list */
+  instanceNode *CurrentNode;
+  MemHandle Handle, NextHandle;
+  Boolean newSearch=true;
+  DmSearchStateType searchState;
+  UInt16 cardNum;
+  LocalID dbID;
+  char name[MAX_INSTANCE_NAME];
+
+  /* build the list */
+  First.Next = MemHandleNew(sizeof(instanceNode));
+  NextHandle = First.Next;
+
+  while(DmGetNextDatabaseByTypeCreator
+	(newSearch,&searchState,'CTXT','PEOS',false,&cardNum,&dbID) == errNone) {	      Handle = NextHandle;	
+	CurrentNode = MemHandleLock(Handle);
+	DmDatabaseInfo(cardNum,dbID,name,NULL,NULL,
+		       NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+	StrCopy(CurrentNode->name, name);
+	CurrentNode->Next = MemHandleNew(sizeof(processNode));
+	NextHandle = CurrentNode->Next;
+	MemHandleUnlock(Handle);
+	
+	newSearch=false;
+  }
+  if (newSearch==false) { /* found at least one model file */
+    CurrentNode = MemHandleLock(Handle);
+    MemHandleFree(CurrentNode->Next);
+    CurrentNode->Next = NULL;
+    MemHandleUnlock(Handle);
+  } else {
+    /* call some error condition */
+	First.Next = NULL;
+  }
+
+  /* return a linked-list of instance names */
+  return First;
+}
 /* Will open the process model file, of type pdb,
  * and load the contained instructions into the
  * instruction array.
@@ -107,7 +164,9 @@ actionNode listActions()
     First.Next = NULL;
   else {
     CurrentNode = MemHandleLock(Handle);
+    MemHandleFree(CurrentNode->Next);
     CurrentNode->Next = NULL;
+    MemHandleUnlock(Handle);
   }
     
   return First;
@@ -115,7 +174,6 @@ actionNode listActions()
 
 
 void freeArgs(void) {
-
   MemHandleUnlock(argActions);
   MemHandleFree(argActions);
 }
@@ -131,15 +189,16 @@ void deListActions(actionNode an) {
   handle = an.Next;
 
   while(handle!=NULL){
-    Current = MemHandleLock(handle);
+    Current = MemHandleLock(handle); 
     nextHandle = Current->Next;
     
+    MemHandleUnlock(handle);
     MemHandleUnlock(handle);
     MemHandleFree(handle);
     handle = nextHandle;
   }
-  
 } /* end deListActions */
+
 
 void deListProcesses(processNode pn) {
 
@@ -156,8 +215,25 @@ void deListProcesses(processNode pn) {
     handle = nextHandle;
     
   }
-  
 } /* end deListProcesses */
+
+
+void deListInstances(instanceNode in) {
+
+  instanceNode* Current;
+  MemHandle nextHandle,handle;
+  
+  handle = in.Next;
+
+  while(handle!=NULL){
+    Current = MemHandleLock(handle);
+    nextHandle = Current->Next;     
+    MemHandleUnlock(handle);
+    MemHandleFree(handle);
+    handle = nextHandle;
+    
+  }
+} /* end deListInstances */
 
 int loadInstructions(char* p_name)
 {
@@ -165,7 +241,6 @@ int loadInstructions(char* p_name)
   DmOpenRef openModel;  
   MemHandle record; 
   ActAndState *as;
-  int i;
   
   /* find/open the process model file 
    * create an instance of the process, to run.
@@ -176,14 +251,14 @@ int loadInstructions(char* p_name)
   
   if(modelID!=0) { //pdb file was found
     char* recordBuf;
-    char temp[64];
-    ActAndState* as;
-    MemHandle asH; 
-    int bufI,tempI;
+    char temp[512];
+    //ActAndState* as;
+    int bufI,bufJ,tempI;
     int instrI = 0; // index into instruction array	
     Boolean keepReading = true;
     int actionsSize; // size of context.actions in bytes
-    int insSize; // size of instr_array in bytes
+    int numIns; // size of instr_array (# of elements)
+    int recordNum=1; //record index into database
 
     context.PROC_NACT = 0; // index of action array...
 
@@ -191,7 +266,7 @@ int loadInstructions(char* p_name)
     openModel = DmOpenDatabase(0,modelID,dmModeReadOnly);
     
     //open record and lock it for access
-    record = DmQueryRecord(openModel,1);
+    record = DmQueryRecord(openModel,recordNum);
     recordBuf = MemHandleLock(record);	
     
     // create space for all the ActAndState's
@@ -200,18 +275,24 @@ int loadInstructions(char* p_name)
     actionsH = MemHandleNew(actionsSize);
     context.actions = MemHandleLock(actionsH);
     
+    // space for script, etc
+    actDefsH = MemHandleNew(sizeof(char *)*100);
+    actDefs = MemHandleLock(actDefsH);
     // parse buffer
     bufI = 2; // 1st action name begins at buffer[2]
+    // we really should scan til a space use this to set bufI
     
     while(keepReading) { // scan each line til "start"
       tempI=0;
-      
+      bufJ = bufI;
+
+	
       // get the first word after the line number
-       while ( recordBuf[bufI]!=' ' &&
+      while ( recordBuf[bufI]!=' ' &&
 	      recordBuf[bufI]!='\n') {
 	temp[tempI++] = recordBuf[bufI++];
       }
-      
+ 
       temp[tempI] = '\0'; //temp now contains action name
   
       if( strcmp(temp,"start")!=0 ) { // create a new ActAndState
@@ -229,14 +310,32 @@ int loadInstructions(char* p_name)
 	// bufI is now at position of next action name	
       } else 
 	keepReading = false;
-      
+     
+      //fill array containing action name, requires, script...
+      // scan the line
+      if(keepReading) 
+	{
+	  tempI = 0;
+	  while ( recordBuf[bufJ]!='\n' ) 
+	    {
+	      temp[tempI++] = recordBuf[bufJ++];
+	    }
+
+	  temp[tempI] = '\0';
+	  // create space for string
+	  actDefsStrings[context.PROC_NACT-1] = MemHandleNew(StrLen(temp)+1);
+	  actDefs[context.PROC_NACT-1] = MemHandleLock(actDefsStrings[context.PROC_NACT-1]);
+	  StrCopy(actDefs[context.PROC_NACT-1],temp);
+    	
+	}
+
       // make sure we still have room in context.actions
-      if ( actionsSize <= (context.PROC_NACT+1)*sizeof(ActAndState *) ) {
+      if ( actionsSize <= (context.PROC_NACT+1)*sizeof(ActAndState) ) {
 	ActAndState* tempActions;
 	MemHandle temp;
 	
 	actionsSize = actionsSize*2;
-	temp = MemHandleNew(actionsSize*(sizeof(ActAndState)));
+	temp = MemHandleNew(actionsSize);
 	tempActions = MemHandleLock(temp);
 	
 	memcpy(tempActions,context.actions,sizeof(context.actions));
@@ -253,8 +352,8 @@ int loadInstructions(char* p_name)
     
     // make space for instruction array
     // dynamically adjust size if necessary
-    insSize = sizeof(char *) * 100;
-    instrH = MemHandleNew(insSize);
+    numIns = 100;
+    instrH = MemHandleNew(numIns*sizeof(char *));
     instr_array = MemHandleLock(instrH);
     
     //create space for "start" in instruction array
@@ -268,7 +367,17 @@ int loadInstructions(char* p_name)
     
     while(keepReading) {
       // scan line number
-      while(recordBuf[bufI++]!=' ') { ; } // do nothing
+      while(recordBuf[bufI++]!=' ') { 
+	//do nothing, unless we reach end of buffer
+	if(bufI%4096==0) {
+		MemHandleUnlock(record);
+		MemHandleFree(record);
+		recordNum++;
+		record = DmQueryRecord(openModel, recordNum);
+		recordBuf = MemHandleLock(record);
+		bufI = 0;
+	}
+      } 
       
       tempI = 0;
       // scan instruction
@@ -276,6 +385,16 @@ int loadInstructions(char* p_name)
 	    recordBuf[bufI]!= '\0' &&
 	    recordBuf[bufI]!= EOF ) {
 	temp[tempI++] = recordBuf[bufI++];	
+	
+	if(bufI%4096==0) {
+		MemHandleUnlock(record);
+		MemHandleFree(record);
+		recordNum++;
+		record = DmQueryRecord(openModel, recordNum);
+		recordBuf = MemHandleLock(record);
+		bufI = 0;
+	}
+    	
       }
       
       temp[tempI] = '\0';
@@ -285,9 +404,48 @@ int loadInstructions(char* p_name)
       instr_array[instrI] = MemHandleLock(inStrings[instrI]);
       StrCopy(instr_array[instrI],temp);
       instrI++;
-      
+
+
+	// make sure there is still room in instr_array for next instruction
+	if(instrI >= numIns) {
+
+		char ** temp_instr_array;
+		MemHandle tempInstrH;
+		int i;
+
+		numIns = numIns*2;
+
+		tempInstrH = MemHandleNew(numIns*sizeof(char *));
+		temp_instr_array = MemHandleLock(tempInstrH);
+
+		for(i=0; i<instrI; i++) {
+
+			temp_instr_array[i] = instr_array[i];
+		}
+
+		MemHandleUnlock(instrH);
+		MemHandleFree(instrH);
+
+		instr_array = temp_instr_array;
+		instrH = tempInstrH;
+	}	
+			 
+
+      if(StrNCompare(temp, "call error", 10) == 0) {
+	break; /* we've reached the end of the model file! */
+      }
+
       if(recordBuf[bufI] == '\n') {
-	bufI++; // bufI is at next line number
+	bufI++; // bufI is at next line number	
+	if(bufI%4096==0) {
+		MemHandleUnlock(record);
+		MemHandleFree(record);
+		recordNum++;
+		record = DmQueryRecord(openModel, recordNum);
+		recordBuf = MemHandleLock(record);
+		bufI=0;
+	}
+    
 	if(recordBuf[bufI]=='\0' ||
 	   recordBuf[bufI]==EOF )
 	  break;
@@ -301,6 +459,9 @@ int loadInstructions(char* p_name)
     context.PC = 0;
     context.SP = -1; /* due to implementation of push() in PalmVM */ 
     context.A = -1;
+    context.PROC_WAITING = 0;
+
+    DmCloseDatabase(openModel);
 
     return 0;
   } // end if
@@ -328,28 +489,28 @@ int runVM()
     if(context.PROC_WAITING == 1) { /* return control to the user */
       break;
     } else {
-	sendUI("about to recursively call runVM");
-	return runVM(); /* go back to execute() - next instruction */
+      return runVM(); /* go back to execute() - next instruction */
     }
   case COMPLETE:
     /* process finished */
     /* delete the database file, free up any resources */
+    //sendUI("Process Completed");
     removeState();
-    sendUI("Process Completed.");
+	deleteInstance();
     break;
    
   case PROC_ERROR:
     /* *process* jumped to error instruction */
-    sendUI("Error - PROC_ERROR by PalmVM");
+    //sendUI("Error - PROC_ERROR by PalmVM");
     break;
    
   case INTERN_ERROR:
     /* *VM* encountered some error executing process */
-    sendUI("Error - INTERN_ERROR in PalmVM");
+    //sendUI("Error - INTERN_ERROR in PalmVM");
     break;
 
   default:
-    sendUI("Error - no case!");
+    //sendUI("Error - no case!");
     break;
   }
   return 0;
@@ -370,12 +531,6 @@ int handleSysCall()
 		       context.actions[j].ActName) != 0) {
 	/* loop thru process's actions array till we find a match */
 	if(++j >= context.PROC_NACT) {
-
-	  //DEBUG
-	  sprintf(palm_msg, "handleSysCall: no match for %s", 
-		  SysCallArgs.data.act.acts[i]);
-	  sendUI(palm_msg);
-
 	  error = 1; /* no match found */
 	  break; /* go to next in SysCallArgs.acts array */
 	}
@@ -421,6 +576,7 @@ int handleSysCall()
     break;
   case(OP_EXIT):
     removeState();
+	deleteInstance();
     /* display: SysCallArgs.status, the exit status code */
     break;
   case(OP_SELECT):
@@ -431,10 +587,55 @@ int handleSysCall()
     /* skip */
     push(1); /* to simulate success */
     break;
-   default:
+  default:
     break;
   } /* switch on opcode */
   return 0;
+}
+
+void getScript(int actionI, char *script)
+{
+  int i=0;
+  int j=0;
+  char buf[256];
+
+  //scan each word til 'script' or '\0'
+  do
+    {	
+      j=0;
+
+      //scan word
+      while (actDefs[actionI][i] != ' ' &&
+	     actDefs[actionI][i] != '\0')
+	{
+	  buf[j++] = actDefs[actionI][i++];
+	}
+      buf[j] = '\0';
+		
+      if(actDefs[actionI][i] == '\0')
+	break;
+      else
+	i++;
+
+    } while (StrCompare(buf,"script") != 0);
+
+  // if there is no script we return	
+  if (actDefs[actionI][i] == '\0')
+    {	
+      StrCopy(script, " ");
+      return;
+    }
+
+  // otherwise we scan the script
+  j=0;
+  while(actDefs[actionI][i] != '\0')
+    {
+      buf[j++] = actDefs[actionI][i++];
+    }
+  buf[j] = '\0';
+	
+  StrCopy(script,buf);
+  return;
 }
 
 /* the function called by PalmUI when an action is selected by
@@ -445,10 +646,11 @@ int handleSysCall()
  * -- set to DONE, return runVM() - which calls execute() - to
  * the PalmUI caller, if the action is in the RUNNING state.
  */
-int selectAction (char act_name[])
+int selectAction (char act_name[], char statusMsg[], char script[])
 {
   int j = 0;
-
+  char newScript[256];
+  
   /* find matching action in context.actions */
   while(StrCompare(act_name, context.actions[j].ActName) != 0) {
     /* loop thru process's actions array till we find a match */
@@ -463,29 +665,29 @@ int selectAction (char act_name[])
     /* set act_name's state to RUNNING */
     /* return control to the user */
     /* set the state, if we found a match */    
-    
-    sprintf(palm_msg, "DOING - %s", act_name);
-    sendUI(palm_msg);
+
+    /* so the UI can let the user know what's going on */
+    sprintf(palm_msg, "DOING Action: %s - click again to finish.", act_name);
+    StrCopy(statusMsg, palm_msg);
+
     context.actions[j].ActState = ACT_RUNNING;
+
+    // write script
+    getScript(j,script);
+
     return 0; /* _not_ returning to the VM yet... */
   } else if(context.actions[j].ActState == ACT_RUNNING) {
     /* called when a user clicks a "RUNNING" action to "finish" it...
      * set the selected action's state to DONE, run the VM */
     /* set the state, if we found a match */
     
-    sprintf(palm_msg, "FINISHED - %s", act_name);
-    sendUI(palm_msg);
+    StrCopy(statusMsg, "Select an available action to RUN it.");
+    
     context.actions[j].ActState = ACT_DONE;
     
-    /** HACK - tell runVM() we're not waiting for user input any more **/
-    /* "hack" because we're assuming that we were waiting for
-     * act_name to go to ACT_DONE */
-    /* MM: To really get this functionality working, we'll have to check if
-     the process is waiting; if it is, we'll have to check if we're going
-     to the desired state, and if that's true we'll have to check if act_name 
-     matches any of SysCallArgs.data.act.acts between 0 and SysCallArgs.
-     data.act.nact --> if so, push the index (one-based) of the action 
-     onto the stack. Else ... we're still waiting. */
+    /* clear the script field... */
+    StrCopy(script, " ");
+
     context.PROC_WAITING = 0; 
     push(1); /* tells VM we completed the 'call wait' syscall successfully */
     
@@ -501,11 +703,88 @@ int selectAction (char act_name[])
   }
 } /* selectAction */
 
-int saveState(char p_name[])
+int saveState(char *message, char *script)
 {
+  Err createError;
+  char db_name[32];
+  LocalID db_id;
+  DmOpenRef *db_ref;
+  MemHandle stackH; // handle to record containing the stack
+  MemHandle actAndStatesH; // handle to record containing all ActAndState's 
+  MemHandle contextIntsH; // handle to record containing contextInts
+  MemHandle scriptFieldH; // handle to record containing script
+  MemHandle messageFieldH; // handle to record containing message to user 
+  contextInts ci; // structure to hold integer data members of context
+  ActAndState *temp; // debugging
+
   /* save the state ("context" structure) in
    * a file with an appropriate name, so that
    * it can be restored later for resumption */
+ 
+  /* NOTE: name can be up to 32 bytes long 
+  * prepend the instance # to the process name
+  * to get the database name */
+  StrNCopy(db_name, inst_num, 2);
+  StrCopy(&db_name[2], inst_name);
+ 
+  createError = DmCreateDatabase(0, db_name, 'PEOS', 'CTXT', false);
+
+	 if (createError == errNone) 
+	{
+	//fill the new database
+		//get the database local id
+		db_id = DmFindDatabase(0, db_name);
+		
+		//open database for writing
+		db_ref = DmOpenDatabase(0, db_id, dmModeReadWrite);
+	
+
+		// create record to store the stack
+		stackIndex = 0;
+		stackH = DmNewRecord(db_ref, &stackIndex, sizeof(context.stack));
+		DmWrite(MemHandleLock(stackH), 0, context.stack, sizeof(context.stack));
+		DmReleaseRecord(db_ref, stackIndex, false);
+		MemHandleUnlock(stackH);
+
+		// create record for all ActAndState's 
+		actAndStatesIndex = stackIndex+1;
+		actAndStatesH = DmNewRecord(db_ref, &actAndStatesIndex, sizeof(ActAndState)*context.PROC_NACT);
+		temp = MemHandleLock(actAndStatesH);
+		DmWrite(temp, 0, context.actions, sizeof(ActAndState)*context.PROC_NACT);
+		DmReleaseRecord(db_ref, actAndStatesIndex, false);
+		MemHandleUnlock(actAndStatesH);
+
+
+		//create record for messageField string
+		messageFieldIndex = actAndStatesIndex+1;
+		messageFieldH = DmNewRecord(db_ref, &messageFieldIndex, 512);
+		DmWrite(MemHandleLock(messageFieldH), 0, message, 512);
+		DmReleaseRecord(db_ref, messageFieldIndex, false);
+		MemHandleUnlock(messageFieldH);
+	
+		//create record for scriptField string
+		scriptFieldIndex = messageFieldIndex+1;
+		scriptFieldH = DmNewRecord(db_ref, &scriptFieldIndex, 512);
+		DmWrite(MemHandleLock(scriptFieldH), 0, script, 512);	
+		DmReleaseRecord(db_ref, scriptFieldIndex, false);
+		MemHandleUnlock(scriptFieldH);
+						
+		//create record for contextInts ->defined in PalmEngine.h
+		contextIntsIndex = scriptFieldIndex+1;
+		contextIntsH = DmNewRecord(db_ref, &contextIntsIndex, sizeof(contextInts));
+		ci.PC = context.PC;
+		ci.SP = context.SP;
+		ci.A = context.A;
+		ci.PROC_NACT = context.PROC_NACT;
+		ci.PROC_WAITING = context.PROC_WAITING;
+		DmWrite(MemHandleLock(contextIntsH), 0, &ci, sizeof(ci));
+		DmReleaseRecord(db_ref, contextIntsIndex, false);
+		MemHandleUnlock(contextIntsH);
+
+		// close the database
+		DmCloseDatabase(db_ref);
+	}
+	
   return 0;
 }
 
@@ -517,12 +796,209 @@ int removeState(char p_name[])
    * associated with that instance, that
    * was saved on the device */
   
-/* deallocate instruction array */
+  /* deallocate instruction array */
   MemHandleUnlock(instrH);
   MemHandleFree(instrH);
   for(i=0;inStrings[i]!=NULL;i++) {
     MemHandleUnlock(inStrings[i]);
     MemHandleFree(inStrings[i]);
   }
+
+  /* deallocate actDefs array */
+  MemHandleUnlock(actDefsH);
+  MemHandleFree(actDefsH);
+  for(i=0; actDefsStrings[i]!=NULL;i++) {
+    MemHandleUnlock(actDefsStrings[i]);
+    MemHandleFree(actDefsStrings[i]);
+  }
+
+  MemHandleUnlock(listItemsH);
+  MemHandleFree(listItemsH);
+
   return 0;
 }
+
+/* Called when a new process is selected to run.
+ * Searches through all saved instances to find
+ * a new instance number that can be used for this
+ * instance. Sets global variable inst_num and returns
+ * a pointer to this string. 
+ */
+char *getInstanceNum(void) 
+{
+	Boolean newSearch = true;
+	Boolean numUsed = false;
+	int i=0;
+	char iNum[3];
+	char usedNums[200];
+	char db_name[MAX_DB_NAME];
+	DmSearchStateType stateInfo;
+	UInt16 cardNo;
+	LocalID db_id;
+	char tempNum[3];
+
+	StrCopy(iNum, "00");
+
+	// find all used numbers
+	while( DmGetNextDatabaseByTypeCreator( newSearch, &stateInfo, 'CTXT', 'PEOS', false, &cardNo, &db_id) != dmErrCantFind)
+	{
+		DmDatabaseInfo(0, db_id, db_name, NULL, NULL, NULL, NULL,
+				NULL, NULL, NULL,NULL,NULL,NULL);
+		usedNums[i++] = db_name[0];
+		usedNums[i++] = db_name[1];
+		newSearch = false;
+	}
+	usedNums[i] = '\0';
+
+
+	if(newSearch) // no instances were found
+	{
+		StrCopy(inst_num, iNum);
+		return inst_num;
+	}
+
+	// cycle through usedNums til we have an iNum that is not 
+	// contained in usedNums 
+	
+	while(true)
+	{
+		i=0;
+		while(usedNums[i] != '\0' && !numUsed)
+		{
+			tempNum[0] = usedNums[i++];
+			tempNum[1] = usedNums[i++];
+			tempNum[2] = '\0';
+			if(StrAToI(iNum) == StrAToI(tempNum))
+				numUsed = true;
+
+
+		}
+		
+		// if no matches were found, we can use this iNum
+		if(!numUsed) 
+		{
+			StrCopy(inst_num, iNum);
+			return inst_num;
+		}
+		else // increment iNum and search through usedNums again
+		{
+			int temp;
+			temp = StrAToI(iNum);
+			temp++;
+
+			// hack to deal with no available instance numbers
+			// just use 99 lose whatever instance was there
+			if(temp==100)
+			{
+				StrCopy(inst_num, "99");
+				return inst_num;
+			}
+
+			sprintf(iNum, "%d", temp);
+			// if iNum is a single digit we need to pad it with a 0
+			if(temp<10) {
+				iNum[1] = iNum[0];
+				iNum[0] = '0';
+				iNum[2] = '\0';
+			}
+			numUsed = false;
+		}
+	}
+
+} // end getInstanceNum
+
+
+
+/* sets up context so that saved instance can be resumed
+ * 
+ */
+void loadInstance(MemHandle newMessageH, MemHandle newScriptH) 
+{
+	LocalID dbId;
+	DmOpenRef dbRef;
+	MemHandle stackH; // handle to record containing the stack
+  	MemHandle actAndStatesH; // handle to record containing all ActAndState's 
+  	MemHandle contextIntsH; // handle to record containing contextInts
+  	MemHandle scriptFieldH; // handle to record containing script
+  	MemHandle messageFieldH; // handle to record containing message to user 
+ 	int *tempStack;
+	ActAndState *tempActs;
+	contextInts *tempCI;
+	char * tempScript;
+	char * tempMessage;
+	char db_name[34];
+
+	loadInstructions(inst_name);
+
+	// open instance file and set values accordingly
+
+	StrNCopy(db_name, inst_num, 2);
+	StrCopy(&db_name[2], inst_name);
+	dbId = DmFindDatabase(0, db_name);
+	dbRef = DmOpenDatabase(0, dbId, dmModeReadOnly);
+
+	if(dbRef != 0)
+	{
+
+		// copy stack
+		stackH = DmQueryRecord(dbRef, stackIndex);
+		tempStack = MemHandleLock(stackH);
+		memcpy(context.stack, tempStack, sizeof(tempStack));
+		MemHandleUnlock(stackH);
+
+	
+		// copy context integers
+		contextIntsH = DmQueryRecord(dbRef, contextIntsIndex);
+		tempCI = MemHandleLock(contextIntsH);
+		context.A = tempCI->A;
+		context.SP = tempCI->SP;
+		context.PC = tempCI->PC;
+		context.PROC_NACT = tempCI->PROC_NACT;
+		MemHandleUnlock(contextIntsH);
+	
+		// copy actions
+		actAndStatesH = DmQueryRecord(dbRef, actAndStatesIndex);
+		tempActs = MemHandleLock(actAndStatesH);
+		memcpy(context.actions, tempActs, sizeof(ActAndState)*context.PROC_NACT);
+		MemHandleUnlock(actAndStatesH);
+
+		// copy messageField
+		messageFieldH = DmQueryRecord(dbRef, messageFieldIndex);
+		tempMessage = MemHandleLock(messageFieldH);
+		StrCopy(MemHandleLock(newMessageH), tempMessage);
+		MemHandleUnlock(messageFieldH);
+	
+		// copy scriptField
+		scriptFieldH = DmQueryRecord(dbRef, scriptFieldIndex);
+		tempScript = MemHandleLock(scriptFieldH);
+		StrCopy(MemHandleLock(newScriptH), tempScript);
+		MemHandleUnlock(scriptFieldH);
+	
+		context.PROC_WAITING = 1; /* always 1. user can only exit a 
+					   * process if it is 'hanging' 
+					   */
+	}
+
+	DmCloseDatabase(dbRef);		
+}
+
+
+void deleteInstance(void) 
+{
+	char iName[32];
+	LocalID dbId;
+	Err dmErr;
+
+
+	StrNCopy(iName, inst_num, 2);
+	StrCopy(&iName[2], inst_name);
+
+	if( (dbId = DmFindDatabase(0, iName)) !=0 ) {
+
+		DmDeleteDatabase(0, dbId);
+		dmErr = DmGetLastErr();
+	}
+
+	return;
+}		
+

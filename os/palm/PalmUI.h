@@ -5,6 +5,9 @@
  */
 
 char** processListItems;
+MemHandle listItemsH;
+MemHandle instanceListItemsH;
+char** instanceListItems;
 
 /* takes a string, displays it on the
  * Palm's screen

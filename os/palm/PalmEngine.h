@@ -6,8 +6,8 @@
 #define STACK_LENGTH (256) /* max length of the stack... */
 #define MAX_ACTS (256)
 #define MAX_DB_NAME (32) /* see listModels() in PalmEngine.c */
-#define MAX_ACT_NAME (512)
-
+#define MAX_ACT_NAME (128)
+#define MAX_INSTANCE_NAME (32)
 typedef enum {
   ACT_NONE,
   ACT_READY,
@@ -37,6 +37,7 @@ typedef enum {
   OP_QUERY
 } SysCallOpcode;
 
+
 /* global struct to handle parameters of a system call */
 typedef struct {
   SysCallOpcode opcode; /*opcode - see SysCallOpcode enum */
@@ -53,11 +54,15 @@ typedef struct {
   } data ;
 } SysCallParameters;
 
-/* What's required to pause/resume a process instance */
+/* What's required to pause/resume a process instance.
+ * This'll be saved as a .pdb file on the device every
+ * time a process instance is paused (or in case of fork/
+ * branch), and re-loaded - along w/ the instruction
+ * array from the model file - to resume the process. */
 typedef struct {
   int stack[STACK_LENGTH]; 
-  ActAndState *actions;  
-  int PROC_NACT;
+  ActAndState *actions; /* actions in the process - see ActAndState struct */
+  int PROC_NACT; /* # of actions in the process */
   int PC; /* program counter - set by Engine, used in VM */
   int SP; /* index of top of stack - should start @ -1 due to impl of push()*/ 
   int A; /* the "accumulator" register */
@@ -65,12 +70,30 @@ typedef struct {
 		     * for input from the user */
 } processContext;
 
+/* used to store the context of a saved process to a database
+ * There will exist a record for the stack, a record for the ActAndStates
+ * and a record for this structure containing the rest of the data members
+ * of a processContext
+ */
+typedef struct {
+	int PC;
+	int SP;
+	int A;
+	int PROC_NACT;
+	int PROC_WAITING;
+} contextInts;
+
 typedef struct {
   char process[64];
   char action[64];
   action_state act_state;
   MemHandle Next; /* Next node in the list */
 } processNode; /* Used for listModels() - see PalmEngine.c */
+
+typedef struct {
+	char name[64];
+	MemHandle Next;
+} instanceNode; /* Used for listInstances */
 
 /* A linked list to hold the available actions (READY/RUNNING), 
  * filled when listActions() is called, and each element of which
@@ -93,10 +116,22 @@ extern processContext context; /* what'll be saved as the persistence layer */
 extern char ** instr_array; /* dynamic, like ActArray*/
 extern MemHandle actionsH; /* handle to context.actions array */
 extern MemHandle argActions; /* handle to SysCallArgs.acts */
+extern char ** actDefs; /* includes action name, provides, requires, and scripts */
+extern char inst_num[]; /* instance # of the running process (for saving state) */
+extern char inst_name[]; /* name of the process */
+extern  UInt16 stackIndex;
+extern UInt16  actAndStatesIndex;
+extern UInt16  contextIntsIndex;
+extern UInt16  scriptFieldIndex;
+extern UInt16  messageFieldIndex;
 
 /* PalmEngine functions */
 processNode listModels();
+instanceNode listInstances();
 int loadProcess(char p_name[]);
 actionNode listActions();
-int selectAction(char act_name[]);
-
+int selectAction(char act_name[], char statusMsg[], char script[]);
+void getScript(int index, char *script);
+char *getInstanceNum();
+int saveState(char *message, char *script);
+void deleteInstance(void);
