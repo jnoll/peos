@@ -1,0 +1,38 @@
+#!/bin/sh
+# Create a process instance and send email notification to actor.
+# John Noll Thursday, August 12 2004
+
+# XXX
+# XXX THIS IS A COMPLETELY UNTESTED PROTOTYPE INTENDED TO ILLUSTRATE
+# XXX THE CONCEPT ONLY!
+# XXX
+
+# XXX There will have to be an installation mechanism that sets this
+# path appropriately.  We can't rely on the user's environment, since
+# this script may be invoked from programs like cron or CVS's loginfo
+# that don't necessarily create a full version of the user's environment.
+PEOS=/home/jnoll/bin/peos
+PATH=/bin:/usr/bin
+
+# Arguments.  First is process to create; second is optional user
+# name.
+MODEL=$1
+if [ $# -gt 1 ] ; then 
+   USER=$2
+else
+   USER=`whoami`
+fi
+
+# Create model.  Model must be a full path, since the process is
+# likely not being invoked from a directory containing models.
+# Rather, have to use a known directory in the user's account, so 
+# the process table can be found.
+# XXX need error handling: what if the dir is not there?  What if home
+# directories are not in /home?
+cd "/home/${USER}/.peos" && $PEOS -c $MODEL
+
+# XXX Should check exit code before sending mail, but unfortunately
+# peos doesn't return 0 on successful create.
+MODEL_NAME=`basename $MODEL`
+cat "/home/${USER}/.peos/proc_table.dat.xml"|/bin/mail -s "new instance of '$MODEL_NAME' created" $USER
+
