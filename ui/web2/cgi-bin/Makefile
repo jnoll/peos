@@ -18,9 +18,10 @@ TESTS = test_main.sh \
 	test_action_page.sh \
 	test_create.sh \
 	test_do.sh \
-	test_docreate.sh
+	test_docreate.sh \
+	test_resource.sh
 
-CGI = main.cgi action_page.cgi create.cgi do.cgi do_create.cgi
+CGI = main.cgi action_page.cgi create.cgi do.cgi do_create.cgi resource.cgi
 PML = test_action.pml ../readme.pml
 
 all: test
