@@ -1,1 +1,1 @@
-/usr/java/jdk1.2/bin/java -classpath /usr/java/java1.2/lib:.: ModelingUI
+/usr/local/java/jdk1.2.2/bin/java -classpath /usr/local/java/jdk1.2.2/lib:.: ModelingUI

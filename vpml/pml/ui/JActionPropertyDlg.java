@@ -14,17 +14,31 @@ import java.beans.*; //Property change stuff
 import java.awt.*;
 import java.awt.event.*;
 
-class JActionPropertyDlg extends PropertyDialog {
+/**
+ * This class is responsible for accepting the action property type, name,
+ * and comments from the end-users.  
+ * @author Na Li
+ */
+
+class JActionPropertyDlg extends PropertyDialog 
+{
     private String msgString1;
     private JLabel labelActionName;
-	  private JTextField fieldActionName;
+    private JTextField fieldActionName;
     private JLabel labelActionType;
-	  private JTextField fieldAction;
+    private JTextField fieldAction;
+    private JLabel labelComments;
+    private JTextField fieldComments;
 
     private String strName = null;
     private String strType = null;
-    private String strComment = null;
-    
+    private String strComments = null;
+
+    public void setType(String type)
+    {
+      strType = type;
+    }
+
     public void setSymbolName( String name ) 
     {
       strName = name;
@@ -32,7 +46,7 @@ class JActionPropertyDlg extends PropertyDialog {
 
     public void setComments( String comment ) 
     {
-      strComment = comment;
+      strComments = comment;
     }
 
     public String getName() 
@@ -40,9 +54,24 @@ class JActionPropertyDlg extends PropertyDialog {
        return strName;
     }
 
-    public String getType() 
+    public String getComments()
     {
-      return strType;
+      return strComments;
+    }
+
+    public int getType() 
+    {
+      int type = 0;
+
+      if ( strType == null )
+         return 2;
+         
+      if ( strType.equals("manual") == true )
+        return 0;
+      else if ( strType.equals("automatic") == true )
+        return 1;
+
+      return 2;
     }
 
     public JActionPropertyDlg(JFrame parent, String component, Icon icon ) 
@@ -54,13 +83,20 @@ class JActionPropertyDlg extends PropertyDialog {
         final String btnString2 = "Cancel";
 
         msgString1 = "Enter the " + component + " Properties";
-        labelActionName = new JLabel( "Action Name:" );
-        fieldActionName = new JTextField(20);
+
         labelActionType = new JLabel( "Action Type:" );
         fieldAction = new JTextField(20);
 
-        Object[] array = { msgString1, labelActionName, fieldActionName, 
-                                            labelActionType, fieldAction };
+        labelActionName = new JLabel( "Action Name:" );
+        fieldActionName = new JTextField(20);
+
+        labelComments = new JLabel( "Comments:" );
+        fieldComments = new JTextField(20);
+
+        Object[] array = { msgString1, labelActionType, fieldAction,
+                                       labelActionName, fieldActionName,
+                                       labelComments, fieldComments}  ;
+
         Object[] options = {btnString1, btnString2};
 
         optionPane = new JOptionPane(array,
@@ -69,34 +105,36 @@ class JActionPropertyDlg extends PropertyDialog {
                                       icon,
                                       options,
                                       options[0]);
-          setContentPane(optionPane);
-          setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setContentPane(optionPane);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-//        getContentPane().add( mAuthor, 1 );
-//        getContentPane().add( new JLabel( "Author:", JLabel.LEADING ), 1 );
         setTitle("Action Property");
 
         addWindowListener(
         new WindowAdapter()
         {
-                public void windowClosing(WindowEvent we)
-                {
-                /*
-                 * Instead of directly closing the window,
-                 * we're going to change the JOptionPane's
-                 * value property.
-                 */
-                    optionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
-                 }
+            public void windowClosing(WindowEvent we)
+            {
+            /*
+             * Instead of directly closing the window,
+             * we're going to change the JOptionPane's
+             * value property.
+             */
+                optionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
+             }
         });
 
-        fieldActionName.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        fieldActionName.addActionListener(new ActionListener() 
+	{
+            public void actionPerformed(ActionEvent e) 
+	    {
                 optionPane.setValue(btnString1);
             }
         });
-        optionPane.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent e) {
+        optionPane.addPropertyChangeListener(new PropertyChangeListener() 
+	{
+            public void propertyChange(PropertyChangeEvent e) 
+	    {
                 String prop = e.getPropertyName();
                 if (isVisible() && (e.getSource() == optionPane) && 
                                 (prop.equals(JOptionPane.VALUE_PROPERTY) ||
@@ -105,13 +143,14 @@ class JActionPropertyDlg extends PropertyDialog {
                     Object value = optionPane.getValue();
                     setVisible(false);
                     if (value == JOptionPane.UNINITIALIZED_VALUE) {
-                       //ignore reset
+                        //ignore reset
                         return;
                     }
 
                     if ( value == "OK") {
                       strName = fieldActionName.getText();
                       strType = fieldAction.getText();
+                      strComments = fieldComments.getText();
                     }
                     else
                       return;

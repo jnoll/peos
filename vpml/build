@@ -1,4 +1,4 @@
-/usr/java/jdk1.2/bin/javac -classpath .:/usr/java/jdk1.2/lib:./pml/ui:\
+/usr/local/java/jdk1.2.2/bin/javac -classpath .:/usr/local/java/jdk1.2.2/lib:./pml/ui:\
 .:./pml:\
 ./pml/datamodel:\
 ./pml/Exceptions:\

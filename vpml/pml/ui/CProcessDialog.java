@@ -9,7 +9,8 @@ import java.awt.Window;
 
 /**
  * This class implements the basic properties dialog for a Process Node
- * 
+ *
+ * @author Na Li
  * @author Matt Osminer
  * @author Xing Wei
  */
@@ -40,14 +41,10 @@ public class CProcessDialog extends JPanel implements ActionListener
 		// Create our buttons
 		m_OK = new JButton( "OK" );
 		m_OK.addActionListener( this );
-//		setDefaultButton( m_OK );
-//		m_OK.setActionComand( "OK" );
 		
 		m_Cancel = new JButton( "Cancel" );
 		m_Cancel.addActionListener( this );
 		m_Cancel.setActionCommand( "Cancel" );
-		
-//		pack();
 	}
 	
 	/**

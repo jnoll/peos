@@ -14,7 +14,13 @@ import java.beans.*; //Property change stuff
 import java.awt.*;
 import java.awt.event.*;
 
-class ProcessPropertyDialog extends PropertyDialog {
+/**
+ * This class is responsible for accepting the process property name,
+ * author and comments from the end-users.  
+ * @author Na Li
+ */
+class ProcessPropertyDialog extends PropertyDialog 
+{
     private JTextField author;
     private JTextField name = null;
     private JTextField comments = null;
@@ -42,7 +48,7 @@ class ProcessPropertyDialog extends PropertyDialog {
 
     public String getComments() 
     {        
-	return strComment;
+	      return strComment;
     }
 
     public ProcessPropertyDialog(JFrame parent, String component, Icon icon )
@@ -76,7 +82,8 @@ class ProcessPropertyDialog extends PropertyDialog {
         setContentPane(optionPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        addWindowListener ( new WindowAdapter() {
+        addWindowListener ( new WindowAdapter() 
+		{
             public void windowClosing(WindowEvent we)
             {
               optionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
@@ -84,8 +91,7 @@ class ProcessPropertyDialog extends PropertyDialog {
           }
         );
 
-        name.addActionListener ( new ActionListener()
-          {
+        name.addActionListener ( new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 optionPane.setValue(btnString1);
@@ -93,8 +99,7 @@ class ProcessPropertyDialog extends PropertyDialog {
           }
         );
 
-        optionPane.addPropertyChangeListener ( new PropertyChangeListener()
-          {
+        optionPane.addPropertyChangeListener ( new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent e)
             {
                 String prop = e.getPropertyName();
@@ -102,22 +107,22 @@ class ProcessPropertyDialog extends PropertyDialog {
                                 && (prop.equals(JOptionPane.VALUE_PROPERTY) || 
                                 prop.equals(JOptionPane.INPUT_VALUE_PROPERTY)))
                 {
-                  Object value = optionPane.getValue();
-                  setVisible(false);
-                  if (value == JOptionPane.UNINITIALIZED_VALUE) {
-                    return;
-                  }
+                	Object value = optionPane.getValue();
+                	setVisible(false);
+                	if (value == JOptionPane.UNINITIALIZED_VALUE) {
+                    		return;
+                	}
 
-                  if ( value == "OK") {
-                    strName = name.getText();
-                    strAuthor = author.getText();
-                    strComment = comments.getText();
-                  }
-                  else
-                    return;
+                	if ( value == "OK") {
+                    		strName = name.getText();
+                    		strAuthor = author.getText();
+                    		strComment = comments.getText();
+                	}
+                	else
+                    		return;
 
-                  optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-                  setVisible(false);
+                	optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
+                	setVisible(false);
                 }
             }
           }

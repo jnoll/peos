@@ -82,20 +82,21 @@ public class JMenuEx extends javax.swing.JMenu
      * (can be null)
      * @param al Action listener to receive the menu events from this menu
      */
-    public void addMenuListeners( MenuListener ml, ActionListener al )
-    {
-        // Register the menu itself with this listener
-        if ( ml != null )
-            super.addMenuListener( ml );
-        
-        // Register all of the menu commands with the same listener
-        for ( int i = 0; i < getItemCount(); i++ )
-            getItem( i ).addActionListener( al );
-    }
-    
-    private String[] m_MenuItems;
-    private char[] m_ShortCuts;
-    private char[] m_Accelerators;
-    private int[] m_KeyModifiers;
-    
+     public void addMenuListeners( MenuListener ml, ActionListener al )
+     {
+         // Register the menu itself with this listener
+         if ( ml != null )
+             super.addMenuListener( ml );
+
+         // Register all of the menu commands with the same listener
+         for ( int i = 0; i < getItemCount(); i++ )
+             if ( getItem(i) != null )
+                  getItem( i ).addActionListener( al );
+     }
+
+     private String[] m_MenuItems;
+     private char[] m_ShortCuts;
+     private char[] m_Accelerators;
+     private int[] m_KeyModifiers;
+
 }

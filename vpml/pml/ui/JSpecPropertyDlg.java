@@ -14,43 +14,64 @@ import java.beans.*; //Property change stuff
 import java.awt.*;
 import java.awt.event.*;
 
-class JSpecPropertyDlg extends PropertyDialog {
+/**
+ * This class is responsible for accepting the spec property name,
+ * author and comments from the end-users.  
+ * @author Na Li
+ */
+
+class JSpecPropertyDlg extends PropertyDialog 
+{
     private JTextField mAuthor;
     private String strType = null;
     private String strName = null;
+    private String strComments = null;
 
+    private JLabel labelSpecType = null;
+    private JTextField fieldSpecType = null;
 
-    public String getAuthor() 
+    private JLabel labelSpecName = null;
+    private JTextField fieldSpecName = null;
+
+    private JLabel labelComments = null;
+    private JTextField fieldComments = null;
+
+    public String getAuthor()
     {
         return mAuthor.getText();
     }
 
-    public void setAuthor( String aName ) 
+    public void setAuthor( String aName )
     {
         mAuthor.setText(aName);
     }
 
-    public void setSymbolName( String name ) 
+    public void setSymbolName( String name )
     {
     	strName = name;
     }
 
-    public void setComments( String comment ) 
+    public void setComments( String comment )
     {
-;//      strComment = comment;
+      strComments = comment;
     }
 
-    public String getName() 
-   {
+    public String getName()
+    {
        return strName;
     }
 
-    public String getType() 
-   {
+    public String getType()
+    {
       return strType;
     }
-    
-    public JSpecPropertyDlg(JFrame parent, String component, Icon icon ) 
+
+    public String getComments()
+    {
+      return strComments;
+    }
+
+    public JSpecPropertyDlg(JFrame parent, String component, Icon icon )
     {
         super(parent, component, icon);
 
@@ -61,14 +82,19 @@ class JSpecPropertyDlg extends PropertyDialog {
 
         setTitle("Spec Property");
         msgString1 = "Enter the " + component + " Properties";
-        JLabel labelSpecType = new JLabel( "Spec Type:" );
-        final JTextField fieldSpecType = new JTextField(20);
+        labelSpecType = new JLabel( "Spec Type:" );
+        fieldSpecType = new JTextField(20);
 
-        final JLabel labelSpecName = new JLabel( "Spec Name:" );
-        final JTextField fieldSpecName = new JTextField(20);
+        labelSpecName = new JLabel( "Spec Name:" );
+        fieldSpecName = new JTextField(20);
 
+        labelComments = new JLabel("Spec Comments:");
+        fieldComments = new JTextField(20);
+        
         Object[] array = { msgString1, labelSpecType, fieldSpecType, 
-                                            labelSpecName, fieldSpecName };
+                                       labelSpecName, fieldSpecName,
+                                       labelComments, fieldComments};
+                                       
         Object[] options = { btnString1, btnString2 }; 
 
         optionPane = new JOptionPane(array,
@@ -77,34 +103,35 @@ class JSpecPropertyDlg extends PropertyDialog {
                                       icon,
                                       options,
                                       options[0]);
-          setContentPane(optionPane);
-          setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setContentPane(optionPane);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-//        getContentPane().add( mAuthor, 1 );
-//        getContentPane().add( new JLabel( "Author:", JLabel.LEADING ), 1 );
-        setTitle("Action Property");
+        setTitle("Spec Property");
 
-       addWindowListener(
-        new WindowAdapter()
+        addWindowListener( new WindowAdapter()
         {
-                public void windowClosing(WindowEvent we)
-                {
-                /*
-                 * Instead of directly closing the window,
-                 * we're going to change the JOptionPane's
-                 * value property.
-                 */
-                    optionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
-                 }
+            public void windowClosing(WindowEvent we)
+            {
+            /*
+             * Instead of directly closing the window,
+             * we're going to change the JOptionPane's
+             * value property.
+             */
+                optionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
+             }
         });
 
-        fieldSpecName.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        fieldSpecName.addActionListener(new ActionListener() 
+	{
+            public void actionPerformed(ActionEvent e) 
+	    {
                 optionPane.setValue(btnString1);
             }
         });
-        optionPane.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent e) {
+        optionPane.addPropertyChangeListener(new PropertyChangeListener() 
+	{
+            public void propertyChange(PropertyChangeEvent e) 
+	    {
                 String prop = e.getPropertyName();
                 if (isVisible() && (e.getSource() == optionPane)
                                 && (prop.equals(JOptionPane.VALUE_PROPERTY) ||
@@ -120,6 +147,7 @@ class JSpecPropertyDlg extends PropertyDialog {
                     if ( value == "OK") {
                       strName = fieldSpecName.getText();
                       strType = fieldSpecType.getText();
+                      strComments = fieldComments.getText();
                     }
                     else
                       return;

@@ -22,7 +22,6 @@ public class CPMLWidgetFactory extends Object
     
     /*
      * Method for creating PML widgets - really labels with graphic icons
-    * 
      * @param SymbolName Name that will appear on the widget
      * @param icon icon to insert into the widget
      * @param Border Style the style of border to create see above list
@@ -31,8 +30,8 @@ public class CPMLWidgetFactory extends Object
      * @return A newly created JLabel according to your input specifications
      */
      static public JLabel createPMLWidget( String SymbolName, Icon icon, 
-                                            int BorderStyle, float Alignment )
-    {
+                                           int BorderStyle, float Alignment )
+     {
 	    // Create a new label with the icon adjusted to the left
 
 	    JLabel label = new JLabel( SymbolName, icon, JLabel.LEFT );

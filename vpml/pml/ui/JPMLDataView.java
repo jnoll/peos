@@ -1,7 +1,7 @@
 package pml.ui;
 
 import java.awt.*;
-import java.awt.event.*;          
+import java.awt.event.*;
 import java.util.Observable;
 import javax.swing.event.MenuEvent;
 import javax.swing.*;
@@ -17,7 +17,7 @@ import pml.datamodel.*;
  * This class implements the basic view of the PML graph.
  * While not very exciting right now this class has all kinds
  * of potential for future use
- *
+ * @author Na Li
  * @author Matt Osminer (mosminer@ix.netcom.com)
  * @author Xing Wei
  */
@@ -35,9 +35,9 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
     JLabel newLabel = null;
     /**
      * Constructor that passes in an associated DataModel for use by the view
-     * @param DataModel Reference to the DataModel for which this class 
+     * @param DataModel Reference to the DataModel for which this class
      * illustrates
-     * @param ParentFrame Reference to the frame hosting this view, so view 
+     * @param ParentFrame Reference to the frame hosting this view, so view
      * can set titles etc
      */
 	public JPMLDataView( JPMLDataModel DataModel, JFrame ParentFrame )
@@ -49,24 +49,24 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
 	    m_PMLWidgets = new Hashtable();
 
 	    // Set our layout manager
-	    // Down the road we'll probably want to create a special layout 
-            // manager that handles all of the PML view details for us.  For 
+	    // Down the road we'll probably want to create a special layout
+            // manager that handles all of the PML view details for us.  For
             // now make do with a vertical box layout manager
 	    setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
-		
+
 	    // White background please
 	    setBackground( Color.white );
-		
+
 	    // Setup the build menu
 	    BuildViewMenu();
 
 	    update( null, ((JPMLDataModel)getDataModel()).getFocusNode() );
 
 	}
-	
+
 	// Protected helper methods
-	
-	/** 
+
+	/**
 	 * This method builds the menu bar up for this view
 	 * The menu is dependent on the present PML construct
 	 * that has the focus. While the file, and edit menu's remain the same
@@ -77,66 +77,69 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
 	{
 
         	JMenuBar mb = getParentFrame().getJMenuBar();
-		
+
 		// Remove all components so we can build the menu
 		mb.removeAll();
-		
-        	// Create and add the base filemenu, register this class as a 
+
+        	// Create and add the base filemenu, register this class as a
                 // listener and stuff it into the menu bar
 
         	JMenuEx Menu = new JMenuEx( "File", 'F',
-                	                    m_FileMenuItems,
-                       		            m_FileShortCuts,
-                                    	    m_FileAccelerators,
-                                            m_FileKeyModifiers );
+               	 	                m_FileMenuItems,
+                       		        m_FileShortCuts,
+                                    	m_FileAccelerators,
+                                        m_FileKeyModifiers );
+                if ( Menu == null )
+                     return;
+
         	Menu.addMenuListeners( this, this );
         	Menu.addMenuListeners( null, (JMainFrame)getParentFrame() );
         	mb.add( Menu );
 
         	// Create and add the base edit menu next
         	Menu = new JMenuEx( "Edit", 'E',
-                            		m_EditMenuItems,
-                            		m_EditShortCuts,
-                            		m_EditAccelerators,
-                            		m_EditKeyModifiers );
+               	             	m_EditMenuItems,
+                            	m_EditShortCuts,
+                            	m_EditAccelerators,
+                            	m_EditKeyModifiers );
         	Menu.addMenuListeners( this, this );
         	Menu.addMenuListeners( this, (JMainFrame)getParentFrame() );
         	mb.add( Menu );
 
-        	// Next we're going to insert the PML menu.  This menu allows 
-                // you to. Get the type of object that has the focus
-        	// and build and insert the proper menu.  For now I'm 
+        	// Next we're going to insert the PML menu.  This menu allows
+           	// you to. Get the type of object that has the focus
+        	// and build and insert the proper menu.  For now I'm
         	// going to assume we're working with the Process itself
         	// so insert the PMLProcessMenu
 		CPMLNode Focus = ((JPMLDataModel)getDataModel()).getFocusNode();
 
 		if ( Focus instanceof CProcessNode )
 			Menu = new JMenuEx( "PML", 'P',
-						m_ProcessMenuItems,
-						m_ProcessShortCuts,
-						m_ProcessAccelerators,
-						m_ProcessKeyModifiers );
+					m_ProcessMenuItems,
+					m_ProcessShortCuts,
+					m_ProcessAccelerators,
+					m_ProcessKeyModifiers );
 		else if ( Focus instanceof CTCNode )
 			Menu = new JMenuEx( "PML", 'P',
-						m_TCMenuItems,
-						m_TCShortCuts,
-						m_TCAccelerators,
-						m_TCKeyModifiers );
+					m_TCMenuItems,
+					m_TCShortCuts,
+					m_TCAccelerators,
+					m_TCKeyModifiers );
 		else if ( Focus instanceof CActionNode )
 			Menu = new JMenuEx( "PML", 'P',
-						m_ActionMenuItems,
-						m_ActionShortCuts,
-						m_ActionAccelerators,
-						m_ActionKeyModifiers);
+					m_ActionMenuItems,
+					m_ActionShortCuts,
+					m_ActionAccelerators,
+					m_ActionKeyModifiers);
 		else if ( Focus instanceof CSpecNode )
 			Menu = new JMenuEx( "PML", 'P',
-						m_SpecMenuItems,
-						m_SpecShortCuts,
-						m_SpecAccelerators,
-						m_SpecKeyModifiers );
+					m_SpecMenuItems,
+					m_SpecShortCuts,
+					m_SpecAccelerators,
+					m_SpecKeyModifiers );
 		else
 			return;
-			
+
         	Menu.addMenuListeners( this, this );
         	Menu.addMenuListeners( null, (JMainFrame)getParentFrame() );
         	mb.add( Menu );
@@ -144,39 +147,39 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
 		// Force the menu bar to refresh
 		mb.revalidate();
 	}
-	
-	/** 
+
+	/**
 	 * This method shows the node properties box associated
 	 * with the refrenced PML component
 	 *
 	 * @param node Node for which properties should be shown and updated
 	 *
-	 * @return true if the user verifies the changes, false if cancel 
+	 * @return true if the user verifies the changes, false if cancel
          * selected
 	 */
-	protected boolean updateNodeProperties(  CPMLNode node )
+	protected boolean updateNodeProperties( CPMLNode node )
+    							throws CPMLException
 	{
         	String componentName  = null;
         	Icon icon = null;
 
-        	final String IMAGE_PATH = ".\\Images\\";
-
+        	final String IMAGE_PATH = "./Images/";
 		if ( node instanceof CProcessNode )  {
 			// Bring up Process Dlg
       			componentName= "Process";
       			icon = new ImageIcon( IMAGE_PATH + "Process.gif" );
       			m_Dialog = new ProcessPropertyDialog(
-          				getParentFrame(), componentName, icon);
-
+          			getParentFrame(), componentName, icon);
+System.out.println("??");
       			m_Dialog.pack();
       			m_Dialog.setLocationRelativeTo( this );
       			m_Dialog.setVisible(true);
 
       			node.setSymbolName( m_Dialog.getName());
       			node.setComments( m_Dialog.getComments());
-      			((CProcessNode)node).setAuthor( 
-                               ((ProcessPropertyDialog) m_Dialog).getAuthor());
-      			((CProcessNode)node).setProcessName(m_Dialog.getName());
+      			((CProcessNode)node).setAuthor(
+                                ((ProcessPropertyDialog) m_Dialog).getAuthor());
+      		        ((CProcessNode)node).setProcessName(m_Dialog.getName());
 
       			// Update the user interface with the new process name.
 			update( null, 
@@ -194,8 +197,10 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
       			m_Dialog.setLocationRelativeTo( this );
       			m_Dialog.setVisible(true);
 
+           		((CTCNode)node).setType(
+                                   ((JTaskChainPropertyDlg)m_Dialog).getType());
       			node.setSymbolName( m_Dialog.getName());
-//      		node.setComments( m_Dialog.getComments());
+       		  	node.setComments( m_Dialog.getComments());
     		}
 		else if( node instanceof CActionNode ) {
 			// Bring up Action Dlg
@@ -208,8 +213,10 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
       			m_Dialog.setLocationRelativeTo( this );
       			m_Dialog.setVisible(true);
 
+          		((CActionNode)node).setType(
+                                      ((JActionPropertyDlg)m_Dialog).getType());
       			node.setSymbolName( m_Dialog.getName());
-//      		node.setComments( m_Dialog.getComments());
+        		node.setComments( m_Dialog.getComments());
     		}
 		else if( node instanceof CSpecNode ) {
       			componentName= "Spec";
@@ -221,25 +228,28 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
       			m_Dialog.setLocationRelativeTo( this );
       			m_Dialog.setVisible(true);
 
+          		((CSpecNode)node).setSpecType(
+                                        ((JSpecPropertyDlg)m_Dialog).getType());
       			node.setSymbolName( m_Dialog.getName());
-//      		node.setComments( m_Dialog.getComments());
+      		  	node.setComments( m_Dialog.getComments());
     		}
 
-    		return true;
+        	CPMLNode.setPMLNode(node);
+
+    			return true;
   	}
 	/**
-	 * This method creates a new node, gets the user properties for that 
-         * node and inserts it into the current parent node.  Right now there 
+	 * This method creates a new node, gets the user properties for that
+         * node and inserts it into the current parent node.  Right now there
          * is no support for ordered insertion.  This will be the next step
-	 * @param NodeType integer referring to the type of node to insert see 
+	 * @param NodeType integer referring to the type of node to insert see
          * the top of this file.
 	 * @return true on new node insertion, false otherwise
 	 */
-	protected boolean pmlAdd( int NodeType )
+	protected boolean pmlAdd( int NodeType ) throws CPMLException
 	{
-	    if ( NodeType != COMPONENT_TC &&
-	         NodeType != COMPONENT_ACTION &&
-	         NodeType != COMPONENT_SPEC ) {
+	    if ( NodeType != COMPONENT_TC && NodeType != COMPONENT_ACTION &&
+	         				NodeType != COMPONENT_SPEC ) {
 	        System.err.println( "[pmlAdd]: Invalid Node Type references" );
 	        return false;
 	    }
@@ -261,26 +271,26 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
 	    } catch (CPMLException e ) {
 	        //TODO Any messaging you might want here
 	        return false;
-	    }
+	}
 
-            boolean Complete = false;
+        boolean Complete = false;
 
-            while ( Complete == false ) {
-            	// Now that we have the basic node created get the new
-            	// scoop from the user.  If the user cancels on the properties
-                // then exit this routine
-            	if ( updateNodeProperties( pn ) == false ) {
-                	pn = null;
-               		 return false;   // User cancelled
-            	}
-
-                // Insert the new node into the child - note this validates
-                // the new node as well so if there is a problem
-                // we get false back and come back around for a second iteration
-                Complete = ((JPMLDataModel)getDataModel()).addNode( pn );
+        while ( Complete == false ) {
+            // Now that we have the basic node created get the new
+            // scoop from the user.  If the user cancels on the properties
+            // then exit this routine
+            if ( updateNodeProperties( pn ) == false ) {
+                pn = null;
+               	 return false;   // User cancelled
             }
 
-            return true;
+            // Insert the new node into the child - note this validates
+            // the new node as well so if there is a problem
+            // we get false back and come back around for a second iteration
+            Complete = ((JPMLDataModel)getDataModel()).addNode( pn );
+        }
+
+        return true;
     }
 
     /***** Private utility methods *****/
@@ -290,7 +300,7 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
 
         // Now render the focused object according to it's type
         if ( node instanceof CProcessNode )
-		add( PML = 
+		add( PML =
                        CPMLWidgetFactory.createPMLWidget( node.getSymbolName(),
 		                                                 m_ProcessIcon,
 		                              CPMLWidgetFactory.PROCESS_BORDER,
@@ -341,19 +351,19 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
     /***** Resource references *****/
     // Icons first
     // TODO Get the proper icons loaded for each kind of node and the subtypes
-    // of those nodes.  These will likely revert to arrays of images. You'll 
+    // of those nodes.  These will likely revert to arrays of images. You'll
     // have to add the proper selection code in the renderNode method below
-    private ImageIcon m_ProcessIcon = new ImageIcon( ".\\Images\\process.gif" );
-    private ImageIcon m_TCIcon = new ImageIcon( ".\\Images\\ChainLink.gif" );
-    private ImageIcon m_ActionIcon = new ImageIcon( ".\\Images\\action.gif" );
-    private ImageIcon m_SpecIcon = new ImageIcon( ".\\Images\\spectacles1.gif");
+    private ImageIcon m_ProcessIcon = new ImageIcon( "./Images/Process.gif" );
+    private ImageIcon m_TCIcon = new ImageIcon( "./Images/ChainLink.gif" );
+    private ImageIcon m_ActionIcon = new ImageIcon( "./Images/action.gif" );
+    private ImageIcon m_SpecIcon = new ImageIcon( "./Images/spectacles1.gif");
 
-    // Next Menus - of which we have a base menu implementing basic view 
+    // Next Menus - of which we have a base menu implementing basic view
     // commands and then several for each kind of PML component
     private JMenuBar m_MenuBar;
 
     // Setup all of the filemenu strings
-    private String[] m_FileMenuItems = new String[] { "New", "Open", "Save", 
+    private String[] m_FileMenuItems = new String[] { "New", "Open", "Save",
                                                       "Save As", "<separator>",                                                       "Exit" };
     private char[] m_FileShortCuts = new char[] { 'N', 'O', 'S', 'A', 0, 'X' };
     private char[] m_FileAccelerators = new char[] {'N', 'O', 'S', 'A', 0, 'X'};
@@ -364,8 +374,8 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
                                                    0,
                                                    java.awt.Event.ALT_MASK
                                                  };
-                                                 
-    private String[] m_EditMenuItems = new String[] { "Cut", "Copy", "Paste", 
+
+    private String[] m_EditMenuItems = new String[] { "Cut", "Copy", "Paste",
                                                                     "Delete" };
     private char[] m_EditShortCuts = new char[] { 'T', 'C', 'P', 'D' };
     private char[] m_EditAccelerators = new char[] { 'X', 'C', 'V', 127 };
@@ -373,53 +383,53 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
                                                    java.awt.Event.CTRL_MASK,
                                                    java.awt.Event.CTRL_MASK,
                                                    0 };
-      
+
     private String[] m_ProcessMenuItems = new String[] { "Add TC",
-                                                         "Add Action", 
+                                                         "Add Action",
                                                          "Properties",
-                                                         "<separator>", 
+                                                         "<separator>",
                                                          "Generate PML" };
-                                                  
+
     private char[] m_ProcessShortCuts = new char[] { 'T', 'A', 'P', 0, 'G' };
     private char[] m_ProcessAccelerators = new char[] { 0, 0, 0x0A, 0, 'G' };
     private int[] m_ProcessKeyModifiers = new int[] { 0,
                                                       0,
                                                       java.awt.Event.ALT_MASK,
                                                       0,
-                                                      java.awt.Event.CTRL_MASK 
+                                                      java.awt.Event.CTRL_MASK
                                                     };
 
-	private String[] m_TCMenuItems = new String[] { "Add TC",
-                                                    "Add Action", 
+    private String[] m_TCMenuItems = new String[] { "Add TC",
+                                                    "Add Action",
                                                     "Properties",
-                                                    "<separator>", 
+                                                    "<separator>",
                                                     "Generate PML" };
-                                                  
+
     private char[] m_TCShortCuts = new char[] { 'T', 'A', 'P', 0, 'G' };
     private char[] m_TCAccelerators = new char[] { 0, 0, 0x0A, 0, 'G' };
     private int[] m_TCKeyModifiers = new int[] { 0,
                                                  0,
                                                  java.awt.Event.ALT_MASK,
                                                  0,
-                                                 java.awt.Event.CTRL_MASK 
+                                                 java.awt.Event.CTRL_MASK
                                                 };
 
-	private String[] m_ActionMenuItems = new String[] { "Add Spec",
-                                                            "Properties", 
-                                                            "<separator>", 
+    private String[] m_ActionMenuItems = new String[] { "Add Spec",
+                                                            "Properties",
+                                                            "<separator>",
                                                             "Generate PML" };
-                                                  
+
     private char[] m_ActionShortCuts = new char[] { 'S', 'P', 0, 'G' };
     private char[] m_ActionAccelerators = new char[] { 0, 0x0A, 0, 'G' };
-    private int[] m_ActionKeyModifiers = new int[] { 0, 
-                                                     java.awt.Event.ALT_MASK, 
-                                                     0, 
-                                                     java.awt.Event.CTRL_MASK 
-                                                   }; 
+    private int[] m_ActionKeyModifiers = new int[] { 0,
+                                                     java.awt.Event.ALT_MASK,
+                                                     0,
+                                                     java.awt.Event.CTRL_MASK
+                                                   };
     private String[] m_SpecMenuItems = new String[] { "Add Spec",
-							  "Properties", 
+							  "Properties",
                                                           "<separator>",
-							  "Generate PML" }; 
+							  "Generate PML" };
     private char[] m_SpecShortCuts = new char[] { 'P', 0, 'G' };
     private char[] m_SpecAccelerators = new char[] { 0x0A, 0, 'G' };
     private int[] m_SpecKeyModifiers = new int[] { java.awt.Event.ALT_MASK,
@@ -451,10 +461,10 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
         // in the parameters list. At the same time provide a mapping
         // from the new widgets we just created to it's associated
         // PML data construct
-        m_PMLWidgets.put( (newLabel = renderNode( pn, 
+        m_PMLWidgets.put( (newLabel = renderNode( pn,
                                           Component.CENTER_ALIGNMENT )), arg );
-	// Add some filler space
-	add( Box.createRigidArea( new Dimension( 0, 10 ) ) );
+	    // Add some filler space
+	    add( Box.createRigidArea( new Dimension( 0, 10 ) ) );
 
         // Now render the children nodes - in order mind you!
         int NumChildren = pn.NumberOfChildren();
@@ -474,13 +484,13 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
         // TODO Render the connecting lines between the parent and it's children
         // to represent execution order and type
 
-	// Refresh the menu so it corresponds with the proper node
+	    // Refresh the menu so it corresponds with the proper node
 
-	BuildViewMenu();
+	    BuildViewMenu();
 
         // Force a repaint of the screen so it's up to date based on the change
         doLayout();
-	revalidate();
+	    revalidate();
         getParentFrame().repaint();
 
     }
@@ -504,36 +514,42 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
         /********* PML Menu command processing ******/
 
         // Handle the addition of a TC node
-        if ( e.getActionCommand().equals( "Add TC" ) )
+        try {
+          if ( e.getActionCommand().equals( "Add TC" ) )
             pmlAdd( COMPONENT_TC );
 
-        // Handle an action add
-        if ( e.getActionCommand().equals( "Add Action" ) )
+          // Handle an action add
+          if ( e.getActionCommand().equals( "Add Action" ) )
             pmlAdd( COMPONENT_ACTION );
-            
-        // Handle a spec add
-        if ( e.getActionCommand().equals( "Add Spec" ) )
+
+          // Handle a spec add
+          if ( e.getActionCommand().equals( "Add Spec" ) )
             pmlAdd( COMPONENT_SPEC );
-            
-        // Handle a properties command
-        if ( e.getActionCommand().equals( "Properties" ) )
-            updateNodeProperties( 
+
+          // Handle a properties command
+          if ( e.getActionCommand().equals( "Properties" ) )
+            updateNodeProperties(
                    (CPMLNode)((JPMLDataModel)getDataModel()).getFocusNode() );
-            
+
+          JPMLTreeView.getInstance().addNode(
+                     (CPMLNode)((JPMLDataModel)getDataModel()).getFocusNode());
+        } catch(CPMLException exp) {
+          System.out.println(exp.toString());
+        }
     }
-   
+
    /***** Mouse Listener methods *****/
-   
+
    /**
     * The mouse clicked event should do one of two things.
     * 1. If the event is sent by a registered component of this view
     *    and that event is a left click the display the component's properties.
     *    If it's a right click then display the context menu appropriate to that
     *    particular PML component
-    * 2. If the event is "in the blue" and a left click then don't do anything, 
-    *    if it's a right click then popup the context menu appropriate to this 
+    * 2. If the event is "in the blue" and a left click then don't do anything,
+    *    if it's a right click then popup the context menu appropriate to this
     *    class.
-    * @param e The Mouse Event with all the details of the event and how it 
+    * @param e The Mouse Event with all the details of the event and how it
     * came to be
     */
    public void mouseClicked( MouseEvent e )
@@ -541,22 +557,26 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
         // Process the mouse event as follows
         // Doubleclicking anybody brings up the properties for that node
         // A click on the parent node bring up the parent node's parent
-        // A click on a child brings that child up as the new parent and 
-        // displays. it's children.  If the child has no children then don't 
+        // A click on a child brings that child up as the new parent and
+        // displays. it's children.  If the child has no children then don't
         // change the parent. Way later we'll check for a pop-up menu event and
-        // go that route, but for now we'll leave this to just simple navigation        // and property selection
+        // go that route, but for now we'll leave this to just simple navigation
+        // and property selection
 
 
         // TODO Implement the above behavior.  For now spit out a mouse event
-        // First case - if we have doubleclicked (or more ) a node then we want         // to see it's properties.  This is easy!
-        int clickedCount = e.getClickCount();
-        if ( clickedCount > 1 ) {
+        // First case - if we have doubleclicked (or more ) a node then we want
+        // to see it's properties.  This is easy!
+        try {
+          int clickedCount = e.getClickCount();
+          if ( clickedCount > 1 ) {
             updateNodeProperties( (CPMLNode)m_PMLWidgets.get(e.getComponent()));
-            return;
+          return;
+          }
+        } catch(CPMLException exp) {
+          System.out.println(exp.toString());
         }
-
-
-        // If this node is the present parent node then set the focus to the 
+        // If this node is the present parent node then set the focus to the
         // parent's parent (if applicable) and update the view
         // Fetch the PML component we are interested in.
         CPMLNode pn = (CPMLNode)m_PMLWidgets.get( e.getComponent() );
@@ -564,45 +584,36 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
         // If we didn't get a node then just ignore this event
         if ( pn == null )
             return;
-        
+
         // If it doesn't have a parent, or a child then ignore the event
         // because there is nowhere to traverse
         if ( pn.GetParent() == null || pn.ChildrenAllowed() == false )
             return;
-            
+
        // Check if we clicked the currently displayed parent node.If we did then
        // we want to display that parent's parent
        if ( pn.equals( ((JPMLDataModel)getDataModel()).getFocusNode())) {
-            ((JPMLDataModel)getDataModel()).setFocusNode( 
+            ((JPMLDataModel)getDataModel()).setFocusNode(
                                                   (CPMLNode)pn.GetParent() );
             return;
        }
 
        // Else set the component itself as the new parent and go from there
        ((JPMLDataModel)getDataModel()).setFocusNode( pn );
+       JPMLTreeView.getInstance().setNode((CPMLNode)(
+                                (JPMLDataModel)getDataModel()).getFocusNode());
 
-        // Refresh the menu so the PML menu now reflects the current parent 
+        // Refresh the menu so the PML menu now reflects the current parent
         // node's possibilities if we have changed parents
    }
 
     /**
      * Menu processing for the view.  There are a number of events that can
-     * be processed by this view.  Each according to the current PML object 
+     * be processed by this view.  Each according to the current PML object
      * selected and/or the current state of the program.
      * @param e The menu event
      */
     public void menuSelected( MenuEvent e )
     {
     }
-/*
-    public void mousePressed(MouseEvent e)
-    {
-       int buttonNum2 = e.getModifiers() & InputEvent.BUTTON2_MASK;
-       int buttonNum3 = e.getModifiers() & InputEvent.BUTTON3_MASK;
-
-       if ( buttonNum2 != 0 || buttonNum3 != 0 ) {
-            updateNodeProperties((CPMLNode)m_PMLWidgets.get(e.getComponent()));
-       }
-    }
-*/    
 }

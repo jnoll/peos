@@ -14,6 +14,12 @@ import java.beans.*; //Property change stuff
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * This class is responsible for accept the task chain type, name and comments
+ * from the end-users. It provides the accessor methods to access all these
+ * data memebers.  
+ * @author Na Li
+ */
 class JTaskChainPropertyDlg extends PropertyDialog
 {
     private String msgString1;
@@ -21,20 +27,28 @@ class JTaskChainPropertyDlg extends PropertyDialog
     private JTextField fieldTaskName;
     private JLabel labelTaskType;
     private JTextField fieldTask;
+    private JLabel labelComments;
+    private JTextField fieldComments;
 
     private String strName = null;
     private String strType = null;
+    private String strComments = null;
     
     public String getName() 
     {
        return strName;
     }
 
-    public String getType() 
+    public String getType()
     {
       return strType;
     }
-    
+
+    public String getComments()
+    {
+      return strComments;
+    }
+
     public JTaskChainPropertyDlg(JFrame parent, String component, Icon icon ) 
     {
         super(parent, component, icon);
@@ -49,8 +63,12 @@ class JTaskChainPropertyDlg extends PropertyDialog
         labelTaskType = new JLabel( "Task Type:" );
         fieldTask = new JTextField(20);
 
-        Object[] array = { msgString1, labelTaskName, fieldTaskName, 
-                                           labelTaskType, fieldTask };
+        labelComments = new JLabel( "Task Comments:" );
+        fieldComments = new JTextField(20);
+
+        Object[] array = { msgString1, labelTaskType, fieldTask,
+                                       labelTaskName, fieldTaskName,
+                                       labelComments, fieldComments };
         Object[] options = {btnString1, btnString2};
 
         optionPane = new JOptionPane(array,
@@ -62,31 +80,33 @@ class JTaskChainPropertyDlg extends PropertyDialog
          setContentPane(optionPane);
          setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-//       getContentPane().add( mAuthor, 1 );
-//       getContentPane().add( new JLabel( "Author:", JLabel.LEADING ), 1 );
-         setTitle("Action Property");
+         setTitle("Task Chain Property");
 
          addWindowListener(
          new WindowAdapter()
          {
-                public void windowClosing(WindowEvent we)
-                {
-                /*
-                 * Instead of directly closing the window,
-                 * we're going to change the JOptionPane's
-                 * value property.
-                 */
-                    optionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
-                 }
+            public void windowClosing(WindowEvent we)
+            {
+            /*
+             * Instead of directly closing the window,
+             * we're going to change the JOptionPane's
+             * value property.
+             */
+                optionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
+             }
          });
 
-         fieldTaskName.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+         fieldTaskName.addActionListener(new ActionListener() 
+	 {
+            public void actionPerformed(ActionEvent e) 
+	    {
                 optionPane.setValue(btnString1);
             }
          });
-         optionPane.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent e) {
+         optionPane.addPropertyChangeListener(new PropertyChangeListener() 
+	 {
+            public void propertyChange(PropertyChangeEvent e) 
+	    {
                 String prop = e.getPropertyName();
                 if (isVisible() && (e.getSource() == optionPane)
                                 && (prop.equals(JOptionPane.VALUE_PROPERTY) ||
@@ -102,13 +122,14 @@ class JTaskChainPropertyDlg extends PropertyDialog
                     if ( value == "OK") {
                       strName = fieldTaskName.getText();
                       strType = fieldTask.getText();
+                      strComments = fieldComments.getText();
                     }
                     else
                       return;
 
                     optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
                     setVisible(false);
-                  }
+                }
               }
            });
     }
