@@ -79,7 +79,7 @@ int main()
 	if(strcmp(resources[i].qualifier, "abstract") != 0) {    
             printf("<tr>");
             printf("<td style=\"vertical-align: top;\">%s<br></td>",resources[i].name);
-            printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\" value=\"%s\" maxlength=\"256\"><br></td>",resources[i].name,resources[i].value);
+            printf("<td style=\"vertical-align: top;\"><input type=\"text\" size=\"100\" name=\"%s\" value=\"%s\" maxlength=\"256\"><br></td>",resources[i].name,resources[i].value);
             printf("</tr>");
         }
     }

@@ -107,7 +107,7 @@ int main()
 	for(i=0;i < num_unbound_resources; i++) {
 	    printf("<tr>");
 	    printf("<td style=\"vertical-align: top;\">%s<br></td>",unbound_resource_list[i].name);
-	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" name=\"%s\" value=\" \" maxlength=\"256\"><br></td>",unbound_resource_list[i].name);
+	    printf("<td style=\"vertical-align: top;\"><input type=\"text\" size=\"100\" name=\"%s\" value=\" \" maxlength=\"256\"><br></td>",unbound_resource_list[i].name);
             printf("</tr>");
 	}
 
