@@ -327,13 +327,13 @@ main (int argc, char **argv)
 
 		   
 	 case 'h': {
-		       printf("To create a process: peos -c name_of_model_file\n");
-	               printf("To start an action: peos -n process_id action_name event\n");
+		       printf("To create a process: peos [-l login_name] -c name_of_model_file\n");
+	               printf("To start an action: peos [-l login_name] -n process_id action_name event\n");
 	               printf("Event can be: start or finish or abort or suspend\n");
-	               printf("To update states of all processes (daemon simulation): peos -u \n");
-	               printf("To get a list of instances: peos -i\n");
-		       printf("To bind resources: peos -r pid resource_name resource_value\n");
-		       printf("To delete a process: peos -d pid\n");
+	               printf("To update states of all processes (daemon simulation): peos [-l login_name] -u \n");
+	               printf("To get a list of instances: peos [-l login_name] -i\n");
+		       printf("To bind resources: peos [-l login_name] -r pid resource_name resource_value\n");
+		       printf("To delete a process: peos [-l login_name] -d pid\n");
 	               printf("To get help: peos -h\n");
 		       break;
 		   }	       
