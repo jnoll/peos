@@ -5,7 +5,7 @@ process Checkout {
 			tool { "CVS" }
 			script { "Use cvs to checkout file." }
 			requires { "filename" }
-			provides { "filename" }
+			provides { "current file" }
 		}
 	}
 }
