@@ -349,10 +349,21 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 				     this,"Enter/Edit required Files\n" + resourceToBind[i] + ":",
 				     "Submit Start Action", 
 				     JOptionPane.PLAIN_MESSAGE);
-                            if (inputValue == null || inputValue.equals(""))
+                                                     
+                            while (inputValue !=null && inputValue.equals(""))
+                            {
+                                JOptionPane.showMessageDialog(this,
+                                    "Please enter a value for " + resourceToBind[i] +".","No Value Entered!",
+                                    JOptionPane.PLAIN_MESSAGE);
+				inputValue = (String)JOptionPane.showInputDialog(
+				     this,"Enter/Edit required Files\n" + resourceToBind[i] + ":",
+				     "Submit Start Action", 
+				     JOptionPane.PLAIN_MESSAGE);
+                            }
+                            if (inputValue == null)
                             {
 				return;                                
-                            }                            
+                            }
                             if ((inputValue!=null)&&(inputValue.length()>0)) 
                             { 
 				System.out.println("You Entered : " + inputValue);
@@ -399,6 +410,18 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                                 this,"Enter/Edit required Files\n" + resourceToBind[i] + ":",
 				"Submit Finish Action", 
 				JOptionPane.PLAIN_MESSAGE);
+                        while (inputValue !=null && inputValue.equals(""))                        
+                        {
+                                
+                            JOptionPane.showMessageDialog(this,                            
+                                "Please enter a value for " + resourceToBind[i] 
+                                +".","No Value Entered!",                            
+                                JOptionPane.PLAIN_MESSAGE);
+				inputValue = (String)JOptionPane.showInputDialog(
+                                    this,"Enter/Edit required Files\n"
+                                    + resourceToBind[i] + ":",				
+                                    "Submit Finish Action", JOptionPane.PLAIN_MESSAGE);
+                        }
                         if (inputValue == null || inputValue.equals(""))
                             return;                            
                         if ((inputValue!=null)&&(inputValue.length()>0)) { 				
@@ -438,23 +461,14 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                 resFrame.setVisible(false);
                 resFrame = null;
             }
-	    
-            //outline.finish(map.getCurrentAction(pidNum), pidNum);            
+	           
             resources=new JComboBox(outline.getResourceList(pidNum));                        
             resFrame = new JFrame("Change Resources");            
             resPanel = new JPanel();            
             resPanel.setLayout(new GridLayout(2,2));
                         
             newValue = new JTextField(50);
-            /*Object[] possibilities = outline.getResourceList(pidNum);
-            String s = (String)JOptionPane.showInputDialog(
-                    frame,
-                    "Pick resource to change:",
-                    "Change Resources",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    possibilities,
-                    "ham"); */
+ 
             
             JButton submit = new JButton("Submit Change");            
             submit.setActionCommand("submitchange");                        
