@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: uiConfig.tcl,v 1.4 1999/05/07 18:00:01 jneuder Exp $
+## File Information: $Id: uiConfig.tcl,v 1.5 1999/05/07 18:53:09 jneuder Exp $
 #######################################################################
 
 #######################################################################
@@ -33,8 +33,8 @@ namespace eval ::uiConfig:: {
 #
 # Clear the Engine Port and Host Name
 #
-     set UsrCfg(EngineHost) "oslab-server.cudenver.edu" 
-     set UsrCfg(EnginePort) 14175 
+     set UsrCfg(EngineHost) "oslab-server.cudenver.edu"
+     set UsrCfg(EnginePort) 14175
      set UsrCfg(WebBrowser) "netscape"
 #
 # List of functions which are accessible outside this
@@ -420,10 +420,10 @@ proc ::uiConfig::LoadConfigFile {} {
      variable HostSet
 
      if {$UsrCfg(ConfigFile) == ""} then {
-         if {$DebugOn} then {
+	 if {$DebugOn} then {
 	   puts stdout [format "%s No Config File Specified" \
-                        $ModuleName]
-         }
+			$ModuleName]
+	 }
 	 return 0
      } elseif {![file exists $UsrCfg(ConfigFile)]} then {
 	 ::uiErrorHandler::SendMsg \

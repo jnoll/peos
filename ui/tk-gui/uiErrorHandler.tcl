@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: uiErrorHandler.tcl,v 1.1 1999/05/06 04:24:54 jneuder Exp $
+## File Information: $Id: uiErrorHandler.tcl,v 1.2 1999/05/07 18:53:09 jneuder Exp $
 #######################################################################
 
 
@@ -17,17 +17,17 @@ namespace eval ::uiErrorHandler:: {
 
 #######################################################################
 # Function name:  ::uiEngHandler::SendMsg
-# Precondition:   an error has occurred.
+# Precondition:	  an error has occurred.
 # Postcondition:  An error pop-up is generated an a response returned.
-# Description:   Generates an error dialog box displaying the string
-#                contained in the errorMsg variable.
-# Arguments:      errorMsg -->  Error Message to be displayed
+# Description:	 Generates an error dialog box displaying the string
+#		 contained in the errorMsg variable.
+# Arguments:	  errorMsg -->	Error Message to be displayed
 #######################################################################
 proc ::uiErrorHandler::SendMsg { errorMsg } {
 
     set ::uiValues::errorResponse [tk_messageBox -parent . \
-                            -title "PML Error" -type yesno \
-                            -icon error -message $errorMsg]
+			    -title "PML Error" -type yesno \
+			    -icon error -message $errorMsg]
 
 #
 #

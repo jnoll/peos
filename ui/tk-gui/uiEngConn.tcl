@@ -1,10 +1,10 @@
 #######################################################################
-## File Information: $Id: uiEngConn.tcl,v 1.2 1999/05/06 04:24:54 jneuder Exp $
+## File Information: $Id: uiEngConn.tcl,v 1.3 1999/05/07 18:53:09 jneuder Exp $
 #######################################################################
 
 #######################################################################
 # Namespace name: ::uiEngConn
-# Description: This module handles the connection between the PML 
+# Description: This module handles the connection between the PML
 # Engine and the PML User Interface. There are three routine which are
 # exported for use by other PML User Interface Modules. SendMessage,
 # TurnDebugOn and TurnDebugOff
@@ -15,7 +15,7 @@ package provide uiEngConn 1.0
 namespace eval ::uiEngConn:: {
 #
 # Variable Common Within the uiEngConn Namespace Area
-#       
+#
      variable DebugOn 0
      variable ModuleName "uiEngConn\:\:"
 #
@@ -29,14 +29,14 @@ namespace eval ::uiEngConn:: {
 
 #######################################################################
 # Function name:  ::uiEngConn::SendMessage
-# Precondition:   ::uiEngConn namepace must be loaded and a valid 
-#                 UI to Engine Message must be passed in to the routine.
+# Precondition:	  ::uiEngConn namepace must be loaded and a valid
+#		  UI to Engine Message must be passed in to the routine.
 # Postcondition:  engineMessage is sent to the engine daemon via a
-#                 socket connection.
-# Description:    Sends the message specified by engineMessage to the
-#                 engine daemon.
-# Arguments:      engineMessage -->  valid UI to Engine Message is 
-#                                    character string form.
+#		  socket connection.
+# Description:	  Sends the message specified by engineMessage to the
+#		  engine daemon.
+# Arguments:	  engineMessage -->  valid UI to Engine Message is
+#				     character string form.
 #######################################################################
 proc ::uiEngConn::SendMessage { engineMessage } {
 
@@ -46,27 +46,27 @@ proc ::uiEngConn::SendMessage { engineMessage } {
 # Establish a connection with the engine
 #
     set UIEngineSocket [::uiEngConn::EstablishConnection \
-                            [::uiConfig::GetEnginePort]  \
-                            [::uiConfig::GetEngineHost]]
+			    [::uiConfig::GetEnginePort]	 \
+			    [::uiConfig::GetEngineHost]]
 
     if {$DebugOn} then {
-        puts stdout [format "%s Sending Message %s to Engine." \
-                        $ModuleName $engineMessage]
+	puts stdout [format "%s Sending Message %s to Engine." \
+			$ModuleName $engineMessage]
     }
 #
 # Send Message to the engine through the socket channel $UIEngineSocket
-#     
+#
     puts $UIEngineSocket $engineMessage
     flush $UIEngineSocket
 
     if {$DebugOn} then {
-        puts stdout [format "%s Message %s sent to Engine." \
-                         $ModuleName $engineMessage]
+	puts stdout [format "%s Message %s sent to Engine." \
+			 $ModuleName $engineMessage]
     }
 
     if {$DebugOn} then {
-        puts stdout [format "%s Waiting for Reply from Engine." \
-                     $ModuleName]
+	puts stdout [format "%s Waiting for Reply from Engine." \
+		     $ModuleName]
     }
 
     return 1
@@ -74,10 +74,10 @@ proc ::uiEngConn::SendMessage { engineMessage } {
 
 #######################################################################
 # Function name:  ::uiEngConn::TurnDebugOn
-# Precondition:   ::uiEngConn namepace must be loaded       
+# Precondition:	  ::uiEngConn namepace must be loaded
 # Postcondition:  variable Debug is Set to 1
-# Description:    Turns on Debugging Feature of Module
-# Arguments:      None.
+# Description:	  Turns on Debugging Feature of Module
+# Arguments:	  None.
 #######################################################################
 proc ::uiEngConn::TurnDebugOn {} {
 
@@ -87,8 +87,8 @@ proc ::uiEngConn::TurnDebugOn {} {
     set DebugOn 1
 
     if {$DebugOn} then {
-        puts stdout [format "%s Turning Debug On" \
-                         $ModuleName]
+	puts stdout [format "%s Turning Debug On" \
+			 $ModuleName]
     }
 
     return 1
@@ -96,10 +96,10 @@ proc ::uiEngConn::TurnDebugOn {} {
 
 #######################################################################
 # Function name:  ::uiEngConn::TurnDebugOff
-# Precondition:   ::uiEngConn namepace must be loaded       
+# Precondition:	  ::uiEngConn namepace must be loaded
 # Postcondition:  variable Debug is Set to 0
-# Description:    Turns off Debugging Feature of Module
-# Arguments:      None.
+# Description:	  Turns off Debugging Feature of Module
+# Arguments:	  None.
 #######################################################################
 proc ::uiEngConn::TurnDebugOff {} {
 
@@ -107,8 +107,8 @@ proc ::uiEngConn::TurnDebugOff {} {
     variable ModuleName
 
     if {$DebugOn} then {
-        puts stdout [format "%s Turning Debug Off." \
-                         $ModuleName]
+	puts stdout [format "%s Turning Debug Off." \
+			 $ModuleName]
     }
 
     set DebugOn 0
@@ -118,29 +118,29 @@ proc ::uiEngConn::TurnDebugOff {} {
 
 #######################################################################
 # Function name:  ::uiEngConn::ReplyReady
-# Precondition:   ::uiEngConn namepace must be loaded and an active
-#                 UI to Engine Socket ready with and Engine reply
-#                 message.       
+# Precondition:	  ::uiEngConn namepace must be loaded and an active
+#		  UI to Engine Socket ready with and Engine reply
+#		  message.
 # Postcondition:  Reply is consumed and the socket connection is closed.
-# Description:    This routine is called by the socket event handler 
-#                 when a reply message is ready on the sosket. The
-#                 Message is consumed and the socket connection is 
-#                 closed.
-# Arguments:      uiEngSocket --> a valid UI to Engine Socket Message
+# Description:	  This routine is called by the socket event handler
+#		  when a reply message is ready on the sosket. The
+#		  Message is consumed and the socket connection is
+#		  closed.
+# Arguments:	  uiEngSocket --> a valid UI to Engine Socket Message
 #######################################################################
 proc ::uiEngConn::ReplyReady { uiEngSocket } {
 
     variable EngineMessage ""
     variable DebugOn
     variable ModuleName
- 
+
     if {$DebugOn} then {
-        puts stdout [format "%s Reply ready from Engine." \
-                     $ModuleName]
+	puts stdout [format "%s Reply ready from Engine." \
+		     $ModuleName]
     }
 #
 # Retrieve Engine Message from the socket.
-#    
+#
     set EngineMessage [::uiEngConn::ConsumeEngineReply $uiEngSocket]
 #
 # Close Connection to the Engine
@@ -156,50 +156,50 @@ proc ::uiEngConn::ReplyReady { uiEngSocket } {
 
 #######################################################################
 # Function name:  ::uiEngConn::ConsumeEngineReply
-# Precondition:   ::uiEngConn namepace must be loaded and an active
-#                 socket channel must be passed in.       
+# Precondition:	  ::uiEngConn namepace must be loaded and an active
+#		  socket channel must be passed in.
 # Postcondition:  Reply Message is returned from Engine.
-# Description:    Using the active passed in socket, ::uiEngConn::
-#                 ConsumeEngineReply retrieves the message from the 
-#                 socket and returns the message text.
-# Arguments:      uiEngSocket -> Active UI/Engine Socket.
+# Description:	  Using the active passed in socket, ::uiEngConn::
+#		  ConsumeEngineReply retrieves the message from the
+#		  socket and returns the message text.
+# Arguments:	  uiEngSocket -> Active UI/Engine Socket.
 #######################################################################
 proc ::uiEngConn::ConsumeEngineReply { uiEngSocket } {
 
     variable DebugOn
     variable ModuleName
-     
+
     if {$DebugOn} then {
-        puts stdout [format "%s Consuming Message from Engine." \
-                         $ModuleName]
+	puts stdout [format "%s Consuming Message from Engine." \
+			 $ModuleName]
     }
 
     set TempMessage ""
     set UIMessage ""
 #
 # While not end of file on the socket and the incoming message is not
-# empty then retrieve the Engine Message text from the socket and 
+# empty then retrieve the Engine Message text from the socket and
 # place it in the UIMessage variable.
 #
     while {[gets $uiEngSocket TempMessage] >= 0} {
-        if {$TempMessage != ""} then {
-            set UIMessage ${UIMessage}${TempMessage}
-            if {$DebugOn} then {
-                puts stdout [format "%s Creating Message from Engine: %s." \
-                                 $ModuleName $UIMessage]
-            }
-        } else {
-            if {$DebugOn} then {
-                puts stdout [format "%s Blank Line Encountered from Engine." \
-                                 $ModuleName]
-            }
-            break
-        }
+	if {$TempMessage != ""} then {
+	    set UIMessage ${UIMessage}${TempMessage}
+	    if {$DebugOn} then {
+		puts stdout [format "%s Creating Message from Engine: %s." \
+				 $ModuleName $UIMessage]
+	    }
+	} else {
+	    if {$DebugOn} then {
+		puts stdout [format "%s Blank Line Encountered from Engine." \
+				 $ModuleName]
+	    }
+	    break
+	}
     }
 
     if {$DebugOn} then {
-        puts stdout [format "%s Complete Engine Message: %s." \
-                     $ModuleName $UIMessage]
+	puts stdout [format "%s Complete Engine Message: %s." \
+		     $ModuleName $UIMessage]
     }
 #
 # Return Message through procedure
@@ -209,17 +209,17 @@ proc ::uiEngConn::ConsumeEngineReply { uiEngSocket } {
 
 #######################################################################
 # Function name:  ::uiEngConn::EstablishConnection
-# Precondition:   ::uiEngConn namepace must be loaded. The port number
-#                 and the host of the engine daemon.
-# Postcondition:  Connection is established with the Engine on a 
-#                 socket channel.  The socket event handlers are 
-#                 configured to call ::uiEngConn::ReplyReady procedure 
-#                 when a message is ready from the Engine. The active
-#                 socket is returned.
-# Description:    Establishes socket connection with the PML Engine
-#                 daemon and configures the socket event handlers.
-# Arguments:      enginePort -> port number of engine daemon.
-#                 engineHost -> hostname of the engine daemon.
+# Precondition:	  ::uiEngConn namepace must be loaded. The port number
+#		  and the host of the engine daemon.
+# Postcondition:  Connection is established with the Engine on a
+#		  socket channel.  The socket event handlers are
+#		  configured to call ::uiEngConn::ReplyReady procedure
+#		  when a message is ready from the Engine. The active
+#		  socket is returned.
+# Description:	  Establishes socket connection with the PML Engine
+#		  daemon and configures the socket event handlers.
+# Arguments:	  enginePort -> port number of engine daemon.
+#		  engineHost -> hostname of the engine daemon.
 #######################################################################
 proc ::uiEngConn::EstablishConnection { enginePort engineHost } {
 
@@ -228,8 +228,8 @@ proc ::uiEngConn::EstablishConnection { enginePort engineHost } {
     variable UIEngineSocket -1
 
     if {$DebugOn} then {
-        puts stdout [format "%s Establishing Engine Connection." \
-                            $ModuleName]
+	puts stdout [format "%s Establishing Engine Connection." \
+			    $ModuleName]
     }
 #
 # Attempt to establish a socket connection
@@ -241,21 +241,21 @@ proc ::uiEngConn::EstablishConnection { enginePort engineHost } {
 # If socket connection cannot be established then with Engine send an
 # error message to the Error Handling module
 #
-        ::uiErrorHandler::SendMsg \
-            [format "%s Unable to establish a connection with Engine on Port %d on Host %s" \
-                    $ModuleName $enginePort $engineHost]
+	::uiErrorHandler::SendMsg \
+	    [format "%s Unable to establish a connection with Engine on Port %d on Host %s" \
+		    $ModuleName $enginePort $engineHost]
     } else {
 #
 # Configure the socket to call the ::uiEngConn::ReplyReady routine when
 # a message is ready to read from the engine daemon
 #
-        fconfigure $UIEngineSocket -buffering none   
-        fileevent $UIEngineSocket readable [list ::uiEngConn::ReplyReady \
-                                                $UIEngineSocket]
-        if {$DebugOn} then {
-            puts stdout [format "%s Configuring Socket Event Handler" \
-                        $ModuleName]
-        }
+	fconfigure $UIEngineSocket -buffering none
+	fileevent $UIEngineSocket readable [list ::uiEngConn::ReplyReady \
+						$UIEngineSocket]
+	if {$DebugOn} then {
+	    puts stdout [format "%s Configuring Socket Event Handler" \
+			$ModuleName]
+	}
     }
 
     return $UIEngineSocket
@@ -263,20 +263,20 @@ proc ::uiEngConn::EstablishConnection { enginePort engineHost } {
 
 #######################################################################
 # Function name:  ::uiEngConn::CloseConnection
-# Precondition:   ::uiEngConn namepace must be loaded. Active UI to 
-#                 Engine socket connection.
+# Precondition:	  ::uiEngConn namepace must be loaded. Active UI to
+#		  Engine socket connection.
 # Postcondition:  Socket connection is closed.S
-# Description:    Closes connection with the engine daemon.
-# Arguments:      uiEngSocket --> Active UI to Engine Socket
+# Description:	  Closes connection with the engine daemon.
+# Arguments:	  uiEngSocket --> Active UI to Engine Socket
 #######################################################################
 proc ::uiEngConn::CloseConnection { uiEngSocket } {
-   
+
     variable DebugOn
     variable ModuleName
 
     if {$DebugOn} then {
-        puts stdout [format "%s Closing Engine Connection." \
-                     $ModuleName]
+	puts stdout [format "%s Closing Engine Connection." \
+		     $ModuleName]
     }
 #
 # Close Socket Connection.
@@ -284,8 +284,8 @@ proc ::uiEngConn::CloseConnection { uiEngSocket } {
     close $uiEngSocket
 
     if {$DebugOn} then {
-        puts stdout [format "%s Connection Closed." \
-                     $ModuleName]
+	puts stdout [format "%s Connection Closed." \
+		     $ModuleName]
     }
 
     return 1

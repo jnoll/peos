@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: messageMgr.tcl,v 1.2 1999/05/06 20:55:37 jneuder Exp $
+## File Information: $Id: messageMgr.tcl,v 1.3 1999/05/07 18:53:09 jneuder Exp $
 #######################################################################
 
 # messageManager script
@@ -29,33 +29,33 @@ proc ::messageMgr::configUI { messageType } {
     switch $messageType {
 
       processList {
-        ::dynamicWidgets::makeProcessSelect
+	::dynamicWidgets::makeProcessSelect
       }
 
       choiceList  {
-        ::dynamicWidgets::makeChoiceList  
+	::dynamicWidgets::makeChoiceList
       }
 
       action {
-        ::dynamicWidgets::makeAction  
+	::dynamicWidgets::makeAction
       }
-         
+
       iterationComplete {
-        ::dynamicWidgets::makeIterationComplete
-      }  
-        
+	::dynamicWidgets::makeIterationComplete
+      }
+
       info {
-        ::dynamicWidgets::makeInfo
+	::dynamicWidgets::makeInfo
       }
 
       error {
-        ::dynamicWidgets::makeError
+	::dynamicWidgets::makeError
       }
 
       default  {
-          ::uiErrorHandler::SendMsg \
-              [format "%s Unrecognized message type %s" \
-                   $ModuleName $mesg_type ]
+	  ::uiErrorHandler::SendMsg \
+	      [format "%s Unrecognized message type %s" \
+		   $ModuleName $mesg_type ]
       }
    }
 }

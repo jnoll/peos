@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: uiValues.tcl,v 1.2 1999/05/06 20:55:37 jneuder Exp $
+## File Information: $Id: uiValues.tcl,v 1.3 1999/05/07 18:53:09 jneuder Exp $
 #######################################################################
 
 # uiValues script
@@ -7,65 +7,65 @@
 # UI group from UCD CSC 5728 (Sofware Engin.) Spring 1999, Dr. Noll
 
 namespace eval ::uiValues {
-       
-        # Message to be sent to Engine
-        variable uiMessage ""
 
-        # common variables
-        variable userName ""
-        variable processName "N/A"
-        
-        # process Select variables
-        variable resumeList ""
-        variable availList ""
-        variable processType ""
+	# Message to be sent to Engine
+	variable uiMessage ""
 
-        # choice list variables
-        variable choiceList ""
-        variable choiceType ""
-        
-        # action message variables
-        variable process "N/A"
-        variable taskName "N/A"
-        variable taskState "N/A"   
-        variable actionName "N/A"
-        variable actionState "N/A"
-        variable actionType ""
-        variable actionDisplay ""
-        variable actionScript ""
-        variable fieldList ""
-        variable actionTool ""
-        variable actionRequires ""
-        variable actionProvides ""
-        variable actionStep ""
+	# common variables
+	variable userName ""
+	variable processName "N/A"
 
-        variable fieldType ""
+	# process Select variables
+	variable resumeList ""
+	variable availList ""
+	variable processType ""
 
-        # actionField is a list, should it be 3 variables
-        variable actionField "" 
+	# choice list variables
+	variable choiceList ""
+	variable choiceType ""
 
-        # iteration complete variables
-        variable iterComp ""    
-        variable iterationResponse ""
-        variable iterationValue ""
+	# action message variables
+	variable process "N/A"
+	variable taskName "N/A"
+	variable taskState "N/A"
+	variable actionName "N/A"
+	variable actionState "N/A"
+	variable actionType ""
+	variable actionDisplay ""
+	variable actionScript ""
+	variable fieldList ""
+	variable actionTool ""
+	variable actionRequires ""
+	variable actionProvides ""
+	variable actionStep ""
 
-        # info message variables
-        variable infoText ""
-        variable infoResponse ""
+	variable fieldType ""
 
-        # error message variables
-        variable errorText ""
-        variable errorResponse ""
+	# actionField is a list, should it be 3 variables
+	variable actionField ""
 
-        # ActionResponse variables
-        variable responseProcess ""
-        variable responseTaskName ""
-        variable responseActionName ""
-        variable responseState ""
-        variable responseFieldList ""
+	# iteration complete variables
+	variable iterComp ""
+	variable iterationResponse ""
+	variable iterationValue ""
 
-        # message response variables
-        variable output ""
+	# info message variables
+	variable infoText ""
+	variable infoResponse ""
+
+	# error message variables
+	variable errorText ""
+	variable errorResponse ""
+
+	# ActionResponse variables
+	variable responseProcess ""
+	variable responseTaskName ""
+	variable responseActionName ""
+	variable responseState ""
+	variable responseFieldList ""
+
+	# message response variables
+	variable output ""
 }
 
 ## the following reset variables are not used in the initial implementation
@@ -82,9 +82,9 @@ namespace eval ::uiValues {
 #####################################################################
 
 proc ::uiValues::resetCommonVariables {} {
-        # common variables
-        variable userName ""
-        variable processName "N/A"
+	# common variables
+	variable userName ""
+	variable processName "N/A"
 }
 
 ####################################################################
@@ -95,12 +95,12 @@ proc ::uiValues::resetCommonVariables {} {
 ## Arguments: none
 ##
 #####################################################################
-     
+
 proc ::uiValues::resetProcessSelectVariables {} {
-        # process Select variables
-        variable resumeList ""
-        variable availList ""
-        variable processType ""
+	# process Select variables
+	variable resumeList ""
+	variable availList ""
+	variable processType ""
 }
 
 ####################################################################
@@ -113,10 +113,10 @@ proc ::uiValues::resetProcessSelectVariables {} {
 #####################################################################
 
 proc ::uiValues::resetChoiceListVariables {} {
-        # choice list variables
-        variable choiceList ""
-        variable choiceType ""
-        variable choiceName ""
+	# choice list variables
+	variable choiceList ""
+	variable choiceType ""
+	variable choiceName ""
 }
 
 ####################################################################
@@ -128,26 +128,26 @@ proc ::uiValues::resetChoiceListVariables {} {
 ##
 #####################################################################
 
-proc ::uiValues::resetActionVariables {} {      
-        # action message variables
-        variable process "N/A"
-        variable taskName "N/A"
-        variable taskState "N/A"   
-        variable actionName "N/A"
-        variable actionState "N/A"
-        variable actionType "N/A"
-        variable actionDisplay ""
-        variable actionScript ""
-        variable fieldList ""
-        variable actionTool ""
-        variable actionRequires ""
-        variable actionProvides ""
-        variable actionStep ""
+proc ::uiValues::resetActionVariables {} {
+	# action message variables
+	variable process "N/A"
+	variable taskName "N/A"
+	variable taskState "N/A"
+	variable actionName "N/A"
+	variable actionState "N/A"
+	variable actionType "N/A"
+	variable actionDisplay ""
+	variable actionScript ""
+	variable fieldList ""
+	variable actionTool ""
+	variable actionRequires ""
+	variable actionProvides ""
+	variable actionStep ""
 
-        variable fieldType ""
+	variable fieldType ""
 
-        # actionField is a list, should it be 3 variables
-        variable actionField "" 
+	# actionField is a list, should it be 3 variables
+	variable actionField ""
 }
 
 ####################################################################
@@ -160,10 +160,10 @@ proc ::uiValues::resetActionVariables {} {
 #####################################################################
 
 proc ::uiValues::resetIterationCompleteVariables {} {
-        # iteration complete variables
-        variable iterComp ""    
-        variable iterResponse ""
-        variable iterValue ""
+	# iteration complete variables
+	variable iterComp ""
+	variable iterResponse ""
+	variable iterValue ""
 }
 
 ####################################################################
@@ -176,9 +176,9 @@ proc ::uiValues::resetIterationCompleteVariables {} {
 #####################################################################
 
 proc ::uiValues::resetInfoVariables {} {
-        # info message variables
-        variable infoText ""
-        variable infoResponse ""
+	# info message variables
+	variable infoText ""
+	variable infoResponse ""
 }
 
 ####################################################################
@@ -191,9 +191,9 @@ proc ::uiValues::resetInfoVariables {} {
 #####################################################################
 
 proc ::uiValues::resetErrorVariables {} {
-        # error message variables
-        variable errorText ""
-        variable errorResponse ""
+	# error message variables
+	variable errorText ""
+	variable errorResponse ""
 }
 
 ####################################################################
@@ -206,7 +206,7 @@ proc ::uiValues::resetErrorVariables {} {
 #####################################################################
 
 proc ::uiValues::resetOutputVariables {} {
-        # message response variables
-        variable output ""
+	# message response variables
+	variable output ""
 }
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 #######################################################################
-## File Information: $Id: pmlUI.tcl,v 1.2 1999/05/07 16:03:54 jneuder Exp $
+## File Information: $Id: pmlUI.tcl,v 1.3 1999/05/07 18:53:09 jneuder Exp $
 #######################################################################
 
 #
@@ -22,7 +22,7 @@ source messageMgr.tcl
 source parseMesg.tcl
 source persistentWidgets.tcl
 source readMesgField.tcl
-source separateIdName.tcl 
+source separateIdName.tcl
 source uiConfig.tcl
 source uiEngConn.tcl
 source uiErrorHandler.tcl
