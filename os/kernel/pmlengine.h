@@ -16,6 +16,7 @@
 #define ABORTED     5
 #define NONE        6
 
+#ifdef USE_VM_VERSION
 /* process context */
 struct context_t {
     int PC;           /* key of .gdbm file */
@@ -29,6 +30,7 @@ struct act_t {
     int state;        /* state */
     int wait;         /* which event is this action waiting for */
 };
+#endif
 
 /* global variables */
 extern char uname[10];     /* username */
@@ -42,9 +44,9 @@ void sendHelp(void);
 
 void pmlLogin(void);
 int authenticate(char * uname, char * passwd);
-char * createProcess(char * model, int startPC, char * parent);
+/*char * createProcess(char * model, int startPC, char * parent);*/
 int queryActions(int state);
-int runAction(char * proc, char * act_name);
+/*int runAction(char * proc, char * act_name);*/
 int doneAction(char * proc, char * act_name);
 
-int execute(char * proc);
+/*int execute(char * proc);*/

@@ -13,6 +13,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <pml_state.h>
+#include <vm.h>
 #include "pmlengine.h"
 
 // Ming, comment the following line to disable monitoring socket activities.  
@@ -52,12 +54,12 @@ void dispatch()
  
         else if (strcasecmp(cmd, "CREATE", 6) == 0) {
             char model[255];
-            char * proc;
+            pml_obj_t proc;
             if (sscanf(in_buf+6, "%255s", model) != 1) {
                 sendUI("500 geeze, use correct format!\n");
                 continue;
             } 
-            proc = createProcess(model, 0, "");
+            proc = createProcess(model, "",  0);
             if (proc != NULL) {
                 execute(proc);
                 free(proc);

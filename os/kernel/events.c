@@ -146,6 +146,7 @@ int listModel()
     return 0;
 } /* listModel */
 
+#ifdef USE_VM_VERSION
 /***************************** createProcess *******************
 * -when creating a new process, assign startPC 0,
 * -when creating a child process (fork), assign startPC to the start PC 
@@ -277,6 +278,7 @@ char * createProcess(char * model, int startPC, char * parent)
     
     return proc;
 } /* createProcess */
+#endif
 
 /***************************** queryActions *********************
  * Handles the determination of the "available" or next-to-do
@@ -395,6 +397,7 @@ int queryActions(int state)
     return 0;
 } /* queryActions */
 
+#ifdef USE_VM_VERSION
 /****************************** runAction ********************
  * Just what it sounds like - starts an action running (at the
  * user's request, with a command-line I/O). The action must be
@@ -460,6 +463,7 @@ int runAction(char * proc, char * act_name)
     
     return 0;
 } /* runAction */
+#endif
 
 /********************** doneAction ***************************
  * Signals the finish of a currently-running action.
