@@ -13,7 +13,9 @@ KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
 	$(KERNEL_DIR)/graph_engine.o \
 	$(KERNEL_DIR)/process_table.o \
 	$(KERNEL_DIR)/process.o \
-	$(KERNEL_DIR)/action.o 
+	$(KERNEL_DIR)/action.o \
+	$(KERNEL_DIR)/graph.o \
+	$(KERNEL_DIR)/resources.o \
 
 OBJECTS = html.o
 
