@@ -200,7 +200,8 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   	public void actionPerformed(ActionEvent e)
   	{
   		if("start".equals(e.getActionCommand()))
-  		{		
+  		{	
+                        map.getActionByName(pidNum,currActionName);
 			startAction();
 			map.getActionByName(pidNum,currActionName);
 			LinkNode n = map.getCurrentLink(pidNum);
@@ -228,6 +229,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   		}
   		else if ("abort".equals(e.getActionCommand()))
   		{
+                        map.getActionByName(pidNum,currActionName);
 			outline.abort(map.getCurrentAction(pidNum), pidNum);
 			map.getActionByName(pidNum,currActionName);
 			LinkNode n = map.getCurrentLink(pidNum);
@@ -271,6 +273,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		}
   		else if ("suspend".equals(e.getActionCommand()))
   		{
+                        map.getActionByName(pidNum,currActionName);
 			outline.suspend(map.getCurrentAction(pidNum), pidNum);
 			map.getActionByName(pidNum,currActionName);
 			LinkNode n = map.getCurrentLink(pidNum);
