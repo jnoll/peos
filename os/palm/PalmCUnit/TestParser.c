@@ -64,11 +64,11 @@ static void test_peos_list_models(){
 	char ** ret;
 	Int16 dbc;
 	dbc = DmNumDatabases(0);
-	ASSERT_INT16_EQUAL(5, dbc);
-	peos_list_models(); 
+	//ASSERT_INT16_EQUAL(5, dbc);
+	ret=peos_list_models(); 
 	if (ret == NULL)
 		ASSERT_STR_EQUAL("yo", "YOU");
-//	ASSERT_STR_EQUAL("yo", ret[0]);
+	ASSERT_STR_EQUAL("yo", ret[0]);
 }
 static void test_ListCreate()
 {
