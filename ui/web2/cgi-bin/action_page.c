@@ -6,6 +6,7 @@
 #include "../../../os/kernel/process_table.h"
 
 void get_script(int pid, char *action);
+void print_resources(int pid, char *action);
 
 int main()
 {
@@ -43,6 +44,8 @@ int main()
   printf("<font size=\"6\"><b>Action: %s   (%s)</b></font>\n", action, state);
   printf("<br><br>\n");
   printf("<font size=\"5\">Resources</font>\n");
+  printf("<br>\n");
+  print_resources(pid, action);
   printf("<br><br>\n");
   printf("<font size=\"5\">Description</font>\n");
   printf("<br>\n");
@@ -94,16 +97,6 @@ int main()
   printf("</body>\n");
   printf("</html>\n");
 
-
-
-
-
-
-
-
-
-
-
   return 0;
 }
 
@@ -120,4 +113,20 @@ void get_script(int pid, char *action)
   else {
     printf("No Script\n");
   }
+}
+
+void print_resources(int pid, char *action)
+{
+  int i, num_resources;
+  peos_resource_t *resources;
+  
+  load_proc_table("proc_table.dat");
+  resources = (peos_resource_t *) get_resource_list_action(pid, action, &num_resources);
+
+  for(i=0; i<num_resources; i++){
+    printf("%s", resources[i].name);
+    if(i != num_resources-1)
+      printf(", ");
+  }
+  printf("\n");
 }

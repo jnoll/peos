@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "events.h"
-#include "vm.h"
-#include "process_table.h"
+#include "../../../os/kernel/events.h"
+#include "../../../os/kernel/vm.h"
+#include "../../../os/kernel/process_table.h"
 
 void print_action(peos_action_t *action, char *state);
 void get_script(peos_action_t *action);

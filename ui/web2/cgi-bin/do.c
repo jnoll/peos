@@ -117,14 +117,3 @@ void suspend_action(int pid, char *action)
   save_proc_table("proc_table.dat");
 }
 
-void create_process(char *model)
-{
-  int pid;
-
-  load_proc_table("proc_table.dat");
-  if ((pid = peos_run(model, 0, 0)) < 0) {
-    printf("<P>%d</P>\n", pid);
-    printf("<P>Couldn't create %s</P>\n", model);
-  }
-  save_proc_table("proc_table.dat");
-}

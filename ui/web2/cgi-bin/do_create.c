@@ -39,12 +39,30 @@ int main()
 
 void create_process(char *model)
 {
-  int pid;
+  int i, pid, num_resources;
+  char *model_file;
+  peos_resource_t *resources;
 
   load_proc_table("proc_table.dat");
-  if ((pid = peos_run(model, 0, 0)) < 0) {
+  model_file = (char *)find_model_file(model);
+  if(model_file == NULL){
+    printf("error: model file not found\n");
+    return;
+  }
+
+  resources = (peos_resource_t *) get_resource_list(model_file,&num_resources);
+  if(resources == NULL){
+    printf("error getting resources\n");
+    return;
+  }
+  for(i=0; i<num_resources; i++){
+    sprintf(resources[i].value,"value_%d", i);
+  }
+
+  if ((pid = peos_run(model, resources, num_resources)) < 0) {
     printf("<P>%d</P>\n", pid);
     printf("<P>Couldn't create %s</P>\n", model);
   }
   save_proc_table("proc_table.dat");
+  
 }

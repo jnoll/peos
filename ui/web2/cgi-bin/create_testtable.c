@@ -10,7 +10,7 @@ int main()
 {
 
   load_proc_table("proc_table.dat");
-  peos_run("test_action", 0, 0);
+  peos_run("test_action", NULL, 0);
   save_proc_table("proc_table.dat");
 
   return 0;
