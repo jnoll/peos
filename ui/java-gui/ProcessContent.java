@@ -389,6 +389,12 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   	public void changeResourceAction()
   	{		
                 
+                        if (resFrame != null)
+                        {
+                            resFrame.getContentPane().removeAll();
+                            resFrame.setVisible(false);
+                            resFrame = null;
+                        }
 	                //outline.finish(map.getCurrentAction(pidNum), pidNum);
                         resources=new JComboBox(outline.getResourceList(pidNum));
                         resFrame = new JFrame("Change Resources");
@@ -414,6 +420,8 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                         resFrame.getContentPane().add(resPanel);
                         resFrame.pack();
                         resFrame.setVisible(true);
+                        
+                        
 
   	}
   	

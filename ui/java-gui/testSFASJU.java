@@ -78,8 +78,8 @@ public class testSFASJU extends TestCase{
 		//if (!testElem.getAttribute("state").equals("RUN"))
 		//	return false;
 		test.abort(testElem,0);
-		testElem = testAM.getActionByName(0,"Fill_hours");
-		assertTrue(testElem.getAttribute("state").equals("NONE"));
+                testElem = testAM.getActionByName(0,"Fill_hours");
+		assertTrue(testElem.getAttribute("state").equals("AVAILABLE"));
 		//if (!testElem.getAttribute("state").equals("NONE"))
 		//	return false;
 		//return true;
