@@ -481,11 +481,12 @@ int pe_perform_predicate_eval(int pid, Tree t)
 	#endif
 			if(TREE_OP(t->left) == DOT && TREE_OP(t->right) == DOT){
 				if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->right->right))){
-					return pe_file_exists(pe_get_resval(pid, TREE_ID(t->left->left))) && pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
+ 					return pe_file_exists(pe_get_resval(pid, TREE_ID(t->left->left))) && pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
 				}
 			}
 			else if(TREE_OP(t->left) == DOT){
-				if(!strcmp("spellchecked", TREE_ID(t->left->right)))
+				if(!strcmp("spellchecked", TREE_ID(t->left->right)) ||
+				   !strcmp("spell_checked", TREE_ID(t->left->right)))
 					return (pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left))) 
 					== pe_perform_predicate_eval(pid, t->right));
 				else if(!strcmp("clean", TREE_ID(t->left->right)))
