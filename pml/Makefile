@@ -27,7 +27,7 @@ t:              t.o $(LIB)
 
 clean:;		rm -f $(LIB) $(OBJS)
 
-clobber:;	rm -f $(LIB) $(OBJS) $(SRCS) y.tab.h
+clobber:;	rm -f $(LIB) $(OBJS) $(SRCS) y.tab.h libpml.a
 
 
 
