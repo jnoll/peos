@@ -7,7 +7,7 @@
 #include "form.h"
 #include "variables.h"
 #include "vrepo.h"
-#include "seeker.h"
+#include "FSseeker.h"
 #include "resultLinkedList.h"
 #include "queryLinkedList.h"
 #include <stdio.h>
@@ -17,7 +17,7 @@
 
 void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ), int *d )
 {
-	bool isValidOp( char *op ) ; 
+	bool isValidClauses( struct clause *, int ) ;
 	
 	char *word, *toParse ;
 	int i, j ;
@@ -38,14 +38,9 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					strcpy( newQuery -> myClauses[j].attribute, word ) ;
 					break ;
 					
-			case 1 :	if( isValidOp( word ) )
-					{
-						newQuery -> myClauses[j].operator = 
-							(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
-						strcpy( newQuery -> myClauses[j].operator, word ) ;
-					}
-					else
-						printf( "invalid operator!" ) ;
+			case 1 :	newQuery -> myClauses[j].operator = 
+						(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
+					strcpy( newQuery -> myClauses[j].operator, word ) ;
 					break ;
 					
 			case 2 :	newQuery -> myClauses[j].value = 
@@ -64,17 +59,45 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 		word = strtok( NULL, " " ) ;
 	}
 	
-	newQuery -> numClauses = j ;
-	newQuery -> callback = cback;
-	newQuery -> data = d ;
-	myQueries = addQueryItem( myQueries, newQuery ) ;
-	numQueries++ ;
+	if( isValidClauses( newQuery -> myClauses, j ) )
+	{
+		newQuery -> numClauses = j ;
+		newQuery -> callback = cback;
+		newQuery -> data = d ;
+		myQueries = addQueryItem( myQueries, newQuery ) ;
+	}
+	else
+	{
+		for( i = 0 ; i < j ; i++ )
+		{
+			free( newQuery -> myClauses[i].attribute ) ;
+			free( newQuery -> myClauses[i].operator ) ;
+			free( newQuery -> myClauses[i].value ) ;
+			free( newQuery ) ;
+		}
+		printf( "\ninvalid query...\n" ) ;
+	}			
 }
 
-bool isValidOp( char *op )
+bool isValidClauses( struct clause *theClauses, int numClauses )
+{
+	bool isValidOperator( char *op ) ; 
+	
+	int i ;
+	bool valid ;	
+	
+	valid = true ;
+	for( i = 0 ; i < numClauses ; i++ )
+	{
+		valid = isValidOperator( theClauses[i].operator ) ;
+	}
+	return valid ;
+}
+
+bool isValidOperator( char *op )
 {
 	int i ;
-	char operators[6][2] = { "EQ", "NE", "LT", "LE", "GT", "GE" } ;
+	char operators[1][2] = { "EQ" } ;
 	
 	for( i = 0 ; i < sizeof(operators) / sizeof(operators[0]) ; i++ )
 	{
@@ -87,32 +110,34 @@ bool isValidOp( char *op )
 void poll_vr( ) 
 {
 	queryList* queryTool( queryList *listpointer ) ;
-	void deregister( int index ) ;
-	
+		
 	queryList *tempQueries ;
 	
 	int tag = 0 ;
-
-	myQueries = queryTool( myQueries ) ;
 	
-	tempQueries = myQueries ;
-	
-	while( tempQueries != NULL )
+	if( myQueries != NULL )
 	{
-		if( tempQueries -> oneQuery -> numFound )
-		{
-			tag = 1;
-			tempQueries -> oneQuery -> callback( tempQueries -> oneQuery -> numFound,
-						             tempQueries -> oneQuery -> results,
-						             tempQueries -> oneQuery -> data ) ;
-			printf( "%d record(s) found!\n", tempQueries -> oneQuery -> numFound ) ;
-			printResultList( tempQueries -> oneQuery -> results ) ;
-			tempQueries -> oneQuery -> removeTag = 1 ;
-		}
-		tempQueries = ( queryList* ) tempQueries -> link ;
-	}
+		myQueries = FSqueryTool( myQueries ) ;
+			
+		tempQueries = myQueries ;
 	
-	if ( tag )
-		myQueries = filterQueryList( myQueries ) ;
+		while( tempQueries != NULL )
+		{
+			if( tempQueries -> oneQuery -> numFound )
+			{
+				tag = 1;
+				tempQueries -> oneQuery -> callback( tempQueries -> oneQuery -> numFound,
+							             tempQueries -> oneQuery -> results,
+							             tempQueries -> oneQuery -> data ) ;
+				printf( "%d record(s) found!\n", tempQueries -> oneQuery -> numFound ) ;
+				printResultList( tempQueries -> oneQuery -> results ) ;
+				tempQueries -> oneQuery -> removeTag = 1 ;
+			}
+			tempQueries = ( queryList* ) tempQueries -> link ;
+		}
+	
+		if ( tag )
+			myQueries = filterQueryList( myQueries ) ;
+	}
 }
 

@@ -1,7 +1,7 @@
 /* 
 **	Senior Design Project - PEOS Virtual Repository
 **	Author : TASK4ONE
-**	Filename : seeker.h
+**	Filename : FSseeker.h
 */
 
-queryList* queryTool( queryList * ) ;
+queryList* FSqueryTool( queryList * ) ;

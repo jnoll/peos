@@ -1,7 +1,7 @@
 /* 
 **	Senior Design Project - PEOS Virtual Repository
 **	Author : TASK4ONE
-**	Filename : simulator.c
+**	Filename : search.c
 */
 
 #include "form.h"
@@ -41,16 +41,16 @@ void selectLoop( )
 	tv.tv_sec = 5 ;
 	tv.tv_usec = 500000 ;
 	call = callback ;
-	
+
 	FD_ZERO( &readfds ) ;
 	FD_SET( STDIN, &readfds ) ;
 	
 	select( STDIN+1, &readfds, NULL, NULL, &tv ) ;
-	
+
 	if ( FD_ISSET( STDIN, &readfds ) )
 	{
 		printf( "\nreceiving...\n\n" ) ;		
-		fgets( queryString, sizeof( queryString ), stdin ) ;	
+		fgets( queryString, sizeof( queryString ), stdin ) ;
 		query_wait( queryString, call, d ) ;
 		fflush( stdin ) ;
 	}
@@ -65,7 +65,6 @@ void selectLoop( )
 			tempQueries = ( queryList * ) tempQueries -> link ;
 		}
 	}
-	
 	FD_CLR( STDIN, &readfds ) ;
 }
 

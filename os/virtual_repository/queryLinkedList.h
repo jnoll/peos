@@ -7,4 +7,3 @@
 queryList *addQueryItem( queryList *listpointer, const query *data ) ;
 queryList *filterQueryList( queryList *listpointer ) ;
 void printQueryList( queryList *listpointer ) ;
-void zeroQueryList( queryList *listpointer ) ;

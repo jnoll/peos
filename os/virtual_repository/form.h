@@ -12,7 +12,7 @@ struct clause
 	char *attribute ;
 	char *operator ;
 	char *value ;
-} ;
+}  ;
 
 typedef struct
 {

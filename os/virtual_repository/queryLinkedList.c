@@ -13,21 +13,6 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-void zeroQueryList( queryList *listpointer )
-{
-	if ( listpointer == NULL )
-		printf ( "\nquery list is empty!\n" ) ;
-	else
-	{
-    		while ( listpointer != NULL )
-		{
-			listpointer -> oneQuery -> numFound = 0 ;
-			listpointer -> oneQuery -> removeTag = 0 ;
-			listpointer = ( queryList* ) listpointer -> link;
-		}
-	}
-}
-
 void printQueryList( queryList *listpointer )
 {
 	if ( listpointer == NULL )
@@ -58,6 +43,9 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
 		listpointer = ( queryList * ) listpointer -> link;
 		listpointer -> link = NULL;
 		listpointer -> oneQuery = ( query* ) data ;
+		listpointer -> oneQuery -> numFound = 0 ;
+		listpointer -> oneQuery -> removeTag = 0 ;
+		listpointer -> oneQuery -> results = NULL ;
 		return lp ;
     	}
 	else
@@ -65,6 +53,9 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
 		listpointer = ( queryList * ) malloc ( sizeof ( queryList ) ) ;
 		listpointer -> link = NULL;
 		listpointer -> oneQuery = ( query* ) data ;
+		listpointer -> oneQuery -> numFound = 0 ;
+		listpointer -> oneQuery -> removeTag = 0 ;
+		listpointer -> oneQuery -> results = NULL ;
 		return listpointer ;
     	}
 }
@@ -96,7 +87,6 @@ queryList *filterQueryList( queryList *listpointer )
 				clearResultList( current -> oneQuery -> results ) ;
 				free( current ) ;
 				current = ( queryList * ) previous -> link ;
-				
 			}
 		else
 		{
