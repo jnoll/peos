@@ -1,97 +1,115 @@
 //#define DEBUG
 #undef DEBUG
 #undef MORE
+//#define MYTEST
 
 #include "tclinterp.h"
 #include <stdio.h>
 
-void peos_tcl_start(peos_tcl* ptcl)
+#ifdef MYTEST
+#include "comb.c"
+#endif
+int peos_tcl_start(peos_tcl* ptcl)
 {
+
   if(!started){
      started=1;
+    // ptcl->argc=0;
      ptcl->interp=Tcl_CreateInterp();
-     ptcl->argc=0;
-     ptcl->objv = (Tcl_Obj**) ckalloc(DEFAULT_CAPACITY*sizeof(Tcl_Obj*));
-     ptcl->objv_size = DEFAULT_CAPACITY;
-     ptcl->is_cmd_cached=0;
+     if (Tcl_Init(ptcl->interp) == TCL_ERROR) {
+    return TCL_ERROR;
+   }
   }
+   //  if(ptcl->argc > 0)
+   //  //if(ptcl->objv != NULL)
+   //      peos_tcl_release(ptcl);
+   //  ptcl->objv = NULL;// (Tcl_Obj**) ckalloc(DEFAULT_CAPACITY*sizeof(Tcl_Obj*));
+    // ptcl->objv_size = DEFAULT_CAPACITY;
+   //  ptcl->is_cmd_cached=0;
+  
 
+  return TCL_OK;
 }
 
-int peos_tcl_exec_cmd_from_string(peos_tcl* ptcl, char* cmd)
+int peos_tcl_exec_cmd TCL_VARARGS_DEF(Tcl_Interp*, arg1)
 {
-  int i;
-  char* sub_str;
-  char* command = (char*)malloc(sizeof(char)*strlen(cmd));
-  strcpy(command,cmd);
-  
-  if (Tcl_Init(ptcl->interp) == TCL_ERROR) {
-    return TCL_ERROR;
-  }
-  sub_str=strtok(command," ");
-
-  if(sub_str!=NULL){
-    ptcl->objv[ptcl->argc++]=Tcl_NewStringObj(sub_str,strlen(sub_str));
-    ptcl->is_cmd_cached=1;
-    if(Tcl_GetCommandInfo(ptcl->interp, sub_str, &(ptcl->cmd_info) ))
-    {
-      #ifdef DEBUG 
-      system("echo Command found");
-      #endif
-    }else{
-        system("echo Command NOT found");
-        return TCL_ERROR;
+   va_list arg_list;
+   char *cmd;
+   char *arg;
+   char **argv; 
+   int argc, i, max;
+   Tcl_CmdInfo info;
+   
+   Tcl_Interp* interp;
+   Tcl_Obj **objv;	
+   Tcl_Obj *resultPtr;
+   int objc;
+   max=20;
+   //system("echo A0");
+   interp = TCL_VARARGS_START(Tcl_Interp *, arg1, arg_list);
+   //system("echo A1");
+   Tcl_ResetResult(interp);
+   //system("echo A");
+   cmd = va_arg(arg_list, char *);
+   //printf("cmd: [%s]\n",cmd);
+   if(cmd!=NULL){
+      if(!Tcl_GetCommandInfo(interp, cmd, &(info) )){
+       system("echo Command NOT found");
+       Tcl_AppendResult(interp, "unknown command \"", cmd, "\"", NULL);
+       va_end(arg_list);
+       return TCL_ERROR;
     }
-  }
-  while((sub_str=strtok(NULL," "))!=NULL){
-    Tcl_IncrRefCount(ptcl->objv[ptcl->argc++]=Tcl_NewStringObj(sub_str,strlen(sub_str)));
+   }
+   else return TCL_ERROR;
+   //system("echo B");
+   objv = (Tcl_Obj **) ckalloc(max * sizeof(Tcl_Obj *));
+   objv[0] = Tcl_NewStringObj(cmd, strlen(cmd));
+   Tcl_IncrRefCount(objv[0]); 
+   objc = 1;
+   while(1){//(sub_str=strtok(NULL," "))!=NULL){
+     arg=va_arg(arg_list, char *);
+     //printf("arg: [%s]\n",arg);
+     if (arg==(char *)NULL){
+        objv[objc] = (Tcl_Obj *)NULL;
+        break;
+     }
+   //system("echo C");
+   
+   Tcl_IncrRefCount(objv[objc++]=Tcl_NewStringObj(arg,strlen(arg)));
+   //system("echo D");
+    if(objc >= max){
+      // system("echo De");
+       Tcl_Obj **old_obj_list=objv;
+       max*=2;
+       objv=(Tcl_Obj **) ckalloc(max*sizeof(Tcl_Obj *));
+       for (i = 0 ; i < objc ; i++){
+          objv[i] = old_obj_list[i];
+       }
+        //system("echo E");
+       Tcl_Free((char*)old_obj_list);
+    }
+    
+    va_end(arg_list);
+    // system("echo F");
   }
 
-  for( i = 0;i < ptcl->argc;++i){
-    #ifdef DEBUG
-    printf( "--> %s\n", Tcl_GetStringFromObj(ptcl->objv[i],NULL) );
-    #else
-    Tcl_GetStringFromObj(ptcl->objv[i],NULL);
-    #endif
-  }
-
-  if((*(ptcl->cmd_info).objProc)((ptcl->cmd_info).objClientData, ptcl->interp, ptcl->argc, ptcl->objv) != TCL_OK){
+  if((*(info).objProc)((info).objClientData, interp, objc, objv) != TCL_OK){
     fprintf(stderr,"result is error");
     fflush(0);
     return TCL_ERROR;
   }
   #ifdef DEBUG 
-  system("echo Passed");
-  printf("Tcl_GetStringResult(interp)==%s\n",Tcl_GetStringResult(ptcl->interp));
+  printf("Tcl_GetStringResult(interp)==%s\n",Tcl_GetStringResult(interp));
   #else
-  Tcl_GetStringResult(ptcl->interp);
-  #endif
-  
-  #ifdef DEBUG
-  if(*Tcl_GetStringResult(ptcl->interp)=='1'){
-    printf("result is 1\n");
-  }
-  else printf("result is 0\n");
+  Tcl_GetStringResult(interp);
   #endif
   return 0;
-}
-int peos_tcl_release(peos_tcl* ptcl)
-{
-  int i;
-  system("echo A");
-  for (i = 0 ; i < ptcl->argc ; i++) {
-    Tcl_DecrRefCount(ptcl->objv[i]);
-  }
-  system("echo B");
-  //Tcl_Free((char *) ptcl->objv);
-  system("echo C");
-  ptcl->argc=0;
-  //Tcl_Free((char *) ptcl-objv);
 }
 
 char* peos_tcl_get_var(peos_tcl* ptcl, char* var_name)
 {
-     return (char*)Tcl_GetVar(ptcl->interp,var_name,0);
+     return (char*)
+     Tcl_GetVar(ptcl->interp,var_name,TCL_GLOBAL_ONLY);
 }
 int peos_tcl_set_var(peos_tcl* ptcl, char* var_name, char* var_value)
 {
@@ -99,36 +117,60 @@ int peos_tcl_set_var(peos_tcl* ptcl, char* var_name, char* var_value)
 }
 int peos_tcl_link_var(peos_tcl* ptcl, char* var_name, char* var_addr, int type)
 {
-     return Tcl_LinkVar(ptcl->interp,var_name,var_addr,type) == TCL_OK  ? 1:0;
+      Tcl_LinkVar(ptcl->interp,var_name,var_addr,type) ;
+      return 1;// Tcl_UpdateLinkedVar(ptcl->interp,var_name);
 }
+
+
 
 /*
 int main()
 {
   //char com[]="puts stdout bob";
   int var1 =5;
-  char* var2 = "hello tcl";
+  char*var2=NULL;
+  char*var3=NULL;
   peos_tcl p;
   peos_tcl_start(&p);
-  peos_tcl_exec_cmd_from_string(&p,"puts stdout bob");
-  peos_tcl_release(&p);
+  
+
   peos_tcl_set_var(&p,"foo","9999");
-  //peos_tcl_exec_cmd_from_string(&p,"set foo SOMEVALUE");
-  peos_tcl_release(&p);
-  //peos_tcl_exec_cmd_from_string(&p,"puts stdout $foo");
-  //peos_tcl_release(&p);
   printf("value: [%s]\n", peos_tcl_get_var(&p,"foo"));
 
   if(!peos_tcl_link_var(&p, "var1", (char*)&var1, TCL_LINK_INT)) printf("couldnt link\n");
   printf("value: [%s]\n", peos_tcl_get_var(&p,"var1"));
+  
   peos_tcl_set_var(&p,"var1","333");
+  Tcl_GetVar(p.interp,"var1",TCL_GLOBAL_ONLY);
   printf("value changed from TCL: [%s]\n", peos_tcl_get_var(&p,"var1"));
   var1 = 2004;
   printf("value changed from C: [%s]\n", peos_tcl_get_var(&p,"var1"));
+
+  system("echo HI");
+  peos_tcl_exec_cmd((p.interp), "set", "directory1", "/directory_name/", NULL);
+  peos_tcl_exec_cmd((p.interp), "puts stdout ${directory1}");
+  //peos_tcl_exec_cmd((p.interp), "set", "directory1", "/directory_name/", NULL);
+ 
+  peos_tcl_exec_cmd((p.interp), "set", "resource1", "resource_name", NULL);
+  peos_tcl_exec_cmd((p.interp), "set", "file_ext1", ".doc", NULL);
+  peos_tcl_exec_cmd((p.interp), "set", "file_ext2", ".pdf", NULL);
+
+   peos_tcl_link_var(&p, "path1", (char*)&var2, TCL_LINK_STRING);
+   peos_tcl_link_var(&p, "path2", (char*)&var3, TCL_LINK_STRING);
+  Tcl_Eval((p.interp), "set path1 \"${directory1}${resource1}${file_ext1}\"");
+  Tcl_Eval((p.interp), "set path2 \"${directory1}${resource1}${file_ext2}\"");
+  Tcl_Eval((p.interp), "puts stdout ${path1}");
+  Tcl_Eval((p.interp), "puts stdout ${path2}");
+ 
+   printf ("C knows path1 is %s\n", var2);
+   printf ("C knows path2 is %s\n", var3);
+
   
+  //Tcl_Eval((&p)->interp, "puts stdout $foo");
   return 0;
 }
 */
+
 /*
 int peos_tcl_TEST(peos_tcl* ptcl)
 {
