@@ -5,6 +5,10 @@
 #if !defined(_OSDEFS_H)
 #define _OSDEFS_H
 
+#if!defined(_XOPEN_SOURCE)
+#define _XOPEN_SOURCE
+#endif
+
 #if !defined(_WIN32)
 #include <sys/stat.h>
 #include <fcntl.h>

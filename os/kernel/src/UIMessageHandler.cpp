@@ -81,6 +81,7 @@ bool UIMessageHandler::CreateProcess( const string& modelName, const string& par
 	SendMessage( error );
 	return false;
     }
+
     processNames.insert( process );
     SendMessage( "100 Create successful.\n" );
     return true;
@@ -123,6 +124,7 @@ bool UIMessageHandler::ListModels()
 {
     string err;
     vector<string> models = dataAccessIF->ListModels( err );
+
     if ( models.empty() == true && err.empty() == false )
     {
         SendMessage( err );
@@ -193,7 +195,7 @@ bool UIMessageHandler::Login()
 
             if ( sscanf( buffer + 5, "%9s%14s", uname, passwd ) != 2 )
 	    {
-                SendMessage( "500 Geeze, use correct format!\n" );
+                SendMessage( "500 Invalid format!\n" );
             }
             else
 	    {
@@ -592,6 +594,8 @@ bool UIMessageHandler::Authenticate( const string& uname, const string& passwd )
 
     uinfo = getpwnam( uname.c_str() );
 
+    cout << uname.c_str() << endl;
+
     if ( uinfo != NULL )
     {
         DIR* dir = opendir( uname.c_str() );
@@ -616,21 +620,21 @@ bool UIMessageHandler::Authenticate( const string& uname, const string& passwd )
             ret = true;
         }
     }
-
-    /* skip password checking at this time */
-    /* 
+/* 
     if ( ret == true )
     {
         salt[0] = uinfo->pw_passwd[0];
         salt[1] = uinfo->pw_passwd[1];
         
-	if ( strncmp( uinfo->pw_passwd, crypt( passwd, salt ), 13 ) != 0 )
+        cout << uinfo->pw_passwd << endl;
+        cout << crypt(passwd.c_str(), salt);
+	if ( strncmp( uinfo->pw_passwd, crypt( passwd.c_str(), salt ), 13
+) != 0 )
 	{
             ret = false;
 	}
     }
-    */ 
-
+*/
     if ( ret == true )
     {
         userName = uname;

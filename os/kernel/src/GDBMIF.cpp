@@ -30,7 +30,7 @@ bool GDBMIF::GetProcessName( const string& modelName,
     GDBM_FILE dbfm, dbfp;
     int suf;
     string path;
-    
+
     /* open model db */
     path  = "model";
     path += DIRECTORY_SEPARATOR;
@@ -45,43 +45,34 @@ bool GDBMIF::GetProcessName( const string& modelName,
         errorMsg += "' does not exist. Use 'list' command\n";
         return false;
     }
+    gdbm_close( dbfm );
 
     /* find an available suffix. max 999 procs per user*/
-    path = userName;
-    path += DIRECTORY_SEPARATOR;
-    path += modelName;
-    char temp[4] = { 0, 0, 0, 0 };
+    procName = userName;
+    procName += DIRECTORY_SEPARATOR;
+    procName += modelName;
+    char temp[] = ".000";
     suf = 1;
     dbfp = NULL;
+
     do
     {
-        if ( dbfp )
-	{
-            gdbm_close( dbfp );
-	}
-
+        if ( dbfp ) gdbm_close( dbfp );
         sprintf( temp, ".%03d", suf );
-        procName = path;
-        procName += temp;
+        path = procName;
+        path += temp;
         dbfp = gdbm_open( (char*) path.c_str(), 0, GDBM_READER, 0777, 0 ); 
         suf++;
     } while ( suf < 999 && dbfp != NULL ); 
-
-    gdbm_close( dbfm );
+    if ( dbfp ) gdbm_close( dbfp );
 
     if ( suf == 999 )
     {
 	procName.erase();
-        errorMsg = "500 are you crazy? created so many proceses.\n";
-    
-        if ( dbfp != NULL )
-	{
-	    gdbm_close( dbfp );
-	}
-
+        errorMsg = "500 Maximum number of processes exceeded.\n";
         return false;
     }
-
+    procName = path;
     return true;
 }
 
@@ -102,9 +93,18 @@ bool GDBMIF::InitProcessState( const string& procName,
     struct act_t act;
 
     errorMsg.erase();
-    path = procName;
+
+    /* open model db - This code added on 4/16/00 by DA */
+    /* Need path statement */
+    dbfm = gdbm_open( (char*) path.c_str(), 0, GDBM_READER, 0777, 0);
+    if ( dbfm == NULL )
+    {
+       errorMsg = "500 Open model failed\n";
+       return false;
+    }
 
     /* create proc db */
+    path = procName;
     dbfp = gdbm_open( (char*) path.c_str(), 0, GDBM_WRCREAT, 0777, 0 ); 
     
     if ( dbfp == NULL )
@@ -117,7 +117,7 @@ bool GDBMIF::InitProcessState( const string& procName,
     /* create state db */    
     path += ".state";
     dbfs = gdbm_open( (char*) path.c_str(), 0, GDBM_WRCREAT, 0777, 0 ); 
-    
+
     if ( dbfs == NULL )
     {
         gdbm_close( dbfm );
@@ -126,14 +126,15 @@ bool GDBMIF::InitProcessState( const string& procName,
         return false;
     }
 
-    /* initialize state informatin and find first PC */
+    /* initialize state information and find first PC */
     PC = 0;
+    int counter=0;
     while ( true )
     {
         key.dptr = (char *) &PC;
         key.dsize = sizeof( PC );
         content = gdbm_fetch( dbfm, key );
-
+        return true;
         if ( content.dptr == NULL )
 	{
             break;
@@ -240,6 +241,7 @@ vector<string> GDBMIF::QueryActions( const string& userName, int state )
         path += ent->d_name;
 
         dbfs = gdbm_open( (char*) path.c_str(), 0, GDBM_READER, 0777, 0 );
+        cout << (char*) path.c_str() << endl;
         
 	if ( dbfs == NULL )
 	{
