@@ -27,7 +27,7 @@ int main(argc, argv)
 		printf("init succeeded!\n");
 	}
 
-	pml_open = pmlstate_open_repository("reptest.rep", TRUNCATE);
+	pml_open = pml_open_repository("reptest.rep", TRUNCATE);
         if( pml_open < 0 )
         {
                 printf("Open pml state repository failed.\n");
