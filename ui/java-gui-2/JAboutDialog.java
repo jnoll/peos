@@ -1,3 +1,7 @@
+//
+// JAboutDialog.java
+//
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -17,22 +21,25 @@ public class JAboutDialog extends javax.swing.JDialog
 		//{{INIT_CONTROLS
 		setTitle("JFC Application - About");
 		setModal(true);
-		getContentPane().setLayout(new GridBagLayout());
-		getContentPane().setBackground(new java.awt.Color(204,204,204));
-		setSize(273,115);
+		getContentPane().setLayout(null);
+		setSize(325,177);
 		setVisible(false);
 		okButton.setText("OK");
 		okButton.setActionCommand("OK");
 		okButton.setOpaque(false);
 		okButton.setMnemonic((int)'O');
-//		getContentPane().add(okButton, new com.symantec.itools.awt.GridBagConstraintsD(2,1,1,1,0.0,0.0,java.awt.GridBagConstraints.CENTER,java.awt.GridBagConstraints.NONE,new Insets(0,0,10,0),0,0));
 		getContentPane().add(okButton);
-		okButton.setBounds(111,80,51,25);
+		okButton.setFont(new Font("MonoSpaced", Font.BOLD, 12));
+		okButton.setBounds(137,109,51,25);
 		aboutLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		aboutLabel.setText("PEOS Performer Tool, version 1.0");
+		aboutLabel.setText("PEOS Enactment Interface, version 1.0");
 		getContentPane().add(aboutLabel);
-//		getContentPane().add(aboutLabel, new com.symantec.itools.awt.GridBagConstraintsD(0,0,3,1,1.0,1.0,java.awt.GridBagConstraints.CENTER,java.awt.GridBagConstraints.BOTH,new Insets(0,0,0,0),0,0));
-		aboutLabel.setBounds(0,0,273,80);
+		aboutLabel.setFont(new Font("MonoSpaced", Font.BOLD, 12));
+		aboutLabel.setBounds(27,24,271,24);
+		JLabel1.setText("Written by Ming Rutar");
+		getContentPane().add(JLabel1);
+		JLabel1.setFont(new Font("MonoSpaced", Font.ITALIC, 12));
+		JLabel1.setBounds(144,60,156,24);
 		//}}
 
 		//{{REGISTER_LISTENERS
@@ -84,6 +91,7 @@ public class JAboutDialog extends javax.swing.JDialog
 	//{{DECLARE_CONTROLS
 	javax.swing.JButton okButton = new javax.swing.JButton();
 	javax.swing.JLabel aboutLabel = new javax.swing.JLabel();
+	javax.swing.JLabel JLabel1 = new javax.swing.JLabel();
 	//}}
 
 	class SymWindow extends java.awt.event.WindowAdapter

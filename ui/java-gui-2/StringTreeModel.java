@@ -5,7 +5,6 @@ import java.util.Enumeration;
 import java.util.Stack;
 
 /**
-A <a href="com.sun.java.swing.tree.TreeModel"><code>TreeModel</code></a> for <code>String</code> objects.
 */
 public class StringTreeModel
 	extends javax.swing.tree.DefaultTreeModel

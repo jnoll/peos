@@ -4,7 +4,6 @@ import java.util.Enumeration;
 import java.io.Serializable;
 
 /**
-A <a href="com.sun.java.swing.ListModel"><code>ListModel</code></a> for <code>String</code> objects.
 */
 public class StringListModel
 	extends AbstractListModel
