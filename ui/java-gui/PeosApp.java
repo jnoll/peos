@@ -310,8 +310,20 @@ public class PeosApp extends JFrame implements ActionListener
 			
 			try {
 				int pidNum = SetupPath.load(file.getAbsolutePath());
-				activeProcess("proc_table.dat.xml", pidNum);
-				currPagePID = pidNum;
+                                if (pidNum >=0)
+                                {
+                                    activeProcess("proc_table.dat.xml", pidNum);
+                                    currPagePID = pidNum;
+                                }
+                                else
+                                {
+                                    JOptionPane.showMessageDialog(new JFrame(),
+                                        "Invalid PML File.",
+                                        "Error Loading Process",
+                                        JOptionPane.WARNING_MESSAGE);
+                                    /* do nothing */                                
+                                }
+                                   
 				
 			} catch (IOException x) {
 				System.err.println("LoadProcess ERROR");
