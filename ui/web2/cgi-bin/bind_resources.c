@@ -23,6 +23,7 @@ int main()
     peos_resource_t *unbound_resource_list;
     int num_unbound_resources;
     char *resource_type;
+    char name[12];
     
 
     /** First, get the CGI variables into a list of strings         **/
@@ -67,13 +68,10 @@ int main()
 	}
     }
 
-    char name[12];
-    //for(i=0; i < num_unbound_resources; i++) {
     for(i=0; i < num_resources; i++) {
 	char *value;    
 	sprintf(name, "resource%d", i);
 	value = (char *) getvalue(name, cgivars);    
-	//peos_set_resource_binding(pid, unbound_resource_list[i].name, value);
 	peos_set_resource_binding(pid, resources[i].name, value);
     }
 

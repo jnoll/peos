@@ -66,7 +66,7 @@ void add_action_list(_action_page *ap)
     for (i = 0; i < ap->total_actions; i++) {
 	if (!strcmp(ap->action_list[i], "||iteration||")) {
 	    indent(h_sp);
-	    printf("<li>Iteration</li>\n");
+	    printf("<li>Repeat:</li>\n");
 	    indent(h_sp++);
 	    printf("<ul>\n");
 	} else if (!strcmp(ap->action_list[i], "!!iteration!!")) {
@@ -74,7 +74,7 @@ void add_action_list(_action_page *ap)
 	    printf("</ul>\n");
 	} else if (!strcmp(ap->action_list[i], "||selection||")) {
 	    indent(h_sp);
-	    printf("<li>Selection</li>\n");
+	    printf("<li>Select:</li>\n");
 	    indent(h_sp++);
 	    printf("<ul>\n");
 	} else if (!strcmp(ap->action_list[i], "!!selection!!")) {
@@ -82,7 +82,7 @@ void add_action_list(_action_page *ap)
 	    printf("</ul>\n");
 	} else if (!strcmp(ap->action_list[i], "||sequences||")) {
 	    indent(h_sp);
-	    printf("<li>Choice</li>\n");
+	    printf("<li>Choice:</li>\n");
 	    indent(h_sp++);
 	    printf("<ul>\n");
 	} else if (!strcmp(ap->action_list[i], "!!sequences!!")) {
@@ -90,10 +90,18 @@ void add_action_list(_action_page *ap)
 	    printf("</ul>\n");
 	} else if (!strcmp(ap->action_list[i], "||sequenceb||")) {
 	    indent(h_sp);
-	    printf("<li>Path</li>\n");
+	    printf("<li>Path:</li>\n");
 	    indent(h_sp++);
 	    printf("<ul>\n");
 	} else if (!strcmp(ap->action_list[i], "!!sequenceb!!")) {
+	    indent(--h_sp);
+	    printf("</ul>\n");
+	} else if (!strcmp(ap->action_list[i], "||branch||")) {
+	    indent(h_sp);
+	    printf("<li>Do Concurrently:</li>\n");
+	    indent(h_sp++);
+	    printf("<ul>\n");
+	} else if (!strcmp(ap->action_list[i], "!!branch!!")) {
 	    indent(--h_sp);
 	    printf("</ul>\n");
 	} else if (strcmp(ap->action_list[i], action_name)) {
@@ -129,7 +137,7 @@ void write_content()
     ap = get_action_page_details(xml_data_filename, pid, action_name);
     for (i = 0; i < ap->total_actions; i++) {
 	if (strcmp(ap->action_list[i], action_name)) {
-	    if (!strcmp(ap->action_list[i], "||iteration||") || !strcmp(ap->action_list[i], "||selection||") || !strcmp(ap->action_list[i], "||sequence||") || !strcmp(ap->action_list[i], "||branch||") || !strcmp(ap->action_list[i], "!!iteration!!") || !strcmp(ap->action_list[i], "!!selection!!") || !strcmp(ap->action_list[i], "!!sequence!!") || !strcmp(ap->action_list[i], "!!branch!!")) { } else {
+	    if (!strcmp(ap->action_list[i], "||iteration||") || !strcmp(ap->action_list[i], "||selection||") || !strcmp(ap->action_list[i], "||sequences||") || !strcmp(ap->action_list[i], "||sequenceb||") || !strcmp(ap->action_list[i], "||branch||") || !strcmp(ap->action_list[i], "!!iteration!!") || !strcmp(ap->action_list[i], "!!selection!!") || !strcmp(ap->action_list[i], "!!sequences!!") || !strcmp(ap->action_list[i], "!!sequenceb!!") || !strcmp(ap->action_list[i], "!!branch!!")) { } else {
 		if (action_position == -1) {
 		    prevIndex = i;
 		} else if ((nextIndex == -1) && (i > action_position)) {

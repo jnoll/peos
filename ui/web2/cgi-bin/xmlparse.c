@@ -157,55 +157,55 @@ void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *a
 	    apage->total_actions++;
 	} else if (!xmlStrcmp(node->name, (const xmlChar *)"iteration")) {
 	    char *temp1 = "||iteration||";
+	    char *temp2 = "!!iteration!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp1) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp1);
 	    apage->total_actions++;
 	    create_action_list(doc, node, apage, act_name, NODE_ITERATION);
-	    char *temp2 = "!!iteration!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp2);
 	    apage->total_actions++;
 	} else if (!xmlStrcmp(node->name, (const xmlChar *)"selection")) {
 	    char *temp1 = "||selection||";
+	    char *temp2 = "!!selection!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp1) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp1);
 	    apage->total_actions++;
 	    create_action_list(doc, node, apage, act_name, NODE_SELECTION);
-	    char *temp2 = "!!selection!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp2);
 	    apage->total_actions++;
 	} else if (!xmlStrcmp(node->name, (const xmlChar *)"sequence")) {
 	    char *temp1 = "||sequenceb||";
+	    char *temp2 = "!!sequenceb!!";
 	    if (parent == NODE_SELECTION) temp1 = "||sequences||";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp1) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp1);
 	    apage->total_actions++;
 	    create_action_list(doc, node, apage, act_name, parent);
-	    char *temp2 = "!!sequenceb!!";
 	    if (parent == NODE_SELECTION) temp1 = "!!sequences!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp2);
 	    apage->total_actions++;
 	} else if (!xmlStrcmp(node->name, (const xmlChar *)"branch")) {
-	    /*char *temp1 = "||branch||";
+	    char *temp1 = "||branch||";
+	    char *temp2 = "!!branch!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp1) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp1);
 	    apage->total_actions++;
 	    create_action_list(doc, node, apage, act_name, NODE_BRANCH);
-	    char *temp2 = "!!branch!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp2);
-	    apage->total_actions++;*/
-	    create_action_list(doc, node, apage, act_name, NODE_BRANCH);
+	    apage->total_actions++;
+	    //create_action_list(doc, node, apage, act_name, NODE_BRANCH);
 	}
 	node = node->next;
     }
