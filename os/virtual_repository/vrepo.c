@@ -46,14 +46,14 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					break ;
 						
 					
-			case 1 :	if( isValidOperator(  word) )
+			case 1 :	if( isValidOperator( word ) )
 					{
 						newQuery -> myClauses[0].operator = strdup( word ) ;
 						numParses++ ;
 					}						
 					break ;
 					
-			case 2 : 	if( isValidValue(  word) )
+			case 2 : 	if( isValidValue( word ) )
 					{
 						newQuery -> myClauses[0].value = strdup( word ) ;
 						numParses++ ;
@@ -85,14 +85,14 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 			{
 				switch( k )
 				{
-					case 0 :	free( newQuery -> myClauses[0].attribute ) ;
-							break ;
+					case 0 : free( newQuery -> myClauses[0].attribute ) ;
+						 break ;
 					
-					case 1 :	free( newQuery -> myClauses[0].operator ) ;
-							break ;
+					case 1 : free( newQuery -> myClauses[0].operator ) ;
+						 break ;
 					
-					case 2 :	free( newQuery -> myClauses[0].value ) ;
-							break ;
+					case 2 : free( newQuery -> myClauses[0].value ) ;
+						 break ;
 				}
 			}
 		
@@ -142,14 +142,12 @@ void poll_vr( )
 	}
 }
 
-
-
 bool isValidAttribute( char *attr )
 {
 	int i ;
 	char attributes[1][2] = { "ID" } ;
-	
-	for( i = 0 ; i < sizeof( attributes ) / sizeof( attributes[0] ) ; i++ )
+		
+	for( i = 0 ; i < sizeof(attributes) / sizeof(attributes[0] ) ; i++ )
 	{
 		if( attr == NULL || ( strcmp( attributes[i], attr ) != 0 ) )
 			return false ;

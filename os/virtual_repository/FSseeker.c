@@ -15,8 +15,10 @@
 #include <stdio.h>
  
 query *ftwQuery ;
-char searchFile[100];
+char searchFile[100] ;
 static char path[100] ;
+char directoryPath[100] ;
+int getDirectoryPath = 0 ;
 
 queryList* FSqueryTool( queryList *listpointer )
 {
@@ -48,35 +50,60 @@ queryList* FSqueryTool( queryList *listpointer )
         		fclose( configFile ) ;
   		}
   	}
+  	
+  	if( !getDirectoryPath )
+  	{
+  		if ( getcwd( directoryPath, 100 ) == NULL )
+		{
+			printf( "error getting directory path...\n" ) ;
+			exit( 0 ) ;
+		}
+		else
+			getDirectoryPath = 1 ;
+  	}
 
 	tempQueries = listpointer ;
 
 	while( tempQueries != NULL )
 	{
 		strcpy( searchFile, tempQueries -> oneQuery -> myClauses[0].value ) ;
-			
-		repository = strtok( searchFile , ":" ) ;
 		
-		if( strncmp( "file", repository, 4 ) == 0 )
+		if( strchr( searchFile, ':' ) == NULL )	
 		{
-			strcpy( searchFile, strpbrk( tempQueries -> oneQuery -> myClauses[0].value, "/" ) ) ;
-			if( strchr( searchFile + 2, '/' ) != NULL )
+			ftwQuery = tempQueries -> oneQuery ;
+			ftw( path, getFile, 5 ) ;
+		}
+		else
+		{
+			repository = strtok( searchFile , ":" ) ;
+					
+			if( strncmp( "file", repository, 4 ) == 0 )
 			{
-				if( stat( searchFile + 1, &statBuffer ) == 0 )
+				strcpy( searchFile, strpbrk( tempQueries -> oneQuery -> myClauses[0].value, "/" ) ) ;
+				if( strchr( searchFile + 2, '/' ) != NULL )
 				{
-					tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results, 
-											     tempQueries -> oneQuery -> myClauses[0].value ) ;
-			    		tempQueries -> oneQuery -> numFound++ ;
-			    		
+					if( stat( searchFile + 1, &statBuffer ) == 0 )
+					{
+						tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results, 
+												     tempQueries -> oneQuery -> myClauses[0].value ) ;
+				    		tempQueries -> oneQuery -> numFound++ ;
+			    		}
+			    	}
+				else
+				{
+					char tempPath[100] ;
+					strcpy( tempPath, directoryPath) ;
+					strcat( tempPath, searchFile + 1 ) ;
+					if( stat( tempPath, &statBuffer ) == 0 )
+					{
+						tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results, 
+												     tempQueries -> oneQuery -> myClauses[0].value ) ;
+						tempQueries -> oneQuery -> numFound++ ;
+					}
 				}
 			}
-			else
-			{
-				ftwQuery = tempQueries -> oneQuery ;
-				strcpy(searchFile, searchFile + 2 ) ;
-				ftw( path, getFile, 5 ) ;
-			}		
-		}		
+		}
+			
 		tempQueries = ( queryList* ) tempQueries -> link ;
 	}
 	return listpointer ;	

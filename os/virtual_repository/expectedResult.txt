@@ -1,4 +1,9 @@
-file://home/jnoll/.peos/peosrep/peos/src/os
+file:///home/cgoh/peos/src/os/virtual_repository/test.dat
+
+file://test.dat
 
 ./test.dat
+
+
+
 
