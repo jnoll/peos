@@ -81,6 +81,19 @@ START_TEST(test_makegraph)
 }
 END_TEST
 
+START_TEST(test_makegraph_error)
+{
+	char *file = "file";
+	FILE *in = fopen(file, "w");
+	Graph g;
+
+	program = NULL;
+        g = makegraph(file);
+	fail_unless(g == NULL, "graph made from file with parse errors.");
+}
+END_TEST
+
+
 START_TEST(test_mark_successors)
 {
 	cur_node = 1;
@@ -557,6 +570,7 @@ main(int argc, char *argv[])
     tc = tcase_create("makegraph");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_makegraph);
+    tcase_add_test(tc,test_makegraph_error);
 
     tc = tcase_create("mark_successors");
     suite_add_tcase(s,tc);
