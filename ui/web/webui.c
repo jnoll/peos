@@ -54,9 +54,9 @@ int main() {
 			pml_done(PARA1,PARA2);
 		}
 		if (strcasecmp(COMMAND,"create") == 0) {
-			pml_create(PARA1);
+			pml_create("");
 		}
-		if (strcasecmp(COMMAND,"create_pre") == 0) {
+		if (strcasecmp(COMMAND,"createpre") == 0) {
 			pml_create(PARA1);
 		}
 	}
@@ -105,6 +105,8 @@ int main() {
     printf("<TD VALIGN=\"TOP\" WIDTH=\"100%\" HEIGHT=\"100%\">\n");
     printf("%s\n", current_msg);
 
+    printf("COMMAND =_%s_\n", COMMAND);
+    printf("command =_%s_\n", command);
     
     //----------------------------------------------------
 
@@ -156,6 +158,10 @@ char *subpos;
     
 		if(strcmp(cgivars[i], "command")==0) {
 			command = cgivars[i+1];
+                        if (strcasecmp(cgivars[i+1],"createpre") == 0) {
+                            //strncpy(cgivars[i+1],"create",80);
+                        }
+                        
 		}
 		if(strcmp(cgivars[i], "action")==0) {
 			action = cgivars[i+1];
@@ -174,6 +180,12 @@ char *subpos;
 	strncpy(ACTION,action,80);
 	sscanf(ACTION,"%s %s",PARA1,PARA2);
 	strncpy(COMMAND,command,80);
+
+        if (strcasecmp(COMMAND,"createpre") == 0) {
+            command = "create";
+            strncpy(COMMAND,"create",80);
+        }
+
 
 }
 
@@ -277,20 +289,21 @@ int pml_create(char *model)
 {
 	s = contact(s,NAME,PASS);
 	if (strlen(s.errmessage) == 0) {
+/*
 		if (create(s,model)) {
 			current_msg = add_message(current_msg,model);
 			current_msg = add_message(current_msg," is successfully created.<br>\n<br>\n");
 			current_msg = add_message(current_msg,"To get your next available task, reply this message.<br>\n");
 		}
 		else {
-
+*/
 			//current_msg = add_message(current_msg,model);
 			//if (strlen(model) != 0)
 			//	current_msg = add_message(current_msg," can not be found.<br>\n<br>\n");
 			current_msg = add_message(current_msg,"<b>You have the following model(s) available: </b>\n");
 			current_msg = list(s,current_msg);
 
-		}
+//		}
 		logout(s);
 	}
 }
