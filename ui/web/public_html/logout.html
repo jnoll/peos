@@ -43,6 +43,15 @@ if(getCookie("userName") == null){
     window.location="Login.html";
 }
 
+function deleteCookie () {
+    thisCookie = document.cookie.split("; ");
+    for(i=0; i<thisCookie.length; i++) {
+        cookieName = thisCookie[i].split("=")[0];
+        document.cookie = cookieName + "=;expires=Thu, 01-Jan-70 00:00:01 GMT";
+    }
+    window.location="Login.html";
+}
+
 </SCRIPT>
 
 </head>
@@ -81,7 +90,12 @@ if (userType==3 || userType==1) {
 </TD>
 
 <TD VALIGN="TOP" WIDTH="100%" HEIGHT="100%">
-<p> Feature not implemented yet
+<p>Are you sure you want to log out?
+<FORM>
+<INPUT TYPE="button" VALUE="Yes" onClick="deleteCookie()">
+<INPUT TYPE="button" VALUE="Cancel" onClick="history.back()">
+<FORM>
+
 </TD>
 </TR>
 </TABLE>
