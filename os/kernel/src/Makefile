@@ -1,7 +1,7 @@
 ####################################################################### 
 # File :       Makefile
-# Author:      Nikolai Kiachtchenko
-# Date:        11/1/1999
+# Author:      Nikolai Kiachtchenko (Modified by Brad McGarvey)
+# Date:        11/1/1999 (Amended 4/3/00)
 # Description: Makefile for OSServices project in CSC5728,  Fall 1999
 #######################################################################
 .SUFFIXES: .o .h .cpp .c .C

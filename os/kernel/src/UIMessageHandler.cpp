@@ -10,6 +10,7 @@
 #include "IPCHandler.h"
 
 #include <sys/stat.h>
+#include <string>
 
 const int invalidSocket = -1;
 int UIMessageHandler::sessionCount = 0;
@@ -188,9 +189,8 @@ bool UIMessageHandler::Login()
 
         receivedString = buffer;
 
-        if ( strcasecmp( receivedString.substr( 0, 5 ).c_str(), "LOGIN" ) == 0 )
-        {
-            char uname[9];     /* username */
+        if ( strcasecmp( receivedString.substr( 0, 5 ).c_str(), "LOGIN" ) ==
+0 )         {             char uname[9];     /* username */
             char passwd[14];   /* password */
 
             if ( sscanf( buffer + 5, "%9s%14s", uname, passwd ) != 2 )
