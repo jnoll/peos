@@ -384,8 +384,11 @@ int speclist_func(data_dictionary_struct* dictionary_ptr, char *action_name)
 				} else if (tok==AND) {
 					strcat(desc_name,token_buffer);
 					tok = next_token();
-				}
-				else {
+				} else if (tok=STRING) {
+					strcat(desc_name,token_buffer);
+					tok = next_token();
+					old_format = TRUE;
+				} else {
 					syntax_error("Invalid require or provide clause\n");
 				}
 			}	

@@ -32,6 +32,8 @@ int main (int argc, char *argv[])
    int ppout = FALSE;
    int list = FALSE;
 
+   old_format = FALSE;
+
    printf("\nINFO:[main]-PML Compiler Version 2.0\n");
 
    /* make sure the user typed in valid command line arguments */

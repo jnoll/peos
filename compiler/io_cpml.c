@@ -46,6 +46,7 @@ Boolean write_cpml(char* pml_filename, data_dictionary_struct* dictionary_ptr, c
     OUTPUT_STRUCT output;
     char *filename;
     int line_count = 0;
+    int i;
 
     /* Generate cpml file name. */
     if (strlen (pml_filename) <= 0) return FALSE;
@@ -77,6 +78,9 @@ printf ("new file name is %s\n", filename);
 	}
     }
 
+    for (i = 0;i < MAX_VARS; ++i) {
+	ready_list[i] = (char*) malloc(sizeof(char));
+    }
     /* get the root element in the data dictionary */
     root = data_dict_get_root(dictionary_ptr);
     element_ptr = root;
@@ -182,6 +186,7 @@ char* get_actions_query(char action_str[1024], data_dict_element_struct* element
 	  printf("\nERROR[get_actions_query]:memory allocation\n");
           return NULL;
         }
+	*desc = NULL;
 
 	data_dict_get_type(element_ptr,type);
 	if ((strcmp(*type,"action") == 0) || (strcmp(*type,"branch") == 0)) {
@@ -202,7 +207,7 @@ char* get_actions_query(char action_str[1024], data_dict_element_struct* element
 		(strcmp(*type,"task") == 0)) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		child_element_ptr = data_dict_get_child(child_list_ptr);
-		strcat(action_str,get_actions_query(temp_str,child_element_ptr,FALSE,*type));
+		strcat(action_str,get_actions_query(temp_str,child_element_ptr,iteration_flag,*type));
 		free(name);
 		free(type);
 		free(desc);
@@ -217,7 +222,7 @@ char* get_actions_query(char action_str[1024], data_dict_element_struct* element
 		if (iteration_flag != TRUE) {
 			element_ptr = get_next_action(element_ptr);
 			if (element_ptr != NULL) {
-				 strcat(action_str,get_actions_query(temp_str,element_ptr,FALSE,attr_type));
+				 strcat(action_str,get_actions_query(temp_str,element_ptr,TRUE,attr_type));
 			}
 		}
 		free(name);
@@ -283,7 +288,7 @@ char* get_actions(char action_str[1024], data_dict_element_struct* element_ptr, 
 		child_element_ptr = data_dict_get_child(child_list_ptr);
 		free(*type);
 		free(type);
-		return get_actions(temp_str,child_element_ptr,FALSE);
+		return get_actions(temp_str,child_element_ptr,iteration_flag);
 	}
 	else if (strcmp(*type,"iteration") == 0) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
@@ -294,7 +299,7 @@ char* get_actions(char action_str[1024], data_dict_element_struct* element_ptr, 
 		if (iteration_flag != TRUE) {
 			element_ptr = get_next_action(element_ptr);
 			if (element_ptr != NULL) {
-				 strcat(action_str,get_actions(temp_str,element_ptr,FALSE));
+				 strcat(action_str,get_actions(temp_str,element_ptr,TRUE));
 			}
 		}
 		free(*type);
@@ -538,6 +543,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 {
 	char output_str[1024];
 	char temp_str[1024];
+	char temp_str2[1024];
 	char action_str[1024] = "\0";
 	static char var_name[64];
 	char* query_str; 
@@ -581,6 +587,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	else if (strcmp(*type,"iteration") == 0)
 	{
 		strcpy(output_str,"call select ");
+		if (old_format == FALSE) {
 		strcpy(action_str,get_actions_query(temp_str,element_ptr,FALSE,"requires"));
 		strcpy(var_name,strtok(action_str,". "));
 		rc = check_for_var(var_name);
@@ -596,21 +603,28 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 			}
 			strcat(output_str,query_str);
 		}
-		if (rc == -1)
+		if (rc == -1 && query_str != NULL)
 			add_var(var_name, query_str);
-		else {
+		else if (strcmp(var_name,"(null)\0") != 0){
 			sprintf(temp_str,"&&id==$%s", var_name);
 			strcat(output_str,temp_str);
 		}
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		if (rc == -1) {
+		if (rc == -1 && query_str != NULL) {
 			sprintf(output_str,"pop %s",var_name);
 		} else
 			strcpy(output_str,"pop ");
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		
+		} else {
+			strcpy(output_str,"push 0 ");
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+			strcpy(output_str,"pop ");
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+		}
 		/* save current line so we cna jump back at end of loop */
 		temp_line = current_line;
 		strcpy(output_str,"call set ready ");
@@ -619,7 +633,8 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(temp_str,action_str);
 		temp_ptr = strtok(temp_str," ");
 		while (temp_ptr != NULL) {
-			add_to_ready(temp_ptr);
+			strcpy(temp_str2,temp_ptr);
+			add_to_ready(temp_str2);
 			temp_ptr = strtok(NULL," ");
 		}
 		if (get_next_action(element_ptr) == NULL)
@@ -708,6 +723,10 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	}
 	else if (strcmp(*type,"selection") == 0)
 	{
+		strcpy(action_str,get_actions(temp_str,element_ptr,FALSE));
+		strcpy(temp_str,strtok(action_str," "));
+		if (check_for_ready(temp_str) == -1) {
+		if (old_format == FALSE) {
 		strcpy(output_str,"call select ");
 		strcpy(action_str,get_actions_query(temp_str,element_ptr,FALSE,"requires"));
 		strcpy(var_name,strtok(action_str,". "));
@@ -724,20 +743,28 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 			}
 			strcat(output_str,query_str);
 		}
-		if (rc == -1)
+		if (rc == -1 && query_str != NULL)
 			add_var(var_name, query_str);
-		else {
+		else if (strcmp(var_name,"(null)\0") != 0) {
 			sprintf(temp_str,"&&id==$%s", var_name);
 			strcat(output_str,temp_str);
 		}
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		if (rc == -1) {
+		if (rc == -1 && query_str != NULL) {
 			sprintf(output_str,"pop %s",var_name);
 		} else
 			strcpy(output_str,"pop ");
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
+		} else {
+			strcpy(output_str,"push 0 ");
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+			strcpy(output_str,"pop ");
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+		}
 
 		strcpy(output_str,"call set ready ");
 		strcpy(action_str,get_actions(temp_str,element_ptr,FALSE));
@@ -758,6 +785,11 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(output_str,"pop");
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
+		}
+		else {
+			strcpy(action_str,get_actions(temp_str,element_ptr,FALSE));
+			temp_line = current_line + path_length(element_ptr);
+		}
 		strcpy(output_str,"call wait active ");
 		strcat(output_str,action_str);
 		write_cpml_data(current_line,output_str,filetype,output);
@@ -882,9 +914,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(output_str,"decr");
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		/* subtracting 13 comes from the lines that were counted for the branch
-		 * loop that we already passed */
-		sprintf(output_str,"jzero %d",current_line+path_length(element_ptr)-13);
+		sprintf(output_str,"jzero %d",current_line+path_length(element_ptr)-num_children(element_ptr)*4-5);
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
 		sprintf(output_str,"goto %d",current_line-5);
@@ -911,6 +941,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	else if (strcmp(*type,"action") == 0)
 	{
 		if (check_for_ready(*name) == -1) {
+			if (old_format == FALSE) {
 			strcpy(output_str,"call select ");
 			strcpy(action_str,get_actions_query(temp_str,element_ptr,FALSE,"requires"));
 			strcpy(var_name,strtok(action_str,". "));
@@ -929,21 +960,28 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 			}
 			else if (rc != -1)
 				strcat(output_str,var_list[rc].var_desc);
-			if (rc == -1)
+			if (rc == -1 && query_str != NULL)
 				add_var(var_name, query_str);
-			else {
+			else if (strcmp(var_name,"(null)\0") != 0) {
 				sprintf(temp_str,"&&id==$%s", var_name);
 				strcat(output_str,temp_str);
 			}
 			write_cpml_data(current_line,output_str,filetype,output);
 			current_line += 1;
-			if (rc == -1) {
+			if (rc == -1 && query_str != NULL) {
 				sprintf(output_str,"pop %s",var_name);
 			} else
 				strcpy(output_str,"pop ");
 			write_cpml_data(current_line,output_str,filetype,output);
 			current_line += 1;
-
+			} else {
+				strcpy(output_str,"push 0 ");
+				write_cpml_data(current_line,output_str,filetype,output);
+				current_line += 1;
+				strcpy(output_str,"pop ");
+				write_cpml_data(current_line,output_str,filetype,output);
+				current_line += 1;
+			}
 			sprintf(output_str,"call set ready %s",*name);
 			write_cpml_data(current_line,output_str,filetype,output);
 			current_line += 1;
@@ -963,6 +1001,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(output_str,"pop");
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
+		if (old_format == FALSE) {
 		strcpy(output_str,"call select ");
 		strcpy(action_str,get_actions_query(temp_str,element_ptr,FALSE,"provides"));
 		strcpy(var_name,strtok(action_str,". "));
@@ -979,19 +1018,26 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 			}
 			strcat(output_str,query_str);
 		}
-		if (rc == -1)
+		if (rc == -1 && query_str != NULL)
 			add_var(var_name, query_str);
-		else {
+		else if (strcmp(var_name,"(null)\0") != 0) {
 			sprintf(temp_str,"&&id==$%s",var_name);
 			strcat(output_str,temp_str);
 		}
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		if (rc == -1) {
+		if (rc == -1 && query_str != NULL) {
 			sprintf(output_str,"pop %s",var_name);
 		} else
 			strcpy(output_str,"pop ");
 		write_cpml_data(current_line,output_str,filetype,output);
+		} else {
+			strcpy(output_str,"call assert ");
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+			sprintf(output_str,"jzero %d",error_line);
+			write_cpml_data(current_line,output_str,filetype,output);
+		}
 		free(*name);
 		free(name);
 		free(*type);
@@ -1037,8 +1083,10 @@ int path_length(data_dict_element_struct* element_ptr)
 	int sum = 0;
 	char **type;
 	data_dict_element_list_struct *child_list_ptr = NULL;
+	data_dict_element_list_struct *prev_child_list_ptr = NULL;
 	data_dict_element_list_struct *first_child = NULL;
 	data_dict_element_struct *child_element_ptr = NULL;
+	data_dict_element_struct *temp_element_ptr = NULL;
 
 	if ((type = malloc(sizeof(char *))) == NULL) {
 		printf("\nERROR[path_length]-memory allocation\n");
@@ -1056,17 +1104,25 @@ int path_length(data_dict_element_struct* element_ptr)
 				sum += 5;
 			else if (strcmp(*type,"iteration") == 0 && child_list_ptr == first_child)
 				sum += 5;
-			else
+			else if (strcmp(*type,"task") == 0 || strcmp(*type,"sequence") == 0) {
+				child_element_ptr = data_dict_get_child(prev_child_list_ptr);
+				data_dict_get_type(child_element_ptr,type);
+				if (strcmp(*type,"iteration") == 0)
+					sum += 5;
+				else
+					sum += 10;
+			} else
 				sum += 10;
 		} else
 			sum += path_length(child_element_ptr);
+		prev_child_list_ptr = child_list_ptr;
 		child_list_ptr = data_dict_get_next_child(child_list_ptr);
 	}
 	data_dict_get_type(element_ptr, type);
 	/* all of these numbers come from the op-code specification and need to be changed
 	 * if the op-code changes at all! */
 	if (strcmp(*type,"branch") == 0)
-		sum += num_children(element_ptr) + 15;
+		sum += num_children(element_ptr)*5 + 7;
 	else if (strcmp(*type,"action") == 0) {
 		 element_ptr = data_dict_get_parent(element_ptr);
 		 data_dict_get_type(element_ptr, type);
@@ -1076,10 +1132,30 @@ int path_length(data_dict_element_struct* element_ptr)
             sum += 5;
          else
             sum += 10;
-	} else if (strcmp(*type,"iteration") == 0)
+	} else if (strcmp(*type,"iteration") == 0) {
 		sum += 10;
-	else if (strcmp(*type,"selection") == 0)
+	} else if (strcmp(*type,"sequence") == 0) {
+		temp_element_ptr = element_ptr;
+		element_ptr = data_dict_get_parent(element_ptr);
+		child_list_ptr = data_dict_get_child_list(element_ptr);
+		child_element_ptr = data_dict_get_child(child_list_ptr);
+		data_dict_get_type(element_ptr, type);
+         	if (strcmp(*type,"selection") == 0)
+            		sum -= 5;
+         	else if (strcmp(*type,"iteration") == 0 && temp_element_ptr == child_element_ptr)
+            		sum -= 5;
+	 } else if (strcmp(*type,"selection") == 0) {
 		sum += num_children(element_ptr)*2 + 6;
+		temp_element_ptr = element_ptr;
+		element_ptr = data_dict_get_parent(element_ptr);
+		child_list_ptr = data_dict_get_child_list(element_ptr);
+		child_element_ptr = data_dict_get_child(child_list_ptr);
+		data_dict_get_type(element_ptr, type);
+         	if (strcmp(*type,"selection") == 0)
+            		sum -= 5;
+         	else if (strcmp(*type,"iteration") == 0 && temp_element_ptr == child_element_ptr)
+            		sum -= 5;
+	}
 	free(*type);
 	free(type);
 	return sum;
@@ -1350,10 +1426,7 @@ int check_for_var(char* name)
 ******************************************************************************/
 void add_to_ready(char* name)
 {
-	char* new_var = (char*) malloc(sizeof(char));
-	
-	strcpy(new_var,name);
-	ready_list[ready_list_ptr] = new_var;
+	strcpy(ready_list[ready_list_ptr], name);
 	ready_list_ptr += 1;
 }
 

@@ -20,6 +20,7 @@ typedef int    Boolean;
 #define STOP 2
 #endif
 
+Boolean old_format;
 /* To generate text CPML file. */
 #ifndef TEXT_MODE
 #define TEXT_MODE "text"
