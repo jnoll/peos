@@ -28,6 +28,7 @@ char name[30];
 char pass[30];
 
 int hasProblem, isPasswordRight;
+int sessionId = 1;
 
 int main() {
 
@@ -65,7 +66,7 @@ int main() {
     else if(isPasswordRight == 1 || isPasswordRight == 2 || isPasswordRight == 3){
         printf("<body onLoad=\"window.location='main.html';\">\n") ;
         setCookie();
-    }
+    }  
     else{
         printf("<body>\n") ;
         printf("The user name and password failed to authenticate\n");	
@@ -135,6 +136,7 @@ int setCookie(){
     printf("document.cookie=\"userName=%s\";\n", name);
     printf("document.cookie=\"userType=%i\";\n", isPasswordRight);
     printf("document.cookie=\"password=%i\";\n", pass);
+    printf("document.cookie=\"sessionId=%i\";\n", sessionId);
     printf("</SCRIPT>\n");
 }
 
