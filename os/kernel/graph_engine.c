@@ -439,8 +439,10 @@ vm_exit_code action_done(Graph g, char *act_name)
 	     * (num_successors == 1) is a check to see that it is 
 	     * not an iteration.
 	     */
-	    if((child -> type == JOIN) && (num_successors == 1)) {
-	        propogate_join_done(child, state_set);
+	    if(state_set == ACT_DONE) {
+                if((child -> type == JOIN) && (num_successors == 1)) {
+	            propogate_join_done(child, state_set);
+	        }
 	    }
 	    if(child -> type != RENDEZVOUS) {
 		/* 

@@ -252,6 +252,63 @@ START_TEST(test_action_done)
 }
 END_TEST
 
+START_TEST(test_action_done_selection)
+{
+
+   Graph g =(Graph) malloc (sizeof(struct graph));
+
+   Node source,sink,act_0,act_1,sel,join;
+
+   source = make_node("process",ACT_NONE,PROCESS,0);
+   sink = make_node("process",ACT_NONE,PROCESS,5);
+   act_0 = make_node("act_0",ACT_RUN,ACTION,2);
+   act_1 = make_node("act_1",ACT_NONE,ACTION,3);
+   sel = make_node("sel",ACT_RUN,SELECTION,1);
+   join = make_node("sel",ACT_RUN,JOIN,4);
+
+   source -> successors = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   sel -> successors = (List) make_list(act_0,act_1,NULL,NULL,NULL);
+   sel -> predecessors = (List) make_list(source,NULL,NULL,NULL,NULL);
+   act_0 -> predecessors = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   act_1 -> predecessors = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   act_0 -> successors = (List) make_list(join,NULL,NULL,NULL,NULL);
+   act_1 -> successors = (List) make_list(join,NULL,NULL,NULL,NULL);
+   join -> predecessors = (List) make_list(act_0,act_1,NULL,NULL,NULL);
+   join -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+   sink -> predecessors = (List) make_list(join,NULL,NULL,NULL,NULL);
+
+   SUPER_NODES(act_0) = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   
+   SUPER_NODES(act_1) = (List) make_list(sel,NULL,NULL,NULL,NULL);
+
+   REQUIRES_STATE(act_0) = TRUE;
+   PROVIDES_STATE(act_0) = FALSE;
+   REQUIRES_STATE(act_1) = FALSE;
+   PROVIDES_STATE(act_1) = FALSE;
+   
+   g -> source = source;
+   g -> sink = sink;
+   
+   source -> next = sel;
+   sel -> next = act_0;
+
+   act_0 -> next = act_1;
+   act_1 -> next = join;
+   join -> next = sink;
+   sink -> next = NULL;
+   sel -> matching = join;
+   join -> matching = sel;
+
+  
+  fail_unless(action_done(g,act_0->name) == VM_CONTINUE,"return value");
+  fail_unless(STATE(act_0) == ACT_PENDING, "action 0  not pending");
+  fail_unless(STATE(sink) != ACT_DONE, "process done");
+  fail_unless(STATE(sel) != ACT_PENDING, "selection not pending");
+  fail_unless(STATE(join) != ACT_PENDING, "join not pending");
+  
+}
+END_TEST
+
 
 START_TEST(test_action_run)
 {
@@ -1065,6 +1122,7 @@ main(int argc, char *argv[])
     tc = tcase_create("action done");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_action_done);
+    tcase_add_test(tc, test_action_done_selection);
     tcase_add_test(tc,test_propogate_join_done);
 
     tc = tcase_create("set_rendezvous_state");
