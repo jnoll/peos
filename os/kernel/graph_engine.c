@@ -294,16 +294,16 @@ void mark_successors(Node n, vm_act_state state)
  */
 
 
-void propogate_join_done(Node n)
+void propogate_join_done(Node n, vm_act_state state_set)
 {
     int i;
     Node child;
     if (n -> type == JOIN) {
-	set_node_state(n, ACT_DONE);    
-        set_node_state(n -> matching, ACT_DONE);
+	set_node_state(n, state_set);    
+        set_node_state(n -> matching, state_set);
 	for(i = 0; i < ListSize(n->successors); i++) {
 	    child = (Node) ListIndex(n->successors,i);
-	    propogate_join_done(child);
+	    propogate_join_done(child, state_set);
 	    set_rendezvous_state(child);
 	}
     }
@@ -337,7 +337,7 @@ void set_rendezvous_state(Node n)
 	     for(i = 0; i< ListSize(n -> successors); i++) {
 	         child = (Node) ListIndex(n -> successors,i);
 		 if(child -> type == JOIN) {
-	             propogate_join_done(child);
+	             propogate_join_done(child, ACT_DONE);
 		 }
 		 mark_successors(child,ACT_READY);
 		 set_rendezvous_state(child);
@@ -358,7 +358,7 @@ void set_process_state(Graph g)
 
     for(i = 0; i < ListSize(g -> sink -> predecessors); i++) {
         parent = (Node) ListIndex(g -> sink -> predecessors,i);
-	if (STATE(parent) != ACT_DONE)
+        if ((ListSize(parent -> successors) > 1) || (STATE(parent) != ACT_DONE))
 	    status = 0;
     }
     
@@ -427,10 +427,11 @@ vm_exit_code action_done(Graph g, char *act_name)
     Node n;
     Node child;
     int i,num_successors;
+    vm_act_state state_set;
 
     n = find_node(g,act_name);
     if(n != NULL) {
-	set_node_state(n, ACT_DONE);    
+        state_set = set_node_state(n, ACT_DONE);    
 	num_successors = ListSize(n -> successors);
 	for(i = 0; i < num_successors; i++) {
 	    child = (Node) ListIndex(n -> successors, i);
@@ -439,7 +440,7 @@ vm_exit_code action_done(Graph g, char *act_name)
 	     * not an iteration.
 	     */
 	    if((child -> type == JOIN) && (num_successors == 1)) {
-	        propogate_join_done(child);
+	        propogate_join_done(child, state_set);
 	    }
 	    if(child -> type != RENDEZVOUS) {
 		/* 

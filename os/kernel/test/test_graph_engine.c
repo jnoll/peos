@@ -530,7 +530,7 @@ START_TEST(test_propogate_join_done)
 							      
 
   /* Action  */
-   propogate_join_done(join); 
+   propogate_join_done(join,ACT_DONE); 
 
    /* Post */
    
@@ -641,6 +641,46 @@ START_TEST(test_set_process_state)
 }
 END_TEST
 
+
+START_TEST(test_set_process_state_iter)
+{
+	Graph g = (Graph) malloc (sizeof(struct graph));
+        Node source,sink,act_0,act_1;
+                                                                        
+        source = make_node("p",ACT_NONE,PROCESS,0);
+        sink = make_node("p",ACT_NONE,PROCESS,4);
+        act_0 = make_node("act_0",ACT_READY,ACTION,1);
+	act_1 = make_node("act_1",ACT_NONE,ACTION,2);
+
+	source -> successors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+	act_0 -> successors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+	act_0 -> predecessors = (List) make_list(source,act_1,NULL,NULL,NULL);
+	act_1 -> successors = (List) make_list(sink,act_0,NULL,NULL,NULL);
+	act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+	sink -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+
+	ITER_END_NODES(act_0) = (List) make_list(sink,NULL,NULL,NULL,NULL);
+	ITER_START_NODES(sink) = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+
+	source -> next = act_0;
+	act_0 -> next = act_1;
+	act_1 -> next = sink;
+	sink -> next = NULL;
+                                                                         
+        g -> source = source;
+        g -> sink = sink;
+        source -> matching = sink;
+        sink -> matching = source;
+
+	set_process_state(g);
+	
+        fail_unless(STATE(source) != ACT_DONE, "process source done");
+	fail_unless(STATE(sink) != ACT_DONE, "process sink done");
+}
+END_TEST
+
+	
+	 
 START_TEST(test_action_run_iteration)
 {
 	Graph g = (Graph) malloc (sizeof(struct graph));
@@ -682,6 +722,9 @@ START_TEST(test_action_run_iteration)
 	fail_unless(STATE(act_2) == ACT_RUN, "act_2 not run");
 }
 END_TEST
+
+
+
 
 START_TEST(test_mark_iter_nodes)
 {
@@ -1039,6 +1082,9 @@ main(int argc, char *argv[])
     tc = tcase_create("set_process_state");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_set_process_state);
+    tcase_add_test(tc,test_set_process_state_iter);
+    
+    
 
     tc = tcase_create("make_iter_nodes");
     suite_add_tcase(s,tc);

@@ -9,8 +9,6 @@
 #include <readline/history.h>
 #include "events.h"
 
-extern int save_proc_table(char *);
-extern int load_proc_table(char *);
 extern char *act_state_name(vm_act_state state);
 
 /* The following mechanism lifted from the GNU readline documentation. */
@@ -158,7 +156,6 @@ int notify_event(int argc, char *argv[])
 
 int quit()
 {
-    save_proc_table("proc_table.dat");
     exit(0);
 }
 
@@ -238,7 +235,6 @@ main(int argc, char *argv[])
     char *arg_v[256];
     COMMAND *cmd_func;
 
-    load_proc_table("proc_table.dat");
     while (1) {
 	/* If the buffer has already been allocated, return the memory
 	   to the free pool. */

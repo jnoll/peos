@@ -2,7 +2,7 @@
 #define _ACTION_H
 #include <limits.h>
 
-#define MAX_ACT (256)
+
 #define INST_ARRAY_INCR (256)    
 
 typedef enum {
