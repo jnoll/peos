@@ -1,7 +1,7 @@
 /************************************************************************
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
- * Filename : FSsearchEnd2End.c						*
+ * Filename : testFSsearchEnd2End.c					*
  ************************************************************************/
 
 /************************************************************************
@@ -19,7 +19,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-int main( int argc, char * argv[] )
+int main( void )
 {	
 	void callback( int size, resultList *listPointer , int *data ) ;
 	void ( *call )( int, resultList *, int * data ) ;

@@ -22,13 +22,7 @@ queryList* FSqueryTool( queryList *listpointer )
 	printf( "FSqueryTool\n" ) ;
 	return listpointer ;	
 }
-   
-queryList* MailqueryTool( queryList *listpointer )
-{
 
-	printf( "MailqueryTool\n" ) ;
-	return listpointer ;	
-} 
 
 
 	

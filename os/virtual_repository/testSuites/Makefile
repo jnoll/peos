@@ -8,11 +8,18 @@ resultLinkedList.o \
 setup_repositories.o \
 vrepo.o
 
+VROBJECTS = \
+setup_repositories.o \
+dummy_seekers.o
+
 TESTS = \
-FSsearchEnd2End \
-FSsearchSeek \
-FSsearchInvalid \
-FSsearchEmpty
+testFSsearchEnd2End \
+testFSsearchSeek \
+testFSsearchInvalid \
+testFSsearchEmpty
+
+TEST1 = \
+VRsetup
 
 FS_ACTUAL_RESULT_FILES = \
 VRsetupActualResult.txt \
@@ -39,9 +46,16 @@ FSsearchSeekQuery.dat
 #	$(CC) $(CFLAGS) VRsetup.c
 
 # Create a test executable and run the test.
-FS%: FS%.o $(OBJECTS)
-	echo "my rules"
+test%: test%.o $(OBJECTS)
+#	echo "my rules"
 	$(CC) -o $@ $< $(OBJECTS) 
+#	$@ $@.dat > $(@)ActualResult.txt
+#	diff $(@)ExpectedResult.txt $(@)ActualResult.txt
+
+# Create a test executable and run the test.
+VR%:VR%.o $(VROBJECTS)
+#	echo "my rules"
+	$(CC) -o $@ $< $(VROBJECTS) 
 #	$@ $@.dat > $(@)ActualResult.txt
 #	diff $(@)ExpectedResult.txt $(@)ActualResult.txt
 
@@ -51,24 +65,23 @@ FS%: FS%.o $(OBJECTS)
 %.o: ../%.c
 	$(CC) $(CFLAGS) $<
 
-test:	$(TESTS)
+test:	$(TESTS) $(TEST1)
 
-	FSsearchEnd2End FSsearchEnd2EndQuery.dat > FSsearchEnd2EndActualResult.txt
+	testFSsearchEnd2End > FSsearchEnd2EndActualResult.txt
 	diff FSsearchEnd2EndExpectedResult.txt FSsearchEnd2EndActualResult.txt
 	
-	FSsearchSeek FSsearchSeekQuery.dat > FSsearchSeekActualResult.txt
+	testFSsearchSeek > FSsearchSeekActualResult.txt
 	diff FSsearchSeekExpectedResult.txt FSsearchSeekActualResult.txt
 	
-	FSsearchInvalid FSsearchInvalid.dat > FSsearchInvalidActualResult.txt
+	testFSsearchInvalid > FSsearchInvalidActualResult.txt
 	diff FSsearchInvalidExpectedResult.txt FSsearchInvalidActualResult.txt
 	
-	FSsearchEmpty FSsearchEmpty.dat > FSsearchEmptyActualResult.txt
-	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResult.txt	
+	testFSsearchEmpty > FSsearchEmptyActualResult.txt
+	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResult.txt
 	
-#	make VRsetup
-#	VRsetup > VRsetupActualResult.txt
-#	diff VRsetupExpectedResult.txt VRsetupActualResult.txt
-
+	testVRsetup > VRsetupActualResult.txt
+	diff VRsetupExpectedResult.txt VRsetupActualResult.txt	
+	
 clean:
 	-rm *.o
 	-rm core
@@ -76,5 +89,7 @@ clean:
 	-rm $(FS_EXPECTED_RESULT_FILES)
 	-rm $(FS_QUERY_FILES)
 	-rm $(TESTS)
+	-rm $(TEST1)
+
 
 	
