@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.13 2003/11/03 23:49:20 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.14 2003/11/07 02:44:12 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -23,6 +23,7 @@
 #include <time.h>
 #include "vm.h"
 #include "process.h"
+#include "events.h"
 #include "graph_engine.h"
 
 /* Globals. */
@@ -30,7 +31,7 @@
 
 /* Forward declarations. */
 extern peos_context_t *find_free_entry();
-extern int load_actions(char *file,peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes, int *num_other_nodes);
+extern int load_actions(char *file,peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes, int *num_other_nodes,Graph *process_graph);
 
 
 
@@ -157,7 +158,7 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
     }
 
     if ((start = load_actions(model_file,&(context->actions), 
-				   &(context->num_actions),&(context->other_nodes),&(context->num_other_nodes))) >= 0) {
+				   &(context->num_actions),&(context->other_nodes),&(context->num_other_nodes),&(context->process_graph))) >= 0) {
         int i, pid = peos_get_pid(context);
         strcpy(context->model, model_file);
         context->status = PEOS_READY;

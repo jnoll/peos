@@ -18,8 +18,6 @@ void mark_successors(Node n, vm_act_state state);
 void add_iteration_lists(Graph g);
 
 
-
-
 int  annotate_graph(Graph g, peos_context_t *context)
 {
     int i;
@@ -216,7 +214,7 @@ void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int
     return;
 }
 
-peos_resource_t *peos_get_resource_list_action_requires(int pid, char *act_name, int *total_resources)
+peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *total_resources)
 {
     Graph g;
     Node n;
@@ -231,7 +229,8 @@ peos_resource_t *peos_get_resource_list_action_requires(int pid, char *act_name,
     peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
     model_file = context->model;
-    g = makegraph(model_file);
+    //g = makegraph(model_file);
+    g = context -> process_graph;
     if(g != NULL) {
         n = find_node(g,act_name);
         if(n == NULL) {
@@ -248,14 +247,14 @@ peos_resource_t *peos_get_resource_list_action_requires(int pid, char *act_name,
 		}
 	    }
 	}
-        GraphDestroy(g);
+
         return act_resources;
     }    
     else
         return NULL;
 }
 
-peos_resource_t *peos_get_resource_list_action_provides(int pid, char *act_name, int
+peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
 		*total_resources)
 {
     Graph g;
@@ -271,7 +270,8 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid, char *act_name,
     peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
                                                                                     
     model_file = context->model;
-    g = makegraph(model_file);
+ //   g = makegraph(model_file);
+    g = context -> process_graph;   
     if(g != NULL) {
         n = find_node(g,act_name);
         if(n == NULL) {
@@ -288,7 +288,6 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid, char *act_name,
                 }
             }
         }
-        GraphDestroy(g);
         return act_resources;
     }
     else
@@ -296,7 +295,7 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid, char *act_name,
 }
 
 
-peos_resource_t *peos_get_resource_list_action(int pid, char *act_name, int *total_resources)
+peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_resources)
 {
     Graph g;
     Node n;
@@ -310,7 +309,8 @@ peos_resource_t *peos_get_resource_list_action(int pid, char *act_name, int *tot
     peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
     model_file = context->model;
-    g = makegraph(model_file);
+//    g = makegraph(model_file);
+    g = context -> process_graph;
     if(g != NULL) {
         n = find_node(g,act_name);
 	if(n == NULL) {
@@ -328,7 +328,7 @@ peos_resource_t *peos_get_resource_list_action(int pid, char *act_name, int *tot
 		}
 	    }
 	}
-	GraphDestroy(g);
+
         return act_resources;
     }
     else 
@@ -337,7 +337,7 @@ peos_resource_t *peos_get_resource_list_action(int pid, char *act_name, int *tot
 
 	
 // this function is used to get the list of resources for the whole process
-peos_resource_t *peos_get_resource_list(char *model, int *total_resources)
+peos_resource_t *get_resource_list(char *model, int *total_resources)
 {
     int rsize = 256;
     Graph g;
@@ -346,6 +346,7 @@ peos_resource_t *peos_get_resource_list(char *model, int *total_resources)
     peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
     g = makegraph(model);
+
     if(g != NULL) {	
         for(n = g->source->next; n != NULL; n = n -> next) {
 	    if(n -> type == ACTION) {
@@ -354,7 +355,6 @@ peos_resource_t *peos_get_resource_list(char *model, int *total_resources)
 	    }
 	}
 	*total_resources = num_resources;
-	GraphDestroy(g);
 	return resource_list;
     }
     else
@@ -411,7 +411,6 @@ void mark_iter_nodes(Node n)
 	}
     }
 }
-
 
 
 void mark_successors(Node n, vm_act_state state)
@@ -627,7 +626,8 @@ vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state stat
     char *model_file;
 	                                                                                            
     model_file = context->model;
-    g = makegraph(model_file);
+//    g = makegraph(model_file);
+    g = context -> process_graph;
     if(g == NULL) {
         fprintf(stderr,"Handle Action Error: Unable to build graph");
         return VM_INTERNAL_ERROR;
@@ -644,8 +644,6 @@ vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state stat
         fprintf(stderr,"Handle Action Error: Unable to update context");
         return VM_INTERNAL_ERROR;
     }
-
-    GraphDestroy(g);
                                                                
     return VM_DONE;
 }

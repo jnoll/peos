@@ -19,6 +19,12 @@ Graph makegraph(char *file)
    return stub_makegraph(file);
 }
 
+int annotate_graph(Graph g, peos_context_t *context)
+{
+    return 1;
+}
+
+
 void GraphDestroy(Graph g)
 {
 	return;
@@ -55,7 +61,7 @@ START_TEST(test_load_actions)
     /* Action. */
     
   
-	  s = load_actions("test_sample_1.pml", &(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes));
+	  s = load_actions("test_sample_1.pml", &(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes),&(context->process_graph));
  
   /* Post: model loaded - each entry matches a line in the file. */
     fail_unless(s == 1,"return value");	  
@@ -64,6 +70,7 @@ START_TEST(test_load_actions)
     fail_unless(strcmp(context->actions[1].name,"act_1") == 0, "action name wrong");
     fail_unless(context->num_other_nodes == 1, "num_other_nodes wrong");
     fail_unless(strcmp(context->other_nodes[0].name,"sel") == 0, "sel name wrong");
+    fail_unless(context->process_graph != NULL,"Process graph null");
 
 }
 END_TEST

@@ -15,11 +15,17 @@
 #include "vm.h"
 #include "process.h"
 #include "events.h"
+#include "graph_engine.h"
+
+
+
+
 
 /* Global variables. */
 
 /* Forward declarations. */
 extern char *find_model_file(char *model);
+
 
 
 void error_msg(char *s) 
@@ -66,43 +72,52 @@ char **peos_list_models()
     return result;
 }
 
-int peos_set_ready(int pid, char *action)
+
+int peos_set_action_state(int pid,char *action, vm_act_state state)
 {
-    return handle_action_change(pid, action, ACT_READY);
+    switch(state) {
+        case ACT_READY : return handle_action_change(pid,action,ACT_READY);
+			 break;
+        case ACT_RUN : return handle_action_change(pid,action,ACT_RUN);
+		       break;
+		               
+        case ACT_DONE : return handle_action_change(pid,action,ACT_DONE);
+			break;
+        case ACT_SUSPEND : return handle_action_change(pid,action,ACT_SUSPEND);
+			   break;
+        case ACT_ABORT : return handle_action_change(pid,action,ACT_ABORT);
+			 break;
+	default : {
+	              fprintf(stderr,"\nInvalid Action State\n");
+		      return -1;
+		  }
+    }
+}
+	    
+
+peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
+{
+    return get_resource_list_action(pid,name,num_resources);
 }
 
-/*
- * Set action state to 'running.'
- */
-int peos_run_action(int pid, char *action)
+
+peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *num__req_resources)
 {
-    return handle_action_change(pid, action, ACT_RUN);
+    return get_resource_list_action_requires(pid,name,num__req_resources);
 }
 
-/*
- * Set action state to 'suspended'.
- */
-int peos_suspend_action(int pid, char *action)
+
+peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *num_pro_resources)
 {
-    return handle_action_change(pid, action, ACT_SUSPEND);
+    return get_resource_list_action_provides(pid,name,num_pro_resources);
 }
 
-/*
- * Set action state to 'done', awaken any waiting processes.
- */
-vm_exit_code peos_finish_action(int pid, char *action)
-{
-    return handle_action_change(pid, action, ACT_DONE);
-}
 
-/*
- * Set action state to 'aborted', kill owner and children. 
- */
-int peos_abort_action(peos_action_t action)
+peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
 {
-    return 1;
+    char *model_file = find_model_file(model);
+    return get_resource_list(model_file,num_resources);
 }
-
 
 
 int peos_run(char *process, peos_resource_t *resources,int num_resources)

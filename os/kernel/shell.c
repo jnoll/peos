@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.18 2003/11/03 23:49:20 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.19 2003/11/07 02:44:12 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -160,7 +160,6 @@ void create_process(int argc, char *argv[])
     int pid;
     int i;
     char *model;
-    char *model_file;
     int num_resources;
     peos_resource_t *resources;
 
@@ -173,12 +172,7 @@ void create_process(int argc, char *argv[])
 
     /* This is new code I have inserted. */
 
-    model_file = (char *)find_model_file(model);
-    if (model_file == NULL) {
-        printf("error: model file not found\n");
-	return;
-    }
-    resources = (peos_resource_t *) peos_get_resource_list(model_file,&num_resources);
+     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
 
 
     if (resources == NULL) {
@@ -246,7 +240,7 @@ void run_action(int argc, char *argv[])
     pid = atoi(argv[1]);
     action = argv[2];
     printf("Performing action %s\n", action);
-    if ((status = peos_run_action(pid, action)) == VM_ERROR 
+    if ((status = peos_set_action_state(pid, action,ACT_RUN)) == VM_ERROR 
 	|| status == VM_INTERNAL_ERROR) {
 	printf("process executed an illegal instruction and has been terminated\n");
     } 
@@ -275,7 +269,7 @@ void finish_action(int argc, char *argv[])
     pid = atoi(argv[1]);
     action = argv[2];
     printf("Performing action %s\n", action);
-    if ((status = peos_finish_action(pid, action)) == VM_ERROR 
+    if ((status = peos_set_action_state(pid, action,ACT_DONE)) == VM_ERROR 
 	|| status == VM_INTERNAL_ERROR) {
 	printf("process executed an illegal instruction and has been terminated\n");
     }

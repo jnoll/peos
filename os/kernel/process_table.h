@@ -1,6 +1,7 @@
 #ifndef _PROCESS_TABLE_H
 #define _PROCESS_TABLE_H
 #include "action.h"
+#include "pmlheaders.h"
 
 #define INST_ARRAY_INCR (256)    
 #define PEOS_MAX_PID (10)
@@ -16,6 +17,7 @@ typedef enum {
 typedef struct peos_context_tag {
     process_status_t status; 
     int pid;
+    Graph process_graph;
     int num_actions;
     int num_other_nodes;
     int num_resources;

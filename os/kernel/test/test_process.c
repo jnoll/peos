@@ -15,6 +15,8 @@ peos_context_t process_table[PEOS_MAX_PID+1];
 /* Stubs. */
 
 
+int stub_load_actions(char *file, peos_action_t **, int *,peos_other_node_t **,int *num_other_nodes,Graph *process_graph);
+
 vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state state)
 {
 	return VM_DONE;
@@ -50,9 +52,9 @@ return resources;
   
 
 
-int load_actions(char *file, peos_action_t **actions, int *num_actions, peos_other_node_t **other_nodes, int *num_other_nodes)
+int load_actions(char *file, peos_action_t **actions, int *num_actions, peos_other_node_t **other_nodes, int *num_other_nodes,Graph *process_graph)
 {
-    return stub_load_actions(file, actions, num_actions,other_nodes,num_other_nodes);
+    return stub_load_actions(file, actions, num_actions,other_nodes,num_other_nodes,process_graph);
 }
 
 

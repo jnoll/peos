@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.15 2003/11/05 22:59:41 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.16 2003/11/07 02:44:12 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -66,9 +66,7 @@ int peos_set_resource_value(int pid, char *resource_name, char *resource_value)
 }
 
 
-
-
-int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes,int *num_other_nodes)
+int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes,int *num_other_nodes, Graph *process_graph)
 {
     Graph g;
     Node n;
@@ -79,12 +77,11 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
     peos_action_t *act_array = (peos_action_t *) calloc(asize, sizeof(peos_action_t));
 
     peos_other_node_t *node_array = (peos_other_node_t *) calloc(osize, sizeof(peos_other_node_t));
-    
-    
 
     if (file [0]!= '\0') {
         g = makegraph(file);
 	if (g != NULL) {
+	    *process_graph = g;	
 	    for(n = g -> source;n != NULL; n = n -> next) {
 	        if (n -> type == ACTION) {
 		    strcpy(act_array[num_act].name, n -> name);
@@ -120,7 +117,6 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
 	    *num_actions = num_act;
 	    *other_nodes = node_array;
 	    *num_other_nodes = num_nodes;
-	    GraphDestroy(g);
 	    return 1;
 	}
 	else
@@ -149,7 +145,7 @@ load_context(FILE *in, peos_context_t *context)
     
     
     /* Load  actions first, to initialize context.This is also needed to load the script into the context */
-    if ((start = load_actions(context->model,&(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes))) >= 0) 
+    if ((start = load_actions(context->model,&(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes),&(context->process_graph))) >= 0) 
     {
     } 
     else {
@@ -202,6 +198,8 @@ load_context(FILE *in, peos_context_t *context)
                                                                            
 
     if (fscanf(in, "\n\n") < 0) return 0; 
+
+    if(annotate_graph(context->process_graph,context) < 0) return 0;
 
     return 1;
 }

@@ -85,7 +85,7 @@ void free_actions(peos_action_t *actions, int size)
 }
 
 
-int stub_load_actions(char *file, peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes, int *num_other_nodes)
+int stub_load_actions(char *file, peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes, int *num_other_nodes,Graph *process_graph)
 {
 	peos_action_t *act_array = (peos_action_t *) calloc(2,sizeof(peos_action_t));
 	peos_other_node_t *nodes_array = (peos_other_node_t *) calloc(1,sizeof(peos_other_node_t));

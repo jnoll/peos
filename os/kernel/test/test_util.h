@@ -2,6 +2,7 @@
 #define _TEST_UTIL_H
 #include <check.h>
 
+
 
 /* Test control flags. */
 extern int fork_status;
@@ -28,5 +29,5 @@ extern char *big_txt;
 extern void free_actions(peos_action_t *actions, int size);
 extern peos_action_t *make_actions(int size, vm_act_state state);
 extern void parse_args(int argc, char *argv[]);
-extern int stub_load_actions(char *file,peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes,int *num_other_nodes);
+//extern int stub_load_actions(char *file,peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes,int *num_other_nodes,Graph *process_graph);
 #endif

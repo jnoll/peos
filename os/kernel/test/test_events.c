@@ -10,6 +10,7 @@
 #include "events.h"
 #include "test_util.h"
 
+
 /* Stub (bogus) globals. */
 
 
@@ -18,11 +19,39 @@ char *instance_dir = NULL;
 int create_instance_result = 1;
 int handle_action_result = VM_DONE;
 
+
+
 /* Stubs. */
 
 char *find_model_file(char *model)
 {
     return TEST_PROC_NAME;
+}
+
+
+peos_resource_t *get_resource_list(char *model, int *num_res)
+{
+    peos_resource_t *resources;	
+    return resources;
+}
+
+peos_resource_t *get_resource_list_action(int pid,char *act_name, int *num_res)
+{
+    peos_resource_t *resources;	
+    return resources;
+}
+
+peos_resource_t *get_resource_list_action_requires(int pid,char *act_name, int *num_res)
+{
+    peos_resource_t *resources;	
+    return resources;
+}
+
+
+peos_resource_t *get_resource_list_action_provides(int pid,char *act_name, int *num_res)
+{
+    peos_resource_t *resources;	
+    return resources;
 }
 
 int peos_create_instance(char *model,peos_resource_t *resources,int num_resources)
