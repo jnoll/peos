@@ -236,9 +236,12 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 {
 	Graph g;
 	Node n;
+	int i,j;
 	int rsize = 256;
 	int num_resources = 0;
 	peos_context_t *context = peos_get_context(pid);
+	peos_resource_t *proc_resources = context -> resources;
+	int num_proc_resources = context -> num_resources;
         char *model_file;
 	peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
@@ -250,6 +253,18 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 		make_resource_list(n -> requires,act_resources,&num_resources);
 		make_resource_list(n -> provides,act_resources,&num_resources);
 		*total_resources = num_resources;
+		for(i = 0; i < num_resources; i++)
+		{
+			for(j = 0; j < num_proc_resources; j++)
+			{
+ 			if(strcmp(act_resources[i].name,proc_resources[j].name) == 0)
+			{
+			  strcpy(act_resources[i].value,proc_resources[j].value);
+			  break;
+			}
+			}
+		}
+		  
 		GraphDestroy(g);
 	        return act_resources;
 	}
