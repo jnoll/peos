@@ -68,18 +68,18 @@ START_TEST(test_get_lock)
     fd = open("some_file", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     fcntl(fd, F_SETLK, &lck);
 
-  /* redirect stderr to suppress lock error messages. */
-    if (verbosity != CK_VERBOSE) {
-        old_stderr = stderr;
-        stderr = fopen("/dev/null", "w");
-    }
-	
-  
     switch(pid=fork()) {
             case -1: fprintf(stderr, "Cannot Complete Tests\n");
                      exit(-1);
+		     break;
 		     
             case 0 :
+		     /* redirect stderr to suppress lock error messages. */
+		     if (verbosity != CK_VERBOSE) {
+		         old_stderr = stderr;
+		         stderr = fopen("/dev/null", "w");
+		     }
+		     		     
 		     lck1.l_type = F_WRLCK; 
                      lck1.l_whence = 0;
 	             lck1.l_start = 0;
@@ -93,10 +93,18 @@ START_TEST(test_get_lock)
 		         fclose(stderr);
 		         stderr = old_stderr;
 		     }
-		     fail_unless(get_lock_status == -1, "Access to Locked file");
-		     fail_unless((errno == EAGAIN || errno == EACCES), "Invalid Error code");
-                     exit(3); 
-            default: died= wait(&status); // this is the code the parent runs 
+
+                     if ((get_lock_status == -1) && (errno == EAGAIN || errno == EACCES))
+			     exit(0);
+		     else
+			    exit(EXIT_FAILURE); 
+		     break;
+		     
+            default:  	     
+		     died= wait(&status); // this is the code the parent runs 
+		     /* fail unless child exited with status 0 */
+		     fail_unless(status == 0, "Access to locked file");
+		     
     }
 	
     close(fd);
@@ -138,11 +146,14 @@ START_TEST(test_release_lock)
 		     lck1.l_len = 0; 
 		
                      fd1 = open("some_file", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-		     fail_unless(fcntl(fd1, F_SETLK, &lck1) == 0, "Lock Failed");
 
-		     fail_unless((errno != EAGAIN || errno != EACCES), "Invalid Error code");
-                     exit(3); 
+		     if ((fcntl(fd1, F_SETLK, &lck1) == 0) && (errno != EAGAIN || errno != EACCES))
+		         exit(0);
+		     else
+		         exit(EXIT_FAILURE);
+								       
             default: died= wait(&status); // this is the code the parent runs 
+		     fail_unless(status == 0 ,"Lock failed");
     }
 	
     close(fd);
