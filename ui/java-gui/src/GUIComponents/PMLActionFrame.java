@@ -25,7 +25,6 @@ public class PMLActionFrame extends JFrame
     MainController = cntrl;
     ActionForFrame = action;
     setTitle(action.GetName());
-    //setSize(200, 200);
 
     Container contentPane = getContentPane();
 
@@ -239,23 +238,57 @@ public class PMLActionFrame extends JFrame
     return areaScrollPane;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  //  This function execs a process to run the tool associated with the an   //
+  //  action. It looks up the tool string in the config file and uses it to  //
+  //  form the execution string for the new process.  For example if the     //
+  //  action is as follows:                                                  //
+  //                                                                         //
+  // action edit_name {                                                      //
+  //   requires {"/tmp/name"}                                                //
+  //   agent {"software engineer"}                                           //
+  //   script {"Enter your name into the name file."}                        //
+  //   tool {"PMLEDITOR"}                                                    //
+  // }                                                                       //
+  //                                                                         //
+  //  and the pml config file contained the following line:                  //
+  //                                                                         //
+  //  PMLEDITOR: xterm -e vi %r                                              //
+  //                                                                         //
+  //  the process executed would be:                                         //
+  //                                                                         //
+  //  xterm -e vi /tmp/name                                                  //
+  /////////////////////////////////////////////////////////////////////////////
   private void ExecTool(PMLAction action) throws IOException
   {
+    // Get the tool string.
     String tool = ActionForFrame.GetFieldValue("tool");
-    System.out.println("tool : " + tool); 
 
     if (tool != null) {
+      // Get the requires and provides string for the action.
       String requires = ActionForFrame.GetFieldValue("requires");
       String provides = ActionForFrame.GetFieldValue("provides");
+
+      // Find the tool exec string in the config file.
       String execStr = PMLConfig.GetConfig().GetStringValue(tool);
-      System.out.println("before execStr: " + execStr); 
       if (execStr != null) {
+        // Check to see if the exec string contains a %r.
         int requiresIndex = execStr.indexOf("%r");
+
         if (requiresIndex != StringNotFound) {
+          // Replace the %r with the requires field from the action.
           execStr = execStr.substring(0, requiresIndex) + requires +
                     execStr.substring(requiresIndex + 2);
         }
-        System.out.println("execStr: " + execStr); 
+
+        // Check to see if the exec string contains a %p.
+        int providesIndex = execStr.indexOf("%p");
+
+        if (providesIndex != StringNotFound) {
+          // Replace the %p with the provides field from the action.
+          execStr = execStr.substring(0, providesIndex) + provides +
+                    execStr.substring(providesIndex + 2);
+        }
         Runtime.getRuntime().exec(execStr);
       }
     }
@@ -271,6 +304,7 @@ public class PMLActionFrame extends JFrame
 
   // Action that the action frame is displaying.
   private PMLAction ActionForFrame;
+
   static private int StringNotFound = -1;
 }
 

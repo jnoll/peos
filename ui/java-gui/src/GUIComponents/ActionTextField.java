@@ -18,8 +18,7 @@ public class ActionTextField extends JTextField {
   public ActionTextField(String value, int columns) 
   {
     super(columns);
-    // setDocument(new FormattedDocument(f));
-    //format = f;
+
     if (value != null) {
       setText(value);
     }

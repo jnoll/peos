@@ -3,7 +3,7 @@ package GUIComponents;
 ///////////////////////////////////////////////////////////////////////////////
 // Class Description:                                                        //
 //                                                                           //
-// This class is holds login information and is used by the Login Dialog box //
+// This class holds login information and is used by the Login Dialog box    //
 // to return the login information.                                          //
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////

@@ -13,10 +13,12 @@ import Utils.*;
 ///////////////////////////////////////////////////////////////////////////////
 public class LoginKernel extends KernelCommand {
 
-  public void Execute(String userName, String password) throws IOException
+  public void Execute(String userName, String password, String peosHost,
+                      int peosPort) 
+    throws IOException
   {
     // Initialize the socket.
-    Initialize();
+    Initialize(peosHost, peosPort);
 
     // Write the command string to the socket.
     SocketWriter.println("login " + userName + " " + password);

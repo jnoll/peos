@@ -64,7 +64,6 @@ public class PMLMenuBar extends JMenuBar
   public void actionPerformed(ActionEvent evt)
   {  
     String arg = evt.getActionCommand();
-    System.out.println(arg);
     if(arg.equals("Exit")) {
       LogoutActionForMenuBar.PerformLogout();
       System.exit(0);

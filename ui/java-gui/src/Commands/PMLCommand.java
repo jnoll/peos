@@ -120,11 +120,13 @@ public class PMLCommand {
   /////////////////////////////////////////////////////////////////////////////
   // Login to the PML Kernel                                                 //
   /////////////////////////////////////////////////////////////////////////////
-  static public void Login(String userName, String password) throws IOException
+  static public void Login(String userName, String password, String peosHost,
+                           int peosPort) 
+    throws IOException
   {
     LoginKernel login = new LoginKernel();
 
-    login.Execute(userName, password);
+    login.Execute(userName, password, peosHost, peosPort);
   }
 
   /////////////////////////////////////////////////////////////////////////////

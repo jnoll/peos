@@ -23,9 +23,6 @@ import PMLCommands.*;
 class LogoutAction extends AbstractAction
   implements WindowListener
 {  
-  /*
-   * Constructors 
-   */
   public LogoutAction(String name, PMLController cntrl)
   {  
     putValue(Action.NAME, name);
@@ -45,7 +42,8 @@ class LogoutAction extends AbstractAction
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  //                                                                         //
+  // This function performs a logout by sending a logout message to          //
+  // PMLCommand.                                                             //
   /////////////////////////////////////////////////////////////////////////////
   public void PerformLogout()
   {  

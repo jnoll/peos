@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
+import Utils.*;
 import PML.*;
 import PMLCommands.*;
 
@@ -23,9 +24,6 @@ import PMLCommands.*;
 class LoginAction extends AbstractAction
   implements WindowListener
 {  
-  /*
-   * Constructors 
-   */
   public LoginAction(String name, PMLController cntrl, 
                      LoginDialogBox loginDialog)
   {  
@@ -58,8 +56,14 @@ class LoginAction extends AbstractAction
       // Get the user name and password from the user.
       Dialog.showDialog(conInfo);
 
+      // Get the host name that the peos server is running on.
+      String peosHost = PMLConfig.GetConfig().GetStringValue("PEOS_Server");
+      // Get the port name that the peos server is running on.
+      int peosPort = PMLConfig.GetConfig().GetIntValue("PEOS_PortValue");
+
       // Login.
-      PMLCommand.Login(conInfo.userName, conInfo.password);
+      PMLCommand.Login(conInfo.userName, conInfo.password, 
+                       peosHost, peosPort);
 
       // Get list of processes.
       PMLProcessList processes = PMLCommand.GetProcesses();

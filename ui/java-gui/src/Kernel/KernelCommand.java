@@ -62,16 +62,10 @@ public class KernelCommand {
   /////////////////////////////////////////////////////////////////////////////
   // This function initializes the socket interface to the PML Kernel.       //
   /////////////////////////////////////////////////////////////////////////////
-  protected static void Initialize() throws PMLException
+  protected static void Initialize(String peosHost, int peosPort) 
+    throws PMLException
   {
-    int peosPort; 
-    String peosHost = null;
-
     try {
-      // Get the host name that the peos server is running on.
-      peosHost = PMLConfig.GetConfig().GetStringValue("PEOS_Server"); 
-      // Get the port name that the peos server is running on.
-      peosPort = PMLConfig.GetConfig().GetIntValue("PEOS_PortValue");
 
       // Create the socket to communicate with the PEOS server.
       KernelSocket = new Socket(peosHost, peosPort);
