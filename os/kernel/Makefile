@@ -72,10 +72,10 @@ cflow:
 	cflow -I../.. $(SOURCES) > cflow
 
 clean:
-	-rm *.o core.*
+	rm -f *.o core.*
 
 reallyclean: clean
-	rm proc_table.dat proc_table.dat.xml		
+	rm -f proc_table.dat proc_table.dat.xml peos shell
 
 dist: reallyclean
 	tar cvf kernel.tar --exclude-from exclude -C .. kernel
