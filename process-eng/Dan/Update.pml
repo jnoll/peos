@@ -2,17 +2,17 @@ process Update {
 	iteration {
 		action update manual {
 			agent { "student" }
-			tool { "CVS" }
-			script { "Navigate to File Location, update file using tool." }
+			tool { "cvs update" }
+			script { "Navigate to File Location, update file using cvs tool." }
 			requires { "fileName" }
-			provides { "status" }
+			provides { "updated file" }
 		}
 		action resolve manual {
 			agent { "student" }
-			tool { "vi" }
-			script { "Resolve file conflicts using vi." }
+			tool { "vi fileName" }
+			script { "Resolve file update conflicts using vi." }
 			requires { "fileName" }
-			provides { "fileName" }
+			provides { "updated file" }
 		}
 	}
 }
