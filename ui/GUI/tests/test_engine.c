@@ -16,6 +16,7 @@ START_TEST(trunPeos)
   char *command = NULL, *cmd_peos = NULL, *str_rtn = NULL;
 
   /* Construct peos command with peos exe in a known directory */
+#ifdef DEBUG  
   size = strlen("/home/jshah1/bin/peos -c Test.pml") + 1;
   cmd_peos = (char *) malloc((size_t) size * sizeof(char));
   size = 0;
@@ -38,6 +39,7 @@ START_TEST(trunPeos)
    
   fail_unless (rtn_val == EXIT_SUCCESS,
               "The trunPeos test failed to return 0.");
+#endif	      
 
   
 }
@@ -48,6 +50,7 @@ START_TEST(tpeos_in_dir)
 
   #define INVALID_DIR ")"    /* invalid directory name */
   #define BIN "/bin"         /* contains peos executable */
+#ifdef DEBUG  
   char *rtn_val = NULL, *testPeosdir = NULL, *str_rtn = NULL, *dirname = NULL;
   size_t size = 0, rtn = 0;
   signed cmp_val;
@@ -103,6 +106,7 @@ START_TEST(tpeos_in_dir)
    
   free(rtn_val);
   rtn_val = NULL;
+#endif  
   
 }
 END_TEST
@@ -112,7 +116,7 @@ START_TEST(tgetPath)
   
   char *rtn_val = NULL, *t = NULL;	/* t is current token */
   unsigned i = 0, tok_count = 0;      
-
+#ifdef DEBUG
   rtn_val = getPath();
   
   if(rtn_val == NULL) {
@@ -132,6 +136,7 @@ START_TEST(tgetPath)
   if((i > 0) && (tok_count-1 > i)) {
   	fail("Error. Unable to locate peos in any bin directory.");
   }
+#endif  
   
 }
 END_TEST

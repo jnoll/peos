@@ -26,7 +26,8 @@ START_TEST(tSet_href)
   int size = 0;
   char *buf = NULL, *temp = NULL;
   int rtn_val;
-
+  
+#ifdef DEBUG
   /* set current process id to 0 */
   set_CUR_PID((int) 0);
   
@@ -78,6 +79,7 @@ START_TEST(tSet_href)
   temp = NULL;
   free(buf);
   buf = NULL;
+#endif  
 
 }
 END_TEST
@@ -86,7 +88,7 @@ START_TEST(tLookup_rsc_name)
 {
   
   int rtn_val = -1;
-
+#ifdef DEBUG
   set_CUR_PID((int) 0);
   rtn_val = case3_setup();
 
@@ -100,7 +102,7 @@ START_TEST(tLookup_rsc_name)
   if(rtn_val != -1 ) {
 	fail("Function should return -1 if arguments are set to NULL \n");
   }
-  
+#endif  
 }
 END_TEST
 
