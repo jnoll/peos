@@ -12,7 +12,7 @@
 
 char old_msg[512];
 int timesheet_action_counter = 0; /* *ugly* hard-wiring of timesheet */
-
+state timesheet_action_state = READY;
 
 static void drawProcessList (UInt16 itemNum, RectangleType *bounds, Char **itemsText)
 {
@@ -24,6 +24,24 @@ static void drawProcessList (UInt16 itemNum, RectangleType *bounds, Char **items
   
 void sendUI(char new_msg[])
 {
+  /* DRAW MULTIPLE LINES OF TEXT */
+  /*  Coord y; */
+  /*   Char *msg; */
+  /*   Int16 msgWidth; */
+  /*   Int16 widthToOffset = 0; */
+  /*   Int16 pixelWidth = 160; */
+  /*   Int16 msgLength = StrLen(msg); */
+  /*   while (msg && *msg)  */
+  /*     { */
+  /*       widthToOffset = FntWidthToOffset(msg, msgLength, */
+  /*    					   pixelWidth, NULL, &msgWidth); */
+  /* or FntGlueWidthToOffset in PalmOSGlue in OS3.1 & later */
+  /*       WinDrawChars(msg, widthToOffset, 0, y); */
+  /*       y += FntLineHeight(); */
+  /*       msg += widthToOffset; */
+  /*       msgLength = StrLen(msg); */
+  /*     } */
+  
   WinEraseChars(old_msg, StrLen(old_msg), 10, 60);  
   WinDrawChars(new_msg, StrLen(new_msg), 10, 60);
   StrCopy(old_msg, new_msg);
@@ -76,16 +94,16 @@ if (eventP->eType == frmLoadEvent) {
     FrmDrawForm(frmP);
     
     if (formId == RunActionForm) {
-		char process[15];
-		processNode init = loadProcess("timesheet");
-		processNode *currentNode;
-		currentNode = MemHandleLock(init.Next);
-		StrCopy(process,currentNode->process);
-		MemHandleFree(currentNode->Next);
-		MemHandleUnlock(init.Next);
-		MemHandleFree(init.Next);
-		WinDrawChars(process,StrLen(process),10,15);
-     }   
+      char process[15];
+      processNode init = loadProcess("timesheet");
+      processNode *currentNode;
+      currentNode = MemHandleLock(init.Next);
+      StrCopy(process,currentNode->process);
+      MemHandleFree(currentNode->Next);
+      MemHandleUnlock(init.Next);
+      MemHandleFree(init.Next);
+      WinDrawChars(process,StrLen(process),10,15);
+    }   
     handled = true;
   } else if (eventP->eType == lstSelectEvent) {
       //diplay process that user selected
@@ -99,66 +117,69 @@ if (eventP->eType == frmLoadEvent) {
 		FrmGotoForm(RunActionForm);     
   }  else if (eventP->eType == ctlSelectEvent) {
     if (eventP->data.ctlEnter.controlID == RunButton) {
-      /*WinDrawChars("Run button pressed", StrLen("Run button pressed"), 40, 100);
-	WinEraseChars("Done button pressed", StrLen("Done button pressed"), 40, 100);*/
-      switch(timesheet_action_counter) {
-      case 0:
-	selectAction("timesheet", "get_card");
-	break;
-      case 1:
-	selectAction("timesheet", "enter_pay_period");
-	break;
-      case 2:
-	selectAction("timesheet", "fill_hours");
-	break;
-      case 3:
-	selectAction("timesheet", "fill_totals");
-	break;
-      case 4:
-	selectAction("timesheet", "sign_card");
-	break;
-      case 5:
-	selectAction("timesheet", "approve_card");
-	break;
-      case 6:
-	selectAction("timesheet", "turn_in");
-	break;
-      default:
-	break;
-      } /* switch */
+      if (timesheet_action_state == READY) {
+	switch(timesheet_action_counter) {
+	case 0:
+	  selectAction("timesheet", "get_card");
+	  break;
+	case 1:
+	  selectAction("timesheet", "enter_pay_period");
+	  break;
+	case 2:
+	  selectAction("timesheet", "fill_hours");
+	  break;
+	case 3:
+	  selectAction("timesheet", "fill_totals");
+	  break;
+	case 4:
+	  selectAction("timesheet", "sign_card");
+	  break;
+	case 5:
+	  selectAction("timesheet", "approve_card");
+	  break;
+	case 6:
+	  selectAction("timesheet", "turn_in");
+	  break;
+	default:
+	  break;
+	} /* switch */
+	timesheet_action_state = RUNNING;
+      }
     } else if (eventP->data.ctlEnter.controlID == DoneButton) {
-      /*WinDrawChars("Done button pressed", StrLen("Done button pressed"), 40, 100);
-	WinEraseChars("Run button pressed", StrLen("Run button pressed"), 40, 100);*/
-      switch(timesheet_action_counter) {
-      case 0:
-	finishAction("timesheet", "get_card");
-	break;
-      case 1:
-	finishAction("timesheet", "enter_pay_period");
-	break;
-      case 2:
-	finishAction("timesheet", "fill_hours");
-	break;
-      case 3:
-	finishAction("timesheet", "fill_totals");
-	break;
-      case 4:
-	finishAction("timesheet", "sign_card");
-	break;
-      case 5:
-	finishAction("timesheet", "approve_card");
-	break;
-      case 6:
-	finishAction("timesheet", "turn_in");
-	break;
-      default:
-	break;
-      }/* switch */
-      
-      ++timesheet_action_counter;
+      if (timesheet_action_state == RUNNING) {
+	switch(timesheet_action_counter) {
+	case 0:
+	  finishAction("timesheet", "get_card");
+	  break;
+	case 1:
+	  finishAction("timesheet", "enter_pay_period");
+	  break;
+	case 2:
+	  finishAction("timesheet", "fill_hours");
+	  break;
+	case 3:
+	  finishAction("timesheet", "fill_totals");
+	  break;
+	case 4:
+	  finishAction("timesheet", "sign_card");
+	  break;
+	case 5:
+	  finishAction("timesheet", "approve_card");
+	  break;
+	case 6:
+	  finishAction("timesheet", "turn_in");
+	  break;
+	default:
+	  break;
+	}/* switch */
+	++timesheet_action_counter;
+	timesheet_action_state = READY;
+      }
     } else if (eventP->data.ctlEnter.controlID == ListProcessesButton) {
-	handled = true;
-	FrmGotoForm(SelectProcessForm);
+      timesheet_action_counter = 0;
+      timesheet_action_state = RUNNING;
+      handled = true;
+      FrmGotoForm(SelectProcessForm);
     }
     handled = true;
   } else if (eventP->eType == appStopEvent) {
