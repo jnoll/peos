@@ -8,11 +8,11 @@ extern char *get_current_dir_name(void);
 
 START_TEST(trunPeos)
 { 
-#ifdef DEBUG
   int rtn_val = -1;
   size_t size = 0;
   char *command = NULL, *peosPath = NULL, *cmd_peos = NULL, *str_rtn = NULL;
 
+#ifdef DEBUG
   /* Locate the bin directory that contains peos executable. */ 
   peosPath = getPath();
   fail_unless (peosPath != NULL,
