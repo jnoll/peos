@@ -6,7 +6,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#undef TEST_PREDICATE_VERBOSE
 #include "test_util.h"
+
+
 
 /* Globals. */
 peos_resource_t *global_resources;
@@ -52,6 +55,9 @@ START_TEST(test_is_provides_true)
     if(resources) free(resources);
 
     unlink("resource_file");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\n\t*** Leaving test_is_provides_true\n");
+#endif
    
 }
 END_TEST
@@ -77,6 +83,9 @@ START_TEST(test_is_requires_true)
     if(resources) free(resources);
 
     unlink("resource_file");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_is_requires_true\n");
+#endif
    
 }
 END_TEST
@@ -99,6 +108,9 @@ START_TEST(test_is_requires_true_1)
 
     unlink("resource_file");
     
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_is_requires_true_1\n");
+#endif
 }
 END_TEST
 	
@@ -118,6 +130,9 @@ START_TEST(test_is_provides_true_1)
     if(resources) free(resources);
 
     unlink("resource_file");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_is_provides_true_1\n");
+#endif
 }
 END_TEST
 	
@@ -142,6 +157,9 @@ START_TEST(test_is_requires_true_2)
     if(resources) free(resources);
 
     unlink("resource_file");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_is_requires_true_2\n");
+#endif  
 }
 END_TEST
 
@@ -165,7 +183,9 @@ START_TEST(test_is_provides_true_2)
     if(resources) free(resources);
 
     unlink("resource_file");
-
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_is_provides_true_2\n");
+#endif
 }
 END_TEST
 
@@ -192,7 +212,9 @@ START_TEST(test_pe_file_exists)
     fail_unless(pe_file_exists("myfilename")==1
     , "pe_file_exists returned 0 for a file that exists");
     system("rm myfilename");
-    
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_pe_file_exists\n");
+#endif
 }
 END_TEST
 
@@ -204,14 +226,20 @@ START_TEST(test_pe_byname)
     fail_unless(pe_byname("filecount", "mytempdir")==1, "pe_byname failed");
     system("rm mytempdir/one");
     system("rm -rf mytempdir");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_pe_byname\n");
+#endif
 }
 END_TEST
 
 START_TEST(test_pe_isdirempty)
 {
-    system("rm -rf mytempdir");
-    system("mkdir mytempdir");
+    system("rm -rf `pwd`/mytempdir");
+    system("mkdir `pwd`/mytempdir");
     fail_unless(pe_isdirempty("mytempdir")==1, "pe_isdirempty failed");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_pe_isdirempty\n");
+#endif
 }
 END_TEST
 
@@ -221,8 +249,9 @@ START_TEST(test_pe_timestamp)
     system("touch file");
     fail_unless(pe_timestamp("peos", "file")==0, "pe_timestamp failed");
     system("rm file");
-  
-    
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_pe_timestamp\n");
+#endif
 }
 END_TEST
 
@@ -233,16 +262,31 @@ START_TEST(test_pe_spellcheck)
     system("echo 'A qucik brwon fxo jumped over a lazy dog!' > file1");
     fail_unless(pe_spellcheck("file1")==0, "pe_spellcheck failed");
     system("rm file1");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_pe_spellcheck\n");
+#endif
 }
 END_TEST
 
 START_TEST(test_pe_file_size)
 {
+    int file_size =0;
     system("touch file1");
-    fail_unless(pe_file_size("file1")==0, "pe_file_size failed");
+    file_size=pe_file_size("file1");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t\tFile size 1: %d\n",file_size);
+#endif
+    fail_unless(file_size==0, "pe_file_size failed");
     system("echo 'file size is no longer zero' > file1");
-    fail_unless(pe_file_size("file1")>0, "pe_file_size failed");
+    file_size=pe_file_size("file1");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t\tFile size 2: %d\n",file_size);
+#endif
+    fail_unless(file_size!=0, "pe_file_size failed");
     system("rm file1");
+#ifdef TEST_PREDICATE_VERBOSE
+    fprintf(stderr,"\t*** Leaving test_pe_file_size\n");
+#endif
 }
 END_TEST
 
@@ -283,7 +327,7 @@ main(int argc, char *argv[])
     tc = tcase_create("testing_pe_isdirempty");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_pe_isdirempty);
-     
+    
     tc = tcase_create("testing_pe_timestamp");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_pe_timestamp);
@@ -295,7 +339,7 @@ main(int argc, char *argv[])
     tc = tcase_create("testing_pe_file_size");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_pe_file_size);
-    
+   
     sr = srunner_create(s);
 
     srunner_set_fork_status(sr, fork_status);

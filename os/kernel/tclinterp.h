@@ -1,6 +1,9 @@
 #ifndef _TCLINTERP_H_
 #define _TCLINTERP_H_
 #include <tcl.h>
+#ifndef _TCL
+# include "/home/jntestuser/tcl_install/include/tcl.h"
+#endif
 #include <string.h>
 #include <stdlib.h>
 #if defined(__STDC__) || defined(HAS_STDARG)

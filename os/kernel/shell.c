@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.31 2004/09/23 04:25:09 ppozdnya Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.32 2004/09/30 21:09:01 ppozdnya Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003

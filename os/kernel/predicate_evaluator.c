@@ -17,19 +17,21 @@
 #include "tclinterp.h"
 
 #undef NO_TCL
-#define PE_DEBUG
-#define PE_DEBUG_A
-#define PE_DEBUG_B
-#define PE_DEBUG_LITERAL
-#define PE_RETURN
-#define PE_LOG
+#undef PE_LOG
+#ifdef PE_LOG
+# define PE_DEBUG
+# define PE_DEBUG_A
+# define PE_DEBUG_B
+# define PE_DEBUG_LITERAL
+# define PE_RETURN
+#endif
 
 #define PE_RESOURCE_PROVIDES 100
 #define PE_RESOURCE_REQUIRES 200
 
 
 FILE* pe_log=NULL;
-
+int number=0;
 extern char *act_state_name(vm_act_state state);
 
 void to(int i){
@@ -136,8 +138,8 @@ int pe_byname(char* func_name, char* argument)
 	fprintf(pe_log,"\tResult for pe_byname\n\t(file: %s args: %s result: %s)\n", file_name, args, interpreter->interp->result);
 #endif
         if(args) free (args);
-	if(!strcmp ("1", interpreter->interp->result))
-		return_val = 1;
+	sscanf(interpreter->interp->result,"%d", &return_val);
+
 	peos_tcl_delete(interpreter);
 #ifdef PE_RETURN
 	fprintf(pe_log,"RETURN pe_byname %d\n", return_val);
@@ -145,7 +147,6 @@ int pe_byname(char* func_name, char* argument)
 	return return_val;
 	
 }
-
 int pe_isdirempty(char* path)
 {
 
@@ -153,17 +154,15 @@ int pe_isdirempty(char* path)
 	char* result_str=NULL;
 	char* args=NULL;
 	int result =0;
-#ifdef PE_LOG
-	if(!pe_log) pe_log = fopen ("pelog", "a");
-#endif
+#ifdef NO_TCL
+	return 1;
+#endif	
 #ifdef PE_DEBUG_B
 	fprintf(pe_log, "CALL pe_isdirempty(path:%s)\n",path);
 #endif
-#ifdef NO_TCL
-	return 1;
-#endif
+
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
-		fprintf(pe_log,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return 0;
 	}
 	if(!result_str){
@@ -174,22 +173,27 @@ int pe_isdirempty(char* path)
 	}
 	sprintf(args, "tclf_filecount %s", path);
 #ifdef PE_DEBUG_B
-	fprintf(pe_log, "\tIs this what i want? %s\n", args);
+	fprintf(stderr, "\tIs this what i want? %s\n", args);
 #endif
+
 	peos_tcl_script(interpreter, "tclf_filecount.tcl");
 	Tcl_Eval(interpreter->interp, args);
 	if(result_str) free (result_str);
 	if(args) free (result_str);
 #ifdef PE_DEBUG_B
-	fprintf(pe_log, "\tResult for pe_isdirempty(%s): %s\n", path, interpreter->interp->result);
+	fprintf(stderr, "\tResult for pe_isdirempty(%s): %s\n", path, interpreter->interp->result);
 #endif
-        result = (!strcmp("0", interpreter->interp->result)) ? 1 : 0;
-	//peos_tcl_delete(interpreter);
+
+	sscanf(interpreter->interp->result,"%d", &result);
+	result = result ? 0 : 1;
+
 #ifdef PE_RETURN
-	fprintf(pe_log,"RETURN pe_isdirempty %d\n", result);
+	fprintf(stderr,"RETURN pe_isdirempty %d\n", result);
 #endif
+
 	return result;
 }
+
 
 int pe_timestamp(char* file1, char*file2)
 {
@@ -319,7 +323,6 @@ int pe_file_size(char* filename)
 #ifdef PE_DEBUG_B
 	fprintf(pe_log,"\tResult for pe_file_size(%s): %s\n", filename, interpreter->interp->result);
 #endif
-   
 	for(i = 0; i < strlen(interpreter->interp->result); i++){
 		if(!isdigit(interpreter->interp->result[i])){
 			digits =0;
@@ -710,31 +713,33 @@ int is_provides_true_old(int pid, char *act_name)
 int is_requires_true(int pid, char *act_name)
 {
        int i;
-       pe_log = stderr;
 #ifdef PE_LOG
-       pe_log = fopen ("pelog", "a");
+       pe_log = NULL;
+       //pe_log = fopen ("pelog", "a");
 #endif
 	i = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_REQUIRES);
 #ifdef PE_LOG
 	fprintf(pe_log, "***RETURN from is_requires_true : %d\n", i);
+	fflush(pe_log);
+	if(pe_log != NULL && pe_log != stderr)fclose(pe_log);
 #endif
-	fclose(pe_log);
 	return (i || is_requires_true_old(pid, act_name));
 }
 
 int is_provides_true(int pid, char *act_name)
 {
 	int i;
-       pe_log = stderr;
 #ifdef PE_LOG
-       pe_log = fopen ("pelog", "a");
+       pe_log = NULL;
+       //pe_log = fopen ("pelog", "a");
 #endif 
 
        i = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_PROVIDES);
 #ifdef PE_LOG
 	fprintf(pe_log, "***RETURN from is_provodes_true : %d\n", i);
+	fflush(pe_log);
+	if(pe_log != NULL && pe_log != stderr)fclose(pe_log);
 #endif
-       fclose(pe_log);
        return (i || is_provides_true_old(pid, act_name));
 }
 
