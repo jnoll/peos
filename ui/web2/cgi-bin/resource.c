@@ -68,7 +68,7 @@ void get_resources(char *model)
 
   if(num_resources < 1){
     printf("<form action=\"do_create.cgi\">\n");
-    printf("<table width=\"850\" align=\"center\">\n");
+    printf("<table width=\"840\" align=\"center\">\n");
     printf("<tr>\n");
     printf("<td>\n");
     printf("<font size=\"5\"><b>No Resources</b></font>\n");
@@ -86,15 +86,15 @@ void get_resources(char *model)
   }
   else{
     printf("<form action=\"do_create.cgi\">\n");
-    printf("<table width=\"850px\" align=\"center\">\n");
+    printf("<table width=\"840px\" height=\"510\" align=\"center\" background=\"../images/center.jpg\">\n");
     printf("<tr>\n");
-    printf("<td>\n");
+    printf("<td height=\"1\" valign=\"top\">\n");
     printf("<input type=\"hidden\" name=\"model\" value=\"%s\">\n", model);
     printf("</td>\n");
     printf("</tr>\n");
     printf("<tr>\n");
     for(i=0; i<num_resources; i++){
-      printf("<td width=\"150\">\n");
+      printf("<td width=\"150\" height=\"1\" valign=\"top\">\n");
       for(j=0; ;j++){
         if(resources[i].name[j] == '\0' || resources[i].name[j] == '\n')
           break;
@@ -103,7 +103,7 @@ void get_resources(char *model)
       }
       printf("<b>:</b>\n");
       printf("</td>\n");
-      printf("<td width=\"600\">\n");
+      printf("<td width=\"600\" height=\"1\" valign=\"top\">\n");
       printf("<input  name=\"%s\" size=\"30\">\n", "value");
       printf("</td>\n");
       printf("</tr>\n");
@@ -112,15 +112,15 @@ void get_resources(char *model)
       else
         printf("<tr>\n");
     } 
-    printf("</td>\n");
-    printf("</table>\n");
-    printf("<br><br>\n");
-    printf("<table width=\"950px\">\n");
     printf("<tr>\n");
-    printf("<td width=\"385\">\n");
-    printf("</td>\n");
-    printf("<td width=\"465\">\n");
+    printf("<td>\n");
     printf("<input type=\"submit\" value=\"Submit Values\">\n");
+    printf("</td>\n");
+    printf("</tr>\n");
+    printf("</table>\n");
+    printf("<table width=\"1017\" align=\"center\" height=\"62\" background=\"../images/bg_logoblack_bottom.jpg\">\n");
+    printf("<tr>\n");
+    printf("<td>\n");
     printf("</td>\n");
     printf("</tr>\n");
     printf("</table>\n");

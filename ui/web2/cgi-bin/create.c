@@ -20,7 +20,7 @@ int main()
   printf("<style type=\"text/css\">\n");
   printf("<!--\n");
   printf(".myTable {\n");
-  printf("background-image:url(../images/bg.jpg);\n");
+  printf("background-image:url(../images/bg_logoblack_full.jpg);\n");
   printf("background-repeat:no-repeat;\n");
   printf("background-position:center top; }\n");
   printf("-->\n");

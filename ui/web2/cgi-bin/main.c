@@ -32,18 +32,18 @@ int main()
   printf("</head>\n");
   printf("<body class=\"myTable\" text=\"FFFFFF\" link=\"#FFCC66\" vlink=\"#FFCC66\" alink=\"#FFCC66\">\n");
   printf("<br><br><br><br><br><br>\n");
-  printf("<table width=\"850px\" align=\"center\">\n");
+  printf("<table width=\"848px\" height=\"570\" valign=\"top\" align=\"center\" background=\"../images/center.jpg\">\n");
   printf("<tr>\n");
-  printf("<td width=\"100\">\n");
+  printf("<td width=\"100\" height=\"1\" valign=\"top\">\n");
   printf("<font size=\"5\"<b><u>Status</u></b></font>\n"); 
   printf("</td>\n");
-  printf("<td width=\"150\">\n");
+  printf("<td width=\"148\" height=\"1\" valign=\"top\">\n");
   printf("<font size=\"5\"<b><u>Task</u></b>\n"); 
   printf("</td>\n");
-  printf("<td width=\"300\">\n");
+  printf("<td width=\"300\" height=\"1\" valign=\"top\">\n");
   printf("<font size=\"5\"><b><u>Resource(s)</u></b>\n"); 
   printf("</td>\n");
-  printf("<td width=\"300\">\n");
+  printf("<td width=\"300\" height=\"1\" valign=\"top\">\n");
   printf("<font size=\"5\"><b><u>Description</u></b>\n"); 
   printf("</td>\n");
   printf("</tr>\n");
@@ -52,16 +52,16 @@ int main()
   if(alist && alist[0]){
     for(i=0; alist[i]; i++){
       printf("<tr>\n");
-      printf("<td width=\"100px\" valign=\"top\">\n"); 
+      printf("<td width=\"100px\" height=\"1\" valign=\"top\">\n"); 
       printf("active\n");
       printf("</td>\n");
-      printf("<td width=\"150\" valign=\"top\">\n");
+      printf("<td width=\"148\" height=\"1\" valign=\"top\">\n");
       print_action(alist[i], "active");
       printf("</td>\n");
-      printf("<td width=\"300\" valign=\"top\">\n");
+      printf("<td width=\"300\" height=\"1\" valign=\"top\">\n");
       print_resource(alist[i]);
       printf("</td>\n");
-      printf("<td width=\"300\" valign=\"top\">\n");
+      printf("<td width=\"300\" height=\"1\" valign=\"top\">\n");
       get_script(alist[i]);
       printf("</td>\n");
       printf("</tr>\n");
@@ -71,16 +71,16 @@ int main()
   if(alist && alist[0]){
     for(i=0; alist[i]; i++){
       printf("<tr>\n");
-      printf("<td width=\"100px\" valign=\"top\">\n"); 
+      printf("<td width=\"100px\" height=\"1\" valign=\"top\">\n"); 
       printf("suspended\n"); 
       printf("</td>\n");
-      printf("<td width=\"150\" valign=\"top\">\n");
+      printf("<td width=\"148\" height=\"1\" valign=\"top\">\n");
       print_action(alist[i], "suspend");
       printf("</td>\n");
-      printf("<td width=\"300\" valign=\"top\">\n");
+      printf("<td width=\"300\" height=\"1\" valign=\"top\">\n");
       print_resource(alist[i]);
       printf("</td>\n");
-      printf("<td width=\"300\" valign=\"top\">\n");
+      printf("<td width=\"300\" height=\"1\" valign=\"top\">\n");
       get_script(alist[i]);
       printf("</td>\n");
       printf("</tr>\n");
@@ -90,16 +90,16 @@ int main()
   if(alist && alist[0]){
     for(i=0; alist[i]; i++){
       printf("<tr>\n");
-      printf("<td width=\"100px\" valign=\"top\">\n"); 
+      printf("<td width=\"100px\" height=\"1\" valign=\"top\">\n"); 
       printf("ready\n"); 
       printf("</td>\n");
-      printf("<td width=\"150\" valign=\"top\">\n");
+      printf("<td width=\"148\" height=\"1\" valign=\"top\">\n");
       print_action(alist[i], "ready");
       printf("</td>\n");
-      printf("<td width=\"300\" valign=\"top\">\n");
+      printf("<td width=\"300\" height=\"1\" valign=\"top\">\n");
       print_resource(alist[i]);
       printf("</td>\n");
-      printf("<td width=\"300\" valign=\"top\">\n");
+      printf("<td width=\"300\" height=\"1\" valign=\"top\">\n");
       get_script(alist[i]);
       printf("</td>\n");
       printf("</tr>\n");
@@ -107,15 +107,24 @@ int main()
   }
   save_proc_table("proc_table.dat");
   printf("<tr>\n");
-  printf("<td height=\"80\" width=\"800\" valign=\"bottom\" colspan=\"4\">\n");
+  printf("<td height=\"80\" width=\"848\" valign=\"top\" colspan=\"4\">\n");
   printf("<br><br><br><br><br><br>\n");
   printf("<a href=\"create.cgi\">\n"); 
   printf("<img src=\"../images/newprocess_button.jpg\" width=\"120\" height=\"30\" border=\"0\">\n");
   printf("</a>\n");
   printf("</td>\n");
   printf("</tr>\n");
+  printf("<tr>\n");
+  printf("<td height=\"180\" width=\"848\" valign=\"top\" colspan=\"4\">\n");
+  printf("</td>\n");
+  printf("</tr>\n");
   printf("</table>\n");
-
+  printf("<table width=\"1017\" align=\"center\" height=\"62\" background=\"../images/bg_logoblack_bottom.jpg\">\n");
+  printf("<tr>\n");
+  printf("<td>\n");
+  printf("</td>\n");
+  printf("</tr>\n");
+  printf("</table>\n");
   printf("</body>\n");
   printf("</html>\n");
 
