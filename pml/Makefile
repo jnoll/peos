@@ -2,8 +2,7 @@ CC	= gcc
 CFLAGS	= -I.. -g -Wall
 LIB	= libpml.a
 OBJS	= graph.o list.o parser.o scanner.o tree.o
-#SRCS	= parser.c scanner.c y.tab.h
-SRCS	= parser.y scanner.l y.tab.h
+SRCS	= parser.c scanner.c y.tab.h
 YFLAGS	= -d
 
 
@@ -13,6 +12,9 @@ $(LIB):		$(SRCS) $(OBJS)
 		rm -f $(LIB)
 		ar cru $(LIB) $(OBJS)
 		ranlib $(LIB) || true
+
+traverse:	traverse.o $(LIB)
+	$(CC) -o $@ $< $(LIB)
 
 clean:;		rm -f $(LIB) $(OBJS)
 
