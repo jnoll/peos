@@ -12,26 +12,23 @@ TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib
 
 # objects
-CORE_OBJS = events.o process.o process_table.o action.o graph_engine.o
-TEST_OBJS = test_util.o action.o
+CORE_OBJS = action.o events.o graph.o graph_engine.o process.o process_table.o resources.o
+TEST_OBJS = test_util.o action.o graph.o
 
 # sources
 SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 
 # These are in order of use.
-TESTS =  test_action test_events test_process test_process_table test_graph_engine
+TESTS = test_resources test_graph test_action test_events test_process test_process_table test_graph_engine test_assertions 
 
 
 all: test kernel_wrapper
 test: unit_tests 
 suite: unit_tests function accept
 
-unit_tests:  $(TESTS) test_assertions
+unit_tests:  $(TESTS) 
 	@echo "running unit tests..."
 	@-for i in $^ ; do $$i -f -q; done
-	@echo "The following test should report an Error due to assertion failure:"
-	@-test_assertions -f
-	@-rm core*
 	@echo "done."
 
 function:
@@ -43,6 +40,9 @@ accept:
 
 test_action: test_action.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out action.o, $(TEST_OBJS)) $(TEST_LIBS) 
+
+test_graph: test_graph.o $(TEST_OBJS)
+	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out graph.o, $(TEST_OBJS)) $(TEST_LIBS) 
 
 test_%: test_%.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) $(TEST_LIBS) 

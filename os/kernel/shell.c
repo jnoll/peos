@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.22 2003/11/16 04:12:12 jnoll Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.23 2003/11/17 07:29:59 jnoll Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
-* Modified:     Wed Sep 10 18:14:39 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Sun Nov 16 23:02:46 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -25,7 +25,7 @@
 #include "graph_engine.h"
 #include "process.h"
 
-
+extern char *act_state_name(vm_act_state state);
 
 /* The following mechanism lifted from the GNU readline documentation. */
 typedef struct 
@@ -69,13 +69,13 @@ void list_actions()
             alist = peos_list_actions(i,&num_actions);
 	    if(alist) {
 	        for(j = 0; j < num_actions; j++) {
-	            printf("%d  %s  %d\n",i,alist[j].name,alist[j].state);
+	            printf("%d  %s  %s\n",i,alist[j].name,
+			   act_state_name(alist[j].state));
 	        }
 	    }
 	    i++;
 	}
     }
-        
 }    
 	   
    
@@ -144,6 +144,35 @@ void create_process(int argc, char *argv[])
     }
 }
 
+void list_resource_binding(int argc, char *argv[])
+{
+    int i, pid, num_resources;
+    char *action;
+    peos_resource_t *resources;
+
+    if (argc < 3) {
+	printf("usage: %s pid action\n", argv[0]);
+	return;
+    }
+
+    pid = atoi(argv[1]);
+    action = argv[2];
+
+    resources = (peos_resource_t *) 
+	peos_get_resource_list_action(pid, action, &num_resources);
+
+
+    if (resources == NULL) {
+        printf("error getting resources\n");
+        return;
+    }
+    for(i = 0; i < num_resources; i++) {
+        printf("%s=%s\n", resources[i].name, resources[i].value) ;
+    }
+
+    free(resources);
+}
+
 void list_resources(int argc, char *argv[])
 {
     int i;
@@ -173,6 +202,8 @@ void list_resources(int argc, char *argv[])
     for(i = 0; i < num_resources; i++) {
         printf("%s=%s\n", resources[i].name, resources[i].value) ;
     }
+
+    free(resources);
 }
 
 void run_action(int argc, char *argv[])
@@ -236,7 +267,8 @@ COMMAND cmds[] = {
     { "models", list_models, "list models" },
     { "actions", list_actions, "list actions" },
     { "do", run_action, "perform a ready action" },
-    { "resources", list_resources, "list resources associated with model" },
+    { "resource_list", list_resources, "list resources associated with model" },
+    { "resources", list_resource_binding, "list resources associated with model" },
     { "run", run_action, "perform a ready action" },
     { "select", run_action, "perform a ready action" },
     { "finish", finish_action, "finish a running action" },

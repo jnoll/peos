@@ -4,6 +4,10 @@
 #include "action.h"
 #include "test_util.h"
 
+int __assert_fail(const char *assertion, const char *file, unsigned int line, const char *function) {
+    exit(0);
+}
+
 START_TEST(test_set_act_state_error)
 {
     /* Pre: action list is initialized. */
@@ -23,11 +27,11 @@ main(int argc, char *argv[])
     int nf;
     SRunner *sr;
     TCase *tc;
-    Suite *s = suite_create("action");
+    Suite *s = suite_create("assertions");
 
     parse_args(argc, argv);
 
-    tc = tcase_create("assertions");
+    tc = tcase_create("set_act_state");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_set_act_state_error);
 

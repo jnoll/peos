@@ -14,13 +14,14 @@
 #include <time.h>
 #include "process.h"
 #include "events.h"
+#include "resources.h"
 #include "graph_engine.h"
 
-
+/* XXX need to declare this as a real api function.*/
+extern char *act_state_name(vm_act_state state);
 
 /* Forward declarations. */
 extern char *find_model_file(char *model);
-
 
 void error_msg(char *s) 
 {
@@ -67,25 +68,25 @@ char **peos_list_models()
 }
 
 
-vm_exit_code peos_set_action_state(int pid,char *action, vm_act_state state)
+vm_exit_code peos_set_action_state(int pid, char *action, vm_act_state state)
 {
-    switch(state) {
-        case ACT_READY : return handle_action_change(pid,action,ACT_READY);
-			 break;
-        case ACT_RUN : return handle_action_change(pid,action,ACT_RUN);
-		       break;
-		               
-        case ACT_DONE : return handle_action_change(pid,action,ACT_DONE);
-			break;
-        case ACT_SUSPEND : return handle_action_change(pid,action,ACT_SUSPEND);
-			   break;
-        case ACT_ABORT : return handle_action_change(pid,action,ACT_ABORT);
-			 break;
-	default : {
-	              fprintf(stderr,"\nInvalid Action State\n");
-		      return VM_ERROR;
-		  }
+    char msg[256], *this_state;
+    vm_exit_code exit_status;
+
+   
+    this_state = act_state_name(state);
+    sprintf(msg, "jnoll %s %s %d ", this_state, action, pid);
+    log_event(msg);
+    
+    if ((exit_status =  handle_action_change(pid, action, state)) == VM_DONE) {
+	peos_context_t *context = peos_get_context(pid);
+	sprintf(msg,"jnoll DONE %s %d", context->model, pid);
+	log_event(msg);
+	delete_entry(context->pid);
+	context->status = PEOS_DONE; 
     }
+
+    return exit_status;
 }
 	    
 

@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.23 2003/11/16 04:08:09 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.24 2003/11/17 07:29:59 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Fri Nov 14 12:07:58 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Sun Nov 16 22:45:35 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -19,6 +19,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "graph.h"
 #include "process_table.h"
 #include "graph_engine.h"
 
@@ -80,23 +81,8 @@ int peos_set_resource_value(int pid, char *resource_name, char *resource_value)
 }
 
 
-int load_actions(char *file,Graph *process_graph)
-{
-    Graph g;
 
-    if (file [0]!= '\0') {
-        g = makegraph(file);
-	if (g != NULL) {
-	    *process_graph = g;	
-	    return 1;
-	}
-	else
-	    return -1;
-    }
-    else
-        return -1;
-}
-
+/* XXX remove this - it's just as easy to use the graph directly. */
 int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_other_node_t **other_nodes, int *num_other_nodes)
 { 
     Node n;
@@ -154,17 +140,39 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 }
 	    
 
+int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other_node_t *other_nodes, int num_other_nodes)
+{
+    int i;
+    Node node;
+                                                                      
+    for(node = g -> source; node != NULL; node = node -> next) {
+        if (node -> type == ACTION) {
+            STATE(node) = get_act_state(node -> name,actions,num_actions);
+	}
+	else {
+	    if((node->type == SELECTION) || (node->type == BRANCH)) {
+	        for(i=0;i < num_other_nodes; i++) {
+	            if (strcmp(node->name,other_nodes[i].name)==0) {
+	                STATE(node) = other_nodes[i].state;
+	                STATE(node->matching) = other_nodes[i].state;
+	            }
+	        }
+	     }
+	 }
+    }
+	
+    return 1;   
+}
+
 int
 load_context(FILE *in, peos_context_t *context)
 {
-    int i, start;
-    int num_actions,num_other_nodes;
-    int asize = INST_ARRAY_INCR;
-    int osize = INST_ARRAY_INCR;
-    
-    peos_action_t *actions = (peos_action_t *) calloc(asize,sizeof(peos_action_t));
+    int i;
+    int num_actions, num_other_nodes;
 
-    peos_other_node_t *other_nodes = (peos_other_node_t *) calloc(osize,sizeof(peos_other_node_t));
+    peos_action_t *actions;
+
+    peos_other_node_t *other_nodes;
 
     if (fscanf(in, "pid: %d\n", &context->pid) != 1) {
         return 0;
@@ -176,12 +184,18 @@ load_context(FILE *in, peos_context_t *context)
 	context->model[0] = '\0';
     }
     if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
-    if ((start = load_actions(context->model,&(context->process_graph))) < 0) return 0; 
+
+    if ((context->process_graph = makegraph(context->model)) == NULL) {
+	return 0;
+    } else {
+	initialize_graph(context->process_graph);
+    }
     
     if (fscanf(in, "actions: ") < 0) return 0; 
     
     if (fscanf(in, "%d ", &num_actions) != 1) return 0;
-    
+    actions = (peos_action_t *) calloc(num_actions, sizeof(peos_action_t));
+
     for (i = 0; i < num_actions; i++) {
         if (fscanf(in, "%s %d", actions[i].name,(int *)&actions[i].state) != 2) {
 	    free(actions);
@@ -195,7 +209,9 @@ load_context(FILE *in, peos_context_t *context)
     if (fscanf(in, "other_nodes: ") < 0) return 0;
                                                                         
     if (fscanf(in, "%d ", &num_other_nodes) != 1) return 0;
-    
+    other_nodes = (peos_other_node_t *) 
+	calloc(num_other_nodes, sizeof(peos_other_node_t));    
+
     for (i = 0; i < num_other_nodes; i++) {
         if (fscanf(in, "%s %d", other_nodes[i].name,(int *)&other_nodes[i].state) != 2) {
 	    free(other_nodes);

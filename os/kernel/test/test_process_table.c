@@ -10,30 +10,19 @@
 /* Globals. */
 /* NONE! */
 
-/* stubs */
-
+/* Stubs */
 extern Graph stub_makegraph(char *file);
+extern Node make_node(char *name, vm_act_state state, int type,int order);
 
-Graph makegraph(char *file)
-{
-   return stub_makegraph(file);
-}
-
-int annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other_node_t *other_nodes, int num_other_nodes)
-{
-    return 1;
-}
 
 char *get_script_graph(Graph g, char *act_name)
 {
     return "script";
 }
 
-void GraphDestroy(Graph g)
+void initialize_graph(Graph g)
 {
-	return;
 }
-
 
 
 START_TEST(test_get_pid)
@@ -55,47 +44,25 @@ START_TEST(test_get_pid_last)
 END_TEST
 
 
-START_TEST(test_load_actions)
-{
- 
-    int s;
-    peos_context_t *context = &(process_table[0]);
-    
-    /* Pre: a model exists. */
-    /* Action. */
-    
- 
-    s = load_actions("some file",&(context->process_graph));
- 
-  /* Post: model loaded - each entry matches a line in the file. */
-    fail_unless(s == 1,"return value");	  
-    fail_unless(context->process_graph != NULL,"Process graph null");
-
-}
-END_TEST
-
-
 START_TEST(test_peos_set_resource_value)
 {
-	int i;
-	peos_resource_t *resources = (peos_resource_t *) calloc(3,sizeof(peos_resource_t));
-	peos_context_t *context = &(process_table[0]);
+    int i;
+    peos_resource_t *resources = (peos_resource_t *) calloc(3,sizeof(peos_resource_t));
+    peos_context_t *context = &(process_table[0]);
 
-	context -> pid = 0;
-	context -> resources = resources;
-	context -> num_resources = 3;
+    context -> pid = 0;
+    context -> resources = resources;
+    context -> num_resources = 3;
 
-	for(i = 0; i < 3; i++)
-	{
+    for(i = 0; i < 3; i++){
 	sprintf(resources[i].name, "r%d",i);
 	sprintf(resources[i].value, "val");
-	}
+    }
 
-	fail_unless(peos_set_resource_value(0, "r2", "new_val") == 1,"return value");
-
-	fail_unless(strcmp(context->resources[0].value, "val") == 0, "r0 value");
-	fail_unless(strcmp(context->resources[1].value, "val") == 0, "r1 value");
-	fail_unless(strcmp(context->resources[2].value, "new_val") == 0, "r2 value");
+    fail_unless(peos_set_resource_value(0, "r2", "new_val") == 1, "return value");
+    fail_unless(strcmp(context->resources[0].value, "val") == 0, "r0 value");
+    fail_unless(strcmp(context->resources[1].value, "val") == 0, "r1 value");
+    fail_unless(strcmp(context->resources[2].value, "new_val") == 0, "r2 value");
 	
 }
 END_TEST;
@@ -111,14 +78,12 @@ START_TEST(test_peos_set_resource_value_no_resource)
    context -> resources = resources;
    context -> num_resources = 3;
                                                                         
-   for(i = 0; i < 3; i++)
-     {
+   for(i = 0; i < 3; i++) {
        sprintf(resources[i].name, "r%d",i);
        sprintf(resources[i].value, "val");
-     }
+   }
 
-     fail_unless(peos_set_resource_value(0, "r4", "new_val") == -1," unknown resource bound");
-
+   fail_unless(peos_set_resource_value(0, "r4", "new_val") == -1," unknown resource bound");
 }
 END_TEST
 
@@ -132,23 +97,81 @@ START_TEST(test_make_node_lists)
     g = stub_makegraph("some file");
 
     /* action */
-
     fail_unless(make_node_lists(g, &actions, &num_actions, &other_nodes, &num_other_nodes) == 1, "return value");
 
     /* post */
 
-   fail_unless(num_actions == 2,"num actions wrong");
-   fail_unless(num_other_nodes == 1 ," num_other_nodes wrong");
+    fail_unless(num_actions == 2,"num actions wrong");
+    fail_unless(num_other_nodes == 1 ," num_other_nodes wrong");
 
    
-  fail_unless(strcmp(actions[0].name,"act_0") == 0, "act_0 name wrong");
-  fail_unless(strcmp(actions[1].name,"act_1") == 0, "act_1 name wrong");
-  fail_unless(strcmp(other_nodes[0].name,"sel") == 0, "sel name wrong");
-  fail_unless(actions[0].state == ACT_NONE, "act_0 state wrong");
-  fail_unless(actions[1].state == ACT_NONE, "act_1 state wrong");
-  fail_unless(other_nodes[0].state == ACT_NONE, "sel state wrong");
-  fail_unless(strcmp(actions[0].script,"test script") == 0, "act_0 script wrong");
-  fail_unless(strcmp(actions[1].script,"test script") == 0, "act_1 script wrong");
+    fail_unless(strcmp(actions[0].name,"act_0") == 0, "act_0 name wrong");
+    fail_unless(strcmp(actions[1].name,"act_1") == 0, "act_1 name wrong");
+    fail_unless(strcmp(other_nodes[0].name,"sel") == 0, "sel name wrong");
+    fail_unless(actions[0].state == ACT_NONE, "act_0 state wrong");
+    fail_unless(actions[1].state == ACT_NONE, "act_1 state wrong");
+    fail_unless(other_nodes[0].state == ACT_NONE, "sel state wrong");
+    fail_unless(strcmp(actions[0].script,"test script") == 0, "act_0 script wrong");
+    fail_unless(strcmp(actions[1].script,"test script") == 0, "act_1 script wrong");
+}
+END_TEST
+
+START_TEST(test_annotate_graph)
+{
+	int i;
+	int num_actions,num_other_nodes;
+	peos_action_t *actions;
+	peos_other_node_t *other_nodes;
+	
+	Graph g = (Graph) malloc (sizeof (struct graph));
+	Node source,sink,act_0,act_1,sel,branch,join,rendezvous;
+	num_actions = 2;
+	actions = (peos_action_t *) calloc(num_actions, sizeof(peos_action_t));
+
+	for(i = 0; i < num_actions ; i++)
+	{
+		sprintf(actions[i].name,"act_%d",i);
+		actions[i].state = ACT_RUN;
+	}
+
+        num_other_nodes = 2;
+        other_nodes = (peos_other_node_t *) calloc(num_other_nodes, sizeof(peos_other_node_t));
+                                                                       
+          sprintf(other_nodes[0].name,"sel");
+	  sprintf(other_nodes[1].name,"br");
+          other_nodes[0].state = ACT_RUN;
+	  other_nodes[1].state = ACT_READY;
+     
+	source = make_node("p",ACT_NONE,PROCESS,0);
+	sink = make_node("p",ACT_NONE,PROCESS,0);
+	act_0 = make_node("act_0",ACT_NONE,ACTION,0);
+	act_1 = make_node("act_1",ACT_NONE,ACTION,0);
+	sel = make_node("sel",ACT_NONE,SELECTION,0);
+	join = make_node("sel",ACT_NONE,JOIN,0);
+	branch = make_node("br",ACT_NONE,BRANCH,0);
+	rendezvous = make_node("br",ACT_NONE,RENDEZVOUS,0);
+
+	g -> source = source;
+	g -> sink = sink;
+	source -> next = act_0;
+	act_0 -> next = act_1;
+	act_1 -> next = branch;
+	branch -> next = sel;
+	sel -> next = rendezvous;
+	rendezvous -> next = join;
+	join -> next = sink;
+	sink -> next = NULL;
+
+	sel -> matching = join;
+	branch -> matching = rendezvous;
+
+	fail_unless(annotate_graph(g,actions,num_actions,other_nodes,num_other_nodes) == 1, "return value");
+	fail_unless(STATE(act_0) == ACT_RUN, "act 0 state not run");
+	fail_unless(STATE(act_1) == ACT_RUN, "act 1 state not run");
+	fail_unless(STATE(sel) == ACT_RUN, "sel not run");
+	fail_unless(STATE(join) == ACT_RUN, "join not run");
+	fail_unless(STATE(branch) == ACT_READY, "branch not ready");
+       fail_unless(STATE(rendezvous) == ACT_READY, "rendezvous not run");
 
 }
 END_TEST
@@ -239,7 +262,9 @@ END_TEST
 START_TEST(test_load_proc_table) 
 {
     int i, j;
-    char  *model = "test_sample_5.pml";
+//    char  *model = "test_sample_5.pml";
+    char  *model = TEST_PROC_NAME;
+
     peos_context_t ctx;
     FILE *f;
     int num_actions,num_other_nodes;
@@ -286,10 +311,10 @@ START_TEST(test_load_proc_table)
         fprintf(f, "%d ", context->num_resources);
         context->resources = (peos_resource_t *)calloc(context->num_resources, sizeof(peos_resource_t));
         for (i = 0; i < context->num_resources; i++) {
-        strcpy(context->resources[i].name, "some_resource");
-        strcpy(context->resources[i].value,"some_value"); 
+	    strcpy(context->resources[i].name, "some_resource");
+	    strcpy(context->resources[i].value, "some_value"); 
             fprintf(f, " %s %s", context->resources[i].name, context->resources[i].value);
-          }
+	}
 	
 	fprintf(f, "\n\n"); 
     }
@@ -300,11 +325,12 @@ START_TEST(test_load_proc_table)
     mark_point();
 
     /* Load_proc_table requires a real model file to load actions from. */
-
+    make_pml_file(model, "process sample5 {\n  action act_0 {\n    script {\"test script\"}\n  }\n  action act_1 {\n    script {\"test script\"}\n  }\n  action act_2 {\n    script {\"test script\"}\n  }\n}\n");
 
     /* Action */
     load_proc_table("proc_table.dat");
     mark_point();
+    unlink(model);
 
     /* Post: process table reflects file contents; other globals
        initialized. */
@@ -316,9 +342,9 @@ START_TEST(test_load_proc_table)
 	fail_unless(context->process_graph != NULL, "process graph null");	
 	
 	for (i=0; i < context->num_resources;i++) {
-          fail_unless(context->resources[i].pid == j, "resources pid");
-	  fail_unless(strcmp(context->resources[i].name,"some_resource") == 0, "resource name");
-	  fail_unless(strcmp(context->resources[i].value,"some_value") == 0, "resource value");
+	    fail_unless(context->resources[i].pid == j, "resources pid");
+	    fail_unless(strcmp(context->resources[i].name, "some_resource") == 0, "resource name");
+	    fail_unless(strcmp(context->resources[i].value, "some_value") == 0, "resource value");
         }
 	
     }
@@ -467,10 +493,12 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_make_node_lists);
     
+    tc = tcase_create("annotate graph");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_annotate_graph);
 
     tc = tcase_create("table io");
     suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_load_actions);
     tcase_add_test(tc, test_load_proc_table);
     tcase_add_test(tc, test_save_proc_table);
 

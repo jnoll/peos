@@ -87,15 +87,6 @@ void free_actions(peos_action_t *actions, int size)
 }
 
 
-int stub_load_actions(char *file, Graph *process_graph)
-{
-	*process_graph = (Graph) stub_makegraph("some file");
-	 
-	return 1;
-        
-}
-
-
 Graph stub_makegraph(char *file)
 {
    Graph g = (Graph) malloc (sizeof(struct graph));
@@ -176,6 +167,14 @@ Graph stub_makegraph(char *file)
 
 
 
+
+void 
+make_pml_file(char *filename, char *text)
+{
+    FILE *f = fopen(filename, "w");
+    fprintf(f, "%s\n", text);
+    fclose(f);
+}
 
 
 void

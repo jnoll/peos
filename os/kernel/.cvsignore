@@ -1,7 +1,7 @@
 *.o PMLServer *.idx *.dat *.txt
 *.tar
 TODO BUGS
-xref TAGS tags
+xref TAGS tags cscope.out cflow
 shell
 .depend
 event.log

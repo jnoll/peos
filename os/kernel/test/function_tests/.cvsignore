@@ -2,4 +2,6 @@
 *.pml
 *.dat
 *.log
-core
+event.log
+proc_table.dat
+core*

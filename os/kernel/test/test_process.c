@@ -14,14 +14,19 @@ peos_context_t process_table[PEOS_MAX_PID+1];
 int free_entry = 0;
 
 /* Stubs. */
+peos_context_t *peos_get_context(int pid)
+{
+	return pid == 0 ? &(process_table[pid]) : NULL;
+}
 
-int stub_load_actions(char *file,Graph *process_graph);
 
+#ifdef NOTUSED
 vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state state)
 {
 	return VM_CONTINUE;
 }
-	
+#endif
+
 int delete_entry(int pid)
 {
     return 1;
@@ -30,11 +35,6 @@ int delete_entry(int pid)
 int peos_get_pid(peos_context_t *context) 
 {
     return context - process_table;
-}
-
-peos_context_t *peos_get_context(int pid)
-{
-    return pid == 0 ? &(process_table[pid]) : NULL ;
 }
 
 peos_context_t *find_free_entry()
@@ -54,13 +54,9 @@ strcpy(resources[1].name,"b");
 return resources;
 }
   
-
-
-int load_actions(char *file, Graph *process_graph)
+void initialize_graph(Graph g)
 {
-    return stub_load_actions(file, process_graph);
 }
-
 
 
 
@@ -126,7 +122,7 @@ START_TEST(test_find_model_file)
 }
 END_TEST
 
-/*
+#ifdef NOTUSED
 START_TEST(test_handle_action_change_run)
 {
   int nbytes,abytes;
@@ -164,12 +160,12 @@ START_TEST(test_handle_action_change_run)
    
   
   fail_unless(strcmp(actual,expected) == 0, "event.log differs");
-  // unlink("expected_event.log");
-  // unlink("event.log");
+   unlink("expected_event.log");
+   unlink("event.log");
 
 }
 END_TEST
-*/									     
+#endif
 
 
 /* This is really a silly test, since create instance just calls functions 
@@ -288,10 +284,11 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_create_instance);
     tcase_add_test(tc, test_create_instance_multi);
 
-  /*  tc = tcase_create("handle action change");
+#ifdef NOTUSED
+    tc = tcase_create("handle action change");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_handle_action_change_run);
-*/
+#endif
 
     tc = tcase_create("log_event");
     suite_add_tcase(s, tc);

@@ -10,18 +10,23 @@
 #include "events.h"
 #include "test_util.h"
 
-
-/* Stub (bogus) globals. */
-
-
 /* Globals. */
 char *instance_dir = NULL;
 int create_instance_result = 1;
 int handle_action_result = VM_DONE;
 
 
-
 /* Stubs. */
+peos_context_t *peos_get_context(int pid)
+{
+    static peos_context_t context;
+    return &context;
+}
+
+char *act_state_name(vm_act_state s)
+{
+    return "action state name here";
+}
 
 char *find_model_file(char *model)
 {
@@ -33,6 +38,10 @@ void log_event(char *msg)
     return;
 }
 
+int delete_entry(int pid)
+{
+    return 1;
+}
 
 char *get_script(int pid, char *action_name)
 {
@@ -162,12 +171,5 @@ main(int argc, char *argv[])
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
     suite_free(s);
-    if (nf == 0) {
-	/* Clean up. */
-	/* system("rm -r test_instances");*/
-	return EXIT_SUCCESS;
-    } else {
-	/* Leave evidence. */
-	return EXIT_FAILURE;
-    }
+    return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -3,7 +3,6 @@
 #include "action.h"
 #include "pmlheaders.h"
 
-#define INST_ARRAY_INCR (256)    
 #define PEOS_MAX_PID (10)
 
 typedef enum {

@@ -11,8 +11,11 @@
 #include "events.h"
 #include "test_util.h"
 
-/* Stub (bogus) globals. */
-extern Graph stub_makegraph(char *file);
+
+/* Globals. */
+peos_context_t process_table[PEOS_MAX_PID+1];
+
+/* Stubs. */
 extern Node make_node(char *name, vm_act_state, int type,int order);
 extern Tree make_tree(char *,int, Tree,Tree);
 extern Tree make_dot_tree(char *name, char* attr);
@@ -20,83 +23,10 @@ extern Tree make_op_tree(Tree left, int op, char* value);
 extern Tree make_con_tree(Tree left, Tree right, int op, char* value);
 extern List make_list(Item i1, Item i2, Item i3, Item i4, Item i5);
 
-/* Globals. */
-
-
-
-peos_context_t process_table[PEOS_MAX_PID+1];
-
-
-/* stubs */
-
 peos_context_t *peos_get_context(int pid)
 {
 	return pid == 0 ? &(process_table[pid]) : NULL;
 }
-
-
-
-START_TEST(test_find_node)
-{
-	Node n;
-	char *file;
-	Graph g;
-	
-
-
-	file = "test_find_node.pml";
-	/* Pre : Graph exists */
-	g = makegraph(file);
-
-	/* Action */
-
-	n = find_node(g,"act_0");
-
-	/* Post */
-	fail_unless(n != NULL,"return value");
-	fail_unless(strcmp(n->name,"act_0") == 0, "correct node not found");
-
-}
-END_TEST
-
-
-START_TEST(test_find_node_error)
-{
-	Node n;
-	char *file;
-	Graph g;
-
-	file = "test_find_node.pml";
-	/* Pre : Graph exists */
-	g = makegraph(file);
-
-	/* Action */
-	n = find_node(g,"act_2");
-
-	/* Post */
-	fail_unless(n == NULL,"non exixtent node found");
-
-}
-END_TEST
-
-
-START_TEST(test_makegraph_nofile)
-{
-    char *file = "no_file";
-    Graph g;
-    g = makegraph(file);
-    fail_unless(g == NULL, "graph made from non existing file");
-}
-END_TEST
-
-START_TEST(test_makegraph_error)
-{
-    char *file = "test_makegraph_error";
-    Graph g;
-    g = makegraph(file);
-    fail_unless(g == NULL, "graph made from file with parse errors.");
-}
-END_TEST
 
 
 START_TEST(test_mark_successors)
@@ -118,7 +48,7 @@ START_TEST(test_mark_successors)
 
         mark_successors(s,ACT_READY);
 
-	// Post
+	/* Post */
     fail_unless(STATE(a) == ACT_READY,"action a  not ready");
     fail_unless(STATE(b) == ACT_READY, "action b  not ready");
     fail_unless(STATE(s) == ACT_READY, "selection not ready");
@@ -380,10 +310,10 @@ START_TEST(test_propogate_join_done)
   sink -> next = NULL;
 							      
 
-  // Action 
+  /* Action  */
    propogate_join_done(join); 
 
-  // Post
+   /* Post */
    
    fail_unless(STATE(act_0) == ACT_DONE, "act 0 not done");
    fail_unless(STATE(act_1) == ACT_NONE, "act 1 not none");
@@ -578,76 +508,6 @@ END_TEST
 
 
 
-// Test growing resource list. 
-START_TEST(test_insert_resource)
-{
-    int num_resources = 0, rsize = 2, i, num_expected;
-    char rname[32];
-   // Pre: a possibly empty resource list exists. 
-    peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize, sizeof(peos_resource_t));
-
-    // Action: insert a number of resources into the list. 
-    num_expected = (32 * rsize) + 1;
-    for (i = 0; i < num_expected; i++) {
-	sprintf(rname, "%s_%d", "resource", i);
-	insert_resource(rname, &resource_list, &num_resources, &rsize);
-    }
-
-    // Post: all resources have been inserted in order. 
-    fail_unless(num_resources == num_expected, "num_resources wrong");
-    for (i = 0; i < num_expected; i++) {
-	sprintf(rname, "%s_%d", "resource", i);
-	fail_unless(strcmp(resource_list[i].name, rname) == 0, "resource name wrong");
-    }
-}	
-END_TEST
-
-START_TEST(test_make_resource_list)
-{
-	int num_resources = 0, rsize = 256;
-	char *ptr = "y";
-	peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-	
-	Tree t1 = make_tree("y",0,NULL,NULL);
-	Tree t2 = make_tree("modified",0,NULL,NULL);
-	Tree t3 = make_tree(NULL,DOT,t1,t2);
-	Tree t4 = make_tree("true",0,NULL,NULL);
-	Tree t5 = make_tree(NULL,EQ,t3,t4);
-
-	make_resource_list(t5, &resource_list, &num_resources, &rsize);
-
-	fail_unless(num_resources == 1,"num_resources wrong");
-    fail_unless(strcmp(resource_list[0].name,ptr) == 0,"resource name wrong");
-
-}	
-END_TEST
-
-
-// Test growing resource list. 
-START_TEST(test_make_resource_list_realloc)
-{
-    int num_resources = 0, rsize = 2, i, num_expected;
-    char rname[32];
-    peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-    Tree t[256];
-
-    num_expected = (32 * rsize) + 1;
-    for (i = 0; i < num_expected; i++) {
-	sprintf(rname, "%s_%d", "resource", i);
-	t[i] = make_tree(strdup(rname), 0, NULL, NULL);
-    }
-
-    for (i = 0; i < num_expected; i++) {
-	make_resource_list(t[i], &resource_list, &num_resources, &rsize);
-    }
-
-    fail_unless(num_resources == num_expected, "num_resources wrong");
-    for (i = 0; i < num_expected; i++) {
-	sprintf(rname, "%s_%d", "resource", i);
-	fail_unless(strcmp(resource_list[i].name, rname) == 0, "resource name wrong");
-    }
-}	
-END_TEST
 
 START_TEST(test_initialize_graph)
 {
@@ -708,66 +568,6 @@ START_TEST(test_initialize_graph)
 }
 END_TEST
 
-
-START_TEST(test_annotate_graph)
-{
-	int i;
-	int num_actions,num_other_nodes;
-	peos_action_t *actions;
-	peos_other_node_t *other_nodes;
-	
-	Graph g = (Graph) malloc (sizeof (struct graph));
-	Node source,sink,act_0,act_1,sel,branch,join,rendezvous;
-	num_actions = 2;
-	actions = (peos_action_t *) calloc(num_actions, sizeof(peos_action_t));
-
-	for(i = 0; i < num_actions ; i++)
-	{
-		sprintf(actions[i].name,"act_%d",i);
-		actions[i].state = ACT_RUN;
-	}
-
-        num_other_nodes = 2;
-        other_nodes = (peos_other_node_t *) calloc(num_other_nodes, sizeof(peos_other_node_t));
-                                                                       
-          sprintf(other_nodes[0].name,"sel");
-	  sprintf(other_nodes[1].name,"br");
-          other_nodes[0].state = ACT_RUN;
-	  other_nodes[1].state = ACT_READY;
-     
-	source = make_node("p",ACT_NONE,PROCESS,0);
-	sink = make_node("p",ACT_NONE,PROCESS,0);
-	act_0 = make_node("act_0",ACT_NONE,ACTION,0);
-	act_1 = make_node("act_1",ACT_NONE,ACTION,0);
-	sel = make_node("sel",ACT_NONE,SELECTION,0);
-	join = make_node("sel",ACT_NONE,JOIN,0);
-	branch = make_node("br",ACT_NONE,BRANCH,0);
-	rendezvous = make_node("br",ACT_NONE,RENDEZVOUS,0);
-
-	g -> source = source;
-	g -> sink = sink;
-	source -> next = act_0;
-	act_0 -> next = act_1;
-	act_1 -> next = branch;
-	branch -> next = sel;
-	sel -> next = rendezvous;
-	rendezvous -> next = join;
-	join -> next = sink;
-	sink -> next = NULL;
-
-	sel -> matching = join;
-	branch -> matching = rendezvous;
-
-	fail_unless(annotate_graph(g,actions,num_actions,other_nodes,num_other_nodes) == 1, "return value");
-	fail_unless(STATE(act_0) == ACT_RUN, "act 0 state not run");
-	fail_unless(STATE(act_1) == ACT_RUN, "act 1 state not run");
-	fail_unless(STATE(sel) == ACT_RUN, "sel not run");
-	fail_unless(STATE(join) == ACT_RUN, "join not run");
-	fail_unless(STATE(branch) == ACT_READY, "branch not ready");
-       fail_unless(STATE(rendezvous) == ACT_READY, "rendezvous not run");
-
-}
-END_TEST
 
 
 
@@ -908,6 +708,7 @@ START_TEST(test_set_act_state_graph_new)
 END_TEST
 
 
+
 int
 main(int argc, char *argv[])
 {
@@ -918,25 +719,10 @@ main(int argc, char *argv[])
 
     parse_args(argc, argv);
 
-    tc = tcase_create("find_node");
-    suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_find_node);
-    tcase_add_test(tc, test_find_node_error);
-
-    tc = tcase_create("makegraph");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_makegraph_nofile);
-    tcase_add_test(tc,test_makegraph_error);
-
     tc = tcase_create("mark_successors");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_mark_successors);
 
-    tc = tcase_create("make resource list");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_insert_resource);
-    tcase_add_test(tc,test_make_resource_list);
-    tcase_add_test(tc,test_make_resource_list_realloc);
  
     tc = tcase_create("action done");
     suite_add_tcase(s,tc);
@@ -966,10 +752,6 @@ main(int argc, char *argv[])
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_initialize_graph);
 
-    tc = tcase_create("annotate graph");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_annotate_graph);
-
     tc = tcase_create("set act state graph");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_set_act_state_graph_ready);
@@ -986,11 +768,6 @@ main(int argc, char *argv[])
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
     suite_free(s);
-    if (nf == 0)
-	return EXIT_SUCCESS;
-         else
-	/* Leave evidence. */
-	return EXIT_FAILURE;
-
+    return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

@@ -19,10 +19,11 @@ $(CORE_OBJS)
 CORE_OBJS = \
 action.o \
 events.o \
+graph.o \
 graph_engine.o \
 process_table.o \
 process.o \
-
+resources.o \
 
 
 # sources

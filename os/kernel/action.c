@@ -6,10 +6,6 @@
 #include "process.h"
 #include "action.h"
 
-
-#define INST_ARRAY_INCR (256)    
-
-
 int set_act_state(char *act, vm_act_state state, peos_action_t *actions, int num_actions)
 {
     peos_action_t *p;

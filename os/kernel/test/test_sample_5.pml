@@ -1,12 +1,12 @@
 process sample5 {
-         an_action0 {
-              script {"test script"}
-                }
-         an_action1 {
-              script {"test script"}
-                 }
-         an_action2 {
-              script {"test script"}
-                }
-            }
-    
+  action act_0 {
+    script {"test script"}
+  }
+  action act_1 {
+    script {"test script"}
+  }
+  action act_2 {
+    script {"test script"}
+  }
+}
+

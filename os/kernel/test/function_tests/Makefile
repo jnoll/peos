@@ -12,7 +12,8 @@ test_cases: baseline inventory combinations bounds
 
 # Run the tests.
 run: $(LOGS)
-	set -x; grep FAIL *.log
+	@echo "tests:"
+	@(grep -l FAIL *.log && echo "FAILED") || echo "passed."
 
 
 #

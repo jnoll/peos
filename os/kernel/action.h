@@ -1,14 +1,10 @@
 #ifndef _ACTION_H
 #define _ACTION_H
-
-//#include "vm.h"
-//#include "process.h"
-
-
 #include <limits.h>
-                                                                                
+
 #define MAX_ACT (256)
-                                                                                
+#define INST_ARRAY_INCR (256)    
+
 typedef enum {
     VM_DONE = 0, VM_ERROR, VM_INTERNAL_ERROR, VM_SYSCALL, VM_CONTINUE
 } vm_exit_code;

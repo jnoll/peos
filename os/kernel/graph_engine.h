@@ -29,18 +29,7 @@ List iter_start_nodes;
 } *Data;
 
 
-extern vm_exit_code handle_action_change_graph(int , char *, vm_act_state);		
-extern peos_resource_t *get_resource_list(char *model_file,int *num_resources);
-
-extern peos_resource_t *get_resource_list_action(int pid,char *act_name,int *num_resources);
-
-extern peos_resource_t *get_resource_list_action_requires(int pid,char *act_name,int *num_resources);
-
-extern peos_resource_t *get_resource_list_action_provides(int pid,char *act_name,int *num_resources);
-
-extern Graph makegraph(char *);
-
-extern int annotate_graph(Graph g, peos_action_t *actions, int num_actions,peos_other_node_t *other_nodes, int num_other_nodes);
+extern vm_exit_code handle_action_change(int , char *, vm_act_state); 
 
 extern vm_exit_code set_act_state_graph(Graph g,char *act_name, vm_act_state state);
 

@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.18 2003/11/15 04:21:57 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.19 2003/11/17 07:29:59 jnoll Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
-* Modified:     Fri Nov 14 11:38:38 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Sun Nov 16 22:55:42 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -23,6 +23,7 @@
 #include <time.h>
 #include "process.h"
 #include "events.h"
+#include "graph.h"
 #include "graph_engine.h"
 
 /* Globals. */
@@ -30,8 +31,6 @@
 
 /* Forward declarations. */
 extern peos_context_t *find_free_entry();
-extern int load_actions(char *file,Graph *process_graph);
-
 
 
 
@@ -63,31 +62,6 @@ char *act_state_name(vm_act_state state)
 	    return "unknown syscall";
 	    break;
       }
-}
-
-vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
-{
-    char message[256];
-    char *this_state;
-    vm_exit_code exit_status;
-    peos_context_t *context = peos_get_context(pid);
-   
-    this_state = act_state_name(state);
-    sprintf(message, "jnoll %s %s %d ", this_state, action,pid);
-    log_event(message);
-    
-    exit_status =  handle_action_change_graph(pid,action,state); 
-    if (exit_status == VM_DONE) {
-        char msg[256];
-	sprintf(msg,"jnoll DONE %s %d",context->model,pid);
-	log_event(msg);
-	//delete_entry(context->pid);
-	context -> status = PEOS_DONE; 
-	return exit_status;
-    }
-    else
-        return exit_status;
-	    
 }
 
 
@@ -123,18 +97,19 @@ char *find_model_file(char *model)
 
 int peos_create_instance(char *model_file,peos_resource_t *resources,int num_resources)
 {
-    int start = -1;
     peos_context_t *context;
+
     if ((context = find_free_entry()) == NULL) {
         return -1;
     }
 
-    if ((start = load_actions(model_file,&(context->process_graph))) >= 0) {
+    if ((context->process_graph = makegraph(model_file)) != NULL) {
+	initialize_graph(context->process_graph);
 	context->pid = peos_get_pid(context);
         strcpy(context->model, model_file);
         context->status = PEOS_READY;
 	
-	// stick the resources into the context
+	/* stick the resources into the context */
         context->num_resources = num_resources;
         context -> resources = resources;
    
