@@ -46,6 +46,6 @@ process commit_change {
     requires { workspace.tests == "passed" }
     script { "If all tests passed, you are finished.  If not, go back and fix any failures uncovered." }
 
-}
   }
+
 }
