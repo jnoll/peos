@@ -1,5 +1,0 @@
-FROM=`formail -zxFROM:`
-:0c
-| echo "$FROM" [`date`] >> ./mailui.log
-:0:
-| ./mailui "$FROM" status >> ./mailui.log
