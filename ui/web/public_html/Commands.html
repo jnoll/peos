@@ -5,27 +5,27 @@
 	<title>P.E.O.S</title>
 </head>
 
-<body background="BackGround.gif" title="Commands & Actions">
+<body background="BackGround.gif" title="Commands & Actions">	
 
-<i>Available Commands<br></i>
-<form action="Blah.html" name="Command" id="Command" target="WorkArea">
-	<select name="_Command" size="4">
-			<option value="1" SELECTED>New</option>
-			<option value="2">Done</option>
-			<option value="3">Modify</option>
-			<option value="4">Delete</option>
-	</select>
-	
-<br><br>
-<i>Available Actions<br><br></i>
+<form action="cgi-bin/webui.cgi" method = "POST" target="WorkArea">
+<input type = "hidden" name = "username" value = "UserName"><br>
+<input type = "hidden" name = "password" value = "pass"><br>
 
-	<select name="_Action" size="3">
-			<option value="1" SELECTED>Stir</option>
-			<option value="2">Shake</option>
-			<option value="3">Drink</option>
-</select>
-<br><br>
-<input type="submit" name="Submit" value="Submit">
-</form>
+
+<br>
+
+Command: 
+<SELECT NAME="command">
+<OPTION VALUE = "status">status
+<OPTION VALUE = "run">run
+<OPTION VALUE = "done">done
+<OPTION VALUE = "create">create
+</SELECT><BR>
+Action: 
+<INPUT TYPE="text" NAME="action">
+<br>
+<input type = "submit" value = "Continue with PML Interface">
+ </form>
+
 </body>
 </html>
