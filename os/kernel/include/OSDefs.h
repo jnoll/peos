@@ -82,6 +82,7 @@ const char END_OF_STRING = '\0';
 const char SC_WAIT = 'a';
 const char SC_FORK = 'b';
 const char SC_JOIN = 'c';
+const char SC_SELECT = 'd';
 const char SC_EXIT = 'e';
 
 enum Event

@@ -94,6 +94,32 @@ void IPCHandler::Main()
                 {
                     (*itr).second->SetState( PS_WAIT );
                 }
+                else if ( msgID == SC_SELECT )
+                {
+			Process* temp = (*itr).second;
+                	processMap.erase( itr );
+			string query("");
+			query = newMsg.substr( 2, newMsg.length());
+			int FD = pmlvmIF->WaitOnSelectQuery( temp->GetName(), query);
+			if ( FD > 0 )
+	                {
+        	            if ( processMap.insert( make_pair( FD, temp ) ).second == false )
+                	    {
+                        	close( FD );
+	                        delete temp;
+        	            }
+                	    else
+	                    {
+        	                temp->SetState( PS_RUN );
+                	    }
+ 	               }
+        	        else
+                	{
+	                    delete temp;
+        	        }
+
+                	//itr = processMap.begin();
+		}
                 else if ( msgID == SC_FORK )
                 {
                     string childName( "" );

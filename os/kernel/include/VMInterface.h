@@ -18,6 +18,7 @@ public:
 	int ResumeFromWaitOnAction( const string& proc, const string& action, Event event );
 	int ResumeFromWaitForChild( const string& proc, int childExitStatus );
 	int StartFromLine( const string& proc, int lineNumber );
+	int WaitOnSelectQuery( const string& proc, const string& query );
         int StartVM( char* path, char** commandLine );
 private:
         string VMPath;
