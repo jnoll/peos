@@ -166,6 +166,19 @@ START_TEST(test_is_provides_true_2)
     unlink("resource_file");
 }
 END_TEST
+
+START_TEST(test_pe_eval)
+{
+   
+}
+END_TEST
+
+START_TEST(test_pe_perform_predicate_eval)
+{
+   
+}
+END_TEST
+
 	
 int
 main(int argc, char *argv[])
@@ -189,6 +202,13 @@ main(int argc, char *argv[])
     tcase_add_test(tc,test_is_requires_true_1);
     tcase_add_test(tc,test_is_requires_true_2);
     
+    tc = tcase_create("testing_pe_eval");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_pe_eval);
+        
+    tc = tcase_create("testing_pe_perform_predicate_eval");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_pe_perform_predicate_eval);
     
     sr = srunner_create(s);
 

@@ -1,3 +1,6 @@
+
+#define YYDEBUG
+
 #include <unistd.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -10,7 +13,6 @@
 #include "pmlheaders.h"
 #include "graph_engine.h"
 #include "process.h"
-
 
 
 
