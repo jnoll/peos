@@ -79,8 +79,7 @@ public class ActionList extends JScrollPane implements TreeSelectionListener, Hy
         
         if (node.isLeaf()) 
         {                
-            String pathname = (e.getPath()).toString();
-            System.out.println(pathname);         
+            String pathname = (e.getPath()).toString(); 
             currentPage = pathname.substring(pathname.indexOf(",")+1,pathname.indexOf("]"));              
             
             if (pathName(currentPage).equals("Ready")==true)
@@ -98,13 +97,8 @@ public class ActionList extends JScrollPane implements TreeSelectionListener, Hy
             if (pathName(currentPage).equals("Available")==true)
             {
                 return;
-            }                                    
-            
-            //pidNum=Integer.parseInt(pidSplitter[1].substring(0,pidSplitter[1].indexOf(')')));
+            }                                                
                                              
-            System.out.println(pathName(currentPage));
-            System.out.println("Pid:" +map.parsePid(pathName(currentPage))[0]);
-            System.out.println("Name:" +map.parsePid(pathName(currentPage))[1]);
             String[] fixedPath=map.parsePid(pathName(currentPage));
             this.topLevel.switchToProcess(fixedPath);
             

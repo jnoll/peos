@@ -171,7 +171,7 @@ public class displayPO{
 			if (elemName.equals("/branch"))
 				branchFlag=false;
 			if (elemName.equals("sequence"))
-       		       	{ 
+       		       	{                          
 				if (sequenceFlag==false)
                                 {
                                     if (update == true)

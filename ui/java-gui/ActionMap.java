@@ -50,84 +50,6 @@ public class ActionMap{
 		
 		return count;
 	}
-        public String buildActionList()
-        {
-            String stateValue;
-            String output="<TABLE border=1><TR align=center><TD>State</TD><TD>Action</TD></TR>";
-            String[] available = new String[50];
-            String[] ready = new String[50];
-            String[] run = new String[50];
-            int availCount=0;
-            int readyCount=0;
-            int runCount=0;
-            
-            for (int i=0; i< 11; i++)
-            {
-                if (this.isProcActive(i))
-                {            
-                    LinkNode curr=this.getCurrentLink(i);
-                    this.reset(i);
-                    LinkNode probe = this.getCurrentLink(i);
-                
-                    while (probe != null)
-                    {
-                        Element payload = probe.getElement();                    
-                        if ( payload.getAttribute("state") != null )
-                        {
-                            stateValue=payload.getAttribute("state");
-                            
-                            if (stateValue.equals("AVAILABLE"))
-                            {
-                                String name=payload.getAttribute("name");
-                                available[availCount]="<tr><td>Available</td>"
-                                    +"<td><a href=\"" + "[" +i +"]" + name 
-                                    +"\">" +name +"</a></td></tr>";
-                                availCount++;
-                            }
-                                
-                            if (stateValue.equals("READY"))
-                            {
-                                String name=payload.getAttribute("name");
-                                ready[readyCount]="<tr><td>Ready</td>"
-                                    +"<td><a href=\"" + "[" +i +"]" + name 
-                                    +"\">" +name +"</a></td></tr>";
-                                readyCount++;
-                            }
-                                
-                            if (stateValue.equals("RUN"))
-                            {
-                                String name=payload.getAttribute("name");
-                                run[runCount]="<tr><td>Run</td>"
-                                    +"<td><a href=\"" + "[" +i +"]" + name 
-                                    +"\">" +name +"</a></td></tr>";
-                                runCount++;
-                            }
-                            
-                        }
-                        
-                        probe = probe.getNext();
-                    }
-                    this.setCurrent(i,curr);
-                }
-                
-            }
-            for (int i=0; i<availCount; i++)
-            {
-                output+=available[i];
-            }
-            for (int i=0; i<readyCount; i++)
-            {
-                output+=ready[i];
-            }
-            for (int i=0; i<runCount; i++)
-            {
-                output+=run[i];
-            }
-            
-            output+="</TABLE>";
-
-            return output;
-        }
             
         public DefaultMutableTreeNode buildActionTree()
         {
@@ -137,10 +59,12 @@ public class ActionMap{
             String[] ready = new String[50];
             String[] run = new String[50];
             String[] suspend = new String[50];
+            boolean selectionFlag=false;
             int availCount=0;
             int readyCount=0;
             int runCount=0;
             int suspendCount=0;
+            int offsetCounter=-1;
             
             for (int i=0; i< 11; i++)
             {
@@ -153,22 +77,61 @@ public class ActionMap{
                     while (probe != null)
                     {
                         Element payload = probe.getElement();                    
+                        if ( payload.getLocalName().equals("selection"))
+                        {
+                            selectionFlag=true; 
+                            offsetCounter=probe.getNext().getNext().getOffset();
+                        }
+                        else if (selectionFlag ==true && probe.getOffset() != offsetCounter)
+                        {
+                            if (payload.getLocalName().equals("sequence") == false)
+                            {
+                                selectionFlag=false;
+                            }
+                            
+                        }
                         if ( payload.getAttribute("state") != null )
                         {
                             stateValue=payload.getAttribute("state");
                             
                             if (stateValue.equals("AVAILABLE"))
                             {
-                                String name=payload.getAttribute("name");
-                                available[availCount]="(" + i + ")" + name;
-                                availCount++;
+                                if (selectionFlag == true)
+                                {
+                                    String name=payload.getAttribute("name");
+                                    if (available[availCount].equals(""))                                    
+                                        available[availCount]="(" + i + ")" 
+                                            + "*Choose: " + name;
+                                    else
+                                        available[availCount]+="; " +name;
+                                }
+                                else{
+                                    String name=payload.getAttribute("name");
+                                    available[availCount]="(" + i + ")" + name;
+                                    availCount++;
+                                }
                             }
                                 
                             if (stateValue.equals("READY"))
                             {
-                                String name=payload.getAttribute("name");
-                                ready[readyCount]="(" + i + ")" + name;
-                                readyCount++;
+                                if (selectionFlag == true)
+                                {
+                                    String name=payload.getAttribute("name");
+                                    if (ready[readyCount]==null)                                    
+                                        ready[readyCount]="(" + i + ")" 
+                                            + "*Choose: " + name;
+                                    else
+                                        ready[readyCount]+="; " +name;
+                                    if (probe.getNext() == null || 
+                                            probe.getNext().getOffset() != offsetCounter)
+                                        readyCount++;
+                                    
+                                }
+                                else{
+                                    String name=payload.getAttribute("name");
+                                    ready[readyCount]="(" + i + ")" + name;
+                                    readyCount++;
+                                }
                             }
                                 
                             if (stateValue.equals("RUN"))
@@ -274,10 +237,18 @@ public class ActionMap{
             
         }
         public String[] parsePid(String actionBlock)
-        {
+        {                   
             String[] splitter=actionBlock.split("\\)");
-            splitter[0]=splitter[0].substring(1);
+            if (splitter[1].charAt(0) == '*') // pseudoaction case
+            {
+                String actions = splitter[1].substring(9,splitter[1].indexOf(';'));
+                splitter[1]=actions;                                 
+            }
+                           
+            //truncate ( from splitter[0], leaving only pid
+            splitter[0]=splitter[0].substring(1);            
             return splitter;
+
         }
 	public boolean[] listActiveProcesses()
 	{
@@ -406,7 +377,8 @@ public class ActionMap{
 					System.out.print("curr->");
 				System.out.println(i + ":  " 
 				+ curr.getElement().getAttribute("name")
-				+ curr.getElement().getAttribute("state"));
+				+ curr.getElement().getAttribute("state")
+                                + curr.getOffset());
 				curr = curr.getNext();
 			}
 			ActionList[i].setCurrentLink(currHolder);

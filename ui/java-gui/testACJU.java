@@ -76,12 +76,6 @@ public class testACJU extends TestCase{
         
         }
         
-        public void testBuildActionList()
-        {
-            assertEquals("<TABLE border=1><TR align=center><TD>State</TD><TD>Action</TD></TR><tr><td>"
-                +"Ready</td><td><a href=\"[1]overview\">overview</a></td></tr></TABLE>",map.buildActionList());
-        }
-        
         public void testBuildActionTree()
         {
             DefaultMutableTreeNode tester = map.buildActionTree();
@@ -96,6 +90,13 @@ public class testACJU extends TestCase{
 		String result[]= map.parsePid(tester);
                 assertEquals("0", result[0]);
                 assertEquals("hello", result[1]);
+	}
+	public void testParseActionSelectionString()
+	{
+		String tester="(0)*Choose: test1; test3";
+		String result[]= map.parsePid(tester);
+                assertEquals("0", result[0]);
+                assertEquals("test1", result[1]);
 	}
 	protected void setUp()
 	{
