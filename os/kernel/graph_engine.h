@@ -19,6 +19,8 @@
 # define ITER_END_NODES(n) (((Data) (n) -> data) -> iter_end_nodes)
 # define ITER_START_NODES(n) (((Data) (n) -> data) -> iter_start_nodes)
 # define ORDER(n) (((Data) (n) -> data) -> order)
+# define SUPER_NODES(n) (((Data) (n) -> data) -> super_nodes)
+
 			
 typedef struct data
 {
@@ -27,9 +29,28 @@ int iter_start;
 int iter_end;
 int order;
 vm_act_state state;
-List iter_end_nodes;
+
+/* This is a list of nodes which are successors of the last node in an iteration. This list is associated with the first node in an iteration. */ 
+List iter_end_nodes; 
+
+/* This is a list of nodes which are the first nodes of iterations. This list is associated with the successors of the last node of an iteration */ 
+
 List iter_start_nodes;
+
+/* This is the list of nodes (selection and branch) which are the dominators of a given action node */
+List super_nodes;
 } *Data;
+
+
+extern vm_exit_code handle_action_change_graph(int , char *, vm_act_state);		
+extern peos_resource_t *get_resource_list(char *model_file,int *num_resources);
+
+extern peos_resource_t *get_resource_list_action(int pid,char *act_name,int *num_resources);
+
+extern peos_resource_t *get_resource_list_action_requires(int pid,char *act_name,int *num_resources);
+
+extern peos_resource_t *get_resource_list_action_provides(int pid,char *act_name,int *num_resources);
+
 
 
 extern vm_exit_code handle_action_change(int , char *, vm_act_state); 

@@ -91,8 +91,25 @@ void add_iteration_lists(Graph g)
     }
 }
 
+				
+void add_super_node_lists(Graph g)
+{
+    Node n;
 
-	
+    for(n = g -> source -> next; n != NULL; n = n -> next) {
+        if((n -> type == SELECTION) || (n -> type == BRANCH)) {
+            Node slave;
+	    for(slave = n -> next; slave != n -> matching; slave = slave -> next) {
+	        if(slave -> type  == ACTION) {
+		    ListPut(SUPER_NODES(slave),n);
+		}
+	    }
+	}
+    }
+}
+				    
+
+
 
 
 void set_iter_none(Node n, Node original)
@@ -144,6 +161,19 @@ void mark_iter_nodes(Node n)
 	}
     }
 }
+
+void set_super_nodes_run(Node n)
+{
+    Node super;
+    int i;
+    for(i = 0; i <  ListSize(SUPER_NODES(n)); i++) {
+        super = (Node) ListIndex(SUPER_NODES(n),i);
+	STATE(super) = ACT_RUN;
+	STATE(super -> matching) = ACT_RUN;
+	mark_iter_nodes(super);
+    }
+}
+			
 
 
 void mark_successors(Node n, vm_act_state state)
@@ -243,6 +273,7 @@ int action_run(Graph g, char *act_name)
         STATE(n) = ACT_RUN;
 	mark_iter_nodes(n);
 	handle_selection(n);
+	set_super_nodes_run(n);
         sanitize(g);
     }
     else {
@@ -251,7 +282,6 @@ int action_run(Graph g, char *act_name)
     }
     return 1;
 }
-
 
 
 void handle_selection(Node n)
@@ -268,9 +298,6 @@ void handle_selection(Node n)
     for(i = 0; i < ListSize(n -> predecessors); i++) {
         parent = (Node) ListIndex(n -> predecessors,i);
         if ((parent -> type) == SELECTION) {
-	    STATE(parent) = ACT_RUN;
-	    mark_iter_nodes(parent);
-            STATE(parent -> matching) = ACT_RUN;	 
             for(j=0; j < ListSize(parent -> successors); j++) {
                 child = (Node) ListIndex(parent -> successors,j);
                 if(strcmp((child->name),n->name) != 0) {
@@ -278,14 +305,8 @@ void handle_selection(Node n)
                 }
 	     }
 	}
-        else
-	    if (parent -> type == BRANCH) {
-	        STATE(parent) = ACT_RUN;
-	        mark_iter_nodes(parent);
-	        STATE(parent->matching) = ACT_RUN;
-	    }
-            if(ORDER(n) >  ORDER(parent))  
-            handle_selection(parent);
+	if(ORDER(n) >  ORDER(parent))  
+        handle_selection(parent);
     }
     return;
 }
@@ -355,7 +376,9 @@ void initialize_graph(Graph g)
         ITER_END(n) = FALSE;
         ITER_START_NODES(n) = ListCreate();
         ITER_END_NODES(n) = ListCreate();
+	SUPER_NODES(n) = ListCreate();
     }
+    add_super_node_lists(g);
     mark_for_iteration(g);
     sanitize(g);
     add_iteration_lists(g);

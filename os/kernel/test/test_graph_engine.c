@@ -45,7 +45,9 @@ START_TEST(test_mark_successors)
         j -> matching = s;
 	s -> successors = (List) make_list(a,b,NULL,NULL,NULL);
 
-
+	SUPER_NODES(a) = (List) make_list(s,NULL,NULL,NULL,NULL);
+	SUPER_NODES(b) = (List) make_list(s,NULL,NULL,NULL,NULL);
+	
         mark_successors(s,ACT_READY);
 
 	/* Post */
@@ -161,7 +163,10 @@ START_TEST(test_action_run_selection)
    join -> predecessors = (List) make_list(act_0,act_1,NULL,NULL,NULL);
    join -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
    sink -> predecessors = (List) make_list(join,NULL,NULL,NULL,NULL);
-		   
+
+   SUPER_NODES(act_0) = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   
+   SUPER_NODES(act_1) = (List) make_list(sel,NULL,NULL,NULL,NULL);
    
    g -> source = source;
    g -> sink = sink;
@@ -219,6 +224,10 @@ START_TEST(test_action_run_selection_recursive)
   join1 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
   join1 -> predecessors = (List) make_list(join,act_2,NULL,NULL,NULL);
   sink -> predecessors = (List) make_list(join1,NULL,NULL,NULL,NULL);
+
+  SUPER_NODES(act_0) = (List) make_list(sel,sel1,NULL,NULL,NULL);
+  SUPER_NODES(act_1) = (List) make_list(sel,sel1,NULL,NULL,NULL); 
+  SUPER_NODES(act_2) = (List) make_list(sel1,NULL,NULL,NULL,NULL);
          
   g -> source = source;
   g -> sink = sink;

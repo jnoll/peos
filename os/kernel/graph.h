@@ -4,5 +4,6 @@
 
 extern Graph makegraph(char *file);
 extern Node find_node(Graph g, char *node_name);
+extern void sanitize_node(Node n);
 
 #endif

@@ -65,6 +65,7 @@ Node make_node(char *name, vm_act_state state, int type,int order)
      MARKED_4(n) = 0;
      ITER_START_NODES(n) = ListCreate();
      ITER_END_NODES(n) = ListCreate();
+     SUPER_NODES(n) = ListCreate();
      ORDER(n) = order;
      return n;
 }
