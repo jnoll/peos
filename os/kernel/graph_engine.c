@@ -25,20 +25,14 @@ int  annotate_graph(Graph g, peos_context_t *context)
     int i;
     Node node;
                                                                       
-    for(node = g -> source; node != NULL; node = node -> next)
-    {
-        if (node -> type == ACTION)
-        {
+    for(node = g -> source; node != NULL; node = node -> next) {
+        if (node -> type == ACTION) {
             STATE(node) = get_act_state(node -> name,context -> actions, context->num_actions);
 	}
-	else
-	{
-	    if((node->type == SELECTION) || (node->type == BRANCH))
-	    {
-	        for(i=0;i < context->num_other_nodes; i++)
-	        {
-	            if (strcmp(node->name,context->other_nodes[i].name)==0)
-	            {
+	else {
+	    if((node->type == SELECTION) || (node->type == BRANCH)) {
+	        for(i=0;i < context->num_other_nodes; i++) {
+	            if (strcmp(node->name,context->other_nodes[i].name)==0) {
 	                STATE(node) = context->other_nodes[i].state;
 	                STATE(node->matching) = context->other_nodes[i].state;
 	            }
@@ -54,8 +48,7 @@ int  annotate_graph(Graph g, peos_context_t *context)
 void sanitize(Graph g)
 {
     Node n;
-    for(n = g -> source; n != NULL; n = n -> next)
-    {
+    for(n = g -> source; n != NULL; n = n -> next) {
         MARKED_0(n) = FALSE;
 	MARKED_1(n) = FALSE;
 	MARKED_2(n) = FALSE;
@@ -72,23 +65,18 @@ Graph makegraph(char *file)
     yyin = NULL;
     yyin = fopen(filename, "r");
 	
-    if(yyin == NULL)
-    {
+    if(yyin == NULL) {
         return NULL;
     }
 	
-    if(yyparse())
-    {
+    if(yyparse()) {
         return NULL;
     }
         
-    else
-    {	
-        if(yyin)
-        {
+    else {	
+        if(yyin) {
             fclose (yyin);
-	    if(program != NULL)
-	    {
+	    if(program != NULL) {
 	        initialize_graph(program);
 	        return program;
 	    }
@@ -106,23 +94,18 @@ void mark_for_iteration(Graph g)
     int i,k;
 
     MARKED_0(g -> source) = TRUE;
-    for(node = g -> source->next; node != NULL; node = node -> next)
-    {
-        for(i = 0; i < ListSize(node -> predecessors); i++)
-        {
+    for(node = g -> source->next; node != NULL; node = node -> next) {
+        for(i = 0; i < ListSize(node -> predecessors); i++) {
             parent = (Node) ListIndex(node -> predecessors,i);
-            if (MARKED_0(parent) == FALSE)
-	    {
+            if (MARKED_0(parent) == FALSE) {
 	        ITER_START(node) = TRUE;
 	    }
 	}
 
 	MARKED_0(node) = TRUE;
-        for(k = 0; k < ListSize(node -> successors); k++)
-        {
+        for(k = 0; k < ListSize(node -> successors); k++) {
             child = (Node) ListIndex(node -> successors,k);
-            if(MARKED_0(child) == TRUE)
-            {
+            if(MARKED_0(child) == TRUE) {
 	        ITER_END(node) = TRUE;
 	    }
 	}
@@ -138,15 +121,11 @@ void add_iteration_lists(Graph g)
 
     MARKED_1(g -> source) = TRUE;
 
-    for(node = g -> source->next; node != NULL; node = node -> next)
-    {
-        for(i = 0; i < ListSize(node -> predecessors); i++)
-	{
+    for(node = g -> source->next; node != NULL; node = node -> next) {
+        for(i = 0; i < ListSize(node -> predecessors); i++) {
 	    parent = (Node) ListIndex(node -> predecessors,i);
-	    if (MARKED_1(parent) == FALSE)
-	    {
-	        for(j=0; j < ListSize(parent -> successors); j++) 
-	        {
+	    if (MARKED_1(parent) == FALSE) {
+	        for(j=0; j < ListSize(parent -> successors); j++) {
 		    child = (Node) ListIndex(parent->successors,j);
 		    if((strcmp(child->name,node->name) != 0) && (ORDER(child) > ORDER(parent)))
 		    {
@@ -156,16 +135,12 @@ void add_iteration_lists(Graph g)
 	     }
 	}
 	MARKED_1(node) = TRUE;
-        for(k = 0; k < ListSize(node -> successors); k++)
-        {
+        for(k = 0; k < ListSize(node -> successors); k++) {
             child1 = (Node) ListIndex(node -> successors,k);
-	    if(MARKED_1(child1) == TRUE)
-	    {
-	        for(l = 0; l < ListSize(node -> successors); l++)
-	        {
+	    if(MARKED_1(child1) == TRUE) {
+	        for(l = 0; l < ListSize(node -> successors); l++) {
 	            child2 = (Node) ListIndex(node -> successors,l);
-		    if (MARKED_1(child2) == FALSE)
-		    {
+		    if (MARKED_1(child2) == FALSE) {
 		        ListPut(ITER_START_NODES(child2),child1);
 		    }
 	        }
@@ -178,12 +153,9 @@ void add_iteration_lists(Graph g)
 Node find_node(Graph g, char *node_name)
 {
     Node n;
-    for(n = g -> source; n!= NULL; n = n -> next)
-    {
-        if((n -> name) && (n -> type == ACTION))
-        {
-            if (strcmp((n -> name),node_name) == 0)
-	    {
+    for(n = g -> source; n!= NULL; n = n -> next) {
+        if((n -> name) && (n -> type == ACTION)) {
+            if (strcmp((n -> name),node_name) == 0) {
 	        return n;
 	    }
 	}
@@ -196,14 +168,12 @@ void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int 
     int i = 0;
     peos_resource_t *resource_list = *rlist;
 
-    while((i < *num_resources) && (strcmp(resource_list[i].name, id)) != 0) 
-    {
+    while((i < *num_resources) && (strcmp(resource_list[i].name, id)) != 0) {
         i++;
     }
     if (i == *num_resources) 
     {
-        if(*num_resources == *rsize) 
-	{
+        if(*num_resources == *rsize) {
 	    *rsize = *rsize + INST_ARRAY_INCR;
 	    resource_list = realloc(resource_list,(*rsize) * sizeof(peos_resource_t));
 	}
@@ -217,12 +187,9 @@ void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int 
 void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *rsize)
 {
     peos_resource_t *resource_list = *rlist;
-    if(t) 
-    {
-	if (IS_OP_TREE(t)) 
-	{
-	    switch TREE_OP(t) 
-	    {
+    if(t) {
+	if (IS_OP_TREE(t)) {
+	    switch TREE_OP(t) {
 	    case DOT: 
 	    case EQ: 
 	    case NE:
@@ -249,7 +216,7 @@ void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int
     return;
 }
 
-peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *total_resources)
+peos_resource_t *peos_get_resource_list_action_requires(int pid, char *act_name, int *total_resources)
 {
     Graph g;
     Node n;
@@ -265,22 +232,17 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
 
     model_file = context->model;
     g = makegraph(model_file);
-    if(g != NULL)
-    {
+    if(g != NULL) {
         n = find_node(g,act_name);
-        if(n == NULL)
- 	{
+        if(n == NULL) {
             fprintf(stderr,"get_resource_list_action :cannot find action");
 	    return NULL;
 	}
 	make_resource_list(n -> requires, &act_resources, &num_resources, &rsize);
 	*total_resources = num_resources;
-        for(i = 0; i < num_resources; i++)
-	{
-            for(j = 0; j < num_proc_resources; j++)
-	    {
-	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0)
-		{
+        for(i = 0; i < num_resources; i++) {
+            for(j = 0; j < num_proc_resources; j++) {
+	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
 	            strcpy(act_resources[i].value,proc_resources[j].value);
 		    break;
 		}
@@ -293,7 +255,7 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
         return NULL;
 }
 
-peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
+peos_resource_t *peos_get_resource_list_action_provides(int pid, char *act_name, int
 		*total_resources)
 {
     Graph g;
@@ -310,22 +272,17 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
                                                                                     
     model_file = context->model;
     g = makegraph(model_file);
-    if(g != NULL)
-    {
+    if(g != NULL) {
         n = find_node(g,act_name);
-        if(n == NULL)
-        {
+        if(n == NULL) {
             fprintf(stderr,"get_resource_list_action :cannot find action");
             return NULL;
         }
 	make_resource_list(n -> provides, &act_resources, &num_resources, &rsize);
         *total_resources = num_resources;
-        for(i = 0; i < num_resources; i++)
-        {
-            for(j = 0; j < num_proc_resources; j++)
-            {
-                if(strcmp(act_resources[i].name,proc_resources[j].name) == 0)
-                {
+        for(i = 0; i < num_resources; i++) {
+            for(j = 0; j < num_proc_resources; j++) {
+                if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
                     strcpy(act_resources[i].value,proc_resources[j].value);
                     break;
                 }
@@ -339,7 +296,7 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
 }
 
 
-peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_resources)
+peos_resource_t *peos_get_resource_list_action(int pid, char *act_name, int *total_resources)
 {
     Graph g;
     Node n;
@@ -354,23 +311,18 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 
     model_file = context->model;
     g = makegraph(model_file);
-    if(g != NULL)
-    {
+    if(g != NULL) {
         n = find_node(g,act_name);
-	if(n == NULL)
-	{
+	if(n == NULL) {
 	    fprintf(stderr,"get_resource_list_action :cannot find action");
 	    return NULL;
 	}
 	make_resource_list(n -> requires, &act_resources,&num_resources, &rsize);
 	make_resource_list(n -> provides, &act_resources,&num_resources, &rsize);
 	*total_resources = num_resources;
-	for(i = 0; i < num_resources; i++)
-	{
-	    for(j = 0; j < num_proc_resources; j++)
-	    {
- 	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0)
-		{
+	for(i = 0; i < num_resources; i++) {
+	    for(j = 0; j < num_proc_resources; j++) {
+ 	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
 		    strcpy(act_resources[i].value,proc_resources[j].value);
 		    break;
 		}
@@ -385,7 +337,7 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 
 	
 // this function is used to get the list of resources for the whole process
-peos_resource_t *get_resource_list(char *model, int *total_resources)
+peos_resource_t *peos_get_resource_list(char *model, int *total_resources)
 {
     int rsize = 256;
     Graph g;
@@ -394,12 +346,9 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
     peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
     g = makegraph(model);
-    if(g != NULL)
-    {	
-        for(n = g->source->next; n != NULL; n = n -> next)
-	{
-	    if(n -> type == ACTION)
-	    {
+    if(g != NULL) {	
+        for(n = g->source->next; n != NULL; n = n -> next) {
+	    if(n -> type == ACTION) {
                 make_resource_list(n->requires, &resource_list, &num_resources, &rsize);
 		make_resource_list(n->provides, &resource_list, &num_resources, &rsize);
 	    }
@@ -418,13 +367,10 @@ void set_iter_none(Node n, Node original)
     Node iter_start_node,iter_end_node;
     int i;
 
-    for(i = 0; i < ListSize(ITER_START_NODES(n)); i++)
-    {
+    for(i = 0; i < ListSize(ITER_START_NODES(n)); i++) {
         iter_start_node = (Node) ListIndex(ITER_START_NODES(n),i);
-        if((iter_start_node->type == SELECTION) || (iter_start_node->type == BRANCH) ||(iter_start_node->type == ACTION))
-        {
-	    if((strcmp(iter_start_node -> name, original -> name) != 0) && (MARKED_2(iter_start_node) == FALSE))
-	    {
+        if((iter_start_node->type == SELECTION) || (iter_start_node->type == BRANCH) ||(iter_start_node->type == ACTION)) {
+	    if((strcmp(iter_start_node -> name, original -> name) != 0) && (MARKED_2(iter_start_node) == FALSE)) {
 	        MARKED_2(iter_start_node) = TRUE;
                 mark_successors(iter_start_node,ACT_NONE);
                 set_iter_none(iter_start_node,original);
@@ -433,13 +379,10 @@ void set_iter_none(Node n, Node original)
     }
 
 
-    for(i = 0; i < ListSize(ITER_END_NODES(n)); i++)
-    {
+    for(i = 0; i < ListSize(ITER_END_NODES(n)); i++) {
         iter_end_node = (Node) ListIndex(ITER_END_NODES(n),i);
-	if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION))
-	{
-	    if((strcmp(iter_end_node -> name, original -> name) != 0) && (MARKED_2(iter_end_node) == FALSE))
-	    {	     
+	if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION)) {
+	    if((strcmp(iter_end_node -> name, original -> name) != 0) && (MARKED_2(iter_end_node) == FALSE)) {	     
 	        MARKED_2(iter_end_node) = TRUE;
 	        mark_successors(iter_end_node,ACT_NONE);
 	        set_iter_none(iter_end_node,original);
@@ -454,21 +397,16 @@ void mark_iter_nodes(Node n)
 {
     Node iter_end_node;
     int i;
-    if(STATE(n) == ACT_READY)
-    {
-        for(i = 0; i <  ListSize(ITER_END_NODES(n)); i++)
-        {
+    if(STATE(n) == ACT_READY) {
+        for(i = 0; i <  ListSize(ITER_END_NODES(n)); i++) {
             iter_end_node = (Node) ListIndex(ITER_END_NODES(n),i);
-	    if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION))
-	    {
+	    if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION)) {
 	        mark_successors(iter_end_node,ACT_READY);
 	    }
 	}
     }
-    else 
-    {
-        if(STATE(n) == ACT_RUN)
-	{
+    else {
+        if(STATE(n) == ACT_RUN)	{
 	    set_iter_none(n,n);
 	}
     }
@@ -480,8 +418,7 @@ void mark_successors(Node n, vm_act_state state)
 {
     int i;
     Node child;
-    if (n -> type == ACTION)
-    {
+    if (n -> type == ACTION) {
         STATE(n) = state;
 	mark_iter_nodes(n);
 	return;
@@ -489,14 +426,12 @@ void mark_successors(Node n, vm_act_state state)
     else
     if((n -> type == BRANCH) || (n -> type == SELECTION) || (n -> type == JOIN))
     {
-        if((n->type == BRANCH) || (n->type == SELECTION))
-	{
+        if((n->type == BRANCH) || (n->type == SELECTION)) {
 	    STATE(n) = state;
 	    mark_iter_nodes(n);
 	    STATE(n->matching) = state;
 	}
-	for(i = 0; i < ListSize(n -> successors); i++)
-	{
+	for(i = 0; i < ListSize(n -> successors); i++) {
 	    child = (Node) ListIndex(n -> successors, i);
 	    mark_successors(child,state);
 	}
@@ -509,12 +444,10 @@ void propogate_join_done(Node n)
 {
     int i;
     Node child;
-    if (n -> type == JOIN)
-    {
+    if (n -> type == JOIN) {
         STATE(n) = ACT_DONE;
 	STATE(n -> matching) = ACT_DONE;
-	for(i = 0; i < ListSize(n->successors); i++)
-	{
+	for(i = 0; i < ListSize(n->successors); i++) {
 	    child = (Node) ListIndex(n->successors,i);
 	    propogate_join_done(child);
 	}
@@ -529,22 +462,17 @@ void set_rendezvous_state(Node n)
     int i;
     Node child,parent;
     int status = 1;
-    if (n -> type == RENDEZVOUS)
-    {
-        for(i = 0; i < ListSize(n -> predecessors); i++)
-	{
+    if (n -> type == RENDEZVOUS) {
+        for(i = 0; i < ListSize(n -> predecessors); i++) {
 	    parent = (Node) ListIndex(n -> predecessors,i);
-	    if (STATE(parent) != ACT_DONE)
-	    {
+	    if (STATE(parent) != ACT_DONE) {
 	        status = 0;
 	    }
 	 }
-	 if (status == 1)
-	 {
+	 if (status == 1) {
 	     STATE(n) = ACT_DONE;
 	     STATE(n -> matching) = ACT_DONE;
-	     for(i = 0; i< ListSize(n -> successors); i++)
-	     {
+	     for(i = 0; i< ListSize(n -> successors); i++) {
 	         child = (Node) ListIndex(n -> successors,i);
 		 mark_successors(child,ACT_READY);
 		 set_rendezvous_state(child);
@@ -561,15 +489,13 @@ void set_process_state(Graph g)
     int i;
     int status = 1;
 
-    for(i = 0; i < ListSize(g -> sink -> predecessors); i++)
-    {
+    for(i = 0; i < ListSize(g -> sink -> predecessors); i++) {
         parent = (Node) ListIndex(g -> sink -> predecessors,i);
 	if (STATE(parent) != ACT_DONE)
 	    status = 0;
     }
     
-    if (status == 1)
-    {
+    if (status == 1) {
         STATE(g -> source) = ACT_DONE;
 	STATE(g -> sink) = ACT_DONE;
     }
@@ -581,15 +507,13 @@ int action_run(Graph g, char *act_name)
     Node n;
 
     n = find_node(g, act_name);
-    if(n != NULL)
-    {
+    if(n != NULL) {
         STATE(n) = ACT_RUN;
 	mark_iter_nodes(n);
 	handle_selection(n);
         sanitize(g);
     }
-    else 
-    {
+    else {
         fprintf(stderr, "Error in run_action");
 	return -1;
     }
@@ -609,26 +533,21 @@ void handle_selection(Node n)
 		                                                                         
     MARKED_3(n) = TRUE;
  
-    for(i = 0; i < ListSize(n -> predecessors); i++)
-    {
+    for(i = 0; i < ListSize(n -> predecessors); i++) {
         parent = (Node) ListIndex(n -> predecessors,i);
-        if ((parent -> type) == SELECTION)
-        {
+        if ((parent -> type) == SELECTION) {
 	    STATE(parent) = ACT_RUN;
 	    mark_iter_nodes(parent);
             STATE(parent -> matching) = ACT_RUN;	 
-            for(j=0; j < ListSize(parent -> successors); j++) 
-	    {
+            for(j=0; j < ListSize(parent -> successors); j++) {
                 child = (Node) ListIndex(parent -> successors,j);
-                if(strcmp((child->name),n->name) != 0)
-                {
+                if(strcmp((child->name),n->name) != 0) {
                     mark_successors(child,ACT_NONE);
                 }
 	     }
 	}
         else
-	    if (parent -> type == BRANCH)
-	    {
+	    if (parent -> type == BRANCH) {
 	        STATE(parent) = ACT_RUN;
 	        mark_iter_nodes(parent);
 	        STATE(parent->matching) = ACT_RUN;
@@ -646,23 +565,18 @@ int action_done(Graph g, char *act_name)
     int i,num_successors;
 
     n = find_node(g,act_name);
-    if(n != NULL)
-    {
+    if(n != NULL) {
         STATE(n) = ACT_DONE;
 	num_successors = ListSize(n -> successors);
-	for(i = 0; i < num_successors; i++)
-	{
+	for(i = 0; i < num_successors; i++) {
 	    child = (Node) ListIndex(n -> successors, i);
-	    if((child -> type == JOIN) && (num_successors == 1))
-	    {
+	    if((child -> type == JOIN) && (num_successors == 1)) {
 	        propogate_join_done(child);
 	    }
-	    if(child -> type != RENDEZVOUS)
-	    {
+	    if(child -> type != RENDEZVOUS) {
 	        mark_successors(child, ACT_READY);
 	    }
-	    else
-	    {
+	    else {
 	        if(num_successors == 1)	
 		set_rendezvous_state(child);
 	    }
@@ -670,8 +584,7 @@ int action_done(Graph g, char *act_name)
 	if (num_successors == 1)
 	    set_process_state(g);
     }
-    else
-    {
+    else {
         fprintf(stderr, "Error in action_done");
 	return -1;
     }
@@ -683,8 +596,7 @@ void initialize_graph(Graph g)
     Node n;
     int i = 0;
         
-    for(n = g -> source; n != NULL; n = n -> next)
-    {
+    for(n = g -> source; n != NULL; n = n -> next) {
         n -> data = (void *) malloc (sizeof (struct data));
         MARKED_0(n) = FALSE;
         MARKED_1(n) = FALSE;
@@ -716,23 +628,19 @@ vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state stat
 	                                                                                            
     model_file = context->model;
     g = makegraph(model_file);
-    if(g == NULL)
-    {
+    if(g == NULL) {
         fprintf(stderr,"Handle Action Error: Unable to build graph");
         return VM_INTERNAL_ERROR;
     }
-    if(annotate_graph(g,context) < 0)
-    {
+    if(annotate_graph(g,context) < 0) {
         fprintf(stderr, "Handle Action Error: Unable to annotate graph");
         return VM_INTERNAL_ERROR;
     }
-    if(set_act_state_graph(g,action,state) < 0)
-    {
+    if(set_act_state_graph(g,action,state) < 0) {
         fprintf(stderr, "Handle Action Error: Unable to change action state");
         return VM_INTERNAL_ERROR;
     }
-    if(update_context(g,context) < 0)
-    {
+    if(update_context(g,context) < 0) {
         fprintf(stderr,"Handle Action Error: Unable to update context");
         return VM_INTERNAL_ERROR;
     }
@@ -756,8 +664,7 @@ int set_act_state_graph(Graph g, char *action, vm_act_state state)
 	     		      
 	    case(ACT_READY) : {
 			          Node n = find_node(g,action);
-				  if (n!=NULL)
-				  {
+				  if (n!=NULL) {
 				      STATE(n) = ACT_READY;
 				      return 1;
 				  }
@@ -774,8 +681,7 @@ int set_act_state_graph(Graph g, char *action, vm_act_state state)
 
              case(ACT_NONE) :  {
 			           Node n = find_node(g,action);
-				   if (n != NULL)
-				   {
+				   if (n != NULL) {
 			               STATE(n) = ACT_NONE;	 
 		                       return 1;
 				   }
@@ -785,8 +691,7 @@ int set_act_state_graph(Graph g, char *action, vm_act_state state)
  
             case(ACT_SUSPEND) : {
 	                            Node n = find_node(g,action);
-				    if (n != NULL)
-				    {
+				    if (n != NULL) {
 				        STATE(n) = ACT_SUSPEND;
 				        return 1;
 				    }
@@ -796,8 +701,7 @@ int set_act_state_graph(Graph g, char *action, vm_act_state state)
 			         
              case(ACT_ABORT) : {
 			           Node n = find_node(g,action);
-				   if (n != NULL)
-				   {
+				   if (n != NULL) {
 			               STATE(n) = ACT_ABORT;	 
 	                               return 1;
 				   }
@@ -807,8 +711,7 @@ int set_act_state_graph(Graph g, char *action, vm_act_state state)
                
               case(ACT_NEW) :   {
 				    Node n = find_node(g,action);
-				    if (n != NULL)
-				    {
+				    if (n != NULL) {
 				        STATE(n) = ACT_NEW;
 				        return 1;
 				    }
@@ -835,33 +738,23 @@ int update_context(Graph g, peos_context_t *context)
     char times[20];
 		    
                                       
-    for(n = g -> source -> next; n!= NULL; n = n -> next)
-    {
-        if(n -> type == ACTION)
-        {
-            if (set_act_state(n -> name, STATE(n), context -> actions, context -> num_actions) < 0)
-            {
+    for(n = g -> source -> next; n!= NULL; n = n -> next) {
+        if(n -> type == ACTION) {
+            if (set_act_state(n -> name, STATE(n), context -> actions, context -> num_actions) < 0) {
                 return -1;
             }
         }
-        else
-        {
-            if((n->type == SELECTION) || (n->type == BRANCH))
-            {
-                for(i=0;i < context->num_other_nodes; i++)
-                {
-                    if (strcmp(n->name,context->other_nodes[i].name)==0)
-                    {
+        else {
+            if((n->type == SELECTION) || (n->type == BRANCH)) {
+                for(i=0;i < context->num_other_nodes; i++) {
+                    if (strcmp(n->name,context->other_nodes[i].name)==0) {
                         context->other_nodes[i].state = STATE(n);
                     }
                  }
             }
-	    else
-	    {
-	        if(n->type == PROCESS)
-	        {
-		    if (STATE(n) == ACT_DONE)
-		    {
+	    else {
+	        if(n->type == PROCESS) {
+		    if (STATE(n) == ACT_DONE) {
 		        time(&current);
                         current_info = localtime(&current);
 			current = mktime(current_info);

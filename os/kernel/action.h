@@ -3,6 +3,8 @@
 
 #include "vm.h"
 
+
+/* action list */
 typedef struct {
     int pid;			/* Owning process. */
     char name[256];
@@ -10,12 +12,15 @@ typedef struct {
     vm_act_state state;
 } peos_action_t;
 
+/* list of nodes other than action nodes. These nodes have states and hence their state has to be saved in the context */
 
 typedef struct {
 	int pid;
 	char name[256];
 	vm_act_state state;
 } peos_other_node_t;
+
+/* list of resources */
 
 typedef struct {
 	int pid;

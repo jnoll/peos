@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.13 2003/10/30 02:32:17 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.14 2003/11/03 23:49:20 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -41,8 +41,7 @@ int peos_get_pid(peos_context_t *context)
 
 peos_context_t *peos_get_context(int pid)
 {
-    if (pid < 0 || pid > PEOS_MAX_PID) 
-    {
+    if (pid < 0 || pid > PEOS_MAX_PID) {
         return NULL;
     }
 
@@ -56,10 +55,8 @@ int peos_set_resource_value(int pid, char *resource_name, char *resource_value)
     peos_resource_t *resources = context -> resources;
     int num_resources = context -> num_resources;
 
-    for(i = 0; i < num_resources; i++)
-    {
-        if(strcmp(resources[i].name,resource_name) == 0)
-	{
+    for(i = 0; i < num_resources; i++) {
+        if(strcmp(resources[i].name,resource_name) == 0) {
 	    strcpy(resources[i].value,resource_value);
 	    return 1;
 	}
@@ -83,35 +80,27 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
 
     peos_other_node_t *node_array = (peos_other_node_t *) calloc(osize, sizeof(peos_other_node_t));
     
-    if (file [0]!= '\0')
-    {
+    if (file [0]!= '\0') {
         g = makegraph(file);
-	if (g != NULL)
-	{
-	    for(n = g -> source;n != NULL; n = n -> next)
-	    {
-	        if (n -> type == ACTION)
-		{
+	if (g != NULL) {
+	    for(n = g -> source;n != NULL; n = n -> next) {
+	        if (n -> type == ACTION) {
 		    strcpy(act_array[num_act].name, n -> name);
 		    act_array[num_act].state = STATE(n);
 		    act_array[num_act].script = n -> script;
 		    num_act ++;
-		    if(num_act > asize)
-		    {
+		    if(num_act > asize) {
 		        asize = asize*2;
 			realloc(act_array,asize);
 		    }
 		}
 		 
-		else
-		{
-		    if((n->type == SELECTION) || (n->type == BRANCH))
-		    {
+		else {
+		    if((n->type == SELECTION) || (n->type == BRANCH)) {
                         strcpy(node_array[num_nodes].name, n -> name);
 		        node_array[num_nodes].state = STATE(n);
 			num_nodes ++;
-			if(num_nodes > osize)
-			{
+			if(num_nodes > osize) {
                		    osize = osize*2;
 			    realloc(node_array,osize);
 			}
@@ -138,16 +127,13 @@ int
 load_context(FILE *in, peos_context_t *context)
 {
     int i, start;
-    if (fscanf(in, "pid: %d\n", &context->pid) != 1) 
-    {
+    if (fscanf(in, "pid: %d\n", &context->pid) != 1) {
         return 0;
     }
-    if (fscanf(in, "model: %s\n", context->model) != 1) 
-    {
+    if (fscanf(in, "model: %s\n", context->model) != 1) {
 	return 0;
     }
-    if (strcmp(context->model, "none") == 0) 
-    {
+    if (strcmp(context->model, "none") == 0) {
 	context->model[0] = '\0';
     }
     if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
@@ -157,8 +143,7 @@ load_context(FILE *in, peos_context_t *context)
     if ((start = load_actions(context->model,&(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes))) >= 0) 
     {
     } 
-    else 
-    {
+    else {
         return 0;
     }
 	  
@@ -166,10 +151,8 @@ load_context(FILE *in, peos_context_t *context)
     
     if (fscanf(in, "%d ", &context->num_actions) != 1) return 0;
     
-    for (i = 0; i < context->num_actions; i++) 
-    {
-        if (fscanf(in, "%s %d", context->actions[i].name,(int *)&context->actions[i].state) != 2) 
-	{
+    for (i = 0; i < context->num_actions; i++) {
+        if (fscanf(in, "%s %d", context->actions[i].name,(int *)&context->actions[i].state) != 2) {
 	    free(context->actions);
 	    return 0; 
 	}
@@ -182,10 +165,8 @@ load_context(FILE *in, peos_context_t *context)
                                                                         
     if (fscanf(in, "%d ", &context->num_other_nodes) != 1) return 0;
                                                                          
-    for (i = 0; i < context->num_other_nodes; i++) 
-    {
-        if (fscanf(in, "%s %d", context->other_nodes[i].name,(int *)&context->other_nodes[i].state) != 2) 
-	{
+    for (i = 0; i < context->num_other_nodes; i++) {
+        if (fscanf(in, "%s %d", context->other_nodes[i].name,(int *)&context->other_nodes[i].state) != 2) {
 	    free(context->other_nodes);
             return 0;
 	}
@@ -202,10 +183,8 @@ load_context(FILE *in, peos_context_t *context)
     
     context->resources = (peos_resource_t *) calloc(context->num_resources,sizeof(peos_resource_t));
 	                                                                                
-    for (i = 0; i < context->num_resources; i++) 
-    {
-        if (fscanf(in, "%s %s", context->resources[i].name,context->resources[i].value) != 2) 
-	{
+    for (i = 0; i < context->num_resources; i++) {
+        if (fscanf(in, "%s %s", context->resources[i].name,context->resources[i].value) != 2) {
 	    free(context->resources);
             return 0;
         }
@@ -244,22 +223,19 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     fprintf(out, "status: %d\n", context->status);
     fprintf(out, "actions: "); 
     fprintf(out, "%d ", context->num_actions);
-    for (i = 0; i < context->num_actions; i++) 
-    {
+    for (i = 0; i < context->num_actions; i++) {
         fprintf(out, " %s %d", context->actions[i].name, context->actions[i].state); 
     }
 
     fprintf(out, "\nother_nodes: ");
     fprintf(out, "%d ", context->num_other_nodes);
-    for (i = 0; i < context->num_other_nodes; i++) 
-    {
+    for (i = 0; i < context->num_other_nodes; i++) {
         fprintf(out, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
     }
 
     fprintf(out, "\nresources: ");
     fprintf(out, "%d ", context->num_resources);
-    for (i = 0; i < context->num_resources; i++) 
-    {
+    for (i = 0; i < context->num_resources; i++) {
         fprintf(out, " %s %s", context->resources[i].name, context->resources[i].value);
     }
 	    
@@ -274,10 +250,8 @@ save_proc_table(char *file)
     int i;
     FILE *out = fopen(file, "w");
 
-    if (out) 
-    {
-        for (i = 0; i <= PEOS_MAX_PID; i++) 
-	{
+    if (out) {
+        for (i = 0; i <= PEOS_MAX_PID; i++) {
 	    save_context(i, &(process_table[i]), out);
 	}
 	fclose(out);
@@ -290,8 +264,7 @@ char **peos_list_instances()
 {
     static char *result[PEOS_MAX_PID+1];
     int i;
-    for (i = 0; i <= PEOS_MAX_PID; i++) 
-    {
+    for (i = 0; i <= PEOS_MAX_PID; i++) {
         result[i] = process_table[i].model;
     }
     return result;
@@ -301,11 +274,9 @@ int delete_entry(int pid)
 {
     peos_context_t *context;
 
-    if (pid >= 0 && pid <= PEOS_MAX_PID) 
-    {
+    if (pid >= 0 && pid <= PEOS_MAX_PID) {
         context = &(process_table[pid]);
-	if (context->actions) 
-	{
+	if (context->actions) {
 	    free(context->actions);
 	    context->actions = NULL;
 	}
@@ -314,8 +285,7 @@ int delete_entry(int pid)
 	return 1;
 
     } 
-    else 
-    {
+    else {
         return 0;
     }
 }
@@ -323,11 +293,9 @@ int delete_entry(int pid)
 peos_context_t *find_free_entry()
 {
     int i;
-    for (i = 0; i < PEOS_MAX_PID + 1; i++) 
-    {
+    for (i = 0; i < PEOS_MAX_PID + 1; i++) {
         process_status_t status = process_table[i].status;
-	if (status & (PEOS_NONE|PEOS_DONE|PEOS_ERROR)) 
-	{
+	if (status & (PEOS_NONE|PEOS_DONE|PEOS_ERROR)) {
 	    return &(process_table[i]);	
 	}
     }
@@ -342,14 +310,10 @@ peos_action_t **peos_list_actions(vm_act_state state)
 
     result = (peos_action_t **)calloc(INST_ARRAY_INCR, sizeof(peos_action_t*));
 
-    for (i = 0, num = 0; i <= PEOS_MAX_PID; i++) 
-    {
-        for (p = process_table[i].actions;p - process_table[i].actions < process_table[i].num_actions; p++) 
-	{
-	    if (p->state == state) 
-	    {
-	        if (num == size) 
-		{
+    for (i = 0, num = 0; i <= PEOS_MAX_PID; i++) {
+        for (p = process_table[i].actions;p - process_table[i].actions < process_table[i].num_actions; p++) {
+	    if (p->state == state) {
+	        if (num == size) {
 		    size += INST_ARRAY_INCR;
 		    result = (peos_action_t **)realloc(result, size * sizeof(peos_action_t *));
 		}

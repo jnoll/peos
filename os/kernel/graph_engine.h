@@ -27,13 +27,13 @@ List iter_start_nodes;
 
 
 extern vm_exit_code handle_action_change_graph(int , char *, vm_act_state);		
-extern peos_resource_t *get_resource_list(char *model_file,int *num_resources);
+extern peos_resource_t *peos_get_resource_list(char *model_file,int *num_resources);
 
-extern peos_resource_t *get_resource_list_action(int pid,char *act_name,int *num_resources);
+extern peos_resource_t *peos_get_resource_list_action(int pid,char *act_name,int *num_resources);
 
-extern peos_resource_t *get_resource_list_action_requires(int pid,char *act_name,int *num_resources);
+extern peos_resource_t *peos_get_resource_list_action_requires(int pid,char *act_name,int *num_resources);
 
-extern peos_resource_t *get_resource_list_action_provides(int pid,char *act_name,int *num_resources);
+extern peos_resource_t *peos_get_resource_list_action_provides(int pid,char *act_name,int *num_resources);
 
 extern Graph makegraph(char *);
 

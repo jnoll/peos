@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.12 2003/10/30 02:32:17 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.13 2003/11/03 23:49:20 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -37,8 +37,7 @@ extern int load_actions(char *file,peos_action_t **actions, int *num_actions,peo
 
 char *act_state_name(vm_act_state state) 
 {
-    switch (state) 
-    {
+    switch (state) {
       case ACT_NEW:
             return "NEW";
 	    break;
@@ -70,12 +69,9 @@ char *get_field(int pid, char *act, peos_field_t field)
 {
     peos_context_t *context = peos_get_context(pid);
     peos_action_t *p;
-    for (p = context->actions; p - context->actions < context->num_actions; p++)  
-    {
-        if (strcmp(p->name, act) == 0) 
-        {
-            switch(field) 
-            {
+    for (p = context->actions; p - context->actions < context->num_actions; p++)      {
+        if (strcmp(p->name, act) == 0) {
+            switch(field) {
                 case ACT_SCRIPT:
 	              return p->script;
 	              break;
@@ -98,10 +94,9 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
     peos_resource_t *resources;
     int num_resources;
     int i;
-    resources = (peos_resource_t *) get_resource_list_action(pid,action,&num_resources);
+    resources = (peos_resource_t *) peos_get_resource_list_action(pid,action,&num_resources);
 
-    if(resources == NULL)
-    {
+    if(resources == NULL) {
         fprintf(stderr,"Error in Retrieving Resources\n");
         return VM_INTERNAL_ERROR;
     }
@@ -113,8 +108,7 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
     file = fopen("event.log", "a");
     fprintf(file, "%s jnoll %s %s %d resource(s):", times, this_state, action,pid);
     if(num_resources == 0) fprintf(file," no resources");
-    for(i = 0; i < num_resources; i++)
-    {
+    for(i = 0; i < num_resources; i++) {
         fprintf(file," %s",resources[i].name);
         if(i != num_resources-1) fprintf(file,",");
     }
@@ -131,30 +125,25 @@ char *find_model_file(char *model)
     FILE *f;
 
     model_dir = getenv("COMPILER_DIR");
-    if (model_dir == NULL) 
-    {
+    if (model_dir == NULL) {
         model_dir = ".";
     }
 
     sprintf(model_file, "%s/", model_dir);
     ext = strrchr(model, '.');
-    if (ext != NULL) 
-    {
+    if (ext != NULL) {
         strncat(model_file, model, ext - model);
     } 
-    else 
-    {
+    else {
         strncat(model_file, model, strlen(model));
     }
 
     strcat(model_file, ".pml");
-    if ((f = fopen(model_file, "r"))) 
-    {
+    if ((f = fopen(model_file, "r"))) {
         fclose(f);
         return strdup(model_file);
     } 
-    else 
-    {
+    else {
         return NULL;
     }
 }
@@ -163,24 +152,20 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
 {
     int start = -1;
     peos_context_t *context;
-    if ((context = find_free_entry()) == NULL) 
-    {
+    if ((context = find_free_entry()) == NULL) {
         return -1;
     }
 
     if ((start = load_actions(model_file,&(context->actions), 
-				   &(context->num_actions),&(context->other_nodes),&(context->num_other_nodes))) >= 0) 
-    {
+				   &(context->num_actions),&(context->other_nodes),&(context->num_other_nodes))) >= 0) {
         int i, pid = peos_get_pid(context);
         strcpy(context->model, model_file);
         context->status = PEOS_READY;
-        for (i = 0; i < context->num_actions; i++) 
-        {
+        for (i = 0; i < context->num_actions; i++) {
             context->actions[i].pid = pid;
         }
 
-        for (i = 0; i < context->num_other_nodes; i++) 
-        {
+        for (i = 0; i < context->num_other_nodes; i++) {
             context->other_nodes[i].pid = pid;
         }
 	    // stick the resources into the context

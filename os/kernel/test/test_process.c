@@ -36,7 +36,7 @@ peos_context_t *find_free_entry()
     return &(process_table[0]);
 }
 
-peos_resource_t *get_resource_list_action(int pid,char *action, int *num_resources)
+peos_resource_t *peos_get_resource_list_action(int pid,char *action, int *num_resources)
 {
 peos_resource_t *resources = (peos_resource_t *) calloc(2,sizeof(peos_resource_t));  
 

@@ -14,10 +14,8 @@ int set_act_state(char *act, vm_act_state state, peos_action_t *actions, int num
     peos_action_t *p;
     assert(act != NULL);
 
-    for (p = actions; p - actions < num_actions; p++) 
-    {
-        if (strcmp(p->name, act) == 0) 
-	{
+    for (p = actions; p - actions < num_actions; p++) {
+        if (strcmp(p->name, act) == 0) 	{
 	    p->state = state;
 	    return (p - actions);
 	    break;
@@ -31,10 +29,8 @@ vm_act_state get_act_state(char *act, peos_action_t *actions, int num_actions)
 {
     peos_action_t *p;
     assert(act != NULL);
-    for(p = actions; p - actions < num_actions; p++)
-    {
-        if (strcmp(p -> name, act) == 0)
-	{
+    for(p = actions; p - actions < num_actions; p++) {
+        if (strcmp(p -> name, act) == 0) {
 	    return (p -> state);
 	}
     }
