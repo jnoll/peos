@@ -1,8 +1,8 @@
 # compiler
-CC = ../../bin/compiler
+PML = ../../bin/compiler
 
 #PML flags
-CCFLAGS =
+PMLFLAGS =
 
 OBJS = Analysis.pml \
 	OperationalConcept.pml \
@@ -19,11 +19,11 @@ OBJS = Analysis.pml \
 
 # Compile the program
 
-PML: $(OBJS)
-	$(CC) $(CCFLAGS) $(OBJS)
+all: $(OBJS)
+	$(PML) $(PMLFLAGS) $(OBJS)
 
 .pml:
-	$(CC) $(CCFLAGS) $< $(OBJS)
+	$(PML) $(PMLFLAGS) $< $(OBJS)
 	
 install:
 	cp *.gdbm ~tools/workspace/summer99/Engine/src/model/.
