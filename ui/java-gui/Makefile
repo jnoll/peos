@@ -1,6 +1,6 @@
 #these lines are for modification.
 images= ./images/
-path= ./bin/peos_pav 
+path= ./bin/peos 
 help= ./help/
 pml= ./testfiles/ 
 XERCES_PATH=./include/
