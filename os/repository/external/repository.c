@@ -10,11 +10,10 @@
 
 #include "repository.h"
 
-#include "unixfs_repository.h"
+//#include "unixfs_repository.h"
 
 repository_entry *rep_list, *rep_listnext;
 int nr_repositories;
-
 
 int
 repository_init()
@@ -34,9 +33,9 @@ repository_initexternal(id, open, close, assert, query, read)
 		char *id;
 		repository  *(*open)(int,int);
 		int (*close)(repository *);
-		int (*assert)(repository *, char *, int, char *);
-		int (*query)(repository_queryresult *, repository *, char *, int, char *);
-		int (*read)(repository_object *, char *, char *);
+		int (*assert)(repository *, char *, char *);
+		int (*query)(repository_queryresult **, repository *, char *, int, char *);
+		int (*read)(repository_object *, char *, char **);
 {
 		repository_entry *rep_pnt;
 
@@ -83,13 +82,13 @@ repository_open(path)
 		}
 		rep_id[i]='\0';
 
-		printf("rep_id:[%s]\n",rep_id);
+		debug("rep_id:[%s]\n",rep_id);
 
 		rep_pnt = rep_list;
 
 		/* No external repositories registered. */
 		if (rep_pnt == NULL) {
-				printf("no external repositores available.\n");
+				debug("no external repositores available.\n");
 				close(fd);
 				return (repository *)NULL;
 		}
@@ -97,14 +96,14 @@ repository_open(path)
 		/* Search registered repositores for match. */
 		i = 0;
 		while (rep_pnt != NULL && strcmp(rep_id,rep_pnt->id) != 0) {
-				printf("rep id:%s\n",rep_pnt->id);
+				debug("rep id:%s\n",rep_pnt->id);
 				i++;
 				rep_pnt = rep_pnt->next;
 		}
 
 		/* No matching repositories. */
 		if (rep_pnt == NULL) {
-				printf("no matching repositories.\n");
+				debug("no matching repositories.\n");
 				return (repository *)NULL;
 		} else
 				/* Use registered open function to open repository. */
@@ -126,21 +125,20 @@ repository_close(rep)
 }
 
 int
-repository_assert(rep, attribute, operand, value)
+repository_assert(rep, attribute, value)
 		repository *rep;
 		char *attribute;
-		int operand;
 		char *value;
 {
 		/* Assert not supported by external repository. */
 		if ((rep_list + rep->type)->assert == NULL)
 				return (int)-1;
-		return (int)(rep_list + rep->type)->assert(rep, attribute, operand, value);
+		return (int)(rep_list + rep->type)->assert(rep, attribute, value);
 }
 
 int
 repository_query(query_result, rep, attribute, operand, value)
-		repository_queryresult *query_result;
+		repository_queryresult **query_result;
 		repository *rep;
 		char *attribute;
 		int operand;
@@ -152,19 +150,99 @@ repository_query(query_result, rep, attribute, operand, value)
 }
 
 int
-repository_read(rep_object, rep, attribute, operand, value)
+repository_read(rep_object, rep, attribute, value)
 		repository_object *rep_object;
 		repository *rep;
 		char *attribute;
-		int operand;
-		char *value;
+		char **value;
 {
 		/* Read not supported by external repository. */
 		if ((rep_list + rep->type)->read == NULL)
 				return (int)-1;
-		return (int)(rep_list +rep->type)->read(rep_object, attribute, value);
+		return (int)(rep_list + rep->type)->read(rep_object, attribute, value);
 }
 
 
+int
+repository_addtoqueryresult(query_result, rep_object)
+		repository_queryresult *query_result;
+		repository_object *rep_object;
+{
+		if (query_result == NULL || rep_object == NULL) {
+				debug("did not add, error\n");
+				return (int)-1;
+		}
+		if (query_result->start != NULL) {
+				debug("adding more elements\n");
+				query_result->end->next = (repository_querynode *)malloc(sizeof(repository_querynode));
+				query_result->end = query_result->end->next;
+		} else {
+				debug("first element in result\n");
+				query_result->start = (repository_querynode *)malloc(sizeof(repository_querynode));
+				query_result->end = query_result->start;
+				query_result->pos = query_result->start;
+				query_result->start->entry = rep_object;
+				query_result->start->next = NULL;
+		}
+		query_result->end->entry = rep_object;
+		query_result->end->next = NULL;
+		query_result->entries++;
+		return (int)0;
+}
 
+repository_queryresult *
+repository_openquery()
+{
+		repository_queryresult *result;
+
+		result = (repository_queryresult *) malloc(sizeof(repository_queryresult));
+		if (result == NULL)
+				return NULL;
+		result->entries = 0;
+		result->start = NULL;
+		result->end = NULL;
+		result->pos = NULL;
+		return (repository_queryresult *)result;
+}
+
+int
+repository_closequery(query_result)
+		repository_queryresult *query_result;
+{
+		repository_querynode *rep_node,*tmp;
+
+		if (query_result == NULL)
+				return (int)-1;
+
+		rep_node = query_result->start;
+		while (rep_node != NULL) {
+				tmp = rep_node->next;
+				free(rep_node->entry);
+				free(rep_node);
+				rep_node = tmp;
+		}
+		free(query_result);
+		return (int)0;
+}
+
+repository_object *repository_querynext(query_result)
+		repository_queryresult *query_result;
+{
+		repository_querynode *res;
+
+		if (query_result == NULL || query_result->pos == NULL)
+				return NULL;
+		res = query_result->pos;
+		query_result->pos = query_result->pos->next;
+		return (repository_object *)res->entry;
+}
+
+int repository_queryrewind(query_result)
+		repository_queryresult *query_result;
+{
+		if (query_result == NULL)
+				return (int)-1;
+		query_result->pos = query_result->start;
+		return (int)0;
+}
 
