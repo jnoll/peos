@@ -75,24 +75,31 @@ public class ActionMap{
                         if ( payload.getAttribute("state") != null )
                         {
                             stateValue=payload.getAttribute("state");
+                            
                             if (stateValue.equals("AVAILABLE"))
                             {
+                                String name=payload.getAttribute("name");
                                 available[availCount]="<tr><td>Available</td>"
-                                    +"<td>" +payload.getAttribute("name")+"</td></tr>";
+                                    +"<td><a href=\"" + "[" +i +"]" + name 
+                                    +"\">" +name +"</a></td></tr>";
                                 availCount++;
                             }
                                 
                             if (stateValue.equals("READY"))
                             {
+                                String name=payload.getAttribute("name");
                                 ready[readyCount]="<tr><td>Ready</td>"
-                                    +"<td>" +payload.getAttribute("name")+"</td></tr>";
+                                    +"<td><a href=\"" + "[" +i +"]" + name 
+                                    +"\">" +name +"</a></td></tr>";
                                 readyCount++;
                             }
                                 
                             if (stateValue.equals("RUN"))
                             {
+                                String name=payload.getAttribute("name");
                                 run[runCount]="<tr><td>Run</td>"
-                                    +"<td>" +payload.getAttribute("name")+"</td></tr>";
+                                    +"<td><a href=\"" + "[" +i +"]" + name 
+                                    +"\">" +name +"</a></td></tr>";
                                 runCount++;
                             }
                             
@@ -171,6 +178,12 @@ public class ActionMap{
             return root;
             
             
+        }
+        public String[] parsePid(String actionBlock)
+        {
+            String[] splitter=actionBlock.split("]");
+            splitter[0]=splitter[0].substring(1);
+            return splitter;
         }
 	public boolean[] listActiveProcesses()
 	{

@@ -19,7 +19,7 @@ public class PeosApp extends JFrame implements ActionListener
 	private String activePs[] = new String[11];
 	private boolean internalFrameOpen = false;
         private displayPO outline;        
-        private ActionViewer testViewer;
+        private ActionList testViewer;
         
         //0 for process oriented view, 1 for action oriented view
         private int currentViewMode=0;
@@ -201,7 +201,7 @@ public class PeosApp extends JFrame implements ActionListener
 
                     getContentPane().remove(tabbedPane);
 
-                    testViewer = new ActionViewer(outline,this);
+                    testViewer = new ActionList(outline,this);
                     getContentPane().add(testViewer);
                     deleteB.setEnabled(false);
                     
@@ -249,7 +249,7 @@ public class PeosApp extends JFrame implements ActionListener
                                 getContentPane().remove(testViewer);
                                 getContentPane().remove(tabbedPane);
                                 
-                                testViewer=new ActionViewer(outline,this);
+                                testViewer=new ActionList(outline,this);
                                 getContentPane().add(testViewer);
                                 testViewer.setVisible(true);
                                 show();
