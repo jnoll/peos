@@ -30,6 +30,9 @@ typedef struct peos_context_tag {
 /* This has to be here because load_proc_table needs to set it. */
 extern peos_context_t *current_process;
 
+int load_proc_table(char *file);
+int save_proc_table(char *file);
+
 int peos_get_pid(peos_context_t *context);
 peos_context_t *peos_get_context(int pid);
 int peos_create_instance(char *model,peos_resource_t *resources,int num_resources);

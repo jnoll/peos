@@ -22,7 +22,7 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 TESTS =  test_action test_events test_process test_process_table test_graph_engine
 
 
-all: test kernel_wrapper
+all: test #kernel_wrapper
 test: unit_tests 
 suite: unit_tests function accept
 

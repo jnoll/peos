@@ -605,10 +605,12 @@ void handle_selection(Node n)
  int i,j;
  Node parent;
  Node child;
+ 
  if ((n -> predecessors == NULL) || (MARKED(n) == TRUE))
         return;
-					                                                                         
+		                                                                         
  MARKED(n) = TRUE;
+ 
  for(i = 0; i < ListSize(n -> predecessors); i++)
    {
       parent = (Node) ListIndex(n -> predecessors,i);
@@ -617,7 +619,8 @@ void handle_selection(Node n)
 	 STATE(parent) = ACT_RUN;
 	 mark_iter_nodes(parent);
          STATE(parent -> matching) = ACT_RUN;	 
-         for(j=0; j < ListSize(parent -> successors); j++)                                {
+         for(j=0; j < ListSize(parent -> successors); j++) 
+	 {
            child = (Node) ListIndex(parent -> successors,j);
            if(strcmp((child->name),n->name) != 0)
             {
@@ -632,8 +635,10 @@ void handle_selection(Node n)
 		  mark_iter_nodes(parent);
 		  STATE(parent->matching) = ACT_RUN;
 	  }
-										     handle_selection(parent);
-										   }
+    if(ORDER(n) < ORDER(parent))  
+      handle_selection(parent);
+  }
+ return;
 }
 					
 int action_done(Graph g, char *act_name)
@@ -678,6 +683,7 @@ int action_done(Graph g, char *act_name)
 void initialize_graph(Graph g)
 {
 	Node n;
+	int i = 0;
         
         for(n = g -> source; n != NULL; n = n -> next)
 	{
@@ -685,6 +691,8 @@ void initialize_graph(Graph g)
 	    n -> data = (void *) malloc (sizeof (struct data));
             MARKED(n) = FALSE;
             STATE(n) = ACT_NONE;
+	    ORDER(n) = i;
+	    i++;
 	    ITER_START(n) = FALSE;
 	    ITER_END(n) = FALSE;
 	    ITER_START_NODES(n) = ListCreate();
