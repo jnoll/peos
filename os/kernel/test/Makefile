@@ -25,22 +25,24 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 
 # These are in order of use.
 TESTS =  test_action test_events test_process test_process_table test_graph_engine
+FUNC_TESTS = $(wildcard *.tc)
 
+all: test 
 
- all: test 
+test: unit_tests func_tests
 
-test:  $(TESTS) test_assertions
+unit_tests:  $(TESTS) test_assertions
 	-for i in $^ ; do $$i -f; done
 	@echo "The following test should report an Error due to assertion failure:"
 	-test_assertions -f
+
+func_tests:  $(FUNC_TESTS)
+	-for i in $^ ; do expect -f test.exp $$i; done
 
 #vm_harness:  $(CORE_OBJS)
 #	$(CC) $(LDFLAGS) -o $@ $^  $(CORE_LIBS) 
 
 models: $(MODELS)
-
-#%.txt: %.pml
-#	-$(PMLC) -f TEXT $< 
 
 test_action: test_action.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out action.o, $(TEST_OBJS)) $(TEST_LIBS) 
