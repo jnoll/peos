@@ -170,17 +170,24 @@ public class PeosApp extends JFrame implements ActionListener
 				}
 			
 				try {
-					DeleteProcess delPid = new DeleteProcess(pidInt);
+					//DeleteProcess delPid = new DeleteProcess(pidInt);
 					
-					delPid.tryToDelete(map);
+					SetupPath.delete(pidInt);
 				} catch (IOException temp) { System.out.println("actionPerformed delete: tryToDelete FAILED"); }
 	
 				menuBar.removeAll();
 				setJMenuBar(createMenuBar());
 
-                    	} else if (n == JOptionPane.NO_OPTION) {
-                    	} else { /* BLAH */
-                    	}	
+                    	}
+                        
+                        else if (n == JOptionPane.NO_OPTION) 
+                        {
+                    	
+                        } 
+                        else 
+                        {
+                            /* BLAH */               
+                        }	
 
 			if (tabbedPane.getTabCount() == 0)
 				deleteB.setEnabled(false);
@@ -214,7 +221,7 @@ public class PeosApp extends JFrame implements ActionListener
 	}
 	
 
-	/*=========================================== TAB RELATED FUNCTIONS ===============================================*/	
+	/*=========== TAB RELATED FUNCTIONS =============*/	
 	public void initTabIndices()
 	{	
 		String[] actList = new String[11];

@@ -81,4 +81,25 @@ public class SetupPath{
 			System.err.println(err);
 		}
 	}
+        
+        public static void delete(int pid) throws IOException {
+            Process peos;
+            Runtime r=Runtime.getRuntime();
+            
+            try{
+                peos = r.exec(SetupPath.getPeos() + " -d " + pid);
+                try{
+                    peos.waitFor();
+                }
+                catch(Exception e) {
+                    System.err.println(e);
+                }
+                
+                //m.DeleteProcess(pid);
+            }
+            catch(Exception ee) {
+                System.err.println(ee);
+            }
+        }
+        
 }
