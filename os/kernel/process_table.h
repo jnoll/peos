@@ -4,6 +4,7 @@
 #include "pmlheaders.h"
 
 #define PEOS_MAX_PID (10)
+#define MAX_LOCK_ATTEMPTS (10)
 
 typedef enum {
     PEOS_NONE = 0x1,		/* Unoccupied */ 
@@ -35,6 +36,9 @@ peos_context_t *peos_get_context(int pid);
 int peos_create_instance(char *model,peos_resource_t *resources,int num_resources);
 char **peos_list_instances();
 peos_action_t *peos_list_actions(int pid, int *num_actions);
+
+int load_process_table();
+int save_process_table();
 
 int delete_entry(int pid);
 #endif 

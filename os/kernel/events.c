@@ -17,8 +17,6 @@
 #include "resources.h"
 #include "graph_engine.h"
 
-/* XXX need to declare this as a real api function.*/
-extern char *act_state_name(vm_act_state state);
 
 /* Forward declarations. */
 extern char *find_model_file(char *model);
@@ -75,52 +73,85 @@ vm_exit_code peos_set_action_state(int pid, char *action, vm_act_state state)
 	    
 vm_exit_code peos_notify(int pid, char *action, peos_event event)
 {
+     vm_exit_code status;
+     
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
     switch (event) {
         case(PEOS_EVENT_REQUIRES): 
-		return handle_resource_event(pid, action, REQUIRES_TRUE);
+		status =  handle_resource_event(pid, action, REQUIRES_TRUE);
 		break;
 	
 	case(PEOS_EVENT_PROVIDES):
-		return handle_resource_event(pid, action, PROVIDES_TRUE);
+		status =  handle_resource_event(pid, action, PROVIDES_TRUE);
 		break;
 	
 	case(PEOS_EVENT_START):
-		return peos_set_action_state(pid, action, ACT_RUN);
+		status = peos_set_action_state(pid, action, ACT_RUN);
 		break;
 		
 	case(PEOS_EVENT_SUSPEND):
-		return peos_set_action_state(pid, action, ACT_SUSPEND);
+		status = peos_set_action_state(pid, action, ACT_SUSPEND);
 		break;
 		
 	case(PEOS_EVENT_ABORT):
-		return peos_set_action_state(pid, action, ACT_ABORT);
+		status = peos_set_action_state(pid, action, ACT_ABORT);
 		break;
 
 	case(PEOS_EVENT_FINISH):
-		return peos_set_action_state(pid, action, ACT_DONE);
+		status = peos_set_action_state(pid, action, ACT_DONE);
 		break;
 
 	default:
-		fprintf(stderr, "Unknown Event\n");
+		fprintf(stderr, "peos_notify: Unknown Event\n");
 		return VM_INTERNAL_ERROR;
     }
+
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return status;
+    
+       
 }
 
 
 peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
 {
+	
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
     return get_resource_list_action(pid,name,num_resources);
 }
 
 
 peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *num__req_resources)
 {
+
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
     return get_resource_list_action_requires(pid,name,num__req_resources);
 }
 
 
 peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *num_pro_resources)
 {
+	
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
     return get_resource_list_action_provides(pid,name,num_pro_resources);
 }
 
@@ -128,11 +159,23 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *
 peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
 {
     char *model_file = find_model_file(model);
+
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    
     return get_resource_list(model_file,num_resources);
 }
 
 char *peos_get_script(int pid, char *act_name)
 {
+
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
     return get_script(pid,act_name);
 }
     
@@ -151,6 +194,10 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
 	return -1;
     }
 
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
     // this is the only change in peos_run
     pid = peos_create_instance(model_file,resources,num_resources);
 
@@ -158,6 +205,11 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
     log_event(msg);
     
     if (pid >= 0) {  
+	    
+        if(save_process_table() < 0) {
+            fprintf(stderr,"System Error: Cannot Save Process Table\n");
+	    exit(EXIT_FAILURE);
+        }
         return pid;
     } 
     else {

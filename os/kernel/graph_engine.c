@@ -626,8 +626,7 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
         sprintf(msg,"jnoll DONE %s %d", context->model, pid);
         log_event(msg);
         delete_entry(context->pid);
-        context->status = PEOS_DONE;
-	return exit_status;
+  	return exit_status;
     }
     
     if(exit_status == VM_INTERNAL_ERROR) {  

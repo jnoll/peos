@@ -17,14 +17,12 @@ extern char **peos_list_models(void);
 extern int peos_run(char *process,peos_resource_t *resources,int num_resources);
 
 /* 
- * This function is used to set the state of the action in a process. The 
- * parameters are the process id, name of the action and the state 
+ * This function is used to notify the kernel of various events for a given 
+ * action. The parameters are the process id, name of the action and the event. 
  */
 
 extern vm_exit_code peos_notify(int pid, char *action, peos_event event);
 
-
-extern vm_exit_code peos_set_action_state(int pid,char *act_name,vm_act_state state);
 
 /* 
  * This function is used to retrieve the list of resources associated with an 
@@ -66,5 +64,7 @@ extern peos_resource_t *peos_get_resource_list(char *model,int *num_resources);
  * Return a pointer to the script field of specified action.
  */
 extern char *peos_get_script(int pid, char *act_name);
+
+extern char *act_state_name(vm_act_state state);
 
 #endif

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.24 2003/11/26 19:50:39 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.25 2003/12/03 05:02:31 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <fcntl.h>
 #include "events.h"
 #include "process_table.h"
 #include "pmlheaders.h"
@@ -294,7 +295,7 @@ void fire_resource_event_provides(int argc, char *argv[])
 
 void quit()
 {
-    save_proc_table("proc_table.dat");
+
     exit(0);
 }
 
@@ -379,7 +380,6 @@ main(int argc, char *argv[])
     char *arg_v[256];
     COMMAND *cmd_func;
 
-    load_proc_table("proc_table.dat");
     while (1) {
 	/* If the buffer has already been allocated, return the memory
 	   to the free pool. */

@@ -23,7 +23,15 @@ peos_context_t *peos_get_context(int pid)
     return &context;
 }
 
+int load_process_table() 
+{
+    return 1;
+}
 
+int save_process_table()
+{
+    return 1;
+}
 
 char *act_state_name(vm_act_state s)
 {

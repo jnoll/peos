@@ -7,8 +7,6 @@
 #define PROCESS_TABLE
 #include "test_util.h"
 
-/* Globals. */
-/* NONE! */
 
 /* Stubs */
 extern Graph stub_makegraph(char *file);
@@ -46,6 +44,95 @@ START_TEST(test_get_pid_last)
     peos_context_t *context = &(process_table[PEOS_MAX_PID]);
     pid = peos_get_pid(context);
     fail_unless(pid == PEOS_MAX_PID, "pid");
+}
+END_TEST
+
+START_TEST(test_get_lock)
+{
+    struct flock lck,lck1;
+
+    int fd,fd1;
+
+    pid_t pid;
+    int status, died;
+
+    
+    lck.l_type = F_WRLCK;
+    lck.l_whence = 0;
+    lck.l_start = 0;
+    lck.l_len = 0; 
+
+    fd = open("some_file", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    fcntl(fd, F_SETLK, &lck);
+
+    
+    switch(pid=fork()) {
+            case -1: fprintf(stderr, "Cannot Complete Tests\n");
+                     exit(-1);
+		     
+            case 0 :
+		     lck1.l_type = F_WRLCK; 
+                     lck1.l_whence = 0;
+	             lck1.l_start = 0;
+		     lck1.l_len = 0; 
+		
+                     fd1 = open("some_file", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+		     fail_unless(get_lock(fd1) == -1, "Access to Locked file");
+		     fail_unless((errno == EAGAIN || errno == EACCES), "Invalid Error code");
+                     exit(3); 
+            default: died= wait(&status); // this is the code the parent runs 
+    }
+	
+    close(fd);
+    close(fd1);   
+    unlink("some_file");
+   
+}
+END_TEST
+   
+				    
+
+START_TEST(test_release_lock)
+{
+    struct flock lck,lck1;
+
+    int fd,fd1;
+
+    pid_t pid;
+    int status, died;
+    
+    lck.l_type = F_WRLCK;
+    lck.l_whence = 0;
+    lck.l_start = 0;
+    lck.l_len = 0; 
+
+    fd = open("some_file", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    fcntl(fd, F_SETLK, &lck);
+    release_lock(fd);
+
+    
+    switch(pid=fork()) {
+            case -1: fprintf(stderr, "Cannot Complete Tests\n");
+                     exit(-1);
+		     
+            case 0 :
+		     lck1.l_type = F_WRLCK; 
+                     lck1.l_whence = 0;
+	             lck1.l_start = 0;
+		     lck1.l_len = 0; 
+		
+                     fd1 = open("some_file", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+		     fail_unless(fcntl(fd1, F_SETLK, &lck1) == 0, "Lock Failed");
+
+		     fail_unless((errno != EAGAIN || errno != EACCES), "Invalid Error code");
+                     exit(3); 
+            default: died= wait(&status); // this is the code the parent runs 
+    }
+	
+    close(fd);
+    close(fd1);   
+    unlink("some_file");
+   
 }
 END_TEST
 
@@ -247,11 +334,11 @@ START_TEST(test_save_proc_table)
     mark_point();
 
     /* Action */
-    save_proc_table("proc_table.dat");
+    save_proc_table("proc_table1.dat");
     mark_point();
 
     /* Post: process table file exists and contains proc table. */
-    f = fopen("proc_table.dat", "r");
+    f = fopen("proc_table1.dat", "r");
     memset(actual, 0, BUFSIZ);
     abytes = fread(actual, sizeof(char), BUFSIZ, f);
     fail_unless(abytes == nbytes, "file size");
@@ -260,7 +347,7 @@ START_TEST(test_save_proc_table)
 
     fail_unless (strcmp(actual, expected) == 0, "proc table contents differ");
  
-       unlink("proc_table.dat");
+      unlink("proc_table1.dat");
       unlink("expected_proc_table.dat");
 }
 END_TEST
@@ -279,7 +366,7 @@ START_TEST(test_load_proc_table)
     /* Pre: saved process table file. */
     peos_context_t *context = &(ctx);
 
-    f = fopen("proc_table.dat", "w");
+    f = fopen("proc_table_test.dat", "w");
     for (j = 0; j <= PEOS_MAX_PID; j++) {
 	sprintf(context->model, model);
 	fprintf(f, "pid: %d\nmodel: %s\n", j, context->model);
@@ -333,7 +420,7 @@ START_TEST(test_load_proc_table)
     make_pml_file(model, "process sample5 {\n  action act_0 {\n    script {\"test script\"}\n  }\n  action act_1 {\n    script {\"test script\"}\n  }\n  action act_2 {\n    script {\"test script\"}\n  }\n}\n");
 
     /* Action */
-    load_proc_table("proc_table.dat");
+    load_proc_table("proc_table_test.dat");
     mark_point();
     unlink(model);
 
@@ -354,18 +441,74 @@ START_TEST(test_load_proc_table)
 	
     }
 
-    unlink("proc_table.dat");
+    unlink("proc_table_test.dat");
 }
 END_TEST
 
 
 START_TEST(test_list_actions_0)
 {
-    int num_actions;
-    peos_action_t *actions;
     
-    process_table[0].process_graph = (Graph) stub_makegraph("some file");
+    int i, j;
+    char  *model = TEST_PROC_NAME;
 
+    peos_context_t ctx;
+    FILE *f;
+    int num_actions,num_other_nodes;
+    peos_action_t *actions;
+    peos_other_node_t *other_nodes;
+
+    /* Pre: saved process table file. */
+    peos_context_t *context = &(ctx);
+
+    f = fopen("proc_table.dat", "w");
+    for (j = 0; j <= PEOS_MAX_PID; j++) {
+	sprintf(context->model, model);
+	fprintf(f, "pid: %d\nmodel: %s\n", j, context->model);
+	context->status = PEOS_RUNNING;
+	fprintf(f, "status: %d\n", context->status);
+	num_actions = 2;
+	fprintf(f, "actions: "); 
+	fprintf(f, "%d ", num_actions);
+	actions = (peos_action_t *)calloc(num_actions, sizeof(peos_action_t));
+	for (i = 0; i < num_actions; i++) {
+	    sprintf(actions[i].name, "act_%d", i);
+	    actions[i].state = ACT_NONE;
+	    actions[i].script = "test script";
+	    fprintf(f, " %s %d", actions[i].name, actions[i].state); 
+	}
+        
+	fprintf(f,"\n");
+
+	num_other_nodes = 1;
+        fprintf(f, "other_nodes: ");
+        fprintf(f, "%d ", num_other_nodes);
+        other_nodes = (peos_other_node_t *)calloc(num_other_nodes, sizeof(peos_other_node_t));
+        for (i = 0; i < num_other_nodes; i++) {
+            sprintf(other_nodes[i].name, "sel");
+            other_nodes[i].state = ACT_NONE;
+            fprintf(f, " %s %d", other_nodes[i].name, other_nodes[i].state);
+        }
+	
+	fprintf(f,"\n");
+
+        context->num_resources = 2;
+        fprintf(f, "resources: ");
+        fprintf(f, "%d ", context->num_resources);
+        context->resources = (peos_resource_t *)calloc(context->num_resources, sizeof(peos_resource_t));
+        for (i = 0; i < context->num_resources; i++) {
+	    strcpy(context->resources[i].name, "some_resource");
+	    strcpy(context->resources[i].value, "some_value"); 
+            fprintf(f, " %s %s", context->resources[i].name, context->resources[i].value);
+	}
+	
+	fprintf(f, "\n\n"); 
+    }
+    fclose(f);
+
+    make_pml_file(model, "process sample5 {\n  action act_0 {\n    script {\"test script\"}\n  }\n  action act_1 {\n    script {\"test script\"}\n  }\n }\n");
+
+    
     actions = peos_list_actions(0,&num_actions);
 
     fail_unless(actions != NULL,"actions null");
@@ -374,10 +517,12 @@ START_TEST(test_list_actions_0)
     fail_unless(actions[0].pid == 0, "act_0 pid wrong");
     fail_unless(actions[0].state == ACT_NONE, "act_0 state wrong");
     fail_unless(strcmp(actions[1].name,"act_1") == 0, "act_1 name wrong"); 
-    fail_unless(actions[0].pid == 0, "act_1 pid wrong");
+    fail_unless(actions[1].pid == 0, "act_1 pid wrong");
     fail_unless(actions[1].state == ACT_NONE, "act_1 state wrong");
+	    
    
     free(actions);
+    unlink("proc_table.dat");
 }
 END_TEST
 
@@ -494,6 +639,12 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_get_pid);
     tcase_add_test(tc, test_get_pid_last);
 
+    tc = tcase_create("lock file");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_get_lock);
+    tcase_add_test(tc,test_release_lock);
+	
+    
     tc = tcase_create("make node lists");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_make_node_lists);

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.25 2003/11/17 20:00:20 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.26 2003/12/03 05:02:31 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -19,6 +19,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 #include "graph.h"
 #include "process_table.h"
 #include "graph_engine.h"
@@ -33,6 +38,60 @@ int cur_pid = -1;		/* Initially, start below proc table. */
  * These functions allow manipulation of processes without access to
  * process table.
  */
+
+
+/* This function tries to get a lock for the file descriptor */ 
+
+int get_lock(int fd)
+{
+
+    struct flock lck;
+    int num_attempts = 0;
+
+    /* initialize the lock struct for a write lock */
+    lck.l_type = F_WRLCK; /* get a write exclusive lock */
+    lck.l_whence = 0;
+    lck.l_start = 0;
+    lck.l_len = 0; /* lock the whole file address space */
+
+    while (fcntl(fd, F_SETLK, &lck) < 0) {
+        if ((errno == EAGAIN) || (errno == EACCES)) {
+	    if(++num_attempts <= MAX_LOCK_ATTEMPTS) {
+		fprintf(stderr, "Attempting Process File Lock ...\n");     
+	        sleep(2);
+		continue;
+	    }
+	    
+	    fprintf(stderr, "File Lock Error: File Busy \n  Error Msg  : %s\n", strerror(errno));
+	    return -1;
+	}
+	fprintf(stderr, "File Lock Error: Unknown Error\n");
+	fprintf(stderr, "System Error Message: %s\n", strerror(errno));
+	return -1;
+    }
+
+    return 1;
+}
+
+
+int release_lock(int fd)
+{
+    
+    struct flock lck;
+
+    /* initialize the lock struct for a write lock */
+    lck.l_type = F_UNLCK; /* get a write exclusive lock */
+    lck.l_whence = 0;
+    lck.l_start = 0L;
+    lck.l_len = 0L; /* lock the whole file address space */
+
+    if(fcntl(fd, F_SETLK, &lck) < 0) 
+        return -1;
+    else
+        return 1;
+}
+    
+
 
 int peos_get_pid(peos_context_t *context)
 {
@@ -252,11 +311,39 @@ load_context(FILE *in, peos_context_t *context)
     return 1;
 }
 
+int load_process_table()
+{
+    return load_proc_table("proc_table.dat");
+}
+
+int save_process_table()
+{
+    return save_proc_table("proc_table.dat");
+}
+
 int load_proc_table(char *file)
 {   
     int i, status = -1;
-    FILE *in = fopen(file, "r");
+    FILE *in;
+
     int num_proc = 0;
+    
+    int fd;
+   
+
+    fd = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    if (fd < 0) {
+        fprintf(stderr, "Cannot Get Process Table File Descriptor\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    if(get_lock(fd) < 0) {
+        fprintf(stderr, "Cannot Obtain Process Table File Lock\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    in = fdopen(fd, "r+");
+   
     for (i = 0; i <= PEOS_MAX_PID; i++) {
 	process_table[i].status = PEOS_NONE;
     }
@@ -264,7 +351,10 @@ int load_proc_table(char *file)
 	status = 0;
 	while (load_context(in, &process_table[num_proc]))
 	    num_proc++;
+	release_lock(fd);
+	close(fd);
 	fclose(in);
+
     }
     return status;
 }
@@ -280,6 +370,7 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     peos_other_node_t *other_nodes;
 
     make_node_lists(context->process_graph,&actions,&num_actions,&other_nodes,&num_other_nodes);
+    
     
     fprintf(out, "pid: %d\n", pid);
     fprintf(out, "model: %s\n", context->model[0] ? context->model : "none");
@@ -310,14 +401,35 @@ int
 save_proc_table(char *file)
 {
     int i;
-    FILE *out = fopen(file, "w");
+    FILE *out; 
 
+    int fd;
+        
+    fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    
+    if (fd < 0) {
+        fprintf(stderr, "Cannot Get File Descriptor\n");
+	exit(EXIT_FAILURE);
+    }
+
+    if(get_lock(fd) < 0) {
+        fprintf(stderr, "Cannot Obtain Process Table File Lock\n");
+	exit(EXIT_FAILURE);
+    }
+    
+   /*   out = fdopen(fd, "w");   XXX Why doesn't this work ? XXX */
+    out = fopen(file, "w");
+   
     if (out) {
         for (i = 0; i <= PEOS_MAX_PID; i++) {
 	    save_context(i, &(process_table[i]), out);
 	}
+	release_lock(fd);
+	close(fd);
 	fclose(out);
     }
+    else
+         fprintf(stderr, "File Pointer Error: %s \n", strerror(errno));
     return 0;
 }
 
@@ -326,6 +438,12 @@ char **peos_list_instances()
 {
     static char *result[PEOS_MAX_PID+1];
     int i;
+
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
     for (i = 0; i <= PEOS_MAX_PID; i++) {
         result[i] = process_table[i].model;
     }
@@ -371,6 +489,11 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
 
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
     *num_actions = 0;
     if (process_table[pid].status & (PEOS_DONE | PEOS_NONE | PEOS_ERROR)) return NULL;
 
