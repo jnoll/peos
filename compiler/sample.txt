@@ -1,0 +1,135 @@
+0 mix_and_prepare type branch children ( mix prepare )
+1 add_ice type action mode manual requires { "ice" "shaker" } provides { "shaker" } agent { "bartender" } script { "add enough ice to shaker so that the gin will just barely cover it." } 
+2 add_vermouth type action mode manual requires { "vermouth" "shaker" } provides { "shaker" } agent { "bartender" } script { "add generous amount of vermouth, swirl in shaker so ice and sides are coated, then discard." } 
+3 add_gin type action mode manual requires { "gin" "shaker" } provides { "shaker" } agent { "bartender" } script { "add appropriate amount of gin (preferably beefeaters), about two ounces per martini." } 
+4 shake type action mode manual requires { "shaker" } provides { "shaker" } agent { "bartender" } script { "shake gently until ingredients are well chilled.  the shaking should not be so violent that it breaks chips off the ice; a vigourous swirling motion can be substituted." } 
+5 cut_twist type action mode manual 
+6 twist_twis type action mode manual 
+7 wash_olive type action mode manual requires { "olive" } provides { "olive" } agent { "bartender" } script { "if you are not using olives packed in vermouth, wash one or two olives per martini under tap to remove the brine" } 
+8 skewer_olive type action mode manual requires { "olive" "martini-glass" "toothpick" } provides { "martini-glass" } agent { "bartender" } script { "place one or two olives on a toothpick and insert into well chilled martini glass" } 
+9 pour_one type action mode manual requires { "martini-glass" "pitcher" } provides { "martini" } agent { "bartender" } script { "pour an appropriate amount into a prepared martini glass.  appropriate is enough so that all glasses end up with the same amount." } 
+10 start
+11 push 0
+12 call fork 26
+13 jzero 134
+14 pop
+15 incr
+16 call fork 63
+17 jzero 134
+18 pop
+19 incr
+20 call join
+21 jzero 134
+22 pop
+23 decr
+24 jzero 116
+25 goto 20
+26 call set ready add_ice
+27 jzero 134
+28 pop
+29 call wait done add_ice
+30 jzero 134
+31 pop
+32 call assert add_ice
+33 jzero 134
+34 pop
+35 call set ready add_vermouth
+36 jzero 134
+37 pop
+38 call wait done add_vermouth
+39 jzero 134
+40 pop
+41 call assert add_vermouth
+42 jzero 134
+43 pop
+44 call set ready add_gin
+45 jzero 134
+46 pop
+47 call wait done add_gin
+48 jzero 134
+49 pop
+50 call assert add_gin
+51 jzero 134
+52 pop
+53 call set ready shake
+54 jzero 134
+55 pop
+56 call wait done shake
+57 jzero 134
+58 pop
+59 call assert shake
+60 jzero 134
+61 pop
+62 call exit
+63 call set ready cut_twist wash_olive pour_one 
+64 jzero 134
+65 pop
+66 call wait active cut_twist wash_olive pour_one 
+67 jump 134 68 68 114
+68 call set none pour_one
+69 call set ready cut_twist wash_olive 
+70 jzero 134
+71 pop
+72 call wait active cut_twist wash_olive 
+73 jump 134 74 94
+74 call set none wash_olive 
+75 call set ready cut_twist
+76 jzero 134
+77 pop
+78 call wait done cut_twist
+79 jzero 134
+80 pop
+81 call assert cut_twist
+82 jzero 134
+83 pop
+84 call set ready twist_twis
+85 jzero 134
+86 pop
+87 call wait done twist_twis
+88 jzero 134
+89 pop
+90 call assert twist_twis
+91 jzero 134
+92 pop
+93 goto 113
+94 call set none cut_twist 
+95 call set ready wash_olive
+96 jzero 134
+97 pop
+98 call wait done wash_olive
+99 jzero 134
+100 pop
+101 call assert wash_olive
+102 jzero 134
+103 pop
+104 call set ready skewer_olive
+105 jzero 134
+106 pop
+107 call wait done skewer_olive
+108 jzero 134
+109 pop
+110 call assert skewer_olive
+111 jzero 134
+112 pop
+113 goto 63
+114 call set none cut_twist wash_olive 
+115 call exit
+116 call set ready pour_one end
+117 jzero 134
+118 pop
+119 call wait active pour_one end
+120 jump 134 121 132
+121 call set none end
+122 call set ready pour_one
+123 jzero 134
+124 pop
+125 call wait done pour_one
+126 jzero 134
+127 pop
+128 call assert pour_one
+129 jzero 134
+130 pop
+131 goto 116
+132 call set none pour_one 
+133 end
+134 call error
