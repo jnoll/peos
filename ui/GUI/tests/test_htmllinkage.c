@@ -26,8 +26,7 @@ START_TEST(tSet_href)
   int size = 0;
   char *buf = NULL, *temp = NULL;
   int rtn_val;
-  
-#ifdef DEBUG
+
   /* set current process id to 0 */
   set_CUR_PID((int) 0);
   
@@ -43,8 +42,10 @@ START_TEST(tSet_href)
   	fail("The call to set_href should not set buf if glist is NULL. \n");
   }
 
+#ifdef DEBUG
   /* setup global values outside of this address space */
   buf = case1_setup((char *) buf);
+
 
   /* test while glist is not NULL */
   if(strcmp(buf, "") == 0) {

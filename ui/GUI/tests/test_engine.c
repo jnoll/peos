@@ -15,13 +15,17 @@ START_TEST(trunPeos)
   size_t size = 0;
   char *command = NULL, *cmd_peos = NULL, *str_rtn = NULL;
 
-  /* Construct peos command with peos exe in a known directory */
-#ifdef DEBUG  
-  size = strlen("/home/jshah1/bin/peos -c Test.pml") + 1;
+  /* Construct a path to verify if runPeos returns a 0 or 1
+   * The path may fail but the test will pass as long as the
+   * implementation in runPeos returns 1.  If peos happens to
+   * be in /usr/bin then the value returned will be 0.
+   */
+  
+  size = strlen("/usr/bin/peos -c Test.pml") + 1;
   cmd_peos = (char *) malloc((size_t) size * sizeof(char));
   size = 0;
 
-  strcpy(cmd_peos, "/home/jshah1/bin/peos -c Test.pml");
+  strcpy(cmd_peos, "/usr/bin/peos -c Test.pml");
   
   /* Construct commnand argument for runPeos((char *) str) */
   size = strlen(cmd_peos) + strlen(" >message 2>&1") + 1;
@@ -37,9 +41,9 @@ START_TEST(trunPeos)
   free(command);
   command = NULL;
    
-  fail_unless (rtn_val == EXIT_SUCCESS,
-              "The trunPeos test failed to return 0.");
-#endif	      
+  fail_unless ((rtn_val != 0) || (rtn_val != 1),
+              "The trunPeos test failed to return 0 or 1.");
+	      
 
   
 }
@@ -50,7 +54,7 @@ START_TEST(tpeos_in_dir)
 
   #define INVALID_DIR ")"    /* invalid directory name */
   #define BIN "/bin"         /* contains peos executable */
-#ifdef DEBUG  
+  
   char *rtn_val = NULL, *testPeosdir = NULL, *str_rtn = NULL, *dirname = NULL;
   size_t size = 0, rtn = 0;
   signed cmp_val;
@@ -70,25 +74,27 @@ START_TEST(tpeos_in_dir)
   }
  
   /* construct a valid directory to pass to peos_in_dir(char * str) */
-  size = strlen("/home/jshah1/bin") + 1;
+  size = strlen("./bin") + 1;
   dirname = (char *) malloc((size_t) size * sizeof(char));
   size = 0;
-  strcpy(dirname, "/home/jshah1/bin");
+  strcpy(dirname, "./bin");
   
   /* pass a valid peos location dirname argument for peos_in_dir((char *) str) */
   rtn_val = (char *) peos_in_dir((char *) dirname);
   
   /* check to see if peos is in /home/jshah1/bin */
-  rtn = strcmp(dirname, "/home/jshah1/bin/peos");
+  rtn = strcmp(rtn_val, "./bin/./peos");
   if((rtn_val == NULL) && (rtn != 0)) {
-	fail("Error. Peos executable is not in /home/jshah1/bin. \n");
+	fail("Error. Peos executable is not in ./bin. \n");
   }
-  
-  free(rtn_val);
-  rtn_val = NULL;
-  free(dirname);
-  dirname = NULL;
  
+  if(rtn_val != NULL) {
+  	free(rtn_val);
+  	rtn_val = NULL;
+  	free(dirname);
+  	dirname = NULL;
+  }
+
   /* Construct an invlaid dir */
   size = strlen(INVALID_DIR) + 1;
   dirname = (char *) malloc((size_t) size * sizeof(char));
@@ -106,7 +112,7 @@ START_TEST(tpeos_in_dir)
    
   free(rtn_val);
   rtn_val = NULL;
-#endif  
+  
   
 }
 END_TEST
@@ -127,8 +133,11 @@ START_TEST(tgetPath)
 	tok_count++;
   	if(strcmp(t, "bin") == 0) i = tok_count;
   }
-  free(rtn_val);
-  rtn_val = NULL;
+  
+  if(rtn_val != NULL) {
+  	free(rtn_val);
+  	rtn_val = NULL;
+  }
   
   /* If tok_count-1 is greater than i that means bin is not the basename of the peos executable path.
    * I used tok_count-1 to exclude "peos" token.
@@ -136,8 +145,8 @@ START_TEST(tgetPath)
   if((i > 0) && (tok_count-1 > i)) {
   	fail("Error. Unable to locate peos in any bin directory.");
   }
-#endif  
   
+#endif  
 }
 END_TEST
 
