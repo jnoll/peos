@@ -159,7 +159,6 @@ int pe_isdirempty(char* path)
 #ifdef PE_DEBUG_B
 	fprintf(pe_log, "CALL pe_isdirempty(path:%s)\n",path);
 #endif
-
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return 0;
@@ -174,22 +173,19 @@ int pe_isdirempty(char* path)
 #ifdef PE_DEBUG_B
 	fprintf(stderr, "\tIs this what i want? %s\n", args);
 #endif
-
 	peos_tcl_script(interpreter, "tclf_filecount.tcl");
 	Tcl_Eval(interpreter->interp, args);
 	if(result_str) free (result_str);
-	if(args) free (result_str);
+	if(args) free (args);
 #ifdef PE_DEBUG_B
 	fprintf(stderr, "\tResult for pe_isdirempty(%s): %s\n", path, interpreter->interp->result);
 #endif
-
 	sscanf(interpreter->interp->result,"%d", &result);
 	result = result ? 0 : 1;
 
 #ifdef PE_RETURN
 	fprintf(stderr,"RETURN pe_isdirempty %d\n", result);
 #endif
-
 	return result;
 }
 

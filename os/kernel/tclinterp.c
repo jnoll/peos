@@ -103,7 +103,13 @@ int peos_tcl_script(peos_tcl* ptcl, char* file_name)
     int status;
     status = Tcl_EvalFile(ptcl->interp, file_name);
     if (*ptcl->interp->result != 0){
-        fprintf(stderr,"Issue Running Script: %s\n", ptcl->interp->result); 
+        fprintf(stderr,"Issue Running Script: %s\n", ptcl->interp->result);
+	fprintf(stderr,"in Directory: ");
+	system("pwd");
+	//fprintf(stderr,"\nFiles: \n");
+	//system("ls");
+	fprintf(stderr,"\n");
+	
     }
 #ifdef TCLINTERP_DEBUG
     fprintf(stderr,"Script ran, result[%s]: %s\n",*ptcl->interp->result , status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
