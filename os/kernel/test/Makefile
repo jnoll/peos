@@ -48,6 +48,9 @@ test_list_actions_API: test_list_actions_API.o $(CORE_OBJS)
 test_action: test_action.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out action.o, $(TEST_OBJS)) $(TEST_LIBS) 
 
+test_predicate_evaluator: test_predicate_evaluator.o $(TEST_OBJS)
+	$(CC) $(LDFLAGS) -g -o $@ $< process.o graph_engine.o process_table.o $(filter-out predicate_evaluator.o, $(TEST_OBJS)) $(TEST_LIBS)
+
 test_graph: test_graph.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out graph.o, $(TEST_OBJS)) $(TEST_LIBS)
 

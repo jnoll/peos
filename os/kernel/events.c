@@ -225,7 +225,6 @@ peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
 {
     peos_resource_t *resources;	
     char *model_file = find_model_file(model);
-
     /*
      *  No need to load and save process table as context is not 
      * accessed at all 

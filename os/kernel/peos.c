@@ -23,9 +23,7 @@ int create_process(char *model)
     int num_resources;
     peos_resource_t *resources;
 
-
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
-
 
     if (resources == NULL) {
         printf("error getting resources\n");
@@ -44,6 +42,7 @@ int create_process(char *model)
     } 
     else {
 	printf("Created pid = %d\n", pid);
+	
 	return 1;
     }
 }
