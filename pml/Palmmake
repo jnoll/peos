@@ -4,7 +4,7 @@ PalmCUnit= /home/shinobi/PalmCUnit/PalmCUnit
 
 LIB = libpalmpml.a
 
-OBJS	= graph.o list.o parser.o tree.o scannerPalm.o palmfunctions.o
+OBJS	= graph.o list.o parser.o tree.o scanner.o palmfunctions.o
 SRCS	= parser.c scanner.c y.tab.h
 TEST_OBJS = ${OBJS} ${PalmCUnit}/PalmCUnit.o ${PalmCUnit}/TestParser.o \
 		${PalmCUnit}/TestRun.o ${PalmCUnit}/TestDB.o ${PalmCUnit}/AssertImpl.o \
@@ -16,8 +16,8 @@ all:		$(LIB)
 
 $(LIB):		$(SRCS) $(OBJS)		
 		rm -f $(LIB)
-#		ar cru $(LIB) $(OBJS)
-#		ranlib $(LIB) || true
+		m68k-palmos-ar cru $(LIB) $(OBJS)
+		m68k-palmos-ranlib $(LIB) || true
 
 CUnit:		
 		pilrc -ro -allowEditID -q ${PalmCUnit}/PalmCUnit.rcp ${PalmCUnit}/PalmCUnit.ro
