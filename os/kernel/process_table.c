@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.11 2003/09/07 02:01:53 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.12 2003/09/12 21:10:09 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -48,6 +48,26 @@ peos_context_t *peos_get_context(int pid)
 
     return &(process_table[pid]);
 }
+
+int peos_set_resource_value(int pid, char *resource_name, char *resource_value)
+{
+	int i;
+	peos_context_t *context = peos_get_context(pid);
+	peos_resource_t *resources = context -> resources;
+	int num_resources = context -> num_resources;
+
+	for(i = 0; i < num_resources; i++)
+	{
+	  if(strcmp(resources[i].name,resource_name) == 0)
+	  {
+		strcpy(resources[i].value,resource_value);
+		return 1;
+	  }
+	}
+
+	return -1;
+}
+
 
 
 

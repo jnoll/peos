@@ -67,7 +67,52 @@ START_TEST(test_load_actions)
 }
 END_TEST
 
+START_TEST(test_peos_set_resource_value)
+{
+	int i;
+	peos_resource_t *resources = (peos_resource_t *) calloc(3,sizeof(peos_resource_t));
+	peos_context_t *context = &(process_table[0]);
 
+	context -> pid = 0;
+	context -> resources = resources;
+	context -> num_resources = 3;
+
+	for(i = 0; i < 3; i++)
+	{
+	sprintf(resources[i].name, "r%d",i);
+	sprintf(resources[i].value, "val");
+	}
+
+	fail_unless(peos_set_resource_value(0, "r2", "new_val") == 1,"return value");
+
+	fail_unless(strcmp(context->resources[0].value, "val") == 0, "r0 value");
+	fail_unless(strcmp(context->resources[1].value, "val") == 0, "r1 value");
+	fail_unless(strcmp(context->resources[2].value, "new_val") == 0, "r2 value");
+	
+}
+END_TEST;
+
+
+START_TEST(test_peos_set_resource_value_no_resource)
+{
+   int i;
+   peos_resource_t *resources = (peos_resource_t *) calloc(3,sizeof(peos_resource_t));
+   peos_context_t *context = &(process_table[0]);
+  
+   context -> pid = 0;
+   context -> resources = resources;
+   context -> num_resources = 3;
+                                                                        
+   for(i = 0; i < 3; i++)
+     {
+       sprintf(resources[i].name, "r%d",i);
+       sprintf(resources[i].value, "val");
+     }
+
+     fail_unless(peos_set_resource_value(0, "r4", "new_val") == -1," unknown resource bound");
+
+}
+END_TEST
 
 START_TEST(test_save_proc_table)
 {
@@ -482,8 +527,12 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_load_actions);
     tcase_add_test(tc, test_load_proc_table);
-      tcase_add_test(tc, test_save_proc_table);
+    tcase_add_test(tc, test_save_proc_table);
 
+    tc = tcase_create("set resource value");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc,test_peos_set_resource_value);
+    tcase_add_test(tc,test_peos_set_resource_value_no_resource);
 
     tc = tcase_create("list actions");
     suite_add_tcase(s, tc);

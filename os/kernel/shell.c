@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.12 2003/09/09 19:00:22 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.13 2003/09/12 21:10:09 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -57,10 +57,21 @@ print_action(peos_action_t *action, char *state)
     int num_resources;
     int i;
 
+   peos_resource_t  *resources_req,*resources_pro;  
+   int num_req_resources,num_pro_resources;
+
     resources = (peos_resource_t *) get_resource_list_action(action->pid,action->name,&num_resources);
-    
+
+/* get the required resources */    
+    resources_req = (peos_resource_t *) get_resource_list_action_requires(action -> pid,action -> name,&num_req_resources);
+
+
+/* get the provided resources */    
+    resources_pro = (peos_resource_t *) get_resource_list_action_provides(action->pid, action -> name, &num_pro_resources);
+
+   
     printf("  %2d    %-6s (%s) %s  resources:", action->pid, action->name, state, action->script ? action->script : "no script");
-    
+     
     if(num_resources == 0) printf("no resources");
     for(i = 0; i < num_resources; i++)
     {
@@ -68,6 +79,27 @@ print_action(peos_action_t *action, char *state)
     if(i != num_resources-1) printf(",");
     }
     printf("\n");
+
+/* print the required resources */    
+    printf("Required Resources: ");
+    if(num_req_resources == 0) printf("no resources required");
+    for(i = 0; i < num_req_resources; i++)
+      {
+       printf(" %s",resources_req[i].name);
+       if(i != num_req_resources-1) printf(",");
+      }
+      printf("\n");
+
+/* print the provided resources */      
+      printf("Provided Resources: ");
+      if(num_pro_resources == 0) printf("no resources provided");
+      for(i = 0; i < num_pro_resources; i++)
+        {
+         printf(" %s",resources_pro[i].name);
+         if(i != num_pro_resources-1) printf(",");
+        }
+         printf("\n");
+    
 }
 
 

@@ -135,7 +135,7 @@ START_TEST(test_handle_action_change_run)
   current = mktime(current_info);
   strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
   file = fopen("expected_event.log", "a");
-  fprintf(file, "%s jnoll RUN act_0 resource(s): a, b\n", times);
+  fprintf(file, "%s jnoll RUN act_0 1 resource(s): a, b\n", times);
   fclose(file);
 								                                                                                     
   mark_point();

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.10 2003/09/09 18:49:51 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.11 2003/09/12 21:10:09 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -113,7 +113,7 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
     strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
 
     file = fopen("event.log", "a");
-    fprintf(file, "%s jnoll %s %s resource(s):", times, this_state, action);
+    fprintf(file, "%s jnoll %s %s %d resource(s):", times, this_state, action,pid);
     if(num_resources == 0) fprintf(file," no resources");
     for(i = 0; i < num_resources; i++)
        {
