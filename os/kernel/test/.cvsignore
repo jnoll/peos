@@ -1,7 +1,9 @@
-*.o PMLServer *.idx *.dat
-driver test_action test_assertions test_events test_process test_vm vm_harness
+test_process_table test_action test_assertions test_events
+test_process test_vm test_graph_engine 
+driver vm_harness PMLServer
+*.o  *.idx *.dat
 *.txt
 *.pid
 .depend
-test_process_table
 core*
+

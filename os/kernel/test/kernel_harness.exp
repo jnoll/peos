@@ -1,0 +1,181 @@
+#!/usr/bin/env expect
+
+# Expect script to test kernel via shell.
+
+proc parse_args {argv argc} {
+    uplevel 1 {
+	set i 0
+	while {$i < $argc} {
+	    set arg [lindex $argv $i]
+	    switch -re -- $arg {
+		^\[\-\]\[A-Za-z\]+ {
+		    incr i
+		    set [string trimleft $arg "-"] [lindex $argv $i]
+		}
+		default {
+		    set tc_name $arg
+		}
+	    }
+	    incr i
+	}
+    }
+}
+
+# Read test case definition.
+proc read_tc {tc_name} {
+    set input [open $tc_name "r"]
+
+    while {![eof $input]} {
+	set line [gets $input]
+	set field [lindex $line 0]
+	set data [lrange $line 1 end]
+	switch -re $field {
+	    "^\#.*$" {
+		#puts stderr "A comment: $line"
+		continue
+	    }
+	    default {
+		set var [string trimright $field ":"]
+		upvar $var $var
+		set $var $data
+	    }
+	}
+    }
+}
+
+proc trace {level msg} {
+    global verbosity
+    if {$verbosity >= $level} {
+	puts stderr "$msg"
+    }
+}
+
+proc error_msg {op act} {
+    global expect_out
+    puts "FAILURE: while performing '$op' on '$act': $expect_out(buffer)"
+    exit
+}
+
+proc create_expect {model} {
+    send "create $model\n"
+    expect {
+	"Created pid" {
+	    trace 1 "$model created"
+	}
+	"error: couldn't create process" {
+	    error_msg create $model
+	}
+    }
+
+    expect "\n> \n"
+}
+
+proc act_expect {op act {pid 0}} {
+    send "$op $pid $act\n"
+    expect {
+	"Error" {
+	    error_msg $op $act
+	} 
+	"Performing" {
+	    trace 2 "$op $act"
+	} 
+	default {
+	    error_msg $op $act
+	}
+	timeout {
+	    error_msg $op $act
+	}
+    }  
+
+    expect "\n> \n"
+}
+
+proc list_expect {act state} {
+    send "actions\n"
+    expect {
+	-re "$act.*($state)" {
+	    trace 1 "${act} found to be $state" 
+	}
+
+	"\n> \n" {
+	    error_msg actions $act
+	}
+    }
+
+    expect "\n> \n"
+}
+
+
+# defaults
+set verbosity 0
+log_user 0
+set shell "../shell"
+set iterations 1
+
+parse_args $argv $argc
+
+puts -nonewline "$tc_name: "
+flush stdout
+read_tc $tc_name
+
+if {$verbosity > 0} {
+    puts stderr "model: $model"
+    puts stderr "actions: $actions"
+    puts stderr "iterations: $iterations"
+}
+
+# Reset process table.
+set proc_table [open "proc_table.dat" "w"]
+puts $proc_table ""
+close $proc_table
+
+if {$verbosity >= 3} {
+    log_user 1
+}
+spawn ${shell}
+expect "\n> \n"
+
+if {[info exists fill_proc_table]} {
+    set full 0
+    while {!$full} {
+	send "create $model\n"
+	expect {
+	    "Created pid" {}
+	    "error: couldn't create process" {
+		trace 2 "Process table is full, or other error."
+		set full 1
+	    }
+	}
+	expect "\n> \n"
+    }
+} else {
+    create_expect $model
+}
+
+for {set i 0} {$i < $iterations} {incr i} {
+    foreach act $actions {
+	# Look for act to be ready.
+	list_expect $act ready
+
+	# Perform act.
+	act_expect do $act
+
+	# Look for act to be active.
+	list_expect $act active
+
+	# Finish act.
+	act_expect done $act
+    }
+
+    # Create another instance.
+    create_expect $model
+}
+send "quit\n"
+expect "Exiting"
+log_user 1
+puts "done."
+
+
+
+
+
