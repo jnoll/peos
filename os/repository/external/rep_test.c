@@ -13,30 +13,30 @@
 
 int
 main(argc, argv)
-		int argc;
-		char **argv;
+     int argc;
+     char **argv;
 {
-		repository *rep;
-		repository_queryresult *result;
-		repository_object *r_obj;
-		char *tst;
-		int i;
-
-		debug_flag = 0;
-
-		repository_init();
-		rep = repository_open("test.rep");
-		if ((i = repository_query(&result, rep, "name",NE,"test.rep")) != -1) {
-				printf("entries = %d\n",i);
-				while ((r_obj = repository_querynext(result)) != NULL) {
-					repository_read(r_obj,rep,"name",&tst);
-					printf("object name = %s\n",tst);
-				}
-		}
-		repository_closequery(result);
-		repository_close(rep);
-
-		return (int)0;
+  repository *rep;
+  repository_queryresult *result;
+  repository_object *r_obj;
+  char *tst;
+  int i;
+  
+  debug_flag = 0;
+  
+  repository_init();
+  rep = repository_open("test.rep");
+  if ((i = repository_query(&result, rep, "name",NE,"test.rep")) != -1) {
+    printf("entries = %d\n",i);
+    while ((r_obj = repository_querynext(result)) != NULL) {
+      repository_read(r_obj,rep,"name",&tst);
+      printf("object name = %s\n",tst);
+    }
+  }
+  repository_closequery(result);
+  repository_close(rep);
+  
+  return (int)0;
 }
 
 
