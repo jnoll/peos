@@ -21,6 +21,7 @@
 /* Forward declarations. */
 extern char *find_model_file(char *model);
 
+
 void error_msg(char *s) 
 {
     fprintf(stderr, "error: %s\n", s);
@@ -35,29 +36,36 @@ char **peos_list_models()
     char * ext;
     char * COMP_DIR = getenv("COMPILER_DIR");
   
-    if (COMP_DIR == NULL) {
-	COMP_DIR = ".";
+    if (COMP_DIR == NULL) 
+    {
+        COMP_DIR = ".";
     }
     dir = opendir(COMP_DIR);
-    if (dir == NULL) {
-	error_msg("COMPILER_DIR directory does not exist\n");
+    if (dir == NULL) 
+    {
+        error_msg("COMPILER_DIR directory does not exist\n");
 	return NULL;
     }
 
     result = calloc(rsize, sizeof(char *));
     ent = readdir(dir);
-    while (ent) {
+    while (ent) 
+    {
 	ext = strrchr(ent->d_name, '.');
-	if (ext != NULL) {
-	    if (strcmp(ext, ".pml") == 0) {
-		ext[0] = 0;
-		if (r >= rsize) {
+	if (ext != NULL) 
+	{
+	    if (strcmp(ext, ".pml") == 0) 
+	    {
+	        ext[0] = 0;
+		if (r >= rsize) 
+		{
 		    rsize += 256;
 		    result = (char **) realloc(result, rsize * sizeof(char *));
 		}
 		result[r++] = strdup(ent->d_name);
 	    }
 	}
+	 
 	ent = readdir(dir);
     }
     result[r] = NULL;
@@ -112,9 +120,9 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
     time_t current;
 
 
-    if (model_file == NULL) {
-	fprintf(stderr, "peos_run: can't find model file for process %s\n",
-		process);
+    if (model_file == NULL) 
+    {
+        fprintf(stderr, "peos_run: can't find model file for process %s\n",process);
 	return -1;
     }
 
@@ -131,13 +139,13 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
     
     if (pid >= 0) 
     {  
-	    return pid;
-    } else {
-	fprintf(stderr, "peos_run: can't run process %s\n",
-		process);
+        return pid;
+    } 
+    else 
+    {
+	fprintf(stderr, "peos_run: can't run process %s\n",process);
 	return -1;
     }
-
 }
 
 
