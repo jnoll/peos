@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <PalmOS.h>
 #include "PalmVM.h"
 #include "PalmEngine.h"
@@ -88,11 +87,11 @@ VM_state execute()
     } else if (strncmp(op, "push", 4) == 0) {
       int arg;
       /* sscanf(op+4, "%d", &arg); */
-      arg = atoi(op+4);
+      arg = StrAToI(op+4);
       push(arg);
       context.PC++;
     } else if (strncmp(op, "goto", 4) == 0) {
-      context.PC = atoi(op+4) - PC_Offset;
+      context.PC = StrAToI(op+4) - PC_Offset;
     } else if (strncmp(op, "jump", 4) == 0) {
       int i;
       char * token;
@@ -101,7 +100,7 @@ VM_state execute()
       for (i = 0; i <= context.A; i++) {
 	token = strtok(0, " \n\t");
       }
-      context.PC = atoi(token) - PC_Offset;
+      context.PC = StrAToI(token) - PC_Offset;
     } else if (strncmp(op, "start", 5) == 0) { 
       context.PC++;
     } else if (strncmp(op, "jzero", 5) == 0) {
@@ -109,7 +108,7 @@ VM_state execute()
       if (context.A == 0) {
 	char * token;
 	token = strtok(op+5, " \n\t");
-	context.PC = atoi(token) - PC_Offset;
+	context.PC = StrAToI(token) - PC_Offset;
       } else {
 	context.PC++;
       }
@@ -221,7 +220,7 @@ int fillArgs()
   } else if (strncmp(op+5, "fork", 4) == 0) {
     /* set opcode to fork, set line# */
     SysCallArgs.opcode = OP_FORK;
-    SysCallArgs.data.line = atoi(op+10); /* elim. "fork_" */
+    SysCallArgs.data.line = StrAToI(op+10); /* elim. "fork_" */
   } else if (strncmp(op+5, "join", 4) == 0) {
     SysCallArgs.opcode = OP_JOIN; /* defer this till after R2: Noll */
   }
