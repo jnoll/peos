@@ -26,22 +26,6 @@ int main()
     exit(1);
   }
   
-
-  if(sscanf(input,"model_list=%s", model_name) != 1)
-  {
-    printf("<P>Error! Error in passing variable.\n");
-    exit(1);
-  }
-  else if(model_name == NULL)
-  {
-    printf("<P>Error! Error in passing variable.\n");
-    exit(1);
-  }
-  else
-  {
-    create_process(model_name);
-  }
-
   printf("<html>\n");
   printf("<head>\n");
   printf("<body onload=\"window.location.href='main.cgi'\"\n");
