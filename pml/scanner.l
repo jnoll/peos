@@ -12,7 +12,8 @@
 # include <pml/tokens.h>
 # include <pml/scanner.h>
 #ifdef PALM
-#include <PalmOS.h>
+#include <PalmTypes.h>
+#include <SystemPublic.h>
 #include <FileStream.h>
 #endif
 
