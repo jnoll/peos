@@ -53,25 +53,25 @@ int main()
   printf("<tr>\n");
   if(strcmp(state,"active") == 0) {
     printf("<td width=\"100\">\n");
-    printf("<a href=\"http://linux.students.engr.scu.edu/~wchu/cgi-bin/do.cgi?%d+%s=done\"><img src=\"../images/done_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
+    printf("<a href=\"do.cgi?%d+%s=done\"><img src=\"../images/done_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
     printf("</td>\n");
     printf("<td width=\"100\">\n");
-    printf("<a href=\"http://linux.students.engr.scu.edu/~wchu/cgi-bin/do.cgi?%d+%s=suspend\"><img src=\"../images/suspend_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
+    printf("<a href=\"do.cgi?%d+%s=suspend\"><img src=\"../images/suspend_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
   }
   else if(strcmp(state, "suspend") == 0) {
     printf("<td width=\"100\">\n");
-    printf("<a href=\"http://linux.students.engr.scu.edu/~wchu/cgi-bin/do.cgi?%d+%s=resume\"><img src=\"../images/perform_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
+    printf("<a href=\"do.cgi?%d+%s=resume\"><img src=\"../images/perform_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
   }
   else if(strcmp(state, "ready") == 0) {
     printf("<td width=\"100\">\n");
-    printf("<a href=\"http://linux.students.engr.scu.edu/~wchu/cgi-bin/do.cgi?%d+%s=run\"><img src=\"../images/perform_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
+    printf("<a href=\"do.cgi?%d+%s=run\"><img src=\"../images/perform_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
   }
   else {
     printf("Error in action state.\n");
   }
   printf("</td>\n");
   printf("<td>\n"); 
-    printf("<a href=\"http://linux.students.engr.scu.edu/~wchu/cgi-bin/main.cgi\"><img src=\"../images/back_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n");
+    printf("<a href=\"main.cgi\"><img src=\"../images/back_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n");
   printf("</td>\n");
   printf("</tr>\n");
   printf("</table>\n");

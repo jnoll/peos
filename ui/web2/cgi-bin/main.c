@@ -118,7 +118,7 @@ int main()
   printf("<tr>\n");
   printf("<td>\n");
   printf("<br><br><br><br><br>\n");
-  printf("<a href=\"http://linux.students.engr.scu.edu/~wchu/cgi-bin/create.cgi\">\n"); 
+  printf("<a href=\"create.cgi\">\n"); 
   printf("<img src=\"../images/create_button.jpg\" width=\"80\" height=\"25\" border=\"0\">\n");
   printf("</a>\n");
   printf("</td>\n");
@@ -133,7 +133,7 @@ int main()
 
 void print_action(peos_action_t *action, char *state)
 {
-  printf("<a href=\"http://linux.students.engr.scu.edu/~wchu/cgi-bin/action_page.cgi?%d+%s=%s\"> %s<br>\n", action->pid, action->name, state, action->name);
+  printf("<a href=\"action_page.cgi?%d+%s=%s\"> %s<br>\n", action->pid, action->name, state, action->name);
   printf("</a>");
 }
 

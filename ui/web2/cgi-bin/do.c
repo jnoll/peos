@@ -43,7 +43,7 @@ int main()
   
   printf("<html>\n");
   printf("<head>\n");
-  printf("<body onload=\"window.location.href='http://linux.students.engr.scu.edu/~wchu/cgi-bin/main.cgi'\"\n");
+  printf("<body onload=\"window.location.href='main.cgi'\"\n");
   printf("</body>\n");
   printf("</head>\n");
   printf("</html>\n");
