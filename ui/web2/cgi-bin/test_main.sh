@@ -50,7 +50,7 @@ fi
 if !(grep "test_resource" output > /dev/null)
 then
   echo
-  echo Failed script. 
+  echo Failed test_resource. 
   echo
 fi
 
