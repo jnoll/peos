@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.9 2003/09/05 23:12:47 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.10 2003/09/06 04:19:32 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -131,7 +131,7 @@ load_context(FILE *in, peos_context_t *context)
     
 
     
-    /* Load  actions first, to initialize context. */
+    /* Load  actions first, to initialize context.This is also needed to load the script into the context */
    if ((start = load_actions(context->model,&(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes))) >= 0) 
          {
 	} else {
@@ -166,7 +166,25 @@ load_context(FILE *in, peos_context_t *context)
 		         }
        context->other_nodes[i].pid = context->pid;
      }
- 
+
+    fscanf(in, "\n");
+    
+    if (fscanf(in, "resources: ") < 0) return 0;
+                                                                                
+    if (fscanf(in, "%d ", &context->num_resources) != 1) return 0;
+
+    
+    context->resources = (peos_resource_t *) calloc(context->num_resources,sizeof(peos_resource_t));
+	                                                                                
+    for (i = 0; i < context->num_resources; i++) {
+      if (fscanf(in, "%s %s", context->resources[i].name,
+                   context->resources[i].value) != 2) {
+	                free(context->resources);
+                        return 0;
+	                  }
+      context->resources[i].pid = context->pid;
+     }
+                                                                           
 
     if (fscanf(in, "\n\n") < 0) return 0; 
 
@@ -208,8 +226,14 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     for (i = 0; i < context->num_other_nodes; i++) {
         fprintf(out, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
        }
+
+    fprintf(out, "\nresources: ");
+    fprintf(out, "%d ", context->num_resources);
+    for (i = 0; i < context->num_resources; i++) {
+        fprintf(out, " %s %s", context->resources[i].name, context->resources[i].value);
+      }
 	    
-    
+        
     fprintf(out, "\n\n"); 
     return 1;
 }

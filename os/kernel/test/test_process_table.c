@@ -99,7 +99,17 @@ START_TEST(test_save_proc_table)
 	    context->other_nodes[i].state = ACT_NONE;
 	   fprintf(f, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
 	}
-	
+
+        fprintf(f, "\n");
+	context->num_resources = 2;
+        fprintf(f, "resources: ");
+        fprintf(f, "%d ", context->num_resources);
+        context->resources = (peos_resource_t *)calloc(context->num_resources, sizeof(peos_resource_t));
+        for (i = 0; i < context->num_resources; i++) {
+          strcpy(context->resources[i].name, "some_resource");
+            strcpy(context->resources[i].value,"some_value");
+            fprintf(f, " %s %s", context->resources[i].name, context->resources[i].value);
+          }
 	
 	fprintf(f, "\n\n"); 
     }
@@ -127,8 +137,8 @@ START_TEST(test_save_proc_table)
 
     fail_unless (strcmp(actual, expected) == 0, "proc table contents differ");
  
-     //  unlink("proc_table.dat");
-     // unlink("expected_proc_table.dat");
+       unlink("proc_table.dat");
+      unlink("expected_proc_table.dat");
 }
 END_TEST
 
@@ -159,7 +169,8 @@ START_TEST(test_load_proc_table)
 	    fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
 	}
 
-
+        
+	fprintf(f,"\n");
 
 	context->num_other_nodes = 1;
         fprintf(f, "other_nodes: ");
@@ -171,6 +182,18 @@ START_TEST(test_load_proc_table)
             fprintf(f, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
         }
 	
+
+	fprintf(f,"\n");
+	
+        context->num_resources = 2;
+        fprintf(f, "resources: ");
+        fprintf(f, "%d ", context->num_resources);
+        context->resources = (peos_resource_t *)calloc(context->num_resources, sizeof(peos_resource_t));
+        for (i = 0; i < context->num_resources; i++) {
+        strcpy(context->resources[i].name, "some_resource");
+        strcpy(context->resources[i].value,"some_value"); 
+            fprintf(f, " %s %s", context->resources[i].name, context->resources[i].value);
+          }
 	
 	fprintf(f, "\n\n"); 
     }
@@ -212,6 +235,13 @@ START_TEST(test_load_proc_table)
 		fail_unless(context->other_nodes[i].pid == j, "other_nodes pid");
 		fail_unless(context->other_nodes[i].state == ACT_NONE, "other node state");
 	}
+
+	for (i=0; i < context->num_resources;i++) {
+          fail_unless(context->resources[i].pid == j, "resources pid");
+	  fail_unless(strcmp(context->resources[i].name,"some_resource") == 0, "resource name");
+	  fail_unless(strcmp(context->resources[i].value,"some_value") == 0, "resource value");
+        }
+	
     }
 
     unlink("proc_table.dat");

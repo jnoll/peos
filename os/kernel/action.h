@@ -17,8 +17,8 @@ typedef struct {
 
 typedef struct {
 	int pid;
-	char *name;
-	char *value;
+	char name[256];
+	char value[256];
 } peos_resource_t;
 
 

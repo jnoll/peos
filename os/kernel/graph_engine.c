@@ -169,8 +169,8 @@ void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources
 	      }
 	      if(i == *num_resources)
 	      {
-              resource_list[*num_resources].name = TREE_ID(t->left);
-	      resource_list[*num_resources].value = NULL;
+              strcpy(resource_list[*num_resources].name,TREE_ID(t->left));
+	      strcpy(resource_list[*num_resources].value,"\0");
 	      *num_resources = *num_resources + 1;
 	      if(*num_resources > rsize)
 	      {
@@ -192,8 +192,8 @@ void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources
                   }
                  if(i == *num_resources)
                  {
-         	 resource_list[*num_resources].name = TREE_ID(t);
-		 resource_list[*num_resources].value = NULL;
+         	 strcpy(resource_list[*num_resources].name,TREE_ID(t));
+		 strcpy(resource_list[*num_resources].value,"\0");
 	         *num_resources = *num_resources + 1;
 		 if(*num_resources > rsize)
 		 {
@@ -222,6 +222,41 @@ void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources
             return;
 }
 
+
+/* 
+ * This function is used to get the list of resources for a particular action
+ * The return value is a list of peos_resource_t and not a list of strings, because
+ * this lets me reuse the function make_resource_list above. If I had to retun a list of strings
+ * then I would have to write another fuunction which would be same as make_resource_list
+ * but would make a list of strings.
+ *
+ */
+peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_resources)
+{
+	Graph g;
+	Node n;
+	int rsize = 256;
+	int num_resources = 0;
+	peos_context_t *context = peos_get_context(pid);
+        char *model_file;
+	peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+
+        model_file = context->model;
+        g = makegraph(model_file);
+	if(g != NULL)
+	{
+		n = find_node(g,act_name);
+		make_resource_list(n -> requires,act_resources,&num_resources);
+		make_resource_list(n -> provides,act_resources,&num_resources);
+		*total_resources = num_resources;
+	        return act_resources;
+	}
+	else 
+		return NULL;
+}
+
+	
+// this function is used to get the list of resources for the whole process
 peos_resource_t *get_resource_list(char *model, int *total_resources)
 {
 	int rsize = 256;
@@ -231,7 +266,8 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
 	peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
 	g = makegraph(model);
-	
+	if(g != NULL)
+	{	
 	for(n = g->source->next; n != NULL; n = n -> next)
 	{
 		if(n -> type == ACTION)
@@ -242,6 +278,9 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
 	}
 	*total_resources = num_resources;
 	return resource_list;
+	}
+	else
+		return NULL;
 }
 
 
