@@ -12,7 +12,7 @@ process RepositorySynchronize {
 			agent { "PEOS user" }
 			script { "resolves merging conflicts" }
 			tool { "editor" }
-			input { SourceCodeEdit.pml }
+			input { "SourceCodeEdit.pml" }
 			requires { "updated source code from the repository" }
 			provides { "source code with conflicts resolved" }
 		}
