@@ -1,7 +1,7 @@
 HARNESS = ../kernel_harness.exp -- -verbosity 3
 CASES = $(wildcard *.tc)
 LOGS = $(CASES:tc=log)
-NUM_ACTS = 1 3 31 53 73 113 187 213 271 301
+NUM_ACTS = 1 3 31 53 73 113 187 213 271 301 513 769
 
 all:
 	@echo "type 'make gen' to generate test cases"
@@ -12,7 +12,7 @@ test_cases: baseline inventory combinations bounds
 
 # Run the tests.
 run: $(LOGS)
-	grep FAIL *.log
+	set -x; grep FAIL *.log
 
 
 #
@@ -44,17 +44,17 @@ trends: base_trend inv_trend combo_trend
 	echo "Caution: this takes a long time to execute!'
 
 base_trend:
-	i=1; while [ $$i -lt 50 ] ; do \
+	i=1; while [ $$i -lt 769 ] ; do \
 	    ../gen_tc.tcl -baseline -num_act $$i; i=`expr $$i + 1`; \
 	done
 
 inv_trend:
-	i=1; while [ $$i -lt 50 ] ; do \
+	i=1; while [ $$i -lt 769 ] ; do \
 	../gen_tc.tcl -inventory -num_act $$i; i=`expr $$i + 1`; \
 	done
 
 combo_trend:
-	i=1; while [ $$i -lt 50 ] ; do \
+	i=1; while [ $$i -lt 769 ] ; do \
 	../gen_tc.tcl -combinations -num_act $$i; i=`expr $$i + 1`; \
 	done
 

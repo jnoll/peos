@@ -9,6 +9,11 @@ proc parse_args {argv argc} {
 	while {$i < $argc} {
 	    set arg [lindex $argv $i]
 	    switch -re -- $arg {
+		-gdb {
+		    set gdb 1
+		    incr i
+		    set gdb_script [lindex $argv $i]
+		}
 		^\[\-\]\[A-Za-z\]+ {
 		    incr i
 		    set [string trimleft $arg "-"] [lindex $argv $i]
@@ -77,6 +82,12 @@ proc error_msg {op act {msg {}}} {
     }
 }
 
+proc gdb_interact {} {
+    interact {
+	go { return }
+    }
+}
+
 proc create_proc {model} {
     send "create $model\r\n"
 
@@ -90,6 +101,11 @@ proc create_proc {model} {
       "error\[^\r\n\]*\[\r\n\]" {
 	error_msg create $model "error"
       }
+
+      -ex "(gdb)" {
+	  gdb_interact
+      }
+
       timeout {
 	error_msg create $model "timeout"
       }
@@ -110,9 +126,15 @@ proc notify {pid act event} {
 	"\n> " {
 	    trace 2 "$event $act"
 	} 
+
+	-ex "(gdb)" {
+	    gdb_interact
+	}
+
 	timeout {
 	    error_msg $event $act "timeout"
 	}
+
 	default {
 	    error_msg $event $act 
 	}
@@ -120,12 +142,17 @@ proc notify {pid act event} {
 }
 
 
+# Assert act of pid is in state.
 proc assert {pid act state} {
     send "actions $pid\r\n"
 
     expect {
 	-re "${pid}\[ \]${act}\[ \]\(${state}\)" {
 	    trace 1 "${act} ${pid} found to be ${state}" 
+	}
+
+	-ex "(gdb)" {
+	    gdb_interact
 	}
 
 	timeout {
@@ -146,6 +173,10 @@ proc assert_done {pid model} {
 	    trace 1 "$model completed successfully."
 	}
 
+	-ex "(gdb)" {
+	    gdb_interact
+	}
+
 	timeout {
 	    error_msg assert_done $model timeout
 	}
@@ -158,9 +189,10 @@ proc assert_done {pid model} {
 
 
 # defaults
-set timeout 1
-set verbosity 0
+set timeout 10
 log_user 0
+set verbosity 0
+set gdb 0
 set shell "kernel_wrapper"
 set iterations 1
 
@@ -171,6 +203,7 @@ flush stdout
 read_tc $tc_name
 
 if {$verbosity > 0} {
+    puts stdout "shell: $shell"
     puts stdout "model: $model"
     puts stdout "script: $script"
     puts stdout "iterations: $iterations"
@@ -184,13 +217,32 @@ close $proc_table
 if {$verbosity >= 3} {
     log_user 1
 }
-spawn ${shell}
+
+
+if {$gdb == 1} {
+    # Run test script in gdb.
+    spawn "gdb"
+    send "file ${shell}\r\n"
+    expect -ex "(gdb)"
+    send "$gdb_script\r\n"
+    expect -ex "(gdb)"
+    send "run\r\n"
+    
+} else {
+    # Run in test harness.
+    spawn $shell
+}
+
 expect {
     "> " {}
+    -ex "(gdb)" {
+	gdb_interact
+    }
     timeout {
 	error_msg shell-spawn timeout
     }
 }
+
 
 for {set i 0} {$i < $iterations} {incr i} {
     eval $script

@@ -7,3 +7,4 @@ driver vm_harness PMLServer
 .depend
 core*
 
+cscope.out event.log file kernel_wrapper

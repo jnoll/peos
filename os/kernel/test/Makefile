@@ -12,7 +12,7 @@ TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib
 
 # objects
-CORE_OBJS =  events.o process.o process_table.o action.o graph_engine.o
+CORE_OBJS = events.o process.o process_table.o action.o graph_engine.o
 TEST_OBJS = test_util.o action.o
 
 # sources
@@ -22,12 +22,12 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 TESTS =  test_action test_events test_process test_process_table test_graph_engine
 
 
-all: test #kernel_wrapper
+all: test kernel_wrapper
 test: unit_tests 
 suite: unit_tests function accept
 
 unit_tests:  $(TESTS) test_assertions
-	@echo -n "running unit tests"
+	@echo "running unit tests..."
 	@-for i in $^ ; do $$i -f -q; done
 	@echo "The following test should report an Error due to assertion failure:"
 	@-test_assertions -f

@@ -17,14 +17,17 @@ OBJS = \
 $(CORE_OBJS)
 
 CORE_OBJS = \
+action.o \
 events.o \
+graph_engine.o \
 process_table.o \
 process.o \
-action.o \
-graph_engine.o
+
+
 
 # sources
 SOURCES = $(OBJS:.o=.c)
+HEADERS = $(wildcard *.h)
 
 all: test shell
 
@@ -42,11 +45,14 @@ xref:
 
 tags:	TAGS ctags
 
-TAGS:	$(SOURCES)
-	etags $(SOURCES)
+TAGS:	$(SOURCES) $(HEADERS)
+	etags $^
 
-ctags:	$(SOURCES)
-	ctags $(SOURCES)
+ctags:	$(SOURCES) $(HEADERS)
+	ctags $^
+
+cflow:
+	cflow -I../.. $(SOURCES) > cflow
 
 clean:
 	-rm *.o core.*
