@@ -24,7 +24,7 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int 
      
 
 peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *num_resources)
-{
+{ 
      
     *num_resources = global_num_resources;
 

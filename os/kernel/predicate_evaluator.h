@@ -8,7 +8,8 @@ typedef int PE_METHOD;
 #define PE_METH_FILE_TIMESTAMP 1 /* Will compare file time stamps */
 
 
-
+int pe_spellcheck(char* filename);
+int pe_timestamp(char* file1, char*file2);
 /****************************************************************
 *  Purpose: Compare the resources according to the condition and
 *	the resource attributes

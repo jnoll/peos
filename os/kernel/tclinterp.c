@@ -106,7 +106,7 @@ int peos_tcl_script(peos_tcl* ptcl, char* file_name)
         fprintf(stderr,"Issue Running Script: %s\n", ptcl->interp->result); 
     }
 #ifdef TCLINTERP_DEBUG
-    fprintf(stderr,"Script ran, result: %s\n", status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
+    fprintf(stderr,"Script ran, result[%s]: %s\n",*ptcl->interp->result , status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
 #endif
     return status;
 }

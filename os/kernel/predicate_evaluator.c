@@ -20,6 +20,7 @@ typedef int PE_CONDITION;
 typedef int PE_METHOD;
 #undef PE_DEBUG
 #undef PE_DEBUG_A
+#define PE_DEBUG_B
 #define PE_COND_RA_RA 1 /* Resource-Attrib, Resource-Attrib */
 #define PE_COND_FILE 2 /* Node is a file */
 #define PE_COND_RA_R 3 /* Resource-Attrib, Resource-Attrib */
@@ -35,8 +36,76 @@ typedef int PE_METHOD;
 
 
 extern char *act_state_name(vm_act_state state);
+int pe_timestamp(char* file1, char*file2)
+{
 
+	peos_tcl* interpreter;
+	char* result_str=NULL;
+	char* args=NULL;
+	printf("pe_spellcheck called!\n");
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return 0;
+	}
+	if(!result_str){
+		result_str = (char*)malloc(sizeof(char)*(255));
+	}
+	if(!args){
+		args = (char*)malloc(sizeof(char)*(255));
+	}
+	//sprintf(args, "timestamp");
+#ifdef PE_DEBUG_B
+	//printf("Is this what i want? %s\n", args);
+#endif
+	peos_tcl_eval(interpreter,"path1", file1, result_str );
+	peos_tcl_eval(interpreter,"path2", file2, result_str );
 
+	peos_tcl_script(interpreter, "tclf_timestamp.tcl");
+	Tcl_Eval(interpreter->interp, "timestamp");
+	if(result_str) free (result_str);
+	if(args) free (result_str);
+#ifdef PE_DEBUG_B
+	printf("Result for pe_timestamp(%s, %s): %s\n", file1, file2, interpreter->interp->result);
+#endif
+	peos_tcl_delete(interpreter);
+	return 1;
+}
+
+int pe_spellcheck(char* filename)
+{
+	peos_tcl* interpreter;
+	char* result_str=NULL;
+	char* args=NULL;
+	printf("pe_spellcheck called!\n");
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return NULL;
+	}
+	if(!result_str){
+		result_str = (char*)malloc(sizeof(char)*(255));
+	}
+	if(!args){
+		args = (char*)malloc(sizeof(char)*(255));
+	}
+	//sprintf(args, "expr [spellcheck %s]", filename);
+	sprintf(args, "spellcheck %s", filename);
+#ifdef PE_DEBUG_B
+	//printf("Is this what i want? %s\n", args);
+#endif
+	//
+	peos_tcl_eval(interpreter,"filename", filename, result_str );
+	printf("result%s\n",result_str);
+	peos_tcl_script(interpreter, "tclf_spellcheck.tcl");
+	Tcl_Eval(interpreter->interp, args);
+	if(result_str) free (result_str);
+	if(args) free (args);
+#ifdef PE_DEBUG_B
+	printf("Result for pe_spellcheck(%s): %s\n", filename, interpreter->interp->result);
+#endif
+	if(result_str) free (result_str);
+	
+	return 1;
+}
 
 char* pe_get_resval(int pid,char* resource_name)
 {
@@ -46,15 +115,27 @@ char* pe_get_resval(int pid,char* resource_name)
 	int j;
 	char* result_str=NULL;
 	peos_tcl* interpreter;
+#ifdef PE_DEBUG_A
+	printf("Entering pe_get_resval \n");
+#endif
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return NULL;
 	}
+#ifdef PE_DEBUG_A
+	printf("Started tcl\n");
+#endif
 	if(!result_str){
 		result_str = (char*)malloc(sizeof(char)*(255));
 	}
 	for(j = 0; j < num_proc_resources; j++) {
+#ifdef PE_DEBUG_A
+	printf("loop =>\n");
+#endif"spellcheck myreport.doc"
 		peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
+#ifdef PE_DEBUG_A
+	printf("<=\n");
+#endif
 		if(!strcmp(resource_name,proc_resources[j].name)) {
 #ifdef PE_DEBUG_A
 			fprintf(stderr, "Resource: name:%s value%s tclvalue:%s\n ", proc_resources[j].name,
@@ -169,7 +250,7 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 		        return -1;
 	            }
 	        }
-		return 1;
+		return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));
 	}
 	//fprintf(stderr, "No Condition Match found!\n");
  	return -1;
@@ -189,12 +270,12 @@ int pe_perform_predicate_eval(int pid, Tree t)
 			if (TREE_ID(t)[0]=='\"') 
 			{
 #ifdef PE_DEBUG
-				fprintf(stderr,"-------- LITERAL -------- %s\n", TREE_ID(t));
+				fprintf(stderr,"-LITERAL: %s\n", TREE_ID(t));
 #endif
 	    			return 1;
 			}
 #ifdef PE_DEBUG
-			else fprintf(stderr,"-------- NOT A LITERAL -------- %s\n", TREE_ID(t));
+			else fprintf(stderr,"-NOT A LITERAL: %s\n", TREE_ID(t));
 #endif
 		}
 		if((res = pe_eval(pid, PE_COND_FILE, PE_METH_FILE_EXISTS, t))==1){
@@ -414,12 +495,20 @@ int pe_is_requires_eval_true(int pid, char *act_name, int t)
 
 int is_requires_true(int pid, char *act_name)
 {
-	return pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_REQUIRES);
+	int i = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_REQUIRES);
+#ifdef PE_DEBUG
+	fprintf(stderr, "Call to is_requires_true : %d\n", i);
+#endif
+	return i;
 }
 
 int is_provides_true(int pid, char *act_name)
 {
-	return pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_PROVIDES);
+       int i = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_PROVIDES);
+#ifdef PE_DEBUG
+	fprintf(stderr, "Call to is_provodes_true : %d\n", i);
+#endif
+	return i;
 }
 #ifdef OLD
 int is_requires_true_old(int pid, char *act_name)
