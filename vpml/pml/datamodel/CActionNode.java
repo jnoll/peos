@@ -16,9 +16,11 @@ public class CActionNode extends CPMLNode
      * Basic Constructor - sets up the default graph node behavior and
      * the starting properties for this process
      *
-     * @param TCName - the name of the process.  Serves as the process Symbol name so no spaces allowed
+     * @param TCName - the name of the process.  Serves as the process Symbol 
+     * name so no spaces allowed.
      * @param Action - 1 means automatic, 0 means manual, -1 means no type
-     * @param Comments - string representing any process comments the author wants to include
+     * @param Comments - string representing any process comments the author 
+     * wants to include
      *
      * @throws CPMLException
      */
@@ -81,7 +83,7 @@ public class CActionNode extends CPMLNode
      */
     public String PMLClose( int SpaceCardinality )
     {
-        return new String( "\n" + buildWhitespace( SpaceCardinality ) + "}\n" );
+        return new String( "\n" + buildWhitespace( SpaceCardinality ) + "}\n");
     }
     
     /**

@@ -14,20 +14,27 @@ class JStatusArea
     static private JPanel statusArea = new JPanel();
     static private JLabel status = new JLabel("");
 
-    private JStatusArea() {}
+    private JStatusArea()
+    {
 
-    static public JStatusArea getInstance() {
-      if ( Instance == null ) {
+    }
+
+    static public JStatusArea getInstance()
+    {
+      if ( Instance == null )
+      {
         Instance = new JStatusArea();
       }
       return Instance;  
     }
 
-    static public void showStatus(String msg) {
+    static public void showStatus(String msg)
+    {
       status.setText(msg);
     }
 
-    public void createStatusArea(final Container container) {
+    public void createStatusArea(final Container container)
+    {
       statusArea.setBorder(BorderFactory.createEtchedBorder());
       statusArea.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
       statusArea.add(status);

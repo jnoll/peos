@@ -15,9 +15,11 @@ public class CSpecNode extends CPMLNode
      * Basic Constructor - sets up the default graph node behavior and
      * the starting properties for this process
      *
-     * @param TCName - the name of the Spec.  Serves as the process Symbol name so no spaces allowed
-     * @param TCType - string reprenting the type of this TC. See setType for valid options
-     * @param Comments - string representing any process comments the author wants to include
+     * @param TCName - the name of the Spec.  Serves as the process Symbol name      * so no spaces allowed
+     * @param TCType - string reprenting the type of this TC. See setType for 
+     * valid options
+     * @param Comments - string representing any process comments the author 
+     * wants to include
      *
      * @throws CPMLException
      */
@@ -56,8 +58,8 @@ public class CSpecNode extends CPMLNode
     
     /**
      * Dump the author (comments are handled by the base class 
-     * and the author info to the string.  Then dump the process keyword and symbol name
-     *
+     * and the author info to the string.  Then dump the process keyword and
+     * symbol name
      * @param pmlString Reference to string to which we should add this
      * @param SpaceCardinality Number of spaces to add
      */

@@ -108,14 +108,13 @@ abstract public class CPMLNode extends CGraphNode
         // total line length is greater than 80 (std screen width) then 
         // start a newline until we've completed all the comment conversion
         for ( int WordStartIndex = 0; WordStartIndex < m_Comments.length(); 
-                                      WordStartIndex++) {
+                                                            WordStartIndex++) {
             // First locate the length of the next word looking for spaces here
-            while ( m_Comments.charAt( WordStartIndex + WordLength++ ) != ' ' 
-                   && WordLength + WordStartIndex < m_Comments.length() );
+            while (m_Comments.charAt( WordStartIndex + WordLength++ ) != ' ' &&
+                           WordLength + WordStartIndex < m_Comments.length() );
 
-            // If we've exceeded the end of the source string then decrement
-            // the WordLen by one so we don't choke trying to remove the 
-            // substring
+            // If we've exceeded the end of the source string then decrement the
+            // WordLen by one so we don't choke trying to remove the substring
             if ( WordLength >= m_Comments.length() )
                 WordLength--;
             
@@ -130,10 +129,10 @@ abstract public class CPMLNode extends CGraphNode
 
             // Get the word from the local comments string
             Word = m_Comments.substring( WordStartIndex, WordStartIndex +
-                                                               WordLength );
+                                                                 WordLength );
             
-            // Add the word to the current PML formatted comment string 
-            // we're building
+            // Add the word to the current PML formatted comment string we're
+            // building
             Comments += Word;
             
             // Add the word length to the word index and chars processed
@@ -153,7 +152,7 @@ abstract public class CPMLNode extends CGraphNode
 
     /** 
      * Method to call for outputting the children of this node into the PML 
-     * string This just recurses the children which recurses their children etc
+     * string. This just recurses the children which recurses their children etc
      * @param pmlString destination string for PML code
      * @param SpaceCardinality The number of spaces to insert on each newline
      */
@@ -166,11 +165,9 @@ abstract public class CPMLNode extends CGraphNode
         if ( ChildrenAllowed() == false )
             return RetVal;
             
-        // Otherwise recurse the children of this node.  Add 3 to the space
-        // cardinality so all children are indented by three space in scope
+        // Otherwise recurse the children of this node.  Add 3 to the space card        // inality so all children are indented by three space in scope
         for ( int ChildNum = 0; ChildNum < NumberOfChildren(); ChildNum++ )
-            RetVal += ((CPMLNode)GetAChild( ChildNum )).toPMLString( pmlString,
-                                                         SpaceCardinality + 3 );
+            RetVal += ((CPMLNode)GetAChild( ChildNum )).toPMLString( pmlString,                                                          SpaceCardinality + 3 );
             
         return RetVal;
     }
@@ -179,6 +176,7 @@ abstract public class CPMLNode extends CGraphNode
      * This routine builds a string of empty spaces and is used as a utility
      * routine.  This is really clunky for now.  Perhaps later somebody can 
      * clean it up
+     *
      * @param length 
      */
      public String buildWhitespace( int length )

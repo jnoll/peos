@@ -10,9 +10,9 @@ public class CGraphNode extends Object implements java.io.Serializable
 {
     private boolean   childrenAllowed;
     private boolean   childrenOrdered;
-    private CGraphNode parentNode;      // Contains reference to access parent node.
-    private Vector    childNodes;       // Vector that contains all the children nodes.
-    private int       selectedChildIndex = 0; // Index used to access children vector
+    private CGraphNode parentNode;  //Contains reference to access parent node.
+    private Vector  childNodes;  //Vector that contains all the children nodes.
+    private int selectedChildIndex = 0;  //Index used to access children vector.
 
 	/**
 	 * constructor of the class
@@ -58,7 +58,7 @@ public class CGraphNode extends Object implements java.io.Serializable
 	 * @param postcondition: return true or false
 	 */
     public boolean ChildrenAllowed() 
-	{
+    {
         return childrenAllowed;
     }
 
@@ -68,7 +68,7 @@ public class CGraphNode extends Object implements java.io.Serializable
 	 * @param postcondition: return true or false
 	 */
     public boolean ChildrenAreOrdered() 
-	{
+    {
         return childrenOrdered;
     }
 
@@ -78,7 +78,7 @@ public class CGraphNode extends Object implements java.io.Serializable
 	 * @param postcondition: add the node  
 	 */
     public void AddChild(CGraphNode Node, int InsertionIndex) 
-	{
+    {
 	    // IF children aren't allowed then blow this off - we should
 	    // throw an exception here
         if ( childrenAllowed == false ) 
@@ -86,10 +86,11 @@ public class CGraphNode extends Object implements java.io.Serializable
         
         // Test to see if the children are ordered.  If they are then
         // insert at the references index - otherwise just add onto the end
-		if ( childrenOrdered == true && ( InsertionIndex < childNodes.size() && InsertionIndex > 0 ) )
-		    childNodes.insertElementAt(Node, InsertionIndex);
-		else if ( childrenOrdered != true )
-            childNodes.addElement(Node);
+	if ( childrenOrdered == true && ( InsertionIndex < childNodes.size() &&
+                                                         InsertionIndex > 0 ) )
+	        childNodes.insertElementAt(Node, InsertionIndex);
+	else if ( childrenOrdered != true )
+        	childNodes.addElement(Node);
      
         // Set the parent node
         Node.setParent( this );
@@ -102,21 +103,21 @@ public class CGraphNode extends Object implements java.io.Serializable
 	 */
 
     public void RemoveChild(CGraphNode Node)
-	{
-	    // Check for a zero length array
-	    if (childNodes.size() == 0)
-		    return;
+    {
+    	// Check for a zero length array
+        if (childNodes.size() == 0)
+        	return;
 
         // Remove the node from the child list
-	    if ( childNodes.removeElement( Node ) == false )
-	        return;
+	if ( childNodes.removeElement( Node ) == false )
+	       	return;
 
         // Remove all of the node we are removing.  Note that because
         // each successive call the RemoveAllChildren removes all the children 
         // of those children we remove all references of all ancestors of this
         // node!
-	    Node.RemoveAllChildren();
-	}
+	Node.RemoveAllChildren();
+    }
 /**
  * a method to determine the size of children
  * @param precondition: none
@@ -124,9 +125,9 @@ public class CGraphNode extends Object implements java.io.Serializable
  */
 
     public int NumberOfChildren()
-	{
-	    return childNodes.size();
-	}
+    {
+    	return childNodes.size();
+    }
 /**
  * a method to get the first child node
  * @param precondition: none
@@ -135,10 +136,9 @@ public class CGraphNode extends Object implements java.io.Serializable
  */
 
     public CGraphNode GetFirstChild() 
-	{
-	    // If we have child nodes the return the first one
-        if (childNodes.size() > 0) 
-		{
+    {
+        // If we have child nodes the return the first one
+        if (childNodes.size() > 0) {
             selectedChildIndex = 0;
             return (CGraphNode)childNodes.elementAt(0);
         }
@@ -152,8 +152,8 @@ public class CGraphNode extends Object implements java.io.Serializable
 	 * @param postcondition return the node
 	 */
     public CGraphNode GetNextChild() 
-	{
-	    // If we have another child node then return it
+    {
+    	// If we have another child node then return it
         if ( ++selectedChildIndex < childNodes.size() ) 
             return (CGraphNode)childNodes.elementAt( selectedChildIndex );
         else 
@@ -166,10 +166,9 @@ public class CGraphNode extends Object implements java.io.Serializable
 	 */
 
     public CGraphNode GetAChild(int idx) 
-	{
-	    // Make sure we're in range
-        if (idx < childNodes.size()) 
-        {
+    {
+        // Make sure we're in range
+        if (idx < childNodes.size()) {
             // Set the current child index in case we insert or
             // something later
             selectedChildIndex = idx;
@@ -187,11 +186,11 @@ public class CGraphNode extends Object implements java.io.Serializable
     protected void RemoveAllChildren()
     {
         // Iterate through all the child nodes and remove all of their children
-        // This will cover all the descendants of this node in a recursive like fashion
+        // This will cover all the descendants of this node in a recursive 
+        // like fashion
         int NumChildren = childNodes.size();
-        while( --NumChildren != 0 )
-        {
-            ((CGraphNode)childNodes.elementAt( NumChildren )).RemoveAllChildren();
+        while( --NumChildren != 0 ) {
+            ((CGraphNode)childNodes.elementAt(NumChildren)).RemoveAllChildren();
             childNodes.removeElementAt( NumChildren );
         }
     }

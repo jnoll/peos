@@ -14,44 +14,43 @@ import pml.datamodel.JDataModel;
  * view architecture.  This is very similar to the MVC model used by Components
  * and controls in Java.  This class is an observer of the JDataModel class
  * and updates when the model changes.
- *
  * @author Matt Osminer
  * @author Xing Wei
  */
 public class JDataView extends javax.swing.JPanel implements Observer,
-                                                                    MouseListener,
-                                                                    MenuListener,
-                                                                    ActionListener
+                                                             MouseListener,
+                                                             MenuListener,
+                                                             ActionListener
 {
     /**
      * Standard constructor
      *
      * @param model reference to JDataModel for which this view shows
      */
-	public JDataView( JDataModel Model, JFrame ParentFrame )
-	{
-	    // Call the base class constructor
+     public JDataView( JDataModel Model, JFrame ParentFrame )
+     {
+     	// Call the base class constructor
         super();
         
-		// Save the DataModel for this view
-		m_DataModel = Model;
-		m_ParentFrame = ParentFrame;
+	// Save the DataModel for this view
+	m_DataModel = Model;
+	m_ParentFrame = ParentFrame;
 		
-		// Register as an observer with the Data Model
-		m_DataModel.addObserver( this );
+	// Register as an observer with the Data Model
+	m_DataModel.addObserver( this );
 
-	}
+     }
 
-	//{{DECLARE_CONTROLS
-	//}}
+//{{DECLARE_CONTROLS
+//}}
 	
-	/***** Private member accessors *****/
-	/**
-	 * Simply get the datamodel associated with this view
-	 *
-	 * @return Reference to the datamodel
-	 */
-	public JDataModel getDataModel()
+      /***** Private member accessors *****/
+       /**
+        * Simply get the datamodel associated with this view
+        *
+        * @return Reference to the datamodel
+        */
+        public JDataModel getDataModel()
 	{
 	    return m_DataModel;
 	}
@@ -61,10 +60,10 @@ public class JDataView extends javax.swing.JPanel implements Observer,
 	 *
 	 * @return Reference to the parent frame
 	 */
-	public JFrame getParentFrame()
-	{
-	    return m_ParentFrame; 
-	}
+	 public JFrame getParentFrame()
+	 {
+	     return m_ParentFrame; 
+	 }
 	
 	/**
 	 * Set a new data model in case an external one has changed
@@ -120,7 +119,8 @@ public class JDataView extends javax.swing.JPanel implements Observer,
     }
     
     /***** Implement the mouse listener interface *****/
-    // Note these all do nothing right now and should be overridden by your derived classes
+    // Note these all do nothing right now and should be overridden by your 
+    // derived classes
     public void mouseClicked( MouseEvent e )
     {
         // Nothing to do here now
