@@ -15,6 +15,7 @@
 void handle_selection(Node n);
 void mark_successors(Node n, vm_act_state state);
 void add_iteration_lists(Graph g);
+void set_rendezvous_state(Node n);
 
 void sanitize(Graph g)
 {
@@ -212,6 +213,7 @@ void propogate_join_done(Node n)
 	for(i = 0; i < ListSize(n->successors); i++) {
 	    child = (Node) ListIndex(n->successors,i);
 	    propogate_join_done(child);
+	    set_rendezvous_state(child);
 	}
     }
     else
@@ -236,6 +238,9 @@ void set_rendezvous_state(Node n)
 	     STATE(n -> matching) = ACT_DONE;
 	     for(i = 0; i< ListSize(n -> successors); i++) {
 	         child = (Node) ListIndex(n -> successors,i);
+		 if(child -> type == JOIN) {
+	             propogate_join_done(child);
+		 }
 		 mark_successors(child,ACT_READY);
 		 set_rendezvous_state(child);
 	     }
