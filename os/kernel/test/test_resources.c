@@ -54,7 +54,7 @@ START_TEST(test_make_resource_list)
 	Tree t1 = make_tree("y",0,NULL,NULL);
 	Tree t2 = make_tree("modified",0,NULL,NULL);
 	Tree t3 = make_tree(NULL,DOT,t1,t2);
-	Tree t4 = make_tree("true",0,NULL,NULL);
+	Tree t4 = make_tree("\"true\"",0,NULL,NULL);
 	Tree t5 = make_tree(NULL,EQ,t3,t4);
 
 	make_resource_list(t5, &resource_list, &num_resources, &rsize, "\0");

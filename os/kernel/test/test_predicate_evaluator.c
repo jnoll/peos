@@ -16,6 +16,13 @@ peos_resource_t *global_resources;
 int global_num_resources;
 
 /* Stubs. */
+/* XXX As far as I can tell, the tests don't directly exercise any
+   function that actually calls this. -jn */
+peos_context_t *peos_get_context(int pid)
+{
+    static peos_context_t context;
+    return &context;
+}
 
 peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int *num_resources)
 {
@@ -348,5 +355,6 @@ main(int argc, char *argv[])
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
     suite_free(s);
+    system("rm  tclf_*.tcl");	/* Clean up. */
     return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
