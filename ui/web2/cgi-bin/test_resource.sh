@@ -2,6 +2,7 @@
 
 rm proc_table.dat
 create_testtable
+export QUERY_STRING="model_list=test_action"
 resource.cgi > output
 
 if !(grep "<b>t</b><b>e</b><b>s</b><b>t</b><b>_</b><b>p</b><b>r</b><b>o</b><b>v</b><b>i</b><b>d</b><b>e</b><b>:" output > /dev/null)
