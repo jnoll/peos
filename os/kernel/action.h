@@ -46,6 +46,7 @@ typedef struct {
 	int pid;
 	char name[256];
 	char value[256];
+	char qualifier[256];
 } peos_resource_t;
 
 

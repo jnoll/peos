@@ -32,7 +32,7 @@ START_TEST(test_insert_resource)
     num_expected = (32 * rsize) + 1;
     for (i = 0; i < num_expected; i++) {
 	sprintf(rname, "%s_%d", "resource", i);
-	insert_resource(rname, &resource_list, &num_resources, &rsize);
+	insert_resource(rname, &resource_list, &num_resources, &rsize, "qualifier");
     }
 
     /* Post: all resources have been inserted in order. */
@@ -40,6 +40,7 @@ START_TEST(test_insert_resource)
     for (i = 0; i < num_expected; i++) {
 	sprintf(rname, "%s_%d", "resource", i);
 	fail_unless(strcmp(resource_list[i].name, rname) == 0, "resource name wrong");
+	fail_unless(strcmp(resource_list[i].qualifier, "qualifier") == 0, "qualifier missing");
     }
 }	
 END_TEST
@@ -56,7 +57,7 @@ START_TEST(test_make_resource_list)
 	Tree t4 = make_tree("true",0,NULL,NULL);
 	Tree t5 = make_tree(NULL,EQ,t3,t4);
 
-	make_resource_list(t5, &resource_list, &num_resources, &rsize);
+	make_resource_list(t5, &resource_list, &num_resources, &rsize, "\0");
 
 	fail_unless(num_resources == 1,"num_resources wrong");
     fail_unless(strcmp(resource_list[0].name,ptr) == 0,"resource name wrong");
@@ -65,6 +66,53 @@ START_TEST(test_make_resource_list)
 END_TEST
 
 
+START_TEST(test_make_resource_list_1)
+{
+	int num_resources = 0, rsize = 256;
+	char *ptr = "y";
+	peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+	
+	Tree t1 = make_tree("y",0,NULL,NULL);
+	Tree t3 = make_tree("(All)",0,NULL,NULL);
+	Tree t2 = make_tree(NULL,QUALIFIER,t3,t1);
+
+	make_resource_list(t2, &resource_list, &num_resources, &rsize, "\0");
+
+	fail_unless(num_resources == 1,"num_resources wrong");
+        fail_unless(strcmp(resource_list[0].name,ptr) == 0,"resource name wrong");
+	fail_unless(strcmp(resource_list[0].qualifier,"(All)") == 0, "qualifier wrong");
+
+}	
+END_TEST
+
+
+START_TEST(test_make_resource_list_2)
+{
+	int num_resources = 0, rsize = 256;
+	char *ptr = "y";
+	peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+	
+	Tree t1 = make_tree("y",0,NULL,NULL);
+	Tree t3 = make_tree("(All)",0,NULL,NULL);
+	Tree t2 = make_tree(NULL,QUALIFIER,t3,t1);
+
+	Tree t4 = make_tree("y1",0,NULL,NULL);
+	Tree t5 = make_tree("(Any)",0,NULL,NULL);
+	Tree t6 = make_tree(NULL,QUALIFIER,t5,t4);
+
+	Tree t7 = make_tree(NULL,AND,t2,t6);
+
+	make_resource_list(t7, &resource_list, &num_resources, &rsize, "\0");
+
+	fail_unless(num_resources == 2,"num_resources wrong");
+        fail_unless(strcmp(resource_list[0].name,ptr) == 0,"resource name wrong");
+	fail_unless(strcmp(resource_list[0].qualifier,"(All)") == 0, "qualifier wrong");
+        fail_unless(strcmp(resource_list[1].name,"y1") == 0,"resource name wrong");
+	fail_unless(strcmp(resource_list[1].qualifier,"(Any)") == 0, "qualifier 1 wrong");
+}
+END_TEST
+
+	
 /* Test growing resource list. */
 START_TEST(test_make_resource_list_realloc)
 {
@@ -80,7 +128,7 @@ START_TEST(test_make_resource_list_realloc)
     }
 
     for (i = 0; i < num_expected; i++) {
-	make_resource_list(t[i], &resource_list, &num_resources, &rsize);
+	make_resource_list(t[i], &resource_list, &num_resources, &rsize, "\0");
     }
 
     fail_unless(num_resources == num_expected, "num_resources wrong");
@@ -105,8 +153,10 @@ main(int argc, char *argv[])
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_insert_resource);
     tcase_add_test(tc,test_make_resource_list);
+    tcase_add_test(tc,test_make_resource_list_1);
     tcase_add_test(tc,test_make_resource_list_realloc);
-    sr = srunner_create(s);
+    tcase_add_test(tc,test_make_resource_list_2);
+     sr = srunner_create(s);
 
     srunner_set_fork_status(sr, fork_status);
 
