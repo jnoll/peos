@@ -33,10 +33,6 @@ do:
 	gcc -g -g -I../..  -c -o do.o do.c
 	gcc -o do.cgi do.o $(path)events.o $(path)graph_engine.o $(path)process_table.o $(path)process.o $(path)action.o $(libs)
 	chmod og+rx do.cgi
-docreate:
-	gcc -g -g -I../..  -c -o do_create.o do_create.c
-	gcc -o do_create.cgi do_create.o $(path)events.o $(path)graph_engine.o $(path)process_table.o $(path)process.o $(path)action.o $(libs)
-	chmod og+rx do_create.cgi
 test:
 	gcc -g -g -I.  -c -o create_testtable.o create_testtable.c
 	gcc -o create_testtable create_testtable.o $(path)events.o $(path)graph_engine.o $(path)process_table.o $(path)process.o $(path)action.o $(libs)
