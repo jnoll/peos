@@ -1,17 +1,18 @@
 #these lines are for modification.
-images= ./images/
-path= ./bin/peos 
-help= ./help/
-pml= ./testfiles/ 
-XERCES_PATH=./include/
-JUNIT_PATH=./include/
+images= ${HOME}/peos/src/ui/java-gui/images/
+path= ${HOME}/peos/src/ui/java-gui/bin/peos  
+help= ${HOME}/peos/src/ui/java-gui/help/
+pml= ${HOME}/peos/src/ui/java-gui/testfiles/ 
+XERCES_PATH= ${HOME}/peos/src/ui/java-gui/include/
+JUNIT_PATH= ${HOME}/peos/src/ui/java-gui/include/
+JAVAGUI_JAR= ${HOME}/peos/src/ui/java-gui/include/java-gui.jar
+PEOS_HOME=${HOME}/.peos
 
 #these lines are used by the makefile. Do not modify.
 XERCES_INCLUDE=${XERCES_PATH}/xercesImpl.jar:${XERCES_PATH}/xmlParserAPIs.jar
-JAVAGUI_JAR=./include/java-gui.jar
 JUNIT_INCLUDE=${JUNIT_PATH}/junit.jar
 java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JUNIT_INCLUDE}:${JAVAGUI_JAR}:.
-
+run_java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JAVAGUI_JAR}:.
 
 all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class \
 	DisabledPreferencesFactory.class Help.class ActionMap.class LinkedList.class LinkNode.class \
@@ -94,8 +95,9 @@ script:
 	echo "fi" >>runpeos
 	echo 'if test $$runApp -eq 0' >>runpeos
 	echo "then" >>runpeos
+	echo "cd ${PEOS_HOME}" >>runpeos 
 	echo "	xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >>runpeos
-	echo "java ${java} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml}  PeosApp" >>runpeos
+	echo "java ${run_java} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml}  PeosApp" >>runpeos
 	echo "fi" >>runpeos
 	chmod 700 runpeos
 
