@@ -1,51 +1,53 @@
 CC = gcc
+LDFLAGS = -g -L..
+LIBS = -lvr
 CFLAGS = -g -c -I..
+LIB = ../libvr.a
 
 OBJECTS = \
-FSseeker.o \
-EMAILseeker.o \
-queryLinkedList.o \
-resultLinkedList.o \
-setup_repositories.o \
-seekerTools.o \
-vrepo.o \
-debug.o
-
-#VROBJECTS = \
-#setup_repositories.o \
-#dummy_seekers.o
+../FSseeker.o \
+../EMAILseeker.o \
+../queryLinkedList.o \
+../resultLinkedList.o \
+../setup_repositories.o \
+../vrepo.o \
+../debug.o
 
 TESTS = \
 VRsetup \
 testFSsearchEnd2End \
 testFSsearchSeek \
 testFSsearchInvalid \
-testFSsearchEmpty
+testFSsearchEmpty\
+#testEmail
 
 FS_ACTUAL_RESULT_FILES = \
 VRsetupActualResult.txt \
 FSsearchEnd2EndActualResult.txt \
 FSsearchSeekActualResult.txt \
 FSsearchInvalidActualResult.txt \
-FSsearchEmptyActualResult.txt
+FSsearchEmptyActualResult.txt\
+testEmailActualResult.txt
 
 FS_EXPECTED_RESULT_FILES = \
 FSsearchEnd2EndExpectedResult.txt \
 FSsearchSeekExpectedResult.txt \
 FSsearchInvalidExpectedResult.txt \
-FSsearchEmptyExpectedResult.txt
+FSsearchEmptyExpectedResult.txt\
+testEmailExpectedResult.txt
 			 
 FS_QUERY_FILES = \
 FSsearchEnd2EndQuery.dat \
 FSsearchSeekQuery.dat
 
-# Create a test executable and run the test.
-test%: test%.o $(OBJECTS)
-	$(CC) -o $@ $< $(OBJECTS) 
+all: $(TESTS)
+
+$(LIB): $(OBJECTS)
+	$(MAKE) -C ..
 
 # Create a test executable and run the test.
-#VR%: VR%.o $(VROBJECTS)
-#	$(CC) -o $@ $< $(VROBJECTS) 
+test%: test%.o $(LIB)
+	$(CC) -o $@ $< $(LDFLAGS) $(LIBS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $<
@@ -66,10 +68,10 @@ test:	$(TESTS)
 	
 	testFSsearchEmpty > FSsearchEmptyActualResult.txt
 	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResult.txt
-	
-	#VRsetup > VRsetupActualResult.txt
-	#diff VRsetupExpectedResult.txt VRsetupActualResult.txt	
-	
+
+#	diff testEmailExpectedResult.txt testEmailActualResult.txt
+#	testEmail > testEmailActualResult.txt
+
 clean:
 	-rm *.o
 	-rm core

@@ -1,4 +1,9 @@
-CC = gcc
+CC = gcc 
+
+LDFLAGS = -g -L.
+LIBS = -lvr
+LIB = libvr.a
+
 
 OBJECTS = \
 queryLinkedList.o \
@@ -11,11 +16,24 @@ vrepo.o \
 debug.o \
 search.o
 
-search: $(OBJECTS)
-	$(CC) -o search $(OBJECTS)
+all: $(LIB) search
+
+$(LIB): $(OBJECTS)
+	ar -r $@ $^
+
+search: $(LIB)
+	$(CC) -o search $(LDFLAGS) $(LIBS) 
+
+install: 
+	cp $(LIB) ../../lib
 
 clean:
 	-rm $(OBJECTS)
 	-rm core
 	-rm search
+
+
+
+
+
 
