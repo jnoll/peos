@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: shell.c$
-* Version:      $Id: shell.c,v 1.1 2003/06/24 21:01:54 jnoll Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.2 2003/06/29 22:39:14 jnoll Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
-* Modified:     Tue Mar 11 11:09:40 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Sun Jun 29 15:22:49 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -48,20 +48,20 @@ list_actions()
     int i;
 
     alist = peos_list_actions(ACT_RUN);
-    if (alist && alist[0].name) {
-	for (i = 0; alist[i].name; i++) {
+    if (alist && alist[0].name[0]) {
+	for (i = 0; alist[i].name[0]; i++) {
 	    printf("%s (active)\n", alist[i].name);
 	}
     }
     alist = peos_list_actions(ACT_SUSPEND);
-    if (alist && alist[0].name) {
-	for (i = 0; alist[i].name; i++) {
+    if (alist && alist[0].name[0]) {
+	for (i = 0; alist[i].name[0]; i++) {
 	    printf("%s (suspended)\n", alist[i].name);
 	}
     }
     alist = peos_list_actions(ACT_READY);
-    if (alist && alist[0].name) {
-	for (i = 0; alist[i].name; i++) {
+    if (alist && alist[0].name[0]) {
+	for (i = 0; alist[i].name[0]; i++) {
 	    printf("%s (ready)\n", alist[i].name);
 	}
     }
@@ -110,6 +110,7 @@ finish_action(char *action)
 
 quit()
 {
+    save_proc_table("proc_table.dat");
     exit(0);
 }
 
@@ -161,6 +162,7 @@ main(int argc, char *argv[])
     char *cmd, *line = NULL;
     COMMAND *cmd_func;
 
+    load_proc_table("proc_table.dat");
     while (1) {
 	/* If the buffer has already been allocated, return the memory
 	   to the free pool. */
@@ -185,3 +187,6 @@ main(int argc, char *argv[])
 	}
     }    
 }
+
+
+

@@ -1,18 +1,26 @@
 #include <check.h>
 #include <stdlib.h>
 #include <unistd.h>		/* unlink() */
-#include <sys/stat.h>
-#include <sys/types.h>
 #include "process.h"
 #include "test_util.h"
 
 /* Globals. */
-char *instance_dir = NULL;
 int execute_status = VM_DONE;	/* What execute() should return. */
-
-/* Stub (bogus) globals. */
+peos_context_t process_table[1];
+int num_proc;
+peos_context_t *current_process = &(process_table[1]); 
 
 /* Stubs. */
+
+int peos_get_pid(peos_context_t *context) 
+{
+    return context == &(process_table[0]) ? 0 : -1;
+}
+
+peos_context_t *peos_get_context(int pid)
+{
+    return pid == 0 ? &(process_table[pid]) : NULL ;
+}
 
 int execute(vm_context_t *context) 
 {
@@ -26,256 +34,6 @@ int find_actions(char *inst_array[], int size)
 }
 
 
-START_TEST(test_load_instructions)
-{
-    int i, num_inst, num_actions;
-    char **inst_array;		/* Process instructions. */
-    peos_action_t *actions;
-    FILE *out;
-
-    /* Pre: a model exists. */
-    out = fopen("expected.txt", "w");
-    if (out == NULL) {
-	fail("open expected.txt failed");
-	return;
-    }
-    fprintf(out, big_txt);
-    fclose(out);
-
-    fail_unless(load_instructions("expected.txt", 
-				   &inst_array, 
-				   &num_inst,
-				   &actions, 
-				   &num_actions) == 49, "load failed");
-    fail_unless(num_actions == 49, "num_actions wrong");
-    fail_unless(num_inst == 542, "num_inst wrong");
-    /* Post: model loaded - each entry matches a line in the file. */
-    out = fopen("actual.txt", "w");
-    for (i = 0; i < num_actions; i++) {
-	fprintf(out, "%d %s type action mode manual\n", i, actions[i].name);
-    }
-    for (; i <  num_inst; i++) {
-	fprintf(out, "%d %s", i, inst_array[i]);
-    }
-    fclose(out);
-
-    if (0 != system("diff -w expected.txt actual.txt > /dev/null")) {
-	fail("diff expected.txt actual.txt shows differences");
-    } else {
-	unlink("expected.txt");
-	unlink("actual.txt");
-    }
-}
-END_TEST
-
-
-START_TEST(test_save_context)
-{
-#ifdef NOTUSED
-    int num_var = 13, pc = 19, sp = MAX_STACK_SIZE, accum = 233;
-    FILE *expected;
-    vm_context_t context;
-    /* Pre: a model context exists. */
-    setup_context(&context, pc, sp, accum, num_var, p1);
-
-    /* Action. */
-    save_context(&context, actions, num_actions, "actual.pid");
-
-    /* Post. */
-    expected = fopen("expect.pid", "w");
-    fprintf(expected, "%s", p1_context);
-    fclose(expected);
-
-    if (system("diff expect.pid actual.pid > /dev/null") != 0) {
-	fail("diff");
-    } else {
-	unlink("expect.pid");
-	unlink("actual.pid");
-    }
-#endif
-}
-END_TEST
-
-/* Try to save to non-existent directory. */
-START_TEST(test_save_context_nodir)
-{
-    int num_var = 13, pc = 19, sp = MAX_STACK_SIZE, accum = 233;
-    vm_context_t context;
-    /* Pre: a model context exists. */
-    setup_context(&context, pc, sp, accum, num_var, p1);
-
-    /* Action. */
-/*    fail_unless(save_context(&context, actions, num_actions, 
-      "not_there/actual.pid") == -1, NULL);*/
-}
-END_TEST
-
-START_TEST(test_load_context) 
-{
-#ifdef NOTUSED
-    vm_context_t context;
-    int i, num_var = 0, num_act = 3, pc = 19, sp = MAX_STACK_SIZE, accum = 233;
-
-    /* Pre: a model context exists. */
-    setup_context(&context,  pc, sp, accum, num_var, p1);
-/*    save_context(&context, actions, num_actions, "test.pid");*/
-
-    free(context.variables);
-    context.variables = NULL;
-
-    /* Action. */
-/*    load_context(&context, &context.actions, &context.num_actions, "test.pid");*/
-
-    /* Post: model loaded, context set. */
-    fail_unless(pc == context.PC, "PC");
-    fail_unless(sp == context.SP, "SP");
-    fail_unless(accum == context.A, "A");
-
-    mark_point();
-
-    for (i = 0; i < context.SP; i++) {
-	fail_unless(i == context.stack[i], "stack contents");
-    }
-
-    mark_point();
-
-    for (i = 0; i < num_var; i++) {
-	char buf[32];
-	sprintf(buf, "%d", i);
-	fail_unless(strcmp(buf, context.variables[i].name) == 0,
-		    "var name");
-	fail_unless(i = context.variables[i].value, "var val");
-    }
-
-    mark_point();
-
-    for (i = 0; i < num_act; i++) {
-	char buf[32];
-	sprintf(buf, "%d", i);
-	fail_unless(strcmp(buf, context.actions[i].name) == 0, "act name");
-	fail_unless(ACT_NONE == context.actions[i].state, "act state");
-    }
-
-    mark_point();
-    unlink("test.pid");
-#endif
-}
-END_TEST
-
-START_TEST(test_load_context_nofile) 
-{
-#ifdef NOTUSED
-    vm_context_t context;
-    /* Pre: none. */
-    /* Action. */
-    mark_point();
-    fail_unless(load_context(&context, &actions, &num_actions, 
-      "Imnotheretest.pid") == -1, NULL);
-
-    /* Post: model not loaded, context not set. */
-    fail_unless(-1 == context.PC, "PC");
-    fail_unless(0 == context.SP, "SP");
-    fail_unless(-1 == context.A, "A");
-
-#endif
-    mark_point();
-}
-END_TEST
-
-
-START_TEST(test_init_context)
-{
-    peos_context_t context;
-    /* Pre: none. */
-    context.vm_context.inst_array = p1;
-    context.vm_context.num_inst = p1_size;
-
-    /* Action. */
-    init_context(&context.vm_context, 9);
-
-    /* Post: PC, A, SP initialized. */
-    fail_unless(context.vm_context.PC == 9, "PC wrong");
-    fail_unless(context.vm_context.A == -1, "A wrong");
-    fail_unless(context.vm_context.SP == 0, "SP wrong");
-}
-END_TEST
-
-void
-setup_create_instance()
-{
-    char cmd[BUFSIZ];
-    FILE *model;
-    instance_dir = "test_instances";
-
-    sprintf(cmd, "[-d %s] && rm -r %s", instance_dir, instance_dir);
-
-    /* Pre: model file exists, PEOS_DIR set. */
-
-    mkdir(instance_dir, S_IRUSR|S_IWUSR|S_IXUSR);
-    setenv("PEOS_DIR", instance_dir, 1);
-    setenv("COMPILER_DIR", "test_instances", 1);
-    sprintf(cmd, "%s/%s", instance_dir, "big.txt");
-    if ((model = fopen(cmd, "w")) != NULL) {
-	fprintf(model, "%s", big_txt);
-	fclose(model);
-    }
-}
-
-void
-teardown_create_instance()
-{
-    char cmd[BUFSIZ];
-
-    sprintf(cmd, "rm -r %s", instance_dir);
-    system(cmd);
-}
-
-START_TEST(test_create_instance)
-{
-    int i, pid;
-    char *model = "big";
-    peos_context_t *context;
-    for (i = 0; i < 10; i++) {
-/*	struct stat b;
-	char fname[BUFSIZ];
-	peos_instance_t iname;*/
-
-	/* XXX in future, pid will be != 0 */
-	fail_unless((pid = peos_create_instance(model)) == 0, 
-		    "failed to create instance");
-	context = &(process_table[0]);
-	fail_unless(context->vm_context.PC == 49, "PC wrong");
-	fail_unless(context->vm_context.inst_array != NULL, "inst_array null");
-	fail_unless(context->vm_context.num_inst == 542, "num_inst wrong");
-	fail_unless(context->vm_context.A == -1, "A wrong");
-	fail_unless(context->vm_context.SP == 0, "SP wrong");
-	fail_unless(context->vm_context.stack[0] == 0, "");
-	fail_unless(context->actions != NULL, "actions null");
-	fail_unless(context->num_actions == 49, "num_actions wrogn");
-#ifdef NOTUSED
-	/* 
-	 * Post: instance file exists.  Since the context is 
-	 * established by load_instructions()/init_context() in 
-	 * process.c, we don't have to verify the context.
-	 */
-	sprintf(fname, "%s/%d", instance_dir, i+1);
-	if (stat(fname, &b) != 0) {
-	    fail("no context file");
-	}
-#endif
-    }
-}
-END_TEST
-
-/* Try to create an instance of a non-existent model. */
-START_TEST(test_create_instance_noexist)
-{
-    char *model = "no";
-
-    fail_unless(peos_create_instance(model) == -1,
-		"created from non-existent model.");
-}
-END_TEST
 
 
 /*
@@ -296,7 +54,7 @@ START_TEST(test_finish_action)
 
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_DONE;
-    context->vm_context.parameters.act.actions[0] = "act_0";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -331,7 +89,7 @@ START_TEST(test_finish_action_one)
     /* VM is waiting for act_0 to finish.. */
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_DONE;
-    context->vm_context.parameters.act.actions[0] = "act_0";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -367,7 +125,7 @@ START_TEST(test_finish_action_last)
     /* VM is waiting for act_1 to finish.. */
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_DONE;
-    context->vm_context.parameters.act.actions[0] = "act_1";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_1");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -400,7 +158,7 @@ START_TEST(test_finish_action_nowait)
     /* Somehow, the VM set the action to RUN, but didn't call wait. */
     context->vm_context.parameters.call = VM_SET;
     context->vm_context.parameters.act.state = ACT_RUN;
-    context->vm_context.parameters.act.actions[0] = "act_0";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -433,7 +191,7 @@ START_TEST(test_finish_action_nowait2)
     /* VM is waiting for act_1 to finish. */
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_DONE;
-    context->vm_context.parameters.act.actions[0] = "act_1";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_1");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -469,7 +227,7 @@ START_TEST(test_finish_action_nowait3)
     /* VM is waiting for act_0 to go ACTIVE, not DONE. */
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_RUN;
-    context->vm_context.parameters.act.actions[0] = "act_0";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -504,7 +262,7 @@ START_TEST(test_run_action)
 
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_RUN;
-    context->vm_context.parameters.act.actions[0] = "act_0";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -541,7 +299,7 @@ START_TEST(test_run_action2)
 
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_DONE;
-    context->vm_context.parameters.act.actions[0] = "act_0";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -577,7 +335,7 @@ START_TEST(test_run_action_one)
     /* VM is waiting for act_0 to finish.. */
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_RUN;
-    context->vm_context.parameters.act.actions[0] = "act_0";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -613,7 +371,7 @@ START_TEST(test_run_action_last)
     /* VM is waiting for act_1 to finish.. */
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_RUN;
-    context->vm_context.parameters.act.actions[0] = "act_1";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_1");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -646,7 +404,7 @@ START_TEST(test_run_action_nowait)
     /* Somehow, the VM set the action to RUN, but didn't call wait. */
     context->vm_context.parameters.call = VM_SET;
     context->vm_context.parameters.act.state = ACT_RUN;
-    context->vm_context.parameters.act.actions[0] = "act_0";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -679,7 +437,7 @@ START_TEST(test_run_action_nowait2)
     /* VM is waiting for act_1 to finish. */
     context->vm_context.parameters.call = VM_WAIT;
     context->vm_context.parameters.act.state = ACT_RUN;
-    context->vm_context.parameters.act.actions[0] = "act_1";
+    sprintf(context->vm_context.parameters.act.actions[0], "act_1");
     context->vm_context.parameters.act.num_act = 1;
     current_process = context;
 
@@ -745,25 +503,6 @@ main(int argc, char *argv[])
 
     parse_args(argc, argv);
 
-    suite_add_tcase(s, tc);
-
-    tcase_add_test(tc, test_load_instructions);
-    tcase_add_test(tc, test_save_context);
-    tcase_add_test(tc, test_save_context_nodir);
-    tcase_add_test(tc, test_load_context);
-    tcase_add_test(tc, test_load_context_nofile);
-
-    tc = tcase_create("context");
-    suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_init_context);
-
-    tc = tcase_create("create_instance");
-    tcase_add_unchecked_fixture(tc, setup_create_instance,
-			      teardown_create_instance);
-    suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_create_instance);
-    tcase_add_test(tc, test_create_instance_noexist);
-
     tc = tcase_create("resume");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_resume);
@@ -799,4 +538,12 @@ main(int argc, char *argv[])
     suite_free(s);
     return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
+
+
+
+
+
+
+
 

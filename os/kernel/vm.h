@@ -31,7 +31,7 @@ typedef struct {
     union {
 	struct  {
 	    vm_act_state state;
-	    char *actions[MAX_ACT];
+	    char actions[MAX_ACT][256];
 	    int num_act;
 	} act;
 	char *query;		/* assert, select */
@@ -40,7 +40,7 @@ typedef struct {
 } vm_syscall_param_t; 
 
 typedef struct {
-    char *name;
+    char name[256];
     int value;
 } vm_vbinding_t;
 

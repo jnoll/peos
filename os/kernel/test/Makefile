@@ -14,15 +14,15 @@ LDFLAGS = -g -L/usr/local/lib
 PMLFILES = $(wildcard *.pml)
 MODELS = $(PMLFILES:.pml=.txt)
 
-CORE_OBJS = vm.o events.o process.o action.o
+CORE_OBJS = vm.o events.o process_table.o process.o action.o
 
 TEST_OBJS = test_util.o action.o
 
 # sources
-SOURCES = $(TEST_OBJS:.o=.c)
+SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 
 # These are in order of use.
-TESTS = test_vm test_action test_process test_events 
+TESTS = test_vm test_action test_process test_events test_process_table
 #test_assertions
 
 all: test driver vm_harness
@@ -55,6 +55,7 @@ test_%.o: ../%.c test_%.c test_util.h
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) -DUNIT_TEST $<
+
 xref:
 	ctags -x $(SOURCES) > $@
 
@@ -67,6 +68,12 @@ tags:	$(SOURCES)
 clean:
 	-rm *.o core
 
-vm.o: ../vm.h
-events.o: ../events.h ../vm.h
-driver.o: ../vm.h ../events.h
+# Dependencies.
+include .depend
+
+# GNU Make will automatically maintain .depend.  This rule allows explicit
+# recreation of dependencies.
+depend: .depend
+
+.depend: $(SOURCES)
+	$(CC) $(CFLAGS) -MM $^ > $@

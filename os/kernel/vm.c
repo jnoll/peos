@@ -71,7 +71,8 @@ int system_call(char *inst)
 
 	parameters->act.num_act = 0;
 	while ((token = strtok(0, " \n\t"))) {
-	    parameters->act.actions[parameters->act.num_act++] = token;
+	    sprintf(parameters->act.actions[parameters->act.num_act++], 
+		    "%s", token);
 	}
     } else if (strncmp(op, "select", strlen("select")) == 0
 	       || strncmp(op, "assert", strlen("assert")) == 0) {

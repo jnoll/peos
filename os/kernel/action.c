@@ -40,12 +40,12 @@ peos_action_t *peos_find_actions(vm_act_state state, peos_action_t *actions, int
 		size += INST_ARRAY_INCR;
 		result = (peos_action_t *)realloc(result, size * sizeof(peos_action_t));
 	    }
-	    result[num].name = p->name;
+	    strcpy(result[num].name, p->name);
 	    result[num].state = p->state;
 	    num++;
 	}
     }
-    result[num].name = NULL;
+    result[num].name[0] = '\0';
     return result;
 }
 

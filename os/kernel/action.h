@@ -1,7 +1,9 @@
 #ifndef _ACTION_H
 #define _ACTION_H
+#include "vm.h"
+#include "action.h"
 typedef struct {
-    char *name;
+    char name[256];
     vm_act_state state;
 } peos_action_t;
 

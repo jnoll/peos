@@ -53,7 +53,7 @@ START_TEST(test_list_actions)
     acts = peos_find_actions(ACT_READY, actions, 10);
 
     /* Post: list of actions in READY state. */
-    for (p = acts; p->name; p++) {
+    for (p = acts; p->name[0]; p++) {
 	fail_unless(p->state == ACT_READY, NULL);
     }
     fail_unless((p - acts) == 0, "action count wrong");
@@ -66,7 +66,7 @@ START_TEST(test_list_actions)
     acts = peos_find_actions(ACT_READY, actions, 10);
 
     /* Post: one action in READY state. */
-    for (p = acts; p->name; p++) {
+    for (p = acts; p->name[0]; p++) {
 	fail_unless(p->state == ACT_READY, NULL);
     }
     fail_unless((p - acts) == 1, "action count wrong");
@@ -80,7 +80,7 @@ START_TEST(test_list_actions)
     acts = peos_find_actions(ACT_READY, actions, 10);
 
     /* Post: two actions in READY state. */
-    for (p = acts; p->name; p++) {
+    for (p = acts; p->name[0]; p++) {
 	fail_unless(p->state == ACT_READY, NULL);
     }
     fail_unless((p - acts) == 2, "action count wrong");
@@ -93,7 +93,7 @@ START_TEST(test_list_actions)
     acts = peos_find_actions(ACT_READY, actions, 10);
 
     /* Post: three actions in READY state. */
-    for (p = acts; p->name; p++) {
+    for (p = acts; p->name[0]; p++) {
 	fail_unless(p->state == ACT_READY, NULL);
     }
     fail_unless((p - acts) == 3, "action count wrong");

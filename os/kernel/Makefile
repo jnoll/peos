@@ -3,6 +3,7 @@ CC = gcc -g
 
 CFLAGS = -g -I.
 TCFLAGS = -g -I/usr/local/include
+
 # keep track of dependencies automatically
 .KEEP_STATE:
 
@@ -15,13 +16,12 @@ TLDFLAGS = $(LDFLAGS) -L/usr/local/lib
 
 # objects
 OBJS = \
-dispatch.o \
-server.o \
 $(CORE_OBJS)
 
 CORE_OBJS = \
 events.o \
 vm.o \
+process_table.o \
 process.o \
 action.o
 
@@ -43,10 +43,12 @@ test: $(CORE_OBJS)
 xref:
 	ctags -x $(SOURCES) > $@
 
+tags:	TAGS ctags
+
 TAGS:	$(SOURCES)
 	etags $(SOURCES)
 
-tags:	$(SOURCES)
+ctags:	$(SOURCES)
 	ctags $(SOURCES)
 
 clean:
@@ -54,4 +56,13 @@ clean:
 
 dist:
 	tar cvf kernel.tar --exclude-from exclude -C .. kernel
-.PHONY:	test
+
+# Dependencies.
+include .depend
+
+# GNU Make will automatically maintain .depend.  This rule allows explicit
+# recreation of dependencies.
+depend: .depend
+
+.depend: $(SOURCES)
+	$(CC) $(CFLAGS) -MM $^ > $@

@@ -2,3 +2,4 @@
 driver test_action test_assertions test_events test_process test_vm vm_harness
 *.txt
 *.pid
+.depend

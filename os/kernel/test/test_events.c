@@ -48,7 +48,7 @@ int save_context(vm_context_t *c, peos_action_t *a, int n, char *file)
 {
     FILE *f = fopen(file, "w");
     if (f) {
-	fprintf(f, "%s\n", p1_context);
+	fprintf(f, "%s\n", "0 start");
 	return fclose(f);
     }
     return -1;
@@ -133,17 +133,8 @@ START_TEST(test_run_process)
     setenv("COMPILER_DIR", instance_dir, 1);
     
     for (i = 0; i < 10; i++) {
-	struct stat b;
-
 	fail_unless(peos_run(model, 0) != 0, 
 		    "failed to create instance");
-
-#ifdef NOTUSED
-	/* Post: context exists. */
-	if (stat(iname, &b) != 0) {
-	    fail("no context file");
-	}
-#endif
     }
 
     sprintf(cmd, "rm -r %s", instance_dir);
