@@ -142,6 +142,7 @@ script:
 	${V}echo "rm -f proc_table.dat.xml" >>gtkpeos
 	${V}echo "${bin}/peos-gui" >>gtkpeos
 	${V}echo "rm gtk image" >>gtkpeos
+	${V}echo "chmod -f 0644 proc* pelog message event.log" >>gtkpeos
 	${V}echo "fi" >>gtkpeos
 	${V}chmod +x gtkpeos
 	${V}echo "...done creating gtkpeos executable in gtk-gui..."
