@@ -28,6 +28,7 @@ char *action;
 char *username;
 char *password;
 int i;
+int createForm = 0;
 
 void showuser();
 int getstdinput();
@@ -40,8 +41,12 @@ int main() {
 	cfg = readconfig(CONFIG_LOCATION);
 	if (cfg != NULL) {
 
-		//current_msg = add_message(current_msg,"Welcome to PML<br>\n<br>\n");
+                //this is weird, but if you don't have the following message in the current_msg
+                //and the same length then the program doesn't behave properly
+		current_msg = add_message(current_msg,"                        \n");
+
 		getcgiinput();
+
 
 		if (strcasecmp(COMMAND,"status") == 0) {
 			pml_available();
@@ -54,18 +59,15 @@ int main() {
 			pml_done(PARA1,PARA2);
 		}
 		if (strcasecmp(COMMAND,"create") == 0) {
-			pml_create("");
-		}
-		if (strcasecmp(COMMAND,"createpre") == 0) {
 			pml_create(PARA1);
 		}
 	}
 	else {
 		current_msg = add_message(current_msg,"Could not find config file.<br>\n");
 	}
-	
-	
-	
+
+
+
     /** Print the CGI response header, required for all HTML output. **/
     /** Note the extra \n, to send the blank line.                  **/
     printf("Content-type: text/html\n\n") ;
@@ -105,8 +107,12 @@ int main() {
     printf("<TD VALIGN=\"TOP\" WIDTH=\"100%\" HEIGHT=\"100%\">\n");
     printf("%s\n", current_msg);
 
-    printf("COMMAND =_%s_\n", COMMAND);
-    printf("command =_%s_\n", command);
+    //printf("COMMAND =_%s_\n", COMMAND);
+    //printf("command =_%s_\n", command);
+    //printf("PARA1 =_%s_\n", PARA1);
+    //printf("PARA2 =_%s_\n", PARA2);
+    //printf("action =_%s_\n", ACTION);
+
     
     //----------------------------------------------------
 
@@ -123,7 +129,7 @@ int main() {
     printf("</html>\n");
 
     //----------------------------------------------------
-
+	
     /** Free anything that needs to be freed **/
     for (i=0; cgivars[i]; i++) free(cgivars[i]) ;
     free(cgivars) ;
@@ -147,8 +153,7 @@ int getcgiinput()
 {
 char *temp = (char *)malloc(BUFSIZ * sizeof(char));
 char *subpos;
-
-
+char *tempCommand;
 
     /** First, get the CGI variables into a list of strings         **/
     cgivars= getcgivars() ;
@@ -157,11 +162,19 @@ char *subpos;
     for (i=0; cgivars[i]; i+= 2) {
     
 		if(strcmp(cgivars[i], "command")==0) {
-			command = cgivars[i+1];
-                        if (strcasecmp(cgivars[i+1],"createpre") == 0) {
-                            //strncpy(cgivars[i+1],"create",80);
+                        //if the first character of the commnad is 1 it means that we are going
+                        //to create list as a form.
+
+                        if (cgivars[i+1][0] == '1') {
+                            createForm = 1;
+                            tempCommand = cgivars[i+1]+1;
+                            strncpy(cgivars[i+1], tempCommand, 8);
+                            //cgivars[i+1] = "create";
                         }
-                        
+
+			command = cgivars[i+1];
+
+
 		}
 		if(strcmp(cgivars[i], "action")==0) {
 			action = cgivars[i+1];
@@ -180,12 +193,6 @@ char *subpos;
 	strncpy(ACTION,action,80);
 	sscanf(ACTION,"%s %s",PARA1,PARA2);
 	strncpy(COMMAND,command,80);
-
-        if (strcasecmp(COMMAND,"createpre") == 0) {
-            command = "create";
-            strncpy(COMMAND,"create",80);
-        }
-
 
 }
 
@@ -289,21 +296,21 @@ int pml_create(char *model)
 {
 	s = contact(s,NAME,PASS);
 	if (strlen(s.errmessage) == 0) {
-/*
+
 		if (create(s,model)) {
 			current_msg = add_message(current_msg,model);
 			current_msg = add_message(current_msg," is successfully created.<br>\n<br>\n");
 			current_msg = add_message(current_msg,"To get your next available task, reply this message.<br>\n");
 		}
 		else {
-*/
+
 			//current_msg = add_message(current_msg,model);
 			//if (strlen(model) != 0)
 			//	current_msg = add_message(current_msg," can not be found.<br>\n<br>\n");
-			current_msg = add_message(current_msg,"<b>You have the following model(s) available: </b>\n");
+			current_msg = add_message(current_msg,"<b>Please use the following model(s):</b>\n");
 			current_msg = list(s,current_msg);
 
-//		}
+		}
 		logout(s);
 	}
 }

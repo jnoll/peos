@@ -1,10 +1,11 @@
 function writeHiddenForm(){
     document.writeln("<form method=\"post\" action = \"webui.cgi\" name = \"webuiForm\">");
-    document.writeln("<INPUT TYPE = \"hidden\" NAME = \"command\">");
-    document.writeln("<INPUT TYPE = \"hidden\" NAME = \"action\">");
-    document.writeln("<input type = \"hidden\" name = \"sessionid\">");
     document.writeln("<input type = \"hidden\" name = \"username\">");
     document.writeln("<input type = \"hidden\" name = \"password\">");
+    document.writeln("<INPUT TYPE = \"hidden\" NAME = \"command\">");
+    document.writeln("<INPUT TYPE = \"hidden\" NAME = \"action\">");
+    //we don't want to include the sessionid because it may cause problem
+    //document.writeln("<input type = \"hidden\" name = \"sessionid\">");
     document.writeln("</form>");
 }
 
@@ -33,7 +34,7 @@ function writeMenu(userType){
     //for commands requiring parameters we take them to a different page
     //for commands NOT requiring parameters we invoke a cgi program that can generate the page
     document.writeln("<p><A href=\"javascript:invokeAction('create', '')\">List models<a>");
-    document.writeln("<p><A href=\"create.html\">Create models<a>");
+    document.writeln("<p><A href=\"javascript:invokeAction('1create', '')\">Create models<a>");
     document.writeln("<p><p><A href=\"javascript:invokeAction('status', '')\">List available actions<a>");
     document.writeln("<p><A href=\"run.html\">Run processes<a>");
     document.writeln("<p><p><A href=\"javascript:invokeAction('running', '')\">List running processes<a>");

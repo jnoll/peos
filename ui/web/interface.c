@@ -263,7 +263,7 @@ int modelcount = 0;
                         ret_value = add_message(ret_value,"<li>");
 			modelcount++;
 			ret_value = add_message(ret_value,response->value);
-			ret_value = add_message(ret_value,"\n");
+			ret_value = add_message(ret_value,"<br>\n");
 		}
 		freeresponse(response);
 	} while(response->cont == 1);
