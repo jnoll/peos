@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.50 2005/01/21 02:25:30 sbeeby Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.51 2005/02/13 00:59:18 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -598,7 +598,7 @@ void print_graph(Graph g, FILE *fp)
 
         for(i = 0; i < ListSize(n->predecessors); i++) {
        	    parent = (Node) ListIndex(n->predecessors, i);
-            if(ORDER(parent) > ORDER(n)) {
+            if(ORDER(parent) >= ORDER(n)) {
 	        fprintf(fp, "<iteration>\n");
 	    }
         }
@@ -625,7 +625,7 @@ void print_graph(Graph g, FILE *fp)
 
         for(i = 0; i < ListSize(n->successors); i++) {
        	    child = (Node) ListIndex(n->successors, i);
-            if(ORDER(child) < ORDER(n)) {
+            if(ORDER(child) <= ORDER(n)) {
 	        fprintf(fp, "</iteration>\n");
 	    }
 	}
@@ -648,6 +648,7 @@ int save_proc_table_xml()
     char *xml_filename = (char *) malloc((strlen(process_table_filename)+strlen(".xml")+1) * sizeof(char));
     strcpy(xml_filename, process_table_filename);
     strcat(xml_filename, ".xml");
+
     
 
     fp = fopen(xml_filename, "w");
