@@ -170,7 +170,6 @@ public class JPMLDataView extends javax.swing.application.datamodel.JDataView
       			icon = new ImageIcon( IMAGE_PATH + "Process.gif" );
       			m_Dialog = new ProcessPropertyDialog(
           			getParentFrame(), componentName, icon);
-System.out.println("??");
       			m_Dialog.pack();
       			m_Dialog.setLocationRelativeTo( this );
       			m_Dialog.setVisible(true);
