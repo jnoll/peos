@@ -175,7 +175,7 @@ dist: all Makefile-release
 	${MAKE} -s collect_libs
 	cp ${C_SRC} ${H_SRC} *.pml ${TREETOP}
 	cp Makefile-release ${TREETOP}/Makefile
-	cp -r ./image ./gtk README peos exclude_libs ${TREETOP}
+	cp -r ./image ./gtk ./calc-rpm README peos exclude_libs ${TREETOP}
 	@echo start of peos.tar.gz build
 	tar -zcf peos.tar.gz ${TREETOP}
 	@echo end of peos.tar.gz build
