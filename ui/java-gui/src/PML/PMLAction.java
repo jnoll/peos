@@ -55,12 +55,14 @@ public class PMLAction {
   /////////////////////////////////////////////////////////////////////////////
   // This function parses thee leading and trailing '"' from a string.       //
   /////////////////////////////////////////////////////////////////////////////
-  public void trimQuotes(String stringToTrim)
+  static public String trimQuotes(String stringToTrim)
   {
 
     int firstQuote = stringToTrim.indexOf("\"");
     int secondQuote = stringToTrim.indexOf("\"", firstQuote + 1);
-    stringToTrim = stringToTrim.substring(firstQuote + 1, secondQuote - 1);
+    String trimmedString = stringToTrim.substring(firstQuote + 1, 
+                                                  secondQuote);
+    return trimmedString;
   }
       
 
@@ -106,7 +108,7 @@ public class PMLAction {
       }
 
       String fieldValue = t.nextToken();
-      trimQuotes(fieldValue);
+      fieldValue = trimQuotes(fieldValue);
 
       // Insert the field into the map.
       FieldMap.put(fieldName.trim(), fieldValue);

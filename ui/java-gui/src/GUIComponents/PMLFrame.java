@@ -11,7 +11,7 @@ import PML.*;
 import Utils.*;
 
 public class PMLFrame extends JFrame
-   implements ActionListener, PMLController
+   implements PMLController
 {  
   public PMLFrame()
   {  
@@ -26,7 +26,8 @@ public class PMLFrame extends JFrame
 
     addWindowListener(new LoginAction("Login", this, loginDialog));
 
-    addWindowListener(new LogoutAction("Logout", this));
+    FramesLogoutAction = new LogoutAction("Logout", this);
+    addWindowListener(FramesLogoutAction);
 
     Mbar = new PMLMenuBar(this);
     setJMenuBar(Mbar);
@@ -118,17 +119,18 @@ public class PMLFrame extends JFrame
     if (frame == null) {
       frame = new PMLActionFrame(this, action);
       ActionFrames.add(frame);
+    	Point location = this.getLocation();
+    	frame.setLocation(location.x, location.y);
     }
-    frame.show();
+
+    frame.pack();
+    frame.setVisible(true);
   }
 
-  public void actionPerformed(ActionEvent evt)
-  {  
-    String arg = evt.getActionCommand();
-    System.out.println(arg);
-    if(arg.equals("Exit")) {
-     System.exit(0);
-    }
+  public void DisplayError(String errorMessage)
+  {
+    JOptionPane.showMessageDialog(this, errorMessage, "Error",
+                                  JOptionPane.ERROR_MESSAGE);
   }
 
   public static void main(String[] args)
@@ -166,4 +168,5 @@ public class PMLFrame extends JFrame
   private boolean UserLoggedIn;
   private PMLMenuBar Mbar; 
   private JSplitPane SplitPane;
+  private LogoutAction FramesLogoutAction;
 }

@@ -13,13 +13,16 @@ all:
 	cd Kernel; make all
 	cd Commands; make all
 	cd GUIComponents; make all
+	make jar
+
+jar:
 	cd ${JAVA_CLASS_PATH}; ${JAVAR} -cmf0 ../src/manifest.tmp  pml_gui.jar \
 		PMLCommands/*.class \
 		GUIComponents/*.class \
 		Kernel/*.class \
 		PML/*.class \
 		Utils/*.class
-
+	
 install:
 	cp ${JAVA_CLASS_PATH}/pml_gui.jar ../../../bin/.
 

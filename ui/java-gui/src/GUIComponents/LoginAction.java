@@ -68,7 +68,7 @@ class LoginAction extends AbstractAction
     }
 
     catch (IOException e) {
-     System.out.println("Error: " + e);
+     MainController.DisplayError(e.getMessage());
     } 
   }
 

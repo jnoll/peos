@@ -18,6 +18,8 @@ class LoginDialogBox extends JDialog
   public LoginDialogBox(JFrame parent)
   {  
     super(parent, "Connect", true);
+
+    DialogParent = parent;
     Container contentPane = getContentPane();
 
     // Layout the labels and Text fields in a panel
@@ -80,6 +82,7 @@ class LoginDialogBox extends JDialog
   public boolean showDialog(ConnectInfo info)
   {  
     Ok = false;
+    setLocationRelativeTo(DialogParent);
     show();
     if (Ok)
     {  
@@ -101,6 +104,7 @@ class LoginDialogBox extends JDialog
 
   private JButton OkButton;
   private JButton CancelButton;
+  private JFrame DialogParent;
 }
 
                       

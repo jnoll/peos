@@ -8,6 +8,7 @@ import java.util.*;
 import java.io.*;
 
 import PML.*;
+import Utils.*;
 import PMLCommands.*;
 
 /*
@@ -31,11 +32,15 @@ class SelectAction extends AbstractAction
 
   public void actionPerformed(ActionEvent evt)
   {  
-    String actionName = (String)ActionListComp.getSelectedValue();
-
-    PMLAction action = MyActions.Find(actionName);
 
     try {
+      String actionName = (String)ActionListComp.getSelectedValue();
+
+    	if (actionName == null) {
+        throw new PMLException(
+          "No Action Selected. Choose an action from the action list box");
+      }
+      PMLAction action = MyActions.Find(actionName);
       // Have to make sure Action is not already running
       PMLProcessList runningProcesses = PMLCommand.GetRunningProc();
 
@@ -56,7 +61,7 @@ class SelectAction extends AbstractAction
     }
 
     catch (IOException e) {
-     System.out.println("Error: " + e);
+     MainController.DisplayError(e.getMessage());
     }
 
   }

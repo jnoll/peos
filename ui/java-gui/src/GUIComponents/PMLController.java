@@ -22,4 +22,6 @@ public interface PMLController
   public void ActionSelected(PMLAction action);
 
   public void RemoveActionFrame(PMLActionFrame frame);
+ 
+  public void DisplayError(String errorMessage);
 }

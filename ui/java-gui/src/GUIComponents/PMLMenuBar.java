@@ -13,9 +13,7 @@ public class PMLMenuBar extends JMenuBar
 {  
   public PMLMenuBar(PMLFrame parent)
   {  
-
-    // demonstrate enabled/disabled items
-
+    
     JMenu fileMenu = new JMenu("File");
     fileMenu.addMenuListener(this);
 
@@ -32,9 +30,9 @@ public class PMLMenuBar extends JMenuBar
 
     CreateMenuItem = new ActionMenuItem(createModel);
 
-    Action logoutAction = new LogoutAction("Logout", parent);
+    LogoutActionForMenuBar = new LogoutAction("Logout", parent);
 
-    LogoutMenuItem = new ActionMenuItem(logoutAction);
+    LogoutMenuItem = new ActionMenuItem(LogoutActionForMenuBar);
 
     this.add(makeMenu(fileMenu,
              new Object[]
@@ -46,8 +44,6 @@ public class PMLMenuBar extends JMenuBar
                "Exit"
              },
              this));
-
-    // demonstrate mnemonics
 
     JMenu helpMenu = new JMenu("Help");
     helpMenu.setMnemonic('H');
@@ -70,7 +66,8 @@ public class PMLMenuBar extends JMenuBar
     String arg = evt.getActionCommand();
     System.out.println(arg);
     if(arg.equals("Exit")) {
-     System.exit(0);
+      LogoutActionForMenuBar.PerformLogout();
+      System.exit(0);
     }
   }
 
@@ -140,6 +137,7 @@ public class PMLMenuBar extends JMenuBar
     CreateMenuItem.setEnabled(false);
   }
 
+  private LogoutAction LogoutActionForMenuBar;
   private JMenuItem LoginMenuItem;
   private JMenuItem LogoutMenuItem;
   private JMenuItem CreateMenuItem;

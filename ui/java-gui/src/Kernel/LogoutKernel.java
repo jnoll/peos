@@ -15,11 +15,14 @@ public class LogoutKernel extends KernelCommand {
 
   public void Execute() throws IOException
   {
-    // Write the command string to the socket.
-    SocketWriter.println("logout");
 
-    // deinialize the socket. 
-    DeInitialize();
+    if (SocketWriter != null) {
+      // Write the command string to the socket.
+      SocketWriter.println("logout");
+
+      // deinialize the socket. 
+      DeInitialize();
+    }
 
   }
 }

@@ -25,7 +25,7 @@ public class PMLActionFrame extends JFrame
     MainController = cntrl;
     ActionForFrame = action;
     setTitle(action.GetName());
-    setSize(300, 300);
+    //setSize(200, 200);
 
     Container contentPane = getContentPane();
 
@@ -72,6 +72,15 @@ public class PMLActionFrame extends JFrame
 
     // Add the button panel to the action frames content pane. 
     contentPane.add(buttonPanel, "South");
+
+    try {
+      ExecTool(action);
+    }
+
+    catch (IOException e) {
+      System.out.println("Error: " + e);
+    }
+
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -219,7 +228,7 @@ public class PMLActionFrame extends JFrame
     JScrollPane areaScrollPane = new JScrollPane(textArea);
     areaScrollPane.setVerticalScrollBarPolicy(
     JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    areaScrollPane.setPreferredSize(new Dimension(250, 250));
+    areaScrollPane.setPreferredSize(new Dimension(400, 250));
     areaScrollPane.setBorder(
         BorderFactory.createCompoundBorder(
         BorderFactory.createCompoundBorder(
@@ -230,17 +239,27 @@ public class PMLActionFrame extends JFrame
     return areaScrollPane;
   }
 
-//  private void ExecTool(PMLAction action)
-//  {
-//    String tool = ActionForFrame.GetFieldValue("tool");
-//  
-//    if (tool != null) {
-//      String requires = ActionForFrame.GetFieldValue("requires");
-//      String execStr = PMLConfig.GetConfig().GetStringValue(tool);      
-//      if (execStr != null) {
-//        execStr
-//
-//  }
+  private void ExecTool(PMLAction action) throws IOException
+  {
+    String tool = ActionForFrame.GetFieldValue("tool");
+    System.out.println("tool : " + tool); 
+
+    if (tool != null) {
+      String requires = ActionForFrame.GetFieldValue("requires");
+      String provides = ActionForFrame.GetFieldValue("provides");
+      String execStr = PMLConfig.GetConfig().GetStringValue(tool);
+      System.out.println("before execStr: " + execStr); 
+      if (execStr != null) {
+        int requiresIndex = execStr.indexOf("%r");
+        if (requiresIndex != StringNotFound) {
+          execStr = execStr.substring(0, requiresIndex) + requires +
+                    execStr.substring(requiresIndex + 2);
+        }
+        System.out.println("execStr: " + execStr); 
+        Runtime.getRuntime().exec(execStr);
+      }
+    }
+  }
 
   public PMLAction GetAction()
   {
@@ -252,5 +271,6 @@ public class PMLActionFrame extends JFrame
 
   // Action that the action frame is displaying.
   private PMLAction ActionForFrame;
+  static private int StringNotFound = -1;
 }
 
