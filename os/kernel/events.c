@@ -8,10 +8,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <dirent.h>
 #include <string.h>
+#ifndef PALM
+#include <dirent.h>
 #include <assert.h>
 #include <time.h>
+#endif
 #include "process.h"
 #include "events.h"
 #include "resources.h"

@@ -5,7 +5,9 @@
  */
 #include <string.h>
 #include <stdio.h>
+#ifndef PALM
 #include <assert.h>
+#endif
 #include <pml/scanner.h>	/* defines global 'filename' */
 #include <pml/parser.h>		/* defines global 'program' */
 #include <pml/tokens.h>		/* defines ACTION macro */

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.51 2005/02/13 00:59:18 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.52 2005/02/15 08:52:55 sbeeby Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -18,11 +18,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <unistd.h>
 #include <sys/types.h>
+#ifndef PALM
+#include <assert.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#endif
 #include <fcntl.h>
 #include <errno.h>
 #include "graph.h"

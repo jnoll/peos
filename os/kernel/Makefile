@@ -1,6 +1,6 @@
 # compiler:
-CC = gcc
-PALM_CC = m68k-palmos-gcc
+CC = gcc 
+
 
 CFLAGS = -g -I../.. -Wall
 
@@ -16,7 +16,7 @@ LDFLAGS = -g -L../../lib
 
 # objects
 OBJS = \
-$(CORE_OBJS)
+$(PALM_CORE_OBJS)
 
 PALM_CORE_OBJS = \
 action.o \
@@ -42,7 +42,7 @@ peos: peos.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) 
 
 palmpeos: peos.o $(PALM_CORE_OBJS)
-	$(PALM_CC) $(LDFLAGS) -dPALM -o $@ $^ $(LIBS) 
+	$(CC) $(LDFLAGS) -dPALM -o $@ $^ $(LIBS) 
 
 daemon: enactment_daemon.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap

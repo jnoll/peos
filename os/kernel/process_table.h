@@ -6,6 +6,10 @@
 
 #define PEOS_MAX_PID (10)
 
+#ifdef PALM
+#define PATH_MAX 256
+#endif
+
 #ifdef UNIT_TEST
 #define MAX_LOCK_ATTEMPTS (1)
 #else

@@ -1,7 +1,6 @@
 
 #define YYDEBUG
 
-#include <unistd.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +8,11 @@
 #include <stdio.h>
 #ifndef PALM
 #include "tclinterp.h"
+#include <unistd.h>
+#else
+#include <PalmOS.h>
 #endif
+
 #include "events.h"
 #include "process_table.h"
 #include "pmlheaders.h"
@@ -93,8 +96,11 @@ int notify(int pid, char *action, char *event)
         }
 	else return 1;
     }
-
+#ifndef PALM
     fprintf(stderr,"Unknown event\n");
+#else
+    printf("Unknown event\n");
+#endif
     return -1;
 }
 
@@ -131,6 +137,11 @@ void set_login_name(char *loginname)
     peos_set_process_table_file(process_filename);
     peos_set_loginname(loginname);
 }
+
+
+
+#ifndef PALM
+/* stub out main because PalmPilot will not use command line interpreter */
 
 int
 main (int argc, char **argv)
@@ -362,6 +373,6 @@ main (int argc, char **argv)
     return 0;
 }
 		   
-	
+#endif
 
 		   
