@@ -1,14 +1,38 @@
 #!/usr/bin/expect -f
 #
 
+# This expect script prints a list of the available actions bound to 
+# the user specified on the command line.
+#
+# Invoke as:
+# expect -f available.exp host port user password
+
+# Expect is a testing tool built using John Ousterhout's TCL scripting
+# language.  The man page for expect (expect(1)) is a good reference
+# to expect's features; I have not been able to find a good tutorial
+# on expect, other than the O'Reilly book Exploring Expect.  The
+# expect web site is http://expect.nist.gov/.  
+#
+# Since expect uses TCL, you will need to know something about this
+# scripting language to understand these scripts.  A TCL tutorial can
+# be found at:
+# http://hegel.ittc.ukans.edu/topics/tcltk/tutorial-noplugin.html.  A
+# list of other TCL resources is at:
+# http://www.sco.com/Technology/tcl/Tcl.html. Finally, man pages on
+# all TCL commands can be found in section 'n' of the Linux manual:
+# type 'man n command' to see the page about "command".
+
 # Argument parsing.
-if {$argc < 2} {
-    puts "Usage: expect $argv0 host port"
+if {$argc < 4} {
+    puts "Usage: expect $argv0 host port user password" 
     exit
 }
 
 set host [lindex $argv 0]
 set port [lindex $argv 1]
+set user [lindex $argv 2]
+set password [lindex $argv 3]
+
 
 # Connect to PEOS server via telnet.
 set timeout -1
@@ -18,7 +42,7 @@ match_max 100000
 expect  "Escape*\r"
 
 # We are connected; send login command to PEOS and wait for reply.
-send -- "login jnoll test\r"
+send -- "login $user $password\r"
 expect  "100 login successful\r"
 
 # Login successful; get available tasks by sending 'available' message.
@@ -34,12 +58,10 @@ expect {
 	
 	# Split the output by lines.
 	set lines [split $expect_out(buffer) "\n"]
-	puts stderr "[llength $lines] lines"
 
 	# Grab the process and action from each line.
 	set actions {}
 	foreach l $lines {
-	    puts stderr "line: $l"
 	    # Regexp compares a string to a regular expression, and optionally
 	    # extracts subexpressions into variables.   The following looks 
 	    # for a regular expression consisting of the string "100-",
@@ -50,7 +72,6 @@ expect {
 	    
 	    # (See regexp(n) man page.)
 	    if {[regexp "100-(\[^ \]+)\[ \t\]+(\[^ \]+)\[ \].*" $l dummy process action]==1} {
-		puts stderr "match: $process $action"
 		lappend actions [list $process $action]
 	    }
 	}

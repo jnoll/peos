@@ -3,9 +3,14 @@
 # This script performs any available actions bound to the specified user, 
 # by repeatedly querying the PEOS server for available actions, then 
 # sending "run" and "done" commands for those actions.
+#
+# Invoke as follows:
+# expect -f enact.exp host port user password
+
 
 # This TCL procedure performs an action by sending a "run" followed by a "done"
-# command.  It is called by the enact procedure.
+# command.  It is called by the enact procedure.  (See the proc(n) man page 
+# for a description of TCL procedures.)
 proc run_action {process action} {
     send -- "run $process $action\r"
     expect  "100 *\r"
@@ -18,20 +23,44 @@ proc run_action {process action} {
     sleep .1
 }
 
+
+# This TCL procedure performs the first available action, if any.  It sends 
+# the "available" command, then grabs the first line and extracts the process
+# and action identifiers if present; these are passed to the run_action 
+# procedure above.
 proc enact {} {
+    # Ask the kernel for available actions.
     send "available\r"
 
+    # Wait for the reply.  If any actions are returned, the regular expression
+    # will match the process id and action name of the first line as 
+    # subexpressions, so they can be passed to the run_action procedure.
     expect  { 
 	-re "100-(\[^ \]+)\[ \](\[^ \]+)\[ \].*\r\n100\[ \t\r\n]*$" {
+	    # First parenthesized sub-expression match is in 
+	    # expect_out(1,string) (see the expect(1) man page).  This
+	    # is the process id.
 	    set process $expect_out(1,string)
+
+	    # The second parenthesized sub-expression match is in 
+	    # expect_out(2,string);  this is the action name.
 	    set action $expect_out(2,string)
-	    puts stderr "Process: $process Action: $action Buffer: $expect_out(buffer)"
+
+	    # Now run the action.
 	    run_action $process $action
+
+	    # Signal an action was available with the return code.
 	    return 1;
-	}\
+	}
 	-re "100\[ \t\r\n\]*$" {
-	    puts stderr "No actions available."
+	    # No actions available; return 0 to signal this fact.
 	    return 0;
+	}
+	-re "500\[ \t\r\n\]*$" {
+	    # This is an error condition; exit the test.
+	    puts stderr [format "Error executing 'available' command: %s" \
+		    $expect_out(buffer)]
+	    exit 1;
 	}
     }
 }
@@ -47,6 +76,7 @@ set port [lindex $argv 1]
 set user [lindex $argv 2]
 set password [lindex $argv 3]
 
+
 # Connect to PEOS server via telnet.
 set timeout -1
 spawn telnet $host $port
@@ -58,51 +88,14 @@ expect  "Escape*\r"
 send -- "login $user $password\r"
 expect  "100 login successful\r"
 
-# Login successful; get available tasks by sending 'available' message.
-send -- "available\r"
+# Login successful.  Now, loop asking for available actions, then performing
+# one of them.
 
-# Successful requests are acknowledged with "100" reply lines.  "500"
-# indicates an error.  
-expect {
-    "100\[ \t\r\n\]" {
-	# Expect puts the output from the server into the TCL array element
-	# expect_out(buffer).  We can use this to extract the actions into 
-	# a TCL list.
-	
-	# Split the output by lines.
-	set lines [split $expect_out(buffer) "\n"]
-	puts stderr "[llength $lines] lines"
+while {[enact] != 0} {
+    puts "Action performed."
+} 
 
-	# Grab the process and action from each line.
-	set actions {}
-	foreach l $lines {
-	    puts stderr "line: $l"
-	    # Regexp compares a string to a regular expression, and optionally
-	    # extracts subexpressions into variables.   The following looks 
-	    # for a regular expression consisting of the string "100-",
-	    # followed by a subexpression (the process name) consisting of 
-	    # any characters except a space, followed by a space, followed by
-	    # another subexpression (the action name) consisting of non-space
-	    # characters, followed by the rest of the line.
-	    
-	    # (See regexp(n) man page.)
-	    if {[regexp "100-(\[^ \]+)\[ \t\]+(\[^ \]+)\[ \].*" $l dummy process action]==1} {
-		puts stderr "match: $process $action"
-		lappend actions [list $process $action]
-	    }
-	}
-	
-	# Now print out the list of actions.
-	foreach act $actions {
-	    set process [lindex $act 0]
-	    set action [lindex $act 1]
-	    puts stdout [format "Process: %s Action: %s" $process $action]
-	}
-    }
-    "500*\r" {
-	puts stdout [format "Error processing available command: %s" $output(buffer)]
-    }
-}
+puts "No more actions."
 
 # Exit PEOS session.
 send -- "exit\r"
