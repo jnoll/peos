@@ -11,6 +11,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 #include "vm.h"
 #include "process.h"
 #include "events.h"
@@ -105,7 +106,11 @@ int peos_abort_action(peos_action_t action)
 int peos_run(char *process, int line)
 {
     int pid;
-    char *model_file = find_model_file(process);
+    char *model_file = find_model_file(process), times[20];
+    FILE *file;
+    struct tm *current_info;
+    time_t current;
+
     if (model_file == NULL) {
 	fprintf(stderr, "peos_run: can't find model file for process %s\n",
 		process);
@@ -113,6 +118,14 @@ int peos_run(char *process, int line)
     }
 
     pid = peos_create_instance(model_file);
+
+    time(&current);
+    current_info = localtime(&current);
+    current = mktime(current_info);
+    strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
+    file = fopen("event.log", "a");
+    fprintf(file, "%s jnoll start %s %d\n", times, process, pid);
+    fclose(file);
     
     if (pid >= 0) 
     {  
@@ -121,8 +134,8 @@ int peos_run(char *process, int line)
 	fprintf(stderr, "peos_run: can't run process %s\n",
 		process);
 	return -1;
-	return -1;
-   }
+    }
+
 }
 
 

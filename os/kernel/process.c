@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.7 2003/08/29 22:46:30 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.8 2003/09/04 20:40:29 wchu Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "vm.h"
 #include "process.h"
 #include "graph_engine.h"
@@ -86,6 +87,24 @@ char *get_field(int pid, char *act, peos_field_t field)
 
 vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
 {
+    FILE *file;
+    struct tm *current_info;
+    time_t current;
+    char times[20], *this_state;
+
+    this_state = act_state_name(state);
+
+    time(&current);
+    current_info = localtime(&current);
+    current = mktime(current_info);
+
+    strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
+
+    file = fopen("event.log", "a");
+    fprintf(file, "%s jnoll %s %s resource(x)\n", times, this_state, action);
+    
+    fclose(file);
+
     return handle_action_change_graph(pid,action,state); 
 }
 
