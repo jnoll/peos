@@ -61,11 +61,11 @@ function deleteCookie () {
 
 <TABLE CELLSPACING="0"  CELLPADDING="10" BORDER="0" WIDTH="100%" HEIGHT="100%" ALIGH="CENTER">
 
-<TR><TD HEIGHT="120" ALIGH="CENTER" COLSPAN=2 BGCOLOR="94D6E7">
+<TR><TD HEIGHT="75" ALIGH="CENTER" COLSPAN=2 BGCOLOR="94D6E7">
 <P><img src="peos_title.gif" width=470 height=75 alt="" border=0></TD>
 </TR>
 
-<TR><TD WIDTH="80" VALIGN="TOP" ALIGH="CENTER" BGCOLOR="94D6E7" HEIGHT="100%">
+<TR><TD WIDTH="100" VALIGN="TOP" ALIGH="CENTER" BGCOLOR="94D6E7" HEIGHT="100%">
 <SCRIPT LANGUAGE="JavaScript" TYPE="TEXT/JAVASCRIPT">
 var userName = getCookie("userName");
 var userType = getCookie("userType");
@@ -74,11 +74,13 @@ writeMenu(userType);
 </TD>
 
 <TD VALIGN="TOP" WIDTH="100%" HEIGHT="100%">
+
 <p>Are you sure you want to log out?
 <FORM>
 <INPUT TYPE="button" VALUE="Yes" onClick="deleteCookie()">
 <INPUT TYPE="button" VALUE="Cancel" onClick="history.back()">
 <FORM>
+<img src="invisibleBar.gif" width=800 height=1 alt="">
 
 </TD>
 </TR>
