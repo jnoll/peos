@@ -20,7 +20,7 @@ public class PeosApp extends JFrame implements ActionListener
 	private boolean internalFrameOpen = false;
         private displayPO outline;        
         private ActionList testViewer;
-        
+        private JPanel panel;
         //0 for process oriented view, 1 for action oriented view
         private int currentViewMode=0;
         
@@ -32,6 +32,7 @@ public class PeosApp extends JFrame implements ActionListener
 	public JTabbedPane tabbedPane;
 	public int tabCount = 0;
 	public JButton deleteB;
+        public JButton switchB;
 	public String lastDir;
 	public int tabPids[] = new int[11];
         public JPanel actionWindow;
@@ -54,6 +55,7 @@ public class PeosApp extends JFrame implements ActionListener
       		setBounds  (	inset, inset,
        	       			screenSize.width  - inset*2,
  			        screenSize.height - inset*2   );
+                setSize (screenSize);
                 
 	    	//Set up the GUI.
             //    actionWindow=new JPanel();
@@ -402,10 +404,14 @@ public class PeosApp extends JFrame implements ActionListener
         {
             switchView.setText("Switch to Process Mode");
             switchView.setActionCommand("ProcessMode");
-                                
+            switchB.setToolTipText("Switch to Process Mode");
+            switchB.setIcon(new ImageIcon(System.getProperty("peos.images") +"process.jpg"));
+            switchB.setActionCommand("ProcessMode");
+            
             getContentPane().remove(tabbedPane);
             
             testViewer = new ActionList(outline,this);
+            panel = new JPanel();
             getContentPane().add(testViewer);
             deleteB.setEnabled(false);
             
@@ -417,13 +423,16 @@ public class PeosApp extends JFrame implements ActionListener
         {
             switchView.setText("Switch to Action Mode");
             switchView.setActionCommand("ActionMode");
+            switchB.setToolTipText("Switch to Action Mode");
+            switchB.setIcon(new ImageIcon(System.getProperty("peos.images") +"action.jpg"));
+            switchB.setActionCommand("ActionMode");
 
-            getContentPane().remove(testViewer);
+            testViewer.setVisible(false);
+            getContentPane().remove(testViewer);            
             getContentPane().add(tabbedPane,BorderLayout.CENTER);
             deleteB.setEnabled(true);
-            testViewer.setVisible(false);
+            
             tabbedPane.setVisible(true);
-            hide();
             show();
             currentViewMode=0;
         }
@@ -590,7 +599,8 @@ public class PeosApp extends JFrame implements ActionListener
 	{
 	        ImageIcon openIcon = new ImageIcon(System.getProperty("peos.images")+ "/open.jpg");
         	ImageIcon deleteIcon = new ImageIcon(System.getProperty("peos.images")+ "/delete.jpg");
-
+                ImageIcon switchIcon = new ImageIcon(System.getProperty("peos.images") + "/process.jpg");
+                
 		JToolBar toolBar = new JToolBar("peos toolbar");
 		JButton button = new JButton(openIcon);
 		button.setToolTipText("Open process");
@@ -603,6 +613,12 @@ public class PeosApp extends JFrame implements ActionListener
 		deleteB.setActionCommand("deleteShortCut");
 		deleteB.addActionListener(this);
 		toolBar.add(deleteB);
+                
+                switchB = new JButton(switchIcon);
+                switchB.setToolTipText("Switch to Process Mode");
+                switchB.setActionCommand("ProcessMode");
+		switchB.addActionListener(this);
+                toolBar.add(switchB);
 		
 		return toolBar;
 	}
