@@ -20,7 +20,7 @@ MYLIB_CLASS_PATH=${APP_HOME}/classes/engineInterface
 JAVA_CLASS_PATH=${APP_CLASS_PATH}:${JAVA_HOME}/lib/classes.zip
 
 all:
-	mkdir $(APP_CLASS_PATH)
+	[ -d $(APP_CLASS_PATH) ] ||  mkdir $(APP_CLASS_PATH) 
 	cd engineInterface; make all
 	${JAVAC} -d ${APP_CLASS_PATH} -classpath ${JAVA_CLASS_PATH} *.java
 	${JAVAJAR} -cmf manifest.my  PEOS_perform.jar \
