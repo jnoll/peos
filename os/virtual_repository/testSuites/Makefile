@@ -53,8 +53,8 @@ UNITorResultExpectedResult.txt \
 UNITquerywaitExpectedResult.txt \
 UNITcompactStringExpectedResult.txt \
 EMAILsearchEnd2EndExpectedResult.txt \
-EMAILsearchInvalidExpectedResult.txt \
-UNITgetPathExpectedResult.txt 		 
+EMAILsearchInvalidExpectedResult.txt 
+	 
  
 all: $(TESTS)
 
@@ -105,11 +105,8 @@ test:	$(TESTS)
 	diff UNITquerywaitExpectedResult.txt UNITquerywaitActualResult.txt
 		
 	testUNITgetPath > UNITgetPathActualResult.txt
-	diff UNITgetPathActualResult.txt UNITgetPathExpectedResult.txt
-	
 	cp vr.rc $(HOME)
-	rm -f UNITgetPathActualResult.txt UNITgetPathExpectedResult.txt vr.rc
-	testUNITgetPath > UNITgetPathActualResult.txt
+	testUNITgetPath >> UNITgetPathActualResult.txt
 	diff UNITgetPathActualResult.txt UNITgetPathExpectedResult.txt
 
 clean:
