@@ -14,14 +14,12 @@
 int main (int argc, char *argv[]) {
 
   /* local variable declarations */
-  int i = 0;                 /* loop counter */
-  int j = 0;
-  int nobj = 0;               /* object counter */
-  int nattr = 0;             /* attribute counter */ 
-  pml_obj_t * objptr = NULL;    /* object handle - pointer */ 
-  pml_obj_t * tmpObj = NULL;    /* temporary object pointer */
-  char ** attribs;
-  char ** vals;
+  int i, j;
+  int nobj = 0; 
+  int nattr = 0;
+  pml_obj_t *objptr, *tmpObj;
+  char **attribs;
+  char **vals;
   
   /* open (the default) repository in append mode */
   if ( (pml_open_repository(NULL, APPEND)) < 0 ) {
@@ -47,4 +45,4 @@ int main (int argc, char *argv[]) {
 
   pml_query_close(&objptr);
   pml_close_repository();
-} /* main */
+}

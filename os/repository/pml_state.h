@@ -102,6 +102,7 @@ int       pmlstate_write_attribute(pml_obj_t, void *, size_t, void *, size_t);
 int       pmlstate_query_open(void* **, void *, size_t, int, void *, size_t);
 int       pmlstate_query_close(void* **);
 
+int       pmlstate_list_open(void* **);
 int       pmlstate_init();
 
 #ifdef __cplusplus

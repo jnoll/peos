@@ -666,9 +666,9 @@ int pml_list_attributes(void* objptr, char** attrib[], char** values[])
   pml_obj_t objp = (pml_obj_t) objptr;
 
   /* local variable declarations */
-  int i = 0;
-  int j = 0;
+  int i, j, k;
   int err = 0;
+  int natr = 0;
   int rlen = PML_BLK_SIZE;
   char *rbuf = NULL;
   
@@ -701,9 +701,25 @@ int pml_list_attributes(void* objptr, char** attrib[], char** values[])
       if (err) {
 	break;
       }
-      
-      (*values)[i] = malloc(objp->vlen[i] + 1);
-      rbuf = (*values)[i];
+ 
+      /* Ugh.  Because the repository doesn't delete old attributes,
+         we have to search through previous attributes to see if this
+         one has already been seen. */
+      for (k = 0; k < natr; k++) {
+	  if (strcmp(rbuf, (*attrib)[k]) == 0) {
+	      break;
+	  }
+      }
+
+      if (k < natr) {
+	  (*values)[k] = realloc((*values)[k], objp->vlen[i] + 1);
+	  rbuf = (*values)[k];
+      } else {
+	  natr++;
+	  (*values)[i] = malloc(objp->vlen[i] + 1);
+	  rbuf = (*values)[i];
+      }
+
       lseek(datfd, objp->vofs[i], SEEK_SET); 
       while (read(datfd, rbuf, objp->vlen[i]) != objp->vlen[i]) {
 	if (errno == EINTR) {
@@ -728,7 +744,7 @@ int pml_list_attributes(void* objptr, char** attrib[], char** values[])
     return -1;
   }
   
-  return objp->natr;
+  return natr;
 }
 
 /* FUNCTION:  PML WRITE ATTRIBUTE *****************************

@@ -101,10 +101,10 @@ int main(int argc, char *argv[])
   pml_query_close(&resp);
 
   /* flag created objects for deletion */
-  pml_delete_object(objp1);
+/*  pml_delete_object(objp1);
   pml_delete_object(objp2);
   pml_delete_object(objp3);
-
+*/
   /* remove objects flagged for deletion from repository */
   pml_pack_objects();
 

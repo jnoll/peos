@@ -1,34 +1,32 @@
-# Build Path
-BUILD = ../build
-
-# Executable to Build
-TARGET = $(BUILD)/pmlstate
-
 # Object Files
-OBJECTS = state_driver.o
+OBJECTS = 
 
 # Library Paths
-LPATH =-L../build 
+LPATH =-L..
 
 # Include Paths 
-IPATH = -I../lib/
+IPATH = -I..
 
 # Compiler Flags
 CFLAGS = $(IPATH) -g
 
+
 # Linker Flags
-SLIBS = -L../build -lpmlstate 
-DLIBS = -L/usr/lib -lm
+LDFLAGS = $(LPATH) -g
+SLIBS = -lpmlstate 
+DLIBS = -lm
+
+all: drive dump
 
 # Build Dependencies
-$(TARGET): $(OBJECTS)
-	cc $(CFLAGS) $(IFLAGS) -o $@ $(OBJECTS) $(SLIBS) $(DLIBS)
+drive: state_driver.o
+	$(CC) $(LDFLAGS) -o $@ $< $(SLIBS) $(DLIBS)
+
+dump: dump.o
+	$(CC) $(LDFLAGS) -o $@ $< $(SLIBS) $(DLIBS)
 
 # Suffixes
 .SUFFIXES	:	.o .c 
-
-.c.o :
-	cc $(CFLAGS) $(IFLAGS) -c $< 
 
 # Clean Build 
 clean:
