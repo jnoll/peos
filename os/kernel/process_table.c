@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.10 2003/09/06 04:19:32 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.11 2003/09/07 02:01:53 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -103,6 +103,7 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
 	    *num_actions = num_act;
 	    *other_nodes = node_array;
 	    *num_other_nodes = num_nodes;
+	    GraphDestroy(g);
 	     return 1;
 	   }
 	   else

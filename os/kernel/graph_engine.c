@@ -249,6 +249,7 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 		make_resource_list(n -> requires,act_resources,&num_resources);
 		make_resource_list(n -> provides,act_resources,&num_resources);
 		*total_resources = num_resources;
+		GraphDestroy(g);
 	        return act_resources;
 	}
 	else 
@@ -277,6 +278,7 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
 		}
 	}
 	*total_resources = num_resources;
+	GraphDestroy(g);
 	return resource_list;
 	}
 	else

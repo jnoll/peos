@@ -19,6 +19,11 @@ Graph makegraph(char *file)
    return stub_makegraph(file);
 }
 
+void GraphDestroy(Graph g)
+{
+	return;
+}
+
 
 
 START_TEST(test_get_pid)
