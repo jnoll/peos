@@ -43,6 +43,8 @@ int setWait(pml_obj_t proc, char * act_name, int wait);
 int assert(pml_obj_t proc, char * act_name);
 int storeContext(pml_obj_t proc);
 int fetchContext(pml_obj_t proc);
+void add_var(pml_obj_t proc, char* name, char* value);
+char* dereference(pml_obj_t proc, char* string);
 
 void  errExit(void )
 {
@@ -135,7 +137,13 @@ int execute(pml_obj_t process)
             push(process,arg);
         }
         else if (strncmp(op, "pop", 3) == 0) {
-            A = pop(process);
+		char* token;
+
+            	A = pop(process);
+		token = strtok(op+3," \n");		
+		if (token != NULL) {
+			add_var(process,token,(char*)A);
+		}
         }
         else if (strncmp(op, "goto", 4) == 0) {
             PC = atoi(op+4);
@@ -234,6 +242,38 @@ int execute(pml_obj_t process)
                 push(process,order);
             }
         }
+        else if (strncmp(op, "call select", 11) == 0) {
+		int i,n;
+		char* token;
+		char* strptr;
+	    	char query [256];
+	    	char query_new [256];
+		
+		token = strtok(op+11, " \n&");
+		strcpy(query,token);
+		while (token) {
+			token = strtok(NULL, " \n&");
+			strcat(query," ");
+			if (token)
+				strcat(query,token);
+		}
+		// Look for variables to dereference
+		i = 0;
+		strptr = strchr(&query[i],'$');
+		if (strptr == NULL)
+			strcpy(query_new,query);
+		while (strptr) {
+			n = strcspn(&query[i],"$");
+			strncpy(query_new,&query[i],n);
+			if (n < strlen(&query[i]))
+				strcat(query_new,dereference(process,&query[i+n+1]));
+			i += n + 1 + strcspn(&query[i+n+1]," &");
+			strptr = strchr(&query[i],'$');
+		}
+		printf("d %s\n",query_new);
+		fflush(stdout);
+		cond = 0;
+	}
         else if (strncmp(op, "call assert", 11) == 0) {
             char * token;
             token = strtok(op+11, " \n\t");
@@ -535,4 +575,31 @@ int storeContext(pml_obj_t proc)
 		       VM_ATTR_PCTXT, strlen(VM_ATTR_PCTXT)+1,
 		       &context, sizeof(struct context_t));
     return 0;
+}
+
+char* dereference(pml_obj_t proc, char* string)
+{
+	int ret;
+	char* value_ptr = NULL;
+	char value[64];
+	char* temp;
+	temp = strtok(string," \t\n");
+	ret = pml_read_attribute(proc,
+                       temp, strlen(temp)+1,
+                       value, sizeof(value));
+        if( ret == 0 )
+                errExit();
+	value_ptr = value;
+	return value_ptr;
+}
+
+void add_var(pml_obj_t proc, char* name, char* value)
+{
+	int ret;
+
+	ret = pml_write_attribute(proc,
+				name, strlen(name)+1,
+				value, strlen(value)+1);
+        if( ret == 0 )
+                errExit();
 }

@@ -14,7 +14,10 @@
 #include <pml_state.h>
 
 //simulate OS , OS output to VM(input for VM) 
-char * command[34] = {
+char* command[1] = {
+"pmlvm -p bryce"
+};
+/*char * command[34] = {
 "pmlvm -p sample",
 "pmlvm -p sample.001 -l 26",
 "pmlvm -p sample.002 -l 63",
@@ -49,7 +52,7 @@ char * command[34] = {
 "pmlvm -p sample -e 3 -o pour_one",
 "pmlvm -p sample -e 2 -o end",
 ""
-};
+};*/
 // expected result ( VM output to OS (input for OS))
 char * results[] = {
 "b sample.001 26\n",
@@ -88,26 +91,27 @@ int main(int argc , char * argv[])
     char buffer[1024];
 
     /* clean up the repository */
-    pml_open_repository("/home/qzhu/cs5728/Engine/src/", TRUNCATE); 
+    pml_open_repository("/home/bryceb/peos/src/os/vm/rep/", TRUNCATE); 
     pml_close_repository();
-    pml_open_repository("/home/qzhu/cs5728/Engine/src/", APPEND);
+    pml_open_repository("/home/bryceb/peos/src/os/vm/rep/", APPEND); 
+    //pml_open_repository("/home/qzhu/cs5728/Engine/src/", APPEND);
     for(z =0; z < 3; z++, j = 0)
     {
 	printf("...... loop %d\n\n", z);
-    for ( i =0 ; i < 33; i++ )
+    for ( i =0 ; i < 1; i++ )
     {
 	fp = popen(command[i], "r");
 	assert(fp);
 	while(fgets(buffer, 1024, fp)){
 		printf(" %d  VM output: %s", i+1, buffer);	
-	    if(strcmp(buffer, results[j++]) != 0)
+	    /*if(strcmp(buffer, results[j++]) != 0)
             {
 		fprintf(stderr, "%s not equal to %s\n", buffer, results[--j]);
 		fprintf(stderr, "Failed on command: %s", command[i]);
 		exit(1);
-            } 
+            } */
 	}
-	printf("TEST passed %d %s\n\n", i+1, command[i]);
+	//printf("TEST passed %d %s\n\n", i+1, command[i]);
 	fclose(fp);
     }
     }

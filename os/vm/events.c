@@ -403,3 +403,47 @@ int runActionOnEvent(char * processName, char * onAction, int eventCode)
     pml_query_close(&processPtr);
     return 0;
 }
+
+void processQuery(char * processName, char* query_result)
+{
+    int i=0, n=0, ret = 0;
+    char path[256];
+    char actionName[256];
+    char * model;
+    struct act_t act;
+    pml_obj_t * processPtr = NULL;
+    pml_obj_t  process = NULL;
+    char* query = (char*) malloc(sizeof(char));
+    
+    strcpy(path, VM_PREF);
+    if(strncmp(path, processName, strlen(path)) != 0)
+	strcat(path, processName);
+    else
+	strcpy(path, processName);
+
+    ret = pml_query_open(&processPtr, 
+			 VM_ATTR_PROC, strlen(VM_ATTR_PROC)+1,
+			 EQ, path, strlen(path));
+
+    /* looking for the process */
+    actionName[255] = '\0';
+    for( i =0; i < ret; i++)
+    {
+	n = pml_read_attribute(processPtr[i], 
+			       VM_ATTR_PROC, strlen(VM_ATTR_PROC)+1,
+			       actionName, 255);
+	if(strcmp(actionName, path) == 0)  /* process found */
+	{
+	    process = processPtr[i];
+	    break;
+	}
+    }
+
+    query = query_result;
+    push(process,query);
+    execute(process);
+
+    pml_query_close(&processPtr);
+
+
+}

@@ -18,6 +18,7 @@ const int EFLAG = 4;
 const int OFLAG = 8;
 const int CFLAG = 16;
 const int LFLAG = 32;
+const int QFLAG = 64;
 
 int main(int argc, char * argv[])
 {
@@ -30,9 +31,11 @@ int main(int argc, char * argv[])
     char  onAction[64];
     char  childExitStatus[64];
     char  startLineNum[64];
+	char  query_result[64];
     int   FLAG = 0;
     int   optcount = 0;
     char  * usageMsg = "Usage: pmlvm -p process_name { -a action_name | "
+					   "-q query_result | "
                        "-e event -o on_action | -c child_exit_status | "
                        "-l start_line_number}";
     int lineNum = 0;
@@ -48,7 +51,7 @@ int main(int argc, char * argv[])
 
 /*  parse the input and set the cooresponding option flags */
 
-    while(( c = getopt(argc, argv, "p:a:e:c:l:o:")) != -1)
+    while(( c = getopt(argc, argv, "p:a:e:c:l:o:q:")) != -1)
     {
 	switch(c){
 	case 'p':		   /* "p" option to specify path */
@@ -80,6 +83,11 @@ int main(int argc, char * argv[])
 	    optcount ++;
 	    strcpy(startLineNum, optarg);    
 	    break;
+	case 'q':		   /* for the "q" option */
+		FLAG |= QFLAG;
+		optcount ++;
+		strcpy(query_result, optarg);
+		break;
 	default:
 	    fprintf(stderr,usageMsg);
 	    exit(1);
@@ -139,6 +147,8 @@ int main(int argc, char * argv[])
 	 else if( FLAG & CFLAG ) /* child has exit, continue */
 	     runChildExit(processName, childExitStatus);
 //	     fprintf(stderr, "runChildExit ");
+	 else if( FLAG & QFLAG ) /* select query results */
+		 processQuery(processName,query_result);
 	 else    /* run process with a specific line */
 	     runProcess(processName, lineNum);
 //	     fprintf(stderr,"runProcessWithlineNum ");

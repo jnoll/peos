@@ -48,6 +48,7 @@ int runProcess(char * processName, int lineNum);
 int runAction(char * processName, char * actionName);
 int runChildExit(char * processName, char *childExitStatus);
 int runActionOnEvent(char * processName, char * onAction, int eventCode);
+void processQuery(char * processName, char* query_result);
 
 int execute(pml_obj_t);
 
