@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.28 2004/02/20 04:13:39 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.29 2004/02/22 00:23:08 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -129,9 +129,9 @@ void create_process(int argc, char *argv[])
         printf("error getting resources\n");
 	return;
     }
+    
     for(i = 0; i < num_resources; i++) {
-        printf("\nEnter binding for resource %s %s: ",resources[i].name, resources[i].qualifier);
-	scanf("%s", resources[i].value);
+	strcpy(resources[i].value, "$$");
     }
     
     printf("Executing %s:\n", model);
@@ -147,9 +147,10 @@ void create_process(int argc, char *argv[])
 
 void list_resource_binding(int argc, char *argv[])
 {
-    int i, pid, num_resources;
+    int i, pid, num_resources, num_provided_resources;
     char *action;
-    peos_resource_t *resources;
+    peos_resource_t *req_resources;
+    peos_resource_t *pro_resources;
 
     if (argc < 3) {
 	printf("usage: %s pid action\n", argv[0]);
@@ -159,19 +160,31 @@ void list_resource_binding(int argc, char *argv[])
     pid = atoi(argv[1]);
     action = argv[2];
 
-    resources = (peos_resource_t *) 
-	peos_get_resource_list_action(pid, action, &num_resources);
+    req_resources = (peos_resource_t *) 
+	peos_get_resource_list_action_requires(pid, action, &num_resources);
+
+    pro_resources = (peos_resource_t *) 
+	peos_get_resource_list_action_provides(pid, action, &num_provided_resources);
 
 
-    if (resources == NULL) {
+    if ((req_resources == NULL) || (pro_resources == NULL)){
         printf("error getting resources\n");
         return;
     }
+    printf("req_resources=%d\npro_resources=%d\n",num_resources,num_provided_resources);
+    printf("Required resources\n");
     for(i = 0; i < num_resources; i++) {
-        printf("%s=%s\n", resources[i].name, resources[i].value) ;
+        printf("%s=%s=%s\n", req_resources[i].name, req_resources[i].value,req_resources[i].qualifier) ;
     }
 
-    free(resources);
+    printf("Provided resources\n");
+    for(i = 0; i < num_provided_resources; i++) {
+        printf("%s=%s=%s\n", pro_resources[i].name, pro_resources[i].value,pro_resources[i].qualifier) ;
+    }
+
+    
+    free(req_resources);
+    free(pro_resources);
 }
 
 void list_resources(int argc, char *argv[])
@@ -338,6 +351,7 @@ COMMAND cmds[] = {
     { "done", finish_action, "finish a running action" },
     { "exec", create_process, "create an instance of a process" },
     { "create", create_process, "create an instance of a process" },
+    { "resource_bindings", list_resource_binding, "list resource details" },
     { "quit", quit, "quit shell" },
     { NULL, NULL, "end of commands"},
 };
