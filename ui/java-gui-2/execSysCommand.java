@@ -22,6 +22,7 @@ public class execSysCommand extends javax.swing.JDialog
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
+		setTitle("");
 		getContentPane().setLayout(null);
 		setSize(436,587);
 		setVisible(false);
@@ -62,7 +63,6 @@ public class execSysCommand extends javax.swing.JDialog
 		JScrollPane2.setBounds(16,36,404,228);
 		JTextArea2.setEditable(false);
 		JTextArea2.setDoubleBuffered(true);
-//		JTextArea2.setWrapStyleWord(true);
 		JTextArea2.setTabSize(4);
 		JTextArea2.setLineWrap(true);
 		JScrollPane2.getViewport().add(JTextArea2);
@@ -97,6 +97,11 @@ public class execSysCommand extends javax.swing.JDialog
 		super.setVisible(b);
 	}
 
+	static public void main(String args[])
+	{
+		(new execSysCommand()).setVisible(true);
+	}
+
 	public void addNotify()
 	{
 		// Record the size of the window prior to calling parents addNotify.
@@ -115,53 +120,6 @@ public class execSysCommand extends javax.swing.JDialog
 	// Used by addNotify
 	boolean frameSizeAdjusted = false;
     
-    public int getExitCode()
-    {
-        return retCode;
-    }
-    
-    public void Exec(String procID, String cmd, String Type)
-    {
-        setTitle(procID);
-        JExecLable.setText(new String("Executing " + Type));
-		JTextArea2.setText(cmd );
-		ExecCmd(cmd);
-	}	
-    private void ExecCmd(String cmd)
-    {
-        try
-        {
-            Process proc = Runtime.getRuntime().exec(cmd);
-            BufferedReader is = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-			String line;
-            while ((line = is.readLine()) != null)
-            {
-				JTextArea1.append(line);
-            }
-		    JLabel2.setVisible(true);
-            Dimension sz = JLabel2.getSize();
-		    JLabel2.paintImmediately(0, 0, sz.width, sz.height);
-            proc.waitFor();
-            retCode = proc.exitValue();
-            Integer iRet = new Integer(retCode);
-			String msg = new String("\nReturn code is "+iRet.toString()+". Press <Close> to continue.");
-			JTextArea1.append(msg);
-        }
-        catch (Exception e)
-        {
-            String msg = new String("Get exception "+e+"\nCannot preceed. Press <Close> to continue.");
-            JTextArea1.setText(msg);
-        }
-        finally
-        {
-		    JLabel2.setVisible(false);
-            Dimension sz = JLabel2.getSize();
-		    JLabel2.paintImmediately(0, 0, sz.width, sz.height);
-    		JButton1.setEnabled(true);
-		    JButton1.setVisible(true);
-        }
-    }
-
 	//{{DECLARE_CONTROLS
 	javax.swing.JScrollPane JScrollPane1 = new javax.swing.JScrollPane();
 	javax.swing.JTextArea JTextArea1 = new javax.swing.JTextArea();
@@ -223,12 +181,12 @@ public class execSysCommand extends javax.swing.JDialog
 	void JButtonEdit_actionPerformed(java.awt.event.ActionEvent event)
 	{
 		JTextArea2.setEditable(bEdit);
+    	JButton1.setEnabled(!bEdit);
+		JButton1.setVisible(!bEdit);
 	    if (bEdit)
 		{
 		    bEdit = false;
 		    JButtonEdit.setText("Exec");
-    		JButton1.setEnabled(false);
-		    JButton1.setVisible(false);
 		}
 		else
 		{
@@ -237,4 +195,52 @@ public class execSysCommand extends javax.swing.JDialog
 		    JButtonEdit.setText("Edit");
 		}
 	}
+
+    public int getExitCode()
+    {
+        return retCode;
+    }
+    
+    public void Exec(String procID, String cmd, String Type)
+    {
+        setTitle(procID);
+        JExecLable.setText(new String("Executing " + Type));
+		JTextArea2.setText(cmd );
+		ExecCmd(cmd);
+	}	
+
+    private void ExecCmd(String cmd)
+    {
+        try
+        {
+            Process proc = Runtime.getRuntime().exec(cmd);
+            BufferedReader is = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			String line;
+            while ((line = is.readLine()) != null)
+            {
+				JTextArea1.append(line);
+            }
+		    JLabel2.setVisible(true);
+            Dimension sz = JLabel2.getSize();
+		    JLabel2.paintImmediately(0, 0, sz.width, sz.height);
+            proc.waitFor();
+            retCode = proc.exitValue();
+            Integer iRet = new Integer(retCode);
+			String msg = new String("\nReturn code is "+iRet.toString()+". Press <Close> to continue.");
+			JTextArea1.append(msg);
+        }
+        catch (Exception e)
+        {
+            String msg = new String("Get exception "+e+"\nCannot preceed. Press <Close> to continue.");
+            JTextArea1.setText(msg);
+        }
+        finally
+        {
+		    JLabel2.setVisible(false);
+            Dimension sz = JLabel2.getSize();
+		    JLabel2.paintImmediately(0, 0, sz.width, sz.height);
+    		JButton1.setEnabled(true);
+		    JButton1.setVisible(true);
+        }
+    }
 }

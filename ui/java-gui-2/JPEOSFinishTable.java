@@ -22,8 +22,8 @@ public class JPEOSFinishTable
 		setModel(tableModel);
 		setColumnSelectionAllowed(false);
 		setCellSelectionEnabled(false);
-		setRowSelectionAllowed(true);
-		getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		setRowSelectionAllowed(false);
+//		getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		TableColumn lastColumn = getColumn(columnNames[2]);
 		lastColumn.setCellRenderer(multilineRenderer);

@@ -13,7 +13,7 @@ import javax.swing.table.*;
 import javax.swing.border.*;
 import engineInterface.*;
 
-/**
+/*
  * A basic JFC 1.1 based application.
  */
 public class PEOS_EI extends javax.swing.JFrame
@@ -114,13 +114,13 @@ public class PEOS_EI extends javax.swing.JFrame
 		JDoneButton.setBounds(73,0,35,31);
 		JStepRunRadioButton.setText("Single Step");
 		JStepRunRadioButton.setActionCommand("Single Step");
-		JStepRunRadioButton.setSelected(false);
+		JStepRunRadioButton.setSelected(true);
 		JStepRunRadioButton.setBounds(12,8,108,20);
 		JPanel5.add(JStepRunRadioButton);
 		ButtonGroup1.add(JStepRunRadioButton);
-		JAutoRunRadioButton.setText("Run until need interaction");
-		JAutoRunRadioButton.setActionCommand("Run until need interaction ");
-		JAutoRunRadioButton.setSelected(true);
+		JAutoRunRadioButton.setText("Auto Run");
+		JAutoRunRadioButton.setActionCommand("Auto Run");
+		JAutoRunRadioButton.setSelected(false);
 		JAutoRunRadioButton.setBounds(12,30,180,20);
 		ButtonGroup1.add(JAutoRunRadioButton);
 		JPanel5.add(JAutoRunRadioButton);
@@ -133,6 +133,57 @@ public class PEOS_EI extends javax.swing.JFrame
 		JTabbedPane1.setBorder(bevelBorder2);
 		JPanel6.add(JTabbedPane1);
 		JTabbedPane1.setBounds(0,0,396,552);
+
+		JPanel9.setLayout(null);
+		JTabbedPane1.add(JPanel9);
+		JPanel9.setBounds(4,4,387,518);
+		JPanel9.setVisible(false);
+		JScrollPane5.setBorder(bevelBorder2);
+		JScrollPane5.setOpaque(true);
+		JPanel9.add(JScrollPane5);
+		JScrollPane5.setBounds(6,6,375,89);
+		JScrollPane5.setVisible(true);
+		JScrollPane5.getViewport().add(JScriptTable);
+		JScriptTable.setBounds(0,0,371,34);
+		JScriptTable.setVisible(true);
+		JLabel13.setText("No Script or Command Line.");
+		JPanel9.add(JLabel13);
+		JLabel13.setBounds(6,104,314,24);
+		JPanel9.add(JScrollPane7);
+		JScrollPane7.setBounds(6,128,375,382);
+		JScrollPane7.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrptTextArea.setBorder(emptyBorder1);
+		JScrollPane7.getViewport().add(JScrptTextArea);
+		JScrptTextArea.setBounds(0,0,371,382);
+		JScrptTextArea.setLineWrap(true);
+		JScrptTextArea.setTabSize(4);
+		JScrptTextArea.setEditable(false);
+		JScrptTextArea.setVisible(false);
+
+		JPanel9.add(JScrollPane8);
+		JScrollPane8.setBounds(6,128,375,80);
+		JScrollPane8.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		JCommandTextArea.setBorder(emptyBorder1);
+		JScrollPane8.getViewport().add(JCommandTextArea);
+		JCommandTextArea.setBounds(0,0,371,80);
+		JCommandTextArea.setLineWrap(true);
+		JCommandTextArea.setTabSize(4);
+		JCommandTextArea.setEditable(false);
+		JCommandTextArea.setVisible(false);
+		JLabel14.setText("Description:");
+		JPanel9.add(JLabel14);
+		JLabel14.setBounds(6,210,314,24);
+		JLabel14.setVisible(false);
+		JPanel9.add(JScrollPane9);
+		JScrollPane9.setBounds(6,234,375,276);
+		JScrollPane9.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		JDescptTextArea.setBorder(emptyBorder1);
+		JScrollPane9.getViewport().add(JDescptTextArea);
+		JDescptTextArea.setBounds(0,0,371,276);
+		JDescptTextArea.setLineWrap(true);
+		JDescptTextArea.setTabSize(4);
+		JDescptTextArea.setEditable(false);
+		JDescptTextArea.setVisible(false);
 
 		JPanel3.setLayout(null);
 		JTabbedPane1.add(JPanel3);
@@ -162,35 +213,10 @@ public class PEOS_EI extends javax.swing.JFrame
 		JScrollPane4.getViewport().add(JFinishTable);
 		JFinishTable.setBounds(0,0,364,17);
 
-		JPanel9.setLayout(null);
-		JTabbedPane1.add(JPanel9);
-		JPanel9.setBounds(4,4,387,518);
-		JPanel9.setVisible(false);
-		JScrollPane5.setBorder(bevelBorder2);
-		JScrollPane5.setOpaque(true);
-		JPanel9.add(JScrollPane5);
-		JScrollPane5.setBounds(6,6,375,89);
-		JScrollPane5.setVisible(true);
-		JScrollPane5.getViewport().add(JScriptTable);
-		JScriptTable.setBounds(0,0,371,34);
-		JScriptTable.setVisible(true);
-		JLabel13.setText("No Script or Command Line.");
-		JPanel9.add(JLabel13);
-		JLabel13.setBounds(6,104,314,24);
-		JPanel9.add(JScrollPane7);
-		JScrollPane7.setBounds(6,128,375,382);
-		JScrollPane7.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		JScrptTextArea.setBorder(emptyBorder1);
-		JScrollPane7.getViewport().add(JScrptTextArea);
-		JScrptTextArea.setBounds(0,0,371,382);
-		JScrptTextArea.setLineWrap(true);
-		JScrptTextArea.setTabSize(4);
-		JScrptTextArea.setEditable(false);
-
 		JTabbedPane1.setSelectedComponent(JPanel3);
 		JTabbedPane1.setSelectedIndex(0);
-		JTabbedPane1.setTitleAt(0,"Execution Information");
 		JTabbedPane1.setTitleAt(1,"Process Properties");
+		JTabbedPane1.setTitleAt(0,"Execution Information");
 		JPanel7.setBorder(bevelBorder2);
 		JPanel7.setLayout(null);
 		JPanel1.add(JPanel7);
@@ -434,12 +460,17 @@ public class PEOS_EI extends javax.swing.JFrame
 	javax.swing.JScrollPane JScrollPane3 = new javax.swing.JScrollPane();
 	javax.swing.JTextArea JCurrentExecTextArea = new javax.swing.JTextArea();
 	javax.swing.JTextArea JScrptTextArea = new javax.swing.JTextArea();
+	javax.swing.JTextArea JCommandTextArea = new javax.swing.JTextArea();
+	javax.swing.JTextArea JDescptTextArea = new javax.swing.JTextArea();
 	javax.swing.JLabel JProcExecLabel = new javax.swing.JLabel();
 	javax.swing.JLabel JLabel3 = new javax.swing.JLabel();
 	javax.swing.JLabel JLabel13 = new javax.swing.JLabel();
+	javax.swing.JLabel JLabel14 = new javax.swing.JLabel();
 	javax.swing.JScrollPane JScrollPane4 = new javax.swing.JScrollPane();
 	javax.swing.JScrollPane JScrollPane5 = new javax.swing.JScrollPane();
 	javax.swing.JScrollPane JScrollPane7 = new javax.swing.JScrollPane();
+	javax.swing.JScrollPane JScrollPane8 = new javax.swing.JScrollPane();
+	javax.swing.JScrollPane JScrollPane9 = new javax.swing.JScrollPane();
 	javax.swing.JPanel JPanel7 = new javax.swing.JPanel();
 	javax.swing.JComboBox JModelListCB = new javax.swing.JComboBox();
 	javax.swing.JLabel JLabel4 = new javax.swing.JLabel();
@@ -727,9 +758,12 @@ public class PEOS_EI extends javax.swing.JFrame
 			if (JTaskTable.isSelectedRun())
 			{
 				int idx = JTaskTable.getSelectedRow();
-				execCommand(PEOS_Interface.COMMAND_SUSPEND, 
-									(String) JTaskTable.getValueAt(idx, 1), 
-									(String) JTaskTable.getValueAt(idx, 2));
+				if (idx != -1)
+				{
+					execCommand(PEOS_Interface.COMMAND_SUSPEND, 
+										(String) JTaskTable.getValueAt(idx, 1), 
+										(String) JTaskTable.getValueAt(idx, 2));
+				}
 			}
 			else
 		   		Toolkit.getDefaultToolkit().beep();
@@ -893,12 +927,11 @@ public class PEOS_EI extends javax.swing.JFrame
 	
 	void JProcessesTree_valueChanged(javax.swing.event.TreeSelectionEvent event)
 	{
-		String ret[] = JProcessesTree.getSelected();
-
-		if (ret != null)
+		String proc[] = JProcessesTree.getSelected();
+		if (proc != null)
 		{
 			adjustCommandAccess(BA_focusTree);
-  			showProperties(ret[0], ret[1], PEOS_Interface.TL_AVAILABLE);
+  			showProperties(proc[0], proc[1], PEOS_Interface.TL_AVAILABLE);
 		}
 		else
 			adjustCommandAccess(BA_focusNone);
@@ -914,11 +947,12 @@ public class PEOS_EI extends javax.swing.JFrame
 
 	void JTaskTable_selection()
 	{
-		String procID = JTaskTable.getSelectedProc();
-		if (procID != null)
+		int idx = JTaskTable.getSelectedRow();
+		if (idx != -1)
 		{
 			adjustCommandAccess(BA_focusTable, JTaskTable.isSelectedRun());
-			showProperties(procID, JTaskTable.getSelectedTask(), PEOS_Interface.TL_RUNNING);
+			showProperties((String) JTaskTable.getValueAt(idx, 1), 
+						(String) JTaskTable.getValueAt(idx, 2), PEOS_Interface.TL_RUNNING);
 		}
 		else
 			adjustCommandAccess(BA_focusNone);
@@ -1034,7 +1068,7 @@ public class PEOS_EI extends javax.swing.JFrame
 		String cmd = proc.getSystemCommand();
 		if (cmd == null)			
 		{
-			cmd = proc.getScript();
+			cmd = proc.getExecScript();
 			type = SYS_EXEC_SCRIPT;
 		}
 		else
@@ -1063,15 +1097,20 @@ public class PEOS_EI extends javax.swing.JFrame
 	void autoExec(String curProcID, String curTask, boolean bFirstRun)
         throws java.lang.Exception
     {
-    	JTabbedPane1.setSelectedIndex(0);
+		int cur = JTabbedPane1.getSelectedIndex();
+    	JTabbedPane1.setSelectedIndex(1);
+    	JCurrentExecTextArea.updateUI();
+    	JFinishTable.updateUI();
+    	JProcExecLabel.updateUI();
+    	JLabel3.updateUI();
+//		Dimension sz = JTabbedPane1.getSize();
+//		JTabbedPane1.paintImmediately(0, 0, sz.width, sz.height);
 
 		PEOS_Process    procObj = null;
 		boolean bContinue = true;
 	    String  procID = new String(curProcID);
 	    String  task = new String();
 
-        JTabbedPane1.setEnabledAt(0, true);
-		JTabbedPane1.setEnabledAt(1, false);
 		while (bContinue)
 		{
 		    if (procObj == null)
@@ -1093,7 +1132,8 @@ public class PEOS_EI extends javax.swing.JFrame
 			procObj = foundProc(PEOS_Interface.TL_AVAILABLE, procID);		// in avail
 			bContinue = (procObj != null);
 		}
-		JTabbedPane1.setEnabledAt(1, true);
+    	JTabbedPane1.setSelectedIndex(cur);
+    	setScriptCommandProp();
 	}
 	
 	private PEOS_Process foundProc(String key, String procID)
@@ -1163,8 +1203,7 @@ public class PEOS_EI extends javax.swing.JFrame
 			movetoFinished(procID);
 			JCurrentExecTextArea.setText("");
 			JScriptTable.getPEOSModel().clear();
-			JScrptTextArea.setText("");
-			JLabel13.setText("No Script or Command Line.");
+			setScriptCommandProp();
 			Dimension sz = JTabbedPane1.getSize();
 			JTabbedPane1.paintImmediately(0, 0, sz.width, sz.height);
 		}	
@@ -1221,6 +1260,59 @@ public class PEOS_EI extends javax.swing.JFrame
 		return null;
 	}
 
+	void updateScriptCommandProp()
+	{
+		JScrollPane7.updateUI();
+		JScrollPane8.updateUI();
+		JScrollPane9.updateUI();
+		JScrptTextArea.updateUI();
+		JCommandTextArea.updateUI();
+		JDescptTextArea.updateUI();
+		JLabel13.updateUI();
+		JLabel14.updateUI();
+	}
+	void setScriptCommandProp()
+	{
+		JScrollPane7.setVisible(false);
+		JScrollPane8.setVisible(false);
+		JScrollPane9.setVisible(false);
+		JScrptTextArea.setVisible(false);
+		JCommandTextArea.setVisible(false);
+		JDescptTextArea.setVisible(false);
+		JLabel13.setText("No Script or Command Line.");
+		JLabel14.setVisible(false);
+		updateScriptCommandProp();
+	}
+	void setScriptCommandProp(String script)
+	{
+		JScrollPane7.setVisible(true);
+		JScrptTextArea.setVisible(true);
+		JLabel13.setText("Executable Script:");
+		JScrptTextArea.setText(script);
+		JScrollPane8.setVisible(false);
+		JCommandTextArea.setVisible(false);
+		JScrollPane9.setVisible(false);
+		JDescptTextArea.setVisible(false);
+		JLabel14.setVisible(false);
+		updateScriptCommandProp();
+	}
+
+	void setScriptCommandProp(String command, String desc)
+	{
+//		JScrollPane7.setOpaque(false);
+		JScrollPane7.setVisible(false);
+		JScrptTextArea.setVisible(false);
+		JLabel13.setText("Command:");
+		JScrollPane8.setVisible(true);
+		JCommandTextArea.setVisible(true);
+		JCommandTextArea.setText((command!=null)?command:new String("<none>"));
+		JLabel14.setVisible(true);
+		JScrollPane9.setVisible(true);
+		JDescptTextArea.setVisible(true);
+		JDescptTextArea.setText((desc!=null)?desc:new String("<none>"));
+		updateScriptCommandProp();
+	}
+
 	void showProperties(String procID, String Task, String type)
 	{
 	    int idx = JTabbedPane1.getSelectedIndex();
@@ -1237,10 +1329,9 @@ public class PEOS_EI extends javax.swing.JFrame
 //		JTabbedPane1.setEnabledAt(0, true);
 		JCurrentExecTextArea.setText("");
 		JScriptTable.getPEOSModel().clear();
-		JScrptTextArea.setText("");
-		JLabel13.setText("No Script or Command Line.");
 		JCurrentExecTextArea.setText(procID);
 		JCurrentExecTextArea.append(":\n ");
+
 		if (execPath.containsKey(procID))
 		{
 			String thePath = (String) execPath.getProperty(procID);
@@ -1249,29 +1340,28 @@ public class PEOS_EI extends javax.swing.JFrame
 		else
 			JCurrentExecTextArea.append("No information about execution path.");
 
-		if (JTabbedPane1.isEnabledAt(1) && (lastRetValue != null) && (type != null))
+		if ((lastRetValue != null) && (type != null))
 		{
 			PEOS_Process theProc = findProcinlLastRV(type, procID, Task);
 			if (theProc != null)
 			{
 				JScriptTable.setItems(theProc);
-				String ret = theProc.getSystemCommand();
-				if (ret == null)
+				String script = theProc.getExecScript();
+				if (script == null)
 				{
-					if ((ret = theProc.getScript()) != null)
-						JLabel13.setText("Script:");
+					String cmd = theProc.getSystemCommand();
+					String desc = theProc.getSysCommandDesc();
+					if ((cmd == null) && (desc == null))
+						setScriptCommandProp();
 					else
-						JLabel13.setText("No Script or Command Line.");
+						setScriptCommandProp(cmd, desc);
 				}
 				else
-					JLabel13.setText("Command Line:");
-				if (ret != null)
-					JScrptTextArea.setText(ret);
-			    JTabbedPane1.setEnabledAt(1, true);
+					setScriptCommandProp(script);
 			}
 		}
-		Dimension sz = JTabbedPane1.getSize();
-		JTabbedPane1.paintImmediately(0, 0, sz.width, sz.height);
+//		Dimension sz = JTabbedPane1.getSize();
+//		JTabbedPane1.paintImmediately(0, 0, sz.width, sz.height);
 		JTabbedPane1.setSelectedIndex(idx);
 	}
 

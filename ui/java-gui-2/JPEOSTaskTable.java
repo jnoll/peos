@@ -143,11 +143,11 @@ public class JPEOSTaskTable
 
 	public String getSelectedTask()
 	{
-		String Task = null;
+		String procID = null;
 		int idx = getSelectedRow();
 		if ((idx >= 0) && (idx < getRowCount()))
-			Task = (String) getValueAt(idx, 2);
-		return Task;
+			procID = (String) getValueAt(idx, 2);
+		return procID;
 	}
 
 	public boolean isSelectedRun()

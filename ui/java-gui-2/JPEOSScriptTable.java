@@ -12,7 +12,7 @@ public class JPEOSScriptTable
 {
 	final static Object[] columnNames = {"Name", "Value"};
 	final static String[] propNames = 
-		{"Process ID", "Task ID", "State", "Parent ID"};
+		{"Process ID", "Task ID", "State", "Agent"};
 
 	public JPEOSScriptTable()
 	{
@@ -51,8 +51,10 @@ public class JPEOSScriptTable
 				ret = proc.getTaskID();
 				break;
 			case 2:
-				ret = proc.isAvailable()?(new String("Available")):(new String("Runing"));
+				ret = proc.isAvailable()?(PEOS_Interface.TL_AVAILABLE):(PEOS_Interface.TL_RUNNING);
 				break;
+			case 3:
+				ret = proc.getAgent();
 		}
 		if (ret == null)
 		    return new String("<none>");

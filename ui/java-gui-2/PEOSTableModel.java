@@ -7,8 +7,13 @@ import java.io.Serializable;
 import java.util.*;
 import javax.swing.event.TableModelEvent;
 
+import engineInterface.*;
+
 public class PEOSTableModel 
     extends javax.swing.table.AbstractTableModel implements Serializable {
+
+	final static String STS_RUN       = new String("R");
+	final static String STS_SUSPENDED = new String("S");
 
 //
 // Instance Variables
@@ -571,6 +576,19 @@ public class PEOSTableModel
 	public void setItems(Vector items)
 	{
         dataVector = new Vector(0);
+		if (items.size() > 0)
+		{
+			PEOS_Process    proc;
+			String[] tempString = new String[3];
+			for (int iRow = 0; iRow < items.size(); iRow++)
+			{
+				proc = (PEOS_Process) items.elementAt(iRow);
+				tempString[1] = proc.getProcessID();
+				tempString[2] = proc.getTaskID();
+				tempString[0] = (proc.getState()==PEOS_Process.STS_RUNNING)?STS_SUSPENDED:STS_RUN;
+				addRow(tempString);
+			}
+		}
 	}
 
 	public void clear()

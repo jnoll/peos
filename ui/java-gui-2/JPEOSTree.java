@@ -133,25 +133,28 @@ public class JPEOSTree
 	    String ret[] = new String[2];
 		boolean bFound = false;
 		javax.swing.tree.TreePath path = getSelectionModel().getSelectionPath();
-		StringTokenizer st = new StringTokenizer(path.toString(), ",[]");
-		if (st.countTokens() > 1)
+		if (path != null)
 		{
-			st.nextToken();			//the root
-			StringTokenizer st1 = new StringTokenizer(st.nextToken(), " ");		//the proc
-			ret[0] = st1.nextToken();
-			if (st.hasMoreTokens())
+			StringTokenizer st = new StringTokenizer(path.toString(), ",[]");
+			if (st.countTokens() > 1)
 			{
-				StringTokenizer st2 = new StringTokenizer(st.nextToken(), " ");	//the task
-				ret[1] = st2.nextToken();
-				bFound = true;
-			}
-			else
-			{
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-				if (node.getChildCount() == 1)
+				st.nextToken();			//the root
+				StringTokenizer st1 = new StringTokenizer(st.nextToken(), " ");		//the proc
+				ret[0] = new String(st1.nextToken());
+				if (st.hasMoreTokens())
 				{
-					ret[1] = node.getChildAt(0).toString();
+					StringTokenizer st2 = new StringTokenizer(st.nextToken(), " ");	//the task
+					ret[1] = new String(st2.nextToken());
 					bFound = true;
+				}
+				else
+				{
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+					if (node.getChildCount() == 1)
+					{
+						ret[1] = new String(node.getChildAt(0).toString());
+						bFound = true;
+					}
 				}
 			}
 		}
@@ -159,22 +162,5 @@ public class JPEOSTree
 		    return ret;
 		else
 		    return null;   
-	}
-
-	public String getSelectedProc()
-	{
-		String procID = null;
-        javax.swing.tree.TreePath tp = getSelectionModel().getSelectionPath();
-        if (tp != null)
-		{
-			StringTokenizer st = new StringTokenizer(tp.toString(), ",][");
-			if (st.countTokens() > 1)
-			{
-				st.nextToken();						//the root
-				StringTokenizer st1 = new StringTokenizer(st.nextToken(), " ");		//the proc
-				procID = st1.nextToken();
-			}
-		}
-		return procID;
 	}
 }
