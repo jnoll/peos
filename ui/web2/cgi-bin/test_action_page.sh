@@ -1,42 +1,40 @@
 #!/bin/sh
-
+echo -n "."
 export QUERY_STRING="0+test_script=ready"
-cp proc_table.dat old_table.dat
-cp test_table.dat proc_table.dat
-
+create_testtable
 action_page.cgi > output
 
-if !(grep "Action: test_script   (ready)" output)
+if !(grep "Action: test_script   (ready)" output > /dev/null)
 then
   echo
   echo Failed Action header.
   echo
 fi
-if !(grep Resources output)
+if !(grep Resources output > /dev/null)
 then
   echo
   echo Failed Resource header.
   echo
 fi
-if !(grep Description output)
+if !(grep Description output > /dev/null)
 then
   echo
   echo Failed Description header.
   echo
 fi
-if !(grep "this is a script" output)
+if !(grep "this is a script" output > /dev/null)
 then
   echo
   echo Failed script.
   echo
 fi
-if !(grep perform_button.jpg output)
+if !(grep perform_button.jpg output > /dev/null)
 then
   echo
   echo Failed Perform button.
   echo
 fi
-if !(grep back_button.jpg output)
+if !(grep back_button.jpg output > /dev/null)
 then
   echo
   echo Failed Back button.
@@ -46,25 +44,23 @@ fi
 export QUERY_STRING="0+test_script=active"
 action_page.cgi > output
 
-if !(grep done_button.jpg output)
+if !(grep done_button.jpg output > /dev/null)
 then
   echo
   echo Failed Done button.
   echo
 fi
-if !(grep suspend_button.jpg output)
+if !(grep suspend_button.jpg output > /dev/null)
 then
   echo
   echo Failed Suspend button.
   echo
 fi
-if !(grep back_button.jpg output)
+if !(grep back_button.jpg output > /dev/null)
 then
   echo
   echo Failed Back button.
   echo
 fi
 
-cp proc_table.dat test_table.dat
-cp old_table.dat proc_table.dat
 rm output

@@ -1,46 +1,46 @@
 #!/bin/sh
-
+echo -n "."
 rm proc_table.dat
 create_testtable
 main.cgi > output
 
-if !(grep Status output)
+if !(grep Status output > /dev/null)
 then
   echo
   echo Failed Status header.
   echo
 fi
-if !(grep Task output)
+if !(grep Task output > /dev/null)
 then
   echo
   echo Failed Task header.
   echo
 fi
-if !(grep Resource\(s\) output)
+if !(grep Resource\(s\) output > /dev/null)
 then
   echo
   echo Failed Resource header.
   echo
 fi
-if !(grep Description output)
+if !(grep Description output > /dev/null)
 then
   echo
   echo Failed Description header.
   echo
 fi
-if !(grep ready output)
+if !(grep ready output > /dev/null)
 then
   echo
   echo Failed ready state.
   echo
 fi
-if !(grep test_script output)
+if !(grep test_script output > /dev/null)
 then
   echo
   echo Failed action name.
   echo
 fi
-if !(grep "this is a script" output)
+if !(grep "this is a script" output > /dev/null)
 then
   echo
   echo Failed script. 

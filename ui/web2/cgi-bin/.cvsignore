@@ -1,1 +1,5 @@
 *.cgi
+core
+core.*
+*.dat
+create_testtable
