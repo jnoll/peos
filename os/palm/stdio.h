@@ -2,6 +2,7 @@
 #define PALMFUNCTIONS_H
 
 
+
 void doNothing();
 
 
@@ -23,13 +24,24 @@ void doNothing();
 #define BUFSIZ 8192
 
 #include <include/stdio.h>
-#include <FileStream.h>
-#include <PalmTypes.h>
-#include <SystemPublic.h>
+//#include <FileStream.h>
+#include <PalmOS.h>
+//#include <PalmTypes.h>
+//#include <SystemPublic.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef FileHand FILE;
+
+typedef struct file FILE;
+
+struct file{
+	int place;
+	char *recordBuf;
+	DmOpenRef db;
+};
+
+
+//typedef FileHand FILE;
 
 UInt32 cut_mode(const char*);
 FILE * fopen(const char*, const char*);

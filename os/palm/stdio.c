@@ -19,11 +19,15 @@ UInt32 cut_mode(const char*str)
 
 FILE * fopen(const char *name, const char *mode_str)
 {
-	FileHand *f;
-	UInt32 mode = cut_mode(mode_str);
-	f = (FileHand *) malloc(sizeof(FileHand));
-	*f =FileOpen(0, name, 0, 0, mode, err); 
-
+	FILE *f;
+	LocalID id;
+//	UInt32 mode = cut_mode(mode_str);
+	f = malloc(sizeof(struct file));
+	id=DmFindDatabase(0,name);
+	//update to use cut_mode below for 3rd param
+	f->db= DmOpenDatabase(0, id, dmModeReadOnly); 
+	f->recordBuf= MemHandleLock(DmQueryRecord(f->db,0)); 
+	f->place=0;
 	return f; 
 }
 
@@ -45,31 +49,44 @@ char* strdup(char*string)
 
 char getc(FILE* stream)
 {
-	char *oneByte;
-	FileRead(*stream, oneByte, 1, 1, err);
-	return *oneByte; 	
+	char oneByte;
+	fread(&oneByte,1,1, stream);
+	return oneByte; 	
 }
 
 Int32  fwrite(const  void  *ptr,  Int32  size,  Int32  nmemb,  FILE * stream)
 {
-	return FileWrite(*stream, ptr, size, nmemb, err);
+	// do nothing for now... don't see a need to write to file?
+
+/*	return FileWrite(*stream, ptr, size, nmemb, err); */
 }
 
 
 Int32 fread(void *ptr, size_t size, size_t nmemb, FILE* stream)
 {
-	return FileRead(*stream, ptr, size, nmemb, err);
+	int i;
+	if (size==1)
+	{
+		for(i=0; i<nmemb; i++)
+		{
+			((char*)ptr)[i]=(stream->recordBuf[stream->place]);
+			stream->place++; //increment place in file
+		}	
+	}	
+//	return FileRead(*stream, ptr, size, nmemb, err);
 }
 
 Int32 ferror(FILE* stream)
 {
-	*err = FileError (*stream);
+//	*err = FileError (*stream);
 	return -1;
 }
 
 Int32 fclose(FILE * stream)
 {
-	FileClose(*stream);
+	DmCloseDatabase(stream->db);
+	free(stream);
+//	FileClose(*stream);
 	return -1;
 }
 
