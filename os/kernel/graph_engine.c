@@ -309,8 +309,8 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
 
 void mark_iter_nodes(Node n)
 {
-	Node iter_start_node,iter_end_node;
-	int i;
+	Node iter_start_node,iter_end_node,iter_node;
+	int i,j;
 
 	if(STATE(n) == ACT_READY)
 	{
@@ -341,6 +341,14 @@ void mark_iter_nodes(Node n)
 	    iter_start_node = (Node) ListIndex(ITER_START_NODES(n),i);
 	    if((iter_start_node->type == SELECTION) || (iter_start_node->type == BRANCH) ||(iter_start_node->type == ACTION))
 	      {
+	       for(j = 0; j < ListSize(ITER_END_NODES(iter_start_node)); j++)
+	       {
+	         iter_node = (Node) ListIndex(ITER_END_NODES(iter_start_node),j);
+		 if(strcmp(iter_node->name,n->name) != 0)
+		 {
+			 mark_successors(iter_node,ACT_NONE);
+		 }
+	       }
 	       mark_successors(iter_start_node,ACT_NONE);
 	      }
 	   }
