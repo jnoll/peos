@@ -28,7 +28,7 @@
 void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ), int *d )
 {
 	bool isValidAttribute( char * ) ; 
-	bool isValidOperator( char * ) ; 
+	bool isValidOperator( char *, char * ) ; 
 	bool isValidValue( char * ) ;
 	bool isValidConjecture( char *) ;
 	
@@ -69,7 +69,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					break ;
 						
 					
-			case 1 :	if( isValidOperator( word ) )
+			case 1 :	if( isValidOperator( word, newQuery -> myClauses[numClauses].attribute ) )
 					{
 						newQuery -> myClauses[numClauses].operator = strdup( word ) ;
 						numParses++ ;
@@ -226,7 +226,7 @@ bool isValidAttribute( char *attr )
  *		operator of the repository. 				*
  ************************************************************************/
 
-bool isValidOperator( char *op )
+bool isValidOperator( char *op, char *attr )
 {
 	int i ;							// used in for loop
 	char *operators[4] = { "EQ", "~", "LT", "GT" } ;	// array that stores repository operators

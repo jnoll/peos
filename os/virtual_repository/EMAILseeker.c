@@ -20,6 +20,9 @@
 #include <time.h>
 #define BUFFER 1000
 
+char operatorType[10] ;
+time_t mailQueryTime ;
+
 /************************************************************************
  * Function:	MailqueryTool						*
  *									*
@@ -64,6 +67,7 @@ queryList* EMAILqueryTool( queryList *listpointer )
    			{
    				_debug( __FILE__, __LINE__, 5, "date attribute is %s", tempQueries -> oneQuery ->myClauses[numClauses].attribute ) ;
    				_debug( __FILE__, __LINE__, 5, "date value is %s", tempQueries -> oneQuery ->myClauses[numClauses].value ) ;
+   				strcpy ( operatorType , tempQueries -> oneQuery ->myClauses[numClauses].operator ) ;
    				getMailBox( mailPath ) ;
    				attributeType = 2 ;
    				if( numClauses == 0 )
@@ -88,6 +92,8 @@ queryList* EMAILqueryTool( queryList *listpointer )
    			{
    				_debug( __FILE__, __LINE__, 5, "date attribute is %s", tempQueries -> oneQuery ->myClauses[numClauses].attribute ) ;
    				_debug( __FILE__, __LINE__, 5, "date value is %s", tempQueries -> oneQuery ->myClauses[numClauses].value ) ;
+   				strcpy ( operatorType , tempQueries -> oneQuery ->myClauses[numClauses].operator ) ;
+   				_debug( __FILE__, __LINE__, 5, "operator type is %s", operatorType ) ;
    				getMailBox( mailPath ) ;
    				attributeType = 3 ;
    				if( numClauses == 0 )
@@ -238,6 +244,12 @@ void getMailPath(char *mailPath, char *value )
 	}		
 }
 
+/************************************************************************
+ * Function:	getMailBox						*
+ *									*
+ * Description:	Function gets the mailbox form the config file.		*
+ ************************************************************************/
+
 void getMailBox( char *mailPath )
 {
 	FILE *configFile ;		
@@ -318,7 +330,7 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 	int EMAILidCompare ( char *mailQuery, char *mailHeader) ;
 	int EMAILdateCompare ( char *queryValue, char *dateLine ) ;
 	void getMessageID( char *idBuffer, char *messageLine ) ;
-	
+
 	char *token ;
 	char oneLine[BUFFER] = {'\0'} ;
 	char testLine[BUFFER] = {'\0'} ;
@@ -332,12 +344,11 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 	tempResults = NULL ;
 	numAttributes = blankLine = fromLine = msgResult = 0 ;	
 	msgStage = lineNumber = 0 ; // first message is without blank
-	
-	
-		
-	while( ( fgets( oneLine, 500, mailFile ) != NULL ) && ( !msgResult ) )
+			
+	while( ( fgets( oneLine, 500, mailFile ) != NULL ) && ( !msgResult ) ) 
 	{
-		_debug( __FILE__, __LINE__, 5, "oneLine is %s\n", oneLine ) ;
+		_debug( __FILE__, __LINE__, 1, "numAttributes before oneline is %d", numAttributes) ;
+		_debug( __FILE__, __LINE__, 1, "oneLine is %s\n", oneLine ) ;
 		
 		strcpy( testLine, oneLine ) ;
 		
@@ -353,86 +364,103 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 			{
 				fromLine = lineNumber ;
 				_debug( __FILE__, __LINE__, 5, "fromLine is %d", fromLine) ;
+				_debug( __FILE__, __LINE__, 5, "testLine is %s", testLine) ;
 				_debug( __FILE__, __LINE__, 5, "blankLine is %d", blankLine) ;
 				if( fromLine - blankLine == 1 )
 				{
-					if( numAttributes != 0 )
+					if( numAttributes == 2 )
+					{
+						_debug( __FILE__, __LINE__, 5, "queryValue is %s", queryValue ) ;
+						_debug( __FILE__, __LINE__, 5, "messageID is %s", messageID ) ;
+						_debug( __FILE__, __LINE__, 5, "dateLine is %s", dateLine ) ;
+						_debug( __FILE__, __LINE__, 5, "subjectLine is %s", subjectLine ) ;
+						getMessageID( messageID, messageLine ) ;				
+						switch ( attributeType ) 					
+						{
+							case 1:	msgResult = EMAILidCompare ( queryValue, messageID );
+								numAttributes = msgStage = 0 ;
+								break ;
+											
+							case 2:	msgResult = EMAILdateCompare ( queryValue, dateLine ) ;
+								numAttributes = msgStage = 0 ;
+								break ;
+					
+							case 3:	msgResult = EMAILsubjectCompare ( queryValue, subjectLine ) ;
+								numAttributes = msgStage = 0 ;
+								subjectLine[0] = '\0' ;
+								break ;				
+						}
+																		
+						if( msgResult )
+						{
+							tempResults = addResultItem( tempResults, messageID ) ;
+							msgResult = 0 ;
+						}
+					}
+					else					
 						numAttributes = 0 ;
 				}
 			}
 
-			if( ( strcmp( "Message-Id:", token ) == 0 ) ||
-			    ( strcmp( "Message-ID:", token ) == 0 ) ||
-			    ( strcmp( "Message-id:", token ) == 0 ) )
+			if( ( ( strcmp( "Message-Id:", token ) == 0 ) ||
+			      ( strcmp( "Message-ID:", token ) == 0 ) ||
+			      ( strcmp( "Message-id:", token ) == 0 ) ) &&
+			      ( numAttributes != 2 ) )
 			{
 				oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
 			    	strcpy( messageLine, oneLine ) ;
-			    	_debug( __FILE__, __LINE__, 5, "messageLine is %s\n", messageLine ) ;
-			    	numAttributes++ ;
-			    	_debug( __FILE__, __LINE__, 5, "message numAttributes is %d\n", numAttributes ) ;
+			     	numAttributes++ ;
 			}
-					
-			if( strcmp( "Date:", token ) == 0 )
+			
+			if( ( strcmp( "Date:", token ) == 0 ) && ( numAttributes != 2 ) )
 			{
 				oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
 				strcpy( dateLine, oneLine ) ;
-				_debug( __FILE__, __LINE__, 5, "dateLine is %s\n", dateLine ) ;
 				numAttributes++ ;
-				_debug( __FILE__, __LINE__, 5, "date numAttributes is %d\n", numAttributes ) ;
 			}
 			
 			if( strcmp( "Subject:", token ) == 0 )
 			{
 				oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
 				strcpy( subjectLine, oneLine ) ;
-				_debug( __FILE__, __LINE__, 5, "subjectLine is %s\n", subjectLine ) ;
-				//numAttributes++ ;
-				_debug( __FILE__, __LINE__, 5, "subject numAttributes is %d\n", numAttributes ) ;
 			}
-		}
-		
-		if( numAttributes == 2 )
-		{	
-			_debug( __FILE__, __LINE__, 5, "with 2 numAttributes" ) ;
-			getMessageID( messageID, messageLine ) ;				
-			switch ( attributeType ) 					
-			{
-				case 1:	msgResult = EMAILidCompare ( queryValue, messageID );
-				_debug( __FILE__, __LINE__, 5, "attributeType is %d", attributeType ) ;
-					numAttributes = msgStage = 0 ;
-					break ;
-							
-				case 2:	msgResult = EMAILdateCompare ( queryValue, dateLine ) ;
-					_debug( __FILE__, __LINE__, 1, "attributeType is %d", attributeType ) ;
-					numAttributes = msgStage = 0 ;
-					break ;
-				
-				case 3:	msgResult = EMAILsubjectCompare ( queryValue, subjectLine ) ;
-					_debug( __FILE__, __LINE__, 5, "attributeType is %d", attributeType ) ;
-					numAttributes = msgStage = 0 ;
-					break ;				
-			}
-		}
-		
-		if( msgResult )
-		{
-			_debug( __FILE__, __LINE__, 5, "with msgResult" ) ;
-			tempResults = addResultItem( tempResults, messageID ) ;
-			msgResult = 0 ;
 		}
 		
 		lineNumber++ ;
-
-	}							
+	}
 	
+	if( numAttributes == 2 )
+	{
+		getMessageID( messageID, messageLine ) ;
+		switch ( attributeType ) 					
+		{
+			case 1	:	msgResult = EMAILidCompare ( queryValue, messageID );
+					break ;
+											
+			case 2	:	msgResult = EMAILdateCompare ( queryValue, dateLine ) ;
+					break ;
+					
+			case 3	:	msgResult = EMAILsubjectCompare ( queryValue, subjectLine ) ;
+					subjectLine[0] = '\0' ;
+					break ;				
+		}
+		numAttributes = msgStage = 0 ;
+				
+		if( msgResult )
+		{
+			tempResults = addResultItem( tempResults, messageID ) ;
+			msgResult = 0 ;
+		}
+	}
+								
 	return tempResults ;
 }
 
 /************************************************************************
- * Function:	EMAILidCompare						*
+ * Function:	getMessageID						*
  *									*
- * Description:	Given mail message and mail query, returns 1 if both 	*
- *		matches. Otherwise returns 0.				*
+ * Description:	Given mail message line, function gets the value of the *
+ *		message id.						*
  ************************************************************************/
  
 void getMessageID( char *idBuffer, char *messageLine )
@@ -453,7 +481,13 @@ void getMessageID( char *idBuffer, char *messageLine )
 	strncpy ( idBuffer, ptrMsg1 + 1, length - 1 ) ;
 }
 
-
+/************************************************************************
+ * Function:	EMAILidCompare						*
+ *									*
+ * Description:	Given mail message and mail query, returns 1 if both 	*
+ *		matches. Otherwise returns 0.				*
+ ************************************************************************/
+ 
 int EMAILidCompare ( char *queryValue, char *messageID ) 
 {
 	char *ptrQuery ;
@@ -478,41 +512,103 @@ int EMAILidCompare ( char *queryValue, char *messageID )
 /************************************************************************
  * Function:	EMAILdateCompare					*
  *									*
- * Description:	Given mail message and mail query, returns 1 if both 	*
- *		matches. Otherwise returns 0.				*
+ * Description:	Given date query and the date from mail, return 1 if  	*
+ *		both matches. Otherwise returns 0.			*
  ************************************************************************/
 
 int EMAILdateCompare ( char *queryValue, char *dateLine )
 {
 	void getMailDate( char *value, char *dateLine ) ;
-	void getMailQueryDate( char *, char * ) ;
-	
+		
 	char mailDate[11] ;
 	char queryDate[11] ;
 	
 	getMailDate( mailDate, dateLine ) ;
-	//getMailQueryDate( queryDate, queryValue ) ;
 	
 	_debug( __FILE__, __LINE__, 5, "mailDate is %s, queryDate is %s", mailDate, queryValue ) ;
 	
-	if( difftime( parsedate(queryValue,NULL),parsedate( mailDate,NULL )) == 0 )
-		return 1 ;
-	else
-		return 0 ;	
+	if ( strcmp ( operatorType, "EQ" ) == 0 )
+		{
+			_debug( __FILE__, __LINE__, 5, "dateLine for operator EQ is %s", dateLine ) ;
+
+			if( difftime( parsedate(queryValue,NULL),parsedate( mailDate,NULL )) == 0 )
+				return 1 ;
+			else
+				return 0 ;
+		}
+	
+	else if ( strcmp ( operatorType, "LT" ) == 0 )
+		{
+			time_t m, q;
+			m = parsedate( mailDate,NULL );
+			q = parsedate(queryValue,NULL);
+			
+			_debug( __FILE__, __LINE__, 1, "subjectLine for operator LT is %s",  dateLine ) ;
+			_debug( __FILE__, __LINE__, 1, "mailDate %s",  ctime(&m ) ) ;
+			_debug( __FILE__, __LINE__, 1, "queryValue %s",  ctime(&q )  ) ;
+			
+			if( difftime( parsedate( mailDate,NULL ), parsedate(queryValue,NULL)) < 0 )
+				return 1 ;
+				
+			else
+				return 0 ;
+			_debug( __FILE__, __LINE__, 1, "difftime is %d", difftime( parsedate( mailDate,NULL ), parsedate(queryValue,NULL))) ;
+		}
+		
+	else if ( strcmp ( operatorType, "GT" ) == 0 )
+		{
+			_debug( __FILE__, __LINE__, 2, "subjectLine for operator GT is %s",  dateLine ) ;
+			
+			if( difftime( parsedate( mailDate,NULL ), parsedate(queryValue,NULL)) > 0 )
+				return 1 ;
+			else
+				return 0 ;
+		}			
 }
 
+/************************************************************************
+ * Function:	EMAILsubjectCompare					*
+ *									*
+ * Description:	Given subject query and subject value from mail, 	*
+ *		returns 1 if query is found/matches. Otherwise 		*
+ *		returns 0.						*
+ ************************************************************************/
 
 int EMAILsubjectCompare ( char *queryValue, char *subjectLine )
 {
-	_debug( __FILE__, __LINE__, 5, "subjectLine is %s", subjectLine ) ;
-	_debug( __FILE__, __LINE__, 5, "strpbrk(subjectLine," ") %s", (strpbrk(subjectLine," ") +1) ) ;
-	_debug( __FILE__, __LINE__, 5, "queryValue %s", queryValue ) ;
+	if ( strlen ( subjectLine ) == 0 )
+		return 0 ;
 			
-	if( strstr( (strpbrk(subjectLine," ") +1), queryValue) != NULL )
-		return 1 ;
 	else
-		return 0 ;	
+	{
+		if ( strcmp ( operatorType, "~" ) == 0 )
+		{
+			_debug( __FILE__, __LINE__, 2, "subjectLine for ~ is %s", subjectLine ) ;
+
+			if( strstr( (strpbrk(subjectLine," ") +1), queryValue) != NULL )
+				return 1 ;
+			else
+				return 0 ;	
+		}
+	
+		else if ( strcmp ( operatorType, "EQ" ) == 0 )
+		{
+			_debug( __FILE__, __LINE__, 2, "subjectLine for EQ is %s", subjectLine ) ;
+			
+			if( strcmp( (strpbrk(subjectLine," ") +1), queryValue) == 0 )
+				return 1 ;
+			else
+				return 0 ;	
+		}
+	} 
 }
+
+/************************************************************************
+ * Function:	getMailDate						*
+ *									*
+ * Description:	Given subject query and subject value from mail, 	*
+ *		returns 1 if query is found. Otherwise returns 0.	*
+ ************************************************************************/
 
 void getMailDate( char *value, char *dateLine )
 {
@@ -562,7 +658,7 @@ void getMailDate( char *value, char *dateLine )
 	_debug( __FILE__, __LINE__, 5, "value is %s", value ) ;
 }
 
-void getMailQueryDate( char *value, char *queryValue )
+/*void getMailQueryDate( char *value, char *queryValue )
 {
 	char *word, *toParse, *year, *month, *day ;
 	int numParses ;
@@ -597,5 +693,5 @@ void getMailQueryDate( char *value, char *queryValue )
 	free( day ) ;
 	free( year ) ;
 	free( toParse ) ;
-}
+}*/
 

@@ -215,7 +215,7 @@ void attributeDATE( )
  *									*
  * Description:	Walks through the tree structure for matching NAMES.	*
  ************************************************************************/
- 
+
 void attributeNAME( ) 
 {
 	int getFile( const char *filename, const struct stat *statptr, int flag );
@@ -233,7 +233,7 @@ void attributeNAME( )
  * Description:	Returns filenames of DATES that matches their		*
  *		corresponding operators of EQ, LT, GT.			*
  ************************************************************************/
- 
+
 int getDate( const char *filename, const struct stat *statptr, int flag )
 {
 	void getFileDate( char * , char * ) ;
@@ -243,10 +243,9 @@ int getDate( const char *filename, const struct stat *statptr, int flag )
 		
 	switch ( flag )
 	{
-		case FTW_F : 	_debug( __FILE__, __LINE__, 1, "FTW file is %s", filename ) ;
-				_debug( __FILE__, __LINE__, 1, "statptr -> st_mtime is %s", ctime(  &statptr -> st_mtime  ) ) ;
-				_debug( __FILE__, __LINE__, 1, "fileQueryTime is %s", ctime(  &fileQueryTime  ) ) ;
-				
+		case FTW_F : 	_debug( __FILE__, __LINE__, 5, "FTW file is %s", filename ) ;
+				_debug( __FILE__, __LINE__, 5, "statptr -> st_mtime is %s", ctime(  &statptr -> st_mtime  ) ) ;
+				_debug( __FILE__, __LINE__, 5, "fileQueryTime is %s", ctime(  &fileQueryTime  ) ) ;
 				getFileDate( fileDate, ctime(  &statptr -> st_mtime  ) ) ;
 				
 				strcat( theFileName, "file://" ) ;
@@ -447,7 +446,6 @@ void getFileDate( char *value, char *fileTime )
 		
 	_debug( __FILE__, __LINE__, 5, "value is %s", value ) ;
 }
-
 
 /************************************************************************
  * Function:	convertMonth						*
