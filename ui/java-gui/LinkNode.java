@@ -32,6 +32,56 @@ public class LinkNode {
     public LinkNode getNext() {
         return this.next;
     }
+    public boolean isNextActionReady(){
+        LinkNode curr=this.getNext();
+        while (curr !=null)
+        {           
+            if (curr.data.getLocalName().equals("action"))
+            {
+                if (curr.data.getAttribute("state").equals("READY"))
+                {
+                    System.out.println(curr.data.getAttribute("name"));
+                    return true;
+                }
+                if (curr.data.getAttribute("state").equals("AVAILABLE"))
+                    return true;
+                return false;
+            }
+            curr=curr.getNext();
+        }
+        return false; 
+    }
+    
+    public String getNextActionName(){
+        LinkNode curr=this.getNext();
+        while (curr !=null)
+        {           
+            if (curr.data.getLocalName().equals("action"))
+            {
+                if (curr.data.getAttribute("state").equals("READY"))
+                    return curr.data.getAttribute("name");
+                if (curr.data.getAttribute("state").equals("AVAILABLE"))
+                    return curr.data.getAttribute("name");
+            }
+            curr=curr.getNext();
+        }
+        return "No Valid Next Action"; 
+    }
+    
+    public String getPostIterationActionName(){
+        
+        LinkNode curr=this.getNext();
+        int startingOffset=this.offset;
+        
+        while (curr !=null)
+        {           
+            if (( curr.offset == startingOffset)  
+                && curr.data.getLocalName().equals("action"))
+                return curr.data.getAttribute("name");;
+            curr=curr.getNext();
+        }
+        return ""; 
+    }
     
     public void setElement(Element update) {
         this.data=update;

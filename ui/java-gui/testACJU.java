@@ -80,7 +80,7 @@ public class testACJU extends TestCase{
         {
             DefaultMutableTreeNode tester = map.buildActionTree();
             assertEquals(tester.getUserObject(), "Actions");
-            tester = (DefaultMutableTreeNode)tester.getChildAt(2).getChildAt(0);
+            tester = (DefaultMutableTreeNode)tester.getChildAt(1).getChildAt(0);
             assertEquals(tester.getUserObject(), "(1)overview");           
             
         }
@@ -98,6 +98,47 @@ public class testACJU extends TestCase{
                 assertEquals("0", result[0]);
                 assertEquals("test1", result[1]);
 	}
+        public void testEnterIteration()
+	{
+		String tester="(0)*Enter iteration at itertest.";
+		String result[]= map.parsePid(tester);
+                assertEquals("0", result[0]);
+                assertEquals("itertest", result[1]);
+	}
+        public void testEndIteration()
+	{
+		String tester="(0)*Skip to itertest2.";
+		String result[]= map.parsePid(tester);
+                assertEquals("0", result[0]);
+                assertEquals("itertest2", result[1]);
+	}
+        public void testParseBadString()
+	{
+		String tester="(0*Choose: test1; test3";
+		String result[]= map.parsePid(tester);
+                
+                assertNull(result);
+	}
+        
+        public void testGetNextActionName()
+        {
+            map.getActionByName(0, "Fill_name");            
+            LinkNode testNode=map.getCurrentLink(0);
+            assertEquals(testNode.getNextActionName(),"No Valid Next Action");
+        }
+        
+        public void testGetPostIterationActionName()
+        {
+            map.getActionByName(1,"create_baseline");
+            LinkNode testNode=map.getCurrentLink(1);
+            assertEquals("create_readme", testNode.getPostIterationActionName());
+        }
+        public void testIsNextActionReady()
+        {            
+            LinkNode testNode=map.getCurrentLink(1);
+            assertFalse(testNode.isNextActionReady());
+        }
+        
 	protected void setUp()
 	{
 

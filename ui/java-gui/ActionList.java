@@ -100,7 +100,8 @@ public class ActionList extends JScrollPane implements TreeSelectionListener, Hy
             }                                                
                                              
             String[] fixedPath=map.parsePid(pathName(currentPage));
-            this.topLevel.switchToProcess(fixedPath);
+            if (fixedPath !=null)
+                this.topLevel.switchToProcess(fixedPath);
             
         }
         

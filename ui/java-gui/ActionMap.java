@@ -59,11 +59,13 @@ public class ActionMap{
             String[] ready = new String[50];
             String[] run = new String[50];
             String[] suspend = new String[50];
-            boolean selectionFlag=false;
+            String[] iteration = new String[22];
+            boolean selectionFlag=false;           
             int availCount=0;
             int readyCount=0;
             int runCount=0;
             int suspendCount=0;
+            int iterationCount=0;
             int offsetCounter=-1;
             
             for (int i=0; i< 11; i++)
@@ -77,6 +79,24 @@ public class ActionMap{
                     while (probe != null)
                     {
                         Element payload = probe.getElement();                    
+                        if ( payload.getLocalName().equals("iteration"))
+                        {
+                            if (probe.isNextActionReady()==true)
+                            {
+                                
+                                System.out.println(probe.getElement().getLocalName());
+                                System.out.println(probe.getPrev().getElement().getAttribute("name"));
+                                System.out.println(probe.getNext().getElement().getAttribute("name"));
+                                iteration[iterationCount]="("+i+")*Enter Iteration";
+                                iteration[iterationCount]+=" at " 
+                                                + probe.getNextActionName() + ".";
+                                iterationCount++;
+                                iteration[iterationCount]="("+i+")*Skip to ";
+                                iteration[iterationCount]+=probe.getPostIterationActionName() +".";
+                                iterationCount++;
+                                probe=null;
+                            }
+                        }
                         if ( payload.getLocalName().equals("selection"))
                         {
                             selectionFlag=true; 
@@ -148,13 +168,20 @@ public class ActionMap{
                             }
                             
                         }
-                        
-                        probe = probe.getNext();
+                        if (probe !=null)
+                            probe = probe.getNext();
                     }
                     this.setCurrent(i,curr);
                 }
                 
             }
+            
+            DefaultMutableTreeNode iterationNode = new DefaultMutableTreeNode("Iteration");
+            for (int i=0; i<iterationCount; i++)
+            {
+                iterationNode.add(new DefaultMutableTreeNode(iteration[i]));
+            }
+            
             DefaultMutableTreeNode availableNode = new DefaultMutableTreeNode("Available");
             for (int i=0; i<availCount; i++)
             {
@@ -177,11 +204,36 @@ public class ActionMap{
                 suspendNode.add(new DefaultMutableTreeNode(suspend[i]));
             }
             
-            root.add(runNode);
-            root.add(suspendNode);
-            root.add(readyNode);
-            root.add(availableNode);
-            
+            boolean noneFlag=true;
+            if (iterationCount>0)
+            {
+                root.add(iterationNode);
+                noneFlag=false;
+            }
+            if (runCount>0)
+            {
+                root.add(runNode);
+                noneFlag=false;
+            }
+            if (suspendCount>0)
+            {
+                root.add(suspendNode);
+                noneFlag=false;
+            }
+            if (readyCount>0)
+            {
+                root.add(readyNode);
+                noneFlag=false;
+            }
+            if (availCount>0)
+            {
+                root.add(availableNode);
+                noneFlag=false;
+            }
+            if (noneFlag==true)
+            {
+                root.add(new DefaultMutableTreeNode("No actions require attention."));
+            }
             return root; 
 
         }        
@@ -237,11 +289,19 @@ public class ActionMap{
             
         }
         public String[] parsePid(String actionBlock)
-        {                   
+        {                
             String[] splitter=actionBlock.split("\\)");
+            if (splitter.length ==1)
+                return null;
             if (splitter[1].charAt(0) == '*') // pseudoaction case
-            {
-                String actions = splitter[1].substring(9,splitter[1].indexOf(';'));
+            {     
+                String actions = "";                         
+                if (splitter[1].charAt(1) =='C') 
+                     actions = splitter[1].substring(9,splitter[1].indexOf(';'));  
+                else if (splitter[1].charAt(1) =='E')                     
+                    actions = splitter[1].substring(20, splitter[1].indexOf('.'));
+                else
+                    actions = splitter[1].substring(9, splitter[1].indexOf('.'));
                 splitter[1]=actions;                                 
             }
                            
