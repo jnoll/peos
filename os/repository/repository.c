@@ -135,6 +135,11 @@ int  pml_open_repository(path, mode)
 
 	i = 0;
 
+        /* This function call is a quick fix to the fact that pml_open_repository seen here should be for UNIXFS, which needs
+to change its calls from a file descriptor to a path anyhow.  */
+
+        return (int) pmlstate_open_repository(path, mode);
+
 	/* Open repository file. */
 	if ((fd = open(path, O_RDWR, REPOSITORY_MASK)) == -1)
 			return (int) -1;
@@ -188,7 +193,7 @@ int  pml_open_repository(path, mode)
 		}
 	}
 
-	return (int) -1;
+	return (int) 0;
 }
 
 /*------------------------------------------------------------
@@ -456,10 +461,3 @@ int repository_queryrewind(query_result)
 		return (int)0;
 }
 
-/* THIS IS FOR TESTING PURPOSES, IF YOU STILL SEE IT,
-   IT'S BECAUSE I FORGOT TO DELETE IT !!!     */
-
-int main()
-{
-return 0;
-}
