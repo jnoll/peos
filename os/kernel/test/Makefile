@@ -92,10 +92,14 @@ tags:	$(SOURCES)
 	ctags $(SOURCES)
 
 clean:
-	-rm *.o core.*
+	-rm -f *.o core.*
 
 reallyclean: clean
-	-rm $(TESTS) test_assertions
+	-rm -f $(TESTS) test_assertions test_resources test_graph \
+	test_action test_events test_process test_process_table \
+	test_graph_engine test_assertions test_tclinterp \
+	test_predicate_evaluator 
+
 
 # Dependencies.
 include .depend
