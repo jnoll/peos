@@ -1,6 +1,9 @@
 file://test.dat
 
+file:///users/student/cgoh/temp/peos/src/os/virtual_repository/testDirectory/test1.c
+
+file:///users/student/cgoh/temp/peos/src/os/virtual_repository/testDirectory/test3.c
+
 file://vrepo.c
 
 file://FSseeker.c
-
