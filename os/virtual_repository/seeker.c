@@ -6,7 +6,7 @@
 
 #include "form.h"
 #include "variables.h"
-#include "listManager.h"
+#include "resultLinkedList.h"
 #include <ftw.h>
 #include <stdlib.h>
 #include <string.h>

@@ -8,7 +8,7 @@
 #include "variables.h"
 #include "vrepo.h"
 #include "seeker.h"
-#include "listManager.h"
+#include "resultLinkedList.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
