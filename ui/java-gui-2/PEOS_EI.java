@@ -362,7 +362,38 @@ public class PEOS_EI extends javax.swing.JFrame
 
 	    JModelListCB.setModel(comboBoxModelProcess);
     
-		JCreateButton.setIcon(loadImageIcon("images/create_up.gif", "Normal Create"));
+		Icon icon = new ImageIcon("images/create_up.gif", "Normal Create");
+		JCreateButton.setIcon(icon);
+		icon = new ImageIcon("images/create_down.gif", "Pressed Create");
+		JCreateButton.setPressedIcon(icon);
+		icon = new ImageIcon("images/create_gray.gif", "Disable Create");
+		JCreateButton.setDisabledIcon(icon);
+		icon = new ImageIcon("images/refresh_up.gif", "Normal Refresh");
+		JRefreshButton.setIcon(icon);
+		icon = new ImageIcon("images/refresh_down.gif", "Pressed Refresh");
+		JRefreshButton.setPressedIcon(icon);
+		icon = new ImageIcon("images/refresh_gray.gif", "Disable Refresh");
+		JRefreshButton.setDisabledIcon(icon);
+		icon = new ImageIcon("images/runButton_up.gif", "Normal Run");
+		JRunButton.setIcon(icon);
+		icon = new ImageIcon("images/runButton_down.gif", "Pressed Run");
+		JRunButton.setPressedIcon(icon);
+		icon = new ImageIcon("images/runButton_gray.gif", "Disable Run");
+		JRunButton.setDisabledIcon(icon);
+		icon = new ImageIcon("images/suspendButton_up.gif", "Normal Suspend");
+		JSuspendButton.setIcon(icon);
+		icon = new ImageIcon("images/suspendButton_donw.gif", "Pressed Suspend");
+		JSuspendButton.setPressedIcon(icon);
+		icon = new ImageIcon("images/suspendButton_gray.gif", "Disable Suspend");
+		JSuspendButton.setDisabledIcon(icon);
+		icon = new ImageIcon("images/resumeButton_up.gif", "Normal Done");
+		JResumeButton.setIcon(icon);
+		icon = new ImageIcon("images/resumeButton_down.gif", "Pressed Done");
+		JResumeButton.setPressedIcon(icon);
+		icon = new ImageIcon("images/resumeButton_gray.gif", "Disable Done");
+		JResumeButton.setDisabledIcon(icon);
+
+/*		JCreateButton.setIcon(loadImageIcon("images/create_up.gif", "Normal Create"));
 		JCreateButton.setPressedIcon(loadImageIcon("images/create_down.gif", "Pressed Create"));
 		JCreateButton.setDisabledIcon(loadImageIcon("images/create_gray.gif", "Disable Create"));
 		JRefreshButton.setIcon(loadImageIcon("images/refresh_up.gif", "Normal Refresh"));
@@ -377,9 +408,8 @@ public class PEOS_EI extends javax.swing.JFrame
 		JResumeButton.setIcon(loadImageIcon("images/resumeButton_up.gif", "Normal Done"));
 		JResumeButton.setPressedIcon(loadImageIcon("images/resumeButton_down.gif", "Pressed Done"));
 		JResumeButton.setDisabledIcon(loadImageIcon("images/resumeButton_gray.gif", "Disable Done"));
-
 	    JProcessesTree.setRootVisible(false);
-	    JProcessesTree.setShowsRootHandles(true);
+	    JProcessesTree.setShowsRootHandles(true);	*/
 	}
 	
 	/**

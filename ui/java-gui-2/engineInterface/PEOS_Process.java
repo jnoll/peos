@@ -92,6 +92,12 @@ public class PEOS_Process extends Object
 	 */
     protected PEOS_Process() 
     {
+		_PMLScript = null;
+		_systemCommand = null;
+		_descScript = null;
+		_execScript = null;
+		_agent = null;
+		_parentProcID = null;
         _state = STS_NONE;
 		_status = ERR_OK;
     }
@@ -103,7 +109,13 @@ public class PEOS_Process extends Object
 	 */
     protected PEOS_Process(int newState) 
     {
-        _state = newState;
+		_PMLScript = null;
+		_systemCommand = null;
+		_descScript = null;
+		_execScript = null;
+		_agent = null;
+		_parentProcID = null;
+        _state = STS_NONE;
 		_status = ERR_OK;
     }
 
