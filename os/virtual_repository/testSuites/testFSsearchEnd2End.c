@@ -98,28 +98,40 @@ void callback( int size, resultList *listpointer, int *data )
 
 void setExpectedResult ( char *queryString, FILE *expectedResultFile ) 
 {
-	char *pValue ;
+	char *token, *value ;
 	char testString[BUFFER] = { '\0' } ;
 	char tempQuery[BUFFER] = { '\0' } ;
+	char cwd[BUFFER] = { '\0' } ;
 	
 	strcpy( tempQuery, queryString ) ;
 		
-	if ( strstr( queryString, "file://" ) != NULL ) 
+	if ( strstr( queryString, "file:///" ) != NULL ) 
 	{
-		pValue = strpbrk( tempQuery, ":" ) ;
-		_assert( __FILE__, __LINE__, pValue ) ;
-		strcpy( testString, pValue - 4 ) ;
+		value = strpbrk( queryString, ":" ) ;
+		strcat( testString, "file://" ) ;
+		strcat( testString, value + 3 ) ;
 		strcat( testString, "\n" ) ;
-		fwrite( testString, sizeof( char ), strlen( testString ), expectedResultFile ) ;
 	}
-	/*else
+	else if ( strstr( queryString, "file://" ) != NULL )  
 	{
-		pValue = strrchr( tempQuery, ' ' ) ;
-		_assert( __FILE__, __LINE__, pValue ) ;
-		strcat( testString, "./" ) ;
-		strcat( testString, pValue + 1 ) ;
-	}*/
-	
+		if( getcwd ( cwd , BUFFER ) == NULL )
+		{
+			puts( "error" ) ;
+		}
+		else
+		{
+			strcat( testString, "file://" ) ;
+			strcat( testString, cwd ) ;
+			strcat( testString, "/" ) ;
+			
+			value = strpbrk( queryString, ":" ) ;
+			_assert( __FILE__, __LINE__, value  ) ;
+			strcat( testString, value + 3 ) ;
+			strcat( testString, "\n" ) ;
+			
+		}
+	}
+	fwrite( testString, sizeof( char ), strlen( testString ), expectedResultFile ) ;
 }
 
 void setTestData ( char *queryString, FILE *testQuery ) 

@@ -74,7 +74,7 @@ test:	$(TESTS)
 
 clean:
 	-rm *.o
-	-rm core
+	-rm core*
 	-rm $(FS_ACTUAL_RESULT_FILES)
 	-rm $(FS_EXPECTED_RESULT_FILES)
 	-rm $(FS_QUERY_FILES)

@@ -52,7 +52,7 @@ int main( void )
 		_debug( __FILE__, __LINE__, 5, "queryString is %s", queryString ) ;
 		if( strlen( queryString ) )
 		{
-			_debug( __FILE__, __LINE__, 5, "queryString is %s", queryString ) ;
+			_debug( __FILE__, __LINE__, 2, "queryString is %s", queryString ) ;
 			query_wait( queryString, call, d ) ;			
 			queryString[0] = '\0' ;
 		}
