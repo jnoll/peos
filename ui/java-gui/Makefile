@@ -1,6 +1,6 @@
 #these lines are for modification.
 images= ./images/
-path= /home/shinobi/peos/src/ui/java-gui/bin/peos 
+path= ./bin/peos 
 help= ./help/
 pml= ./testfiles/ 
 XERCES_PATH=./include/

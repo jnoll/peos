@@ -91,7 +91,7 @@ public class PeosApp extends JFrame implements ActionListener
 
 		/**************** HELP MENU *******************/
 		JMenu helpMenu = new JMenu( "Help" );
-		helpMenu.setMnemonic(KeyEvent.VK_F);
+		helpMenu.setMnemonic(KeyEvent.VK_H);
 		menuBar.add(helpMenu);
 
         	JMenuItem helpItem = new JMenuItem("Online Help");
@@ -137,7 +137,7 @@ public class PeosApp extends JFrame implements ActionListener
 				menuBar.removeAll();
        				setJMenuBar(createMenuBar());
 			}
-			deleteB.setEnabled(true);
+			//deleteB.setEnabled(true);
 		}
 		else if ("active".equals(e.getActionCommand()))
 		{
@@ -300,7 +300,7 @@ public class PeosApp extends JFrame implements ActionListener
 		//fileChooser.setCurrentDirectory(new File(lastDir));
                 fileChooser.setCurrentDirectory(new File(System.getProperty("peos.pml")));
           	int result = fileChooser.showOpenDialog (this);
-
+                
 	        // user clicked Cancel button on dialog
         	if (result == JFileChooser.CANCEL_OPTION)
                         file = null;
@@ -331,6 +331,7 @@ public class PeosApp extends JFrame implements ActionListener
 		
 			String temp = fileChooser.getSelectedFile().toString();
 			lastDir = temp.substring(0,temp.lastIndexOf('/'));
+                        deleteB.setEnabled(true);
 		}
 	}
 		
