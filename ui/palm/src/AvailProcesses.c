@@ -119,7 +119,7 @@ return handled;
 	
 }
 
-/*
+
 char ** list_models (UInt16 * size)
 {
 	UInt16 i;
@@ -130,7 +130,7 @@ char ** list_models (UInt16 * size)
 	}
 	return list;
 }
-*/
+
 
 Boolean AvailableProcessesHandler (EventType* pEvent)
 {
@@ -188,13 +188,13 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 			list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1001));
 
 			//test 1:
-			listElements2 = (char**) malloc (4*2);
-			(char*) listElements2 [0] = "process1";
-			(char*) listElements2 [1] = "proc";
-			numChoices = ( 8 / sizeof (listElements2[0]));
+			//listElements2 = (char**) malloc (4*2);
+			//(char*) listElements2 [0] = "process1";
+			//(char*) listElements2 [1] = "proc";
+			//numChoices = ( 8 / sizeof (listElements2[0]));
 			
 			//test2:  real
-			//listElements2 = list_models (&numChoices);
+			listElements2 = list_models (&numChoices);
 			
 			LstSetListChoices (list, listElements2, numChoices);
 			LstSetSelection (list, -1);
