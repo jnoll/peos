@@ -13,28 +13,18 @@ START_TEST(trunPeos)
  
   int rtn_val = -1;
   size_t size = 0;
-  char *command = NULL, *cmd_peos = NULL, *str_rtn = NULL;
+  char *command = NULL, *str_rtn = NULL;
 
   /* Construct a path to verify if runPeos returns a 0 or 1
    * The path may fail but the test will pass as long as the
-   * implementation in runPeos returns 1.  If peos happens to
-   * be in /usr/bin then the value returned will be 0.
+   * implementation in runPeos returns 1.
    */
   
-  size = strlen("/usr/bin/peos -c Test.pml") + 1;
-  cmd_peos = (char *) malloc((size_t) size * sizeof(char));
+  size = strlen("./bin/peos -c Test.pml") + 1;
+  command = (char *) malloc((size_t) size * sizeof(char));
   size = 0;
 
-  strcpy(cmd_peos, "/usr/bin/peos -c Test.pml");
-  
-  /* Construct commnand argument for runPeos((char *) str) */
-  size = strlen(cmd_peos) + strlen(" >message 2>&1") + 1;
-  command = (char *) malloc((size_t) size * sizeof(char));
-  
-  strcpy(command, cmd_peos);
-  strcat(command, " >message 2>&1");
-  free(cmd_peos);
-  cmd_peos = NULL;
+  strcpy(command, "./bin/peos -c Test.pml");
   
   /* call runPeos((char *) str) with command */
   rtn_val = runPeos((char *) command);
@@ -42,9 +32,15 @@ START_TEST(trunPeos)
   command = NULL;
    
   fail_unless ((rtn_val != 0) || (rtn_val != 1),
-              "The trunPeos test failed to return 0 or 1.");
+              "The trunPeos test failed to return 0 or 1. \n");
 	      
-
+  rtn_val = -1;  /* re-initialize */	      
+  rtn_val = runPeos((char *) NULL);
+  
+  /* test should return 1 if passing NULL argument to runPeos */
+  if(rtn_val != 1) {
+  	fail("RunPeos should return 1 upon evaluating a NULL argument. \n");
+  }
   
 }
 END_TEST
@@ -122,7 +118,7 @@ START_TEST(tgetPath)
   
   char *rtn_val = NULL, *t = NULL;	/* t is current token */
   unsigned i = 0, tok_count = 0;      
-#ifdef DEBUG
+
   rtn_val = getPath();
   
   if(rtn_val == NULL) {
@@ -131,7 +127,7 @@ START_TEST(tgetPath)
   
   for(t = strtok(rtn_val, "/"); t != NULL; t = strtok(NULL, "/")) {
 	tok_count++;
-  	if(strcmp(t, "bin") == 0) i = tok_count;
+  	if(strcmp(t, "peos") == 0) i = tok_count;
   }
   
   if(rtn_val != NULL) {
@@ -139,14 +135,13 @@ START_TEST(tgetPath)
   	rtn_val = NULL;
   }
   
-  /* If tok_count-1 is greater than i that means bin is not the basename of the peos executable path.
-   * I used tok_count-1 to exclude "peos" token.
+  /* If tok_count value does not equal i then peos is not the base and thus
+   * not the executable.
    */ 
-  if((i > 0) && (tok_count-1 > i)) {
+  if((i == 0) || (i != tok_count)) {
   	fail("Error. Unable to locate peos in any bin directory.");
   }
   
-#endif  
 }
 END_TEST
 

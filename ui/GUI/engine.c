@@ -5,39 +5,41 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define SLASH_PEOS "/peos"	/* name of peos cmd, must start with a / */
+#define SLASH_PEOS "/./peos"	/* name of peos cmd, must start with a / */
 
 /* run the peos command with the given command */
 /* XXX - should do fork/exec with the child's stdout and stderr going to a file */
 int
 runPeos (char *cmd)
 {
-  char *shell_cmd;	/* shell command to run */
-  int size;		/* how much to malloc */
+  char *shell_cmd = NULL;	/* shell command to run */
+  int size;			/* how much to malloc */
 
   /* firewall */
   if (cmd == NULL) {
 	/* XXX - panic here about bogus arg passed */
-	return 0;
+	return 1;
   }
 
   /* form the command with >message 2>&1 on the end */
   size = strlen(cmd) + strlen(" >message 2>&1") + 1;
-  shell_cmd = malloc(size+1);
+  shell_cmd = malloc(size*sizeof(char));
   if (shell_cmd == NULL) {
 	/* XXX - panic here about malloc failure */
-	return 0;
+	return 1;
   }
   shell_cmd[0] = '\0';
   snprintf(shell_cmd, size, "%s >message 2>&1", cmd);
-  shell_cmd[size] = '\0';
+  shell_cmd[size-1] = '\0';
 
   /* execute cmd within the shell */
   system(shell_cmd);
 
   /* cleanup */
-  free(shell_cmd);
-  shell_cmd = NULL;
+  if(shell_cmd != NULL) {
+  	free(shell_cmd);
+  	shell_cmd = NULL;
+  }
   return 0;
 }
 
@@ -57,7 +59,7 @@ peos_in_dir(char *dirname)
 {
     #define EXIT_FAIL NULL
     size_t size;	/* malloc string size */
-    char *peos;		/* potential location of peos */
+    char *peos = NULL;		/* potential location of peos */
 
     /* firewall */
     if (dirname == NULL) {
@@ -66,14 +68,14 @@ peos_in_dir(char *dirname)
 
     /* form $PWD/peos */
     size = strlen(dirname) + strlen(SLASH_PEOS) + 1;
-    peos = (char *) malloc((size_t) size);
+    peos = (char *) malloc(size*sizeof(char));
     if (peos == NULL) {
 	perror("malloc of dirname/peos failed");
 	return EXIT_FAIL;
     }
     peos[0] = '\0';
     (void) snprintf(peos, size, "%s%s", dirname, SLASH_PEOS);
-    peos[size] = '\0';
+    peos[size - 1] = '\0';
 
     /* look for peos in the directory */
     if (access(peos, X_OK) != 0) {
@@ -100,8 +102,8 @@ peos_in_dir(char *dirname)
 char *
 getPath(void)
 {
-    char *path_env;	/* value of $PATH */
-    char *peos;		/* potential location of peos */
+    char *path_env = NULL;	/* value of $PATH */
+    char *peos = NULL;		/* potential location of peos */
 
     /* look for peos in current directory */
     if (cwd != NULL) {
