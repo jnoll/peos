@@ -299,7 +299,6 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   	public void startAction()
   	{
 		int status;
-                map.getActionByName(pidNum,currActionName);
 		status = outline.doesStartNeedValue(map.getCurrentAction(pidNum));
                 System.out.println(map.getCurrentAction(pidNum).getAttribute("name"));
 		if(status == 1)
@@ -336,7 +335,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   	public void finishAction()
   	{		
 		int status;
-                map.getActionByName(pidNum,currActionName);
+
                 status = outline.doesFinishNeedValue(map.getCurrentAction(pidNum));
                 System.out.println(map.getCurrentAction(pidNum).getAttribute("name"));
                 System.out.println("status = " + status);
@@ -458,7 +457,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
  	public void createTextPane(LinkNode n, String currentPage)
  	{
 		currActionName=map.printCurrentName(pidNum);
-		
+		System.out.println("WTF MATES" + currActionName);
 	 	String script = outline.getScript(map.getActionByName(pidNum,currentPage),pidNum);
 		String initString = "<font size = 2><font face = \"Arial\">" + 
 				     currentPage + 
