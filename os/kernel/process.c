@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.2 2003/06/29 22:39:14 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.3 2003/07/02 19:22:19 jnoll Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
-* Modified:     Sun Jun 29 14:58:11 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Wed Jul  2 11:53:40 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -168,7 +168,9 @@ int peos_resume(int pid)
     vm_exit_code result;
     int cont = 1;
 
-    if ((current_process = peos_get_context(pid)) == NULL) {
+    current_process = peos_get_context(pid);
+
+    if (current_process == NULL) {
 	return VM_INTERNAL_ERROR;
     }
 

@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.2 2003/06/30 20:26:06 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.3 2003/07/02 19:22:19 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Mon Jun 30 13:17:39 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Wed Jul  2 12:09:46 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -24,7 +24,7 @@
 peos_context_t process_table[PEOS_MAX_PID+1];
 int num_proc = 0;
 int cur_pid = -1;		/* Initially, start below proc table. */
-peos_context_t *current_process = NULL; 
+peos_context_t *current_process = &(process_table[0]);
 
 /* Forward declarations. */
 char *find_model_file(char *model);
@@ -280,14 +280,15 @@ int find_start(char *inst_array[], int size)
     return -1;			/* Not found - error. */
 }
 
-char (*peos_list_instances())[]
+char **peos_list_instances()
 {
-    static char result[PEOS_MAX_PID+1][256];
+    static char result[256], *p[1];
     int i;
     for (i = 0; i <= PEOS_MAX_PID; i++) {
-	strcpy(result[i], process_table[i].model);
+	strcpy(result, process_table[i].model);
     }
-    return result;
+    p[0] = result;
+    return p;
 }
 
 char *find_model_file(char *model)
@@ -351,19 +352,7 @@ int delete_entry(int pid)
 
 peos_context_t *find_free_entry()
 {
-    int i;
-    if (num_proc <= PEOS_MAX_PID) {
-	for (i = cur_pid + 1; i != cur_pid; i++) {
-	    if (i > PEOS_MAX_PID) { 
-		i = 0;
-	    }
-	    if (process_table[i].model[0] == '\0') {
-		cur_pid = i;
-		return &(process_table[i]);
-	    }
-	}
-    }
-    return NULL;
+    return current_process;	/* XXX This is a single threaded system now. */
 }
 
 int peos_create_instance(char *model)
@@ -386,7 +375,7 @@ int peos_create_instance(char *model)
 	{
 	    init_context(&(context->vm_context), start);
 	    strcpy(context->model, model);
-	    num_proc++;
+	    num_proc = 1;	/* XXX single threaded only. */
 	    return (context - process_table); 
 	}
     return -1;

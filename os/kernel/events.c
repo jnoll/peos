@@ -33,8 +33,7 @@ char **peos_list_models()
     char * COMP_DIR = getenv("COMPILER_DIR");
   
     if (COMP_DIR == NULL) {
-	error_msg("peos_list_models: COMPILER_DIR not set.\n");
-	return NULL;
+	COMP_DIR = ".";
     }
     dir = opendir(COMP_DIR);
     if (dir == NULL) {

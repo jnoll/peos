@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: driver.c$
-* Version:      $Id: vm_harness.c,v 1.1 2003/06/24 21:01:55 jnoll Exp $ ($Name:  $)
+* Version:      $Id: vm_harness.c,v 1.2 2003/07/02 19:22:19 jnoll Exp $ ($Name:  $)
 * Description:  Command line driver for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Feb  9 11:26:52 2003
@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "vm.h"
 #include "events.h"
-
+#include "action.h"
 int handle_syscall(peos_context_t *context)
 {
     int cont = 1; /* 0 indicates blocking call. */

@@ -1,6 +1,6 @@
-*.o PMLServer *.idx *.dat
+*.o PMLServer *.idx *.dat *.txt
 *.tar
 TODO BUGS
 xref TAGS tags
-.depend.depend
+.depend
 shell

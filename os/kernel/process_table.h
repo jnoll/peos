@@ -3,7 +3,7 @@
 #include "action.h"
 
 #define INST_ARRAY_INCR (256)    
-#define PEOS_MAX_PID (10)
+#define PEOS_MAX_PID (0)
 
 
 typedef struct peos_context_tag {
@@ -21,5 +21,5 @@ int peos_get_pid(peos_context_t *context);
 peos_context_t *peos_get_context(int pid);
 int peos_create_instance(char *model);
 int peos_resume(int pid);
-char (*peos_list_instances())[];
+char **peos_list_instances();
 #endif 
