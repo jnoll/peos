@@ -12,7 +12,7 @@ test: testSFAS.class testPO.class testAC.class testLoad.class displayPO.class
 	java ${j} testLoad
 	java ${j} testSFAS
 	java ${j} testAC
-jtest: testLoadJU.class LoadProcess.class testACJU.class testSFASJU.class \
+jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class LoadProcess.class testACJU.class testSFASJU.class \
 	testPOJU.class testCRJU.class
 
 	rm -f proc_table.dat
@@ -24,6 +24,8 @@ jtest: testLoadJU.class LoadProcess.class testACJU.class testSFASJU.class \
 	java ${java} testSFASJU
 	java ${java} testACJU
 	java ${java} testCRJU
+	java ${java} testActionMapJU
+	java ${java} testResourceMapJU
 
 setup: SetupPath.class
 	java ${j} SetupPath
