@@ -1,5 +1,5 @@
 test_process_table test_action test_assertions test_events
-test_process test_vm test_graph_engine test_graph
+test_process test_vm test_graph_engine test_graph test_resources
 driver vm_harness PMLServer
 *.o  *.idx *.dat
 *.txt
