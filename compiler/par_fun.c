@@ -117,8 +117,20 @@ int lexical_analyzer()
       else if(in_char=='}') {
          sprintf(token_buffer,"%c",in_char);
          return CL_BRC;
-      }
-      else if(in_char=='\"') {
+      } else if(in_char=='=') {
+	  	 in_char2=fgetc(in_fptr);
+         sprintf(token_buffer,"%c%c",in_char,in_char2);
+		 if(in_char2=='=')
+	 		return EQUAL;
+      } else if(in_char=='&') {
+	  	 in_char2=fgetc(in_fptr);
+         sprintf(token_buffer,"%c%c",in_char,in_char2);
+	 	 if(in_char2=='&')
+	 		return AND;
+      } else if(in_char=='.') {
+         sprintf(token_buffer,"%c",in_char);
+		 return PERIOD;
+      } else if(in_char=='\"') {
               int bb=0;
               in_char=fgetc(in_fptr);
 
@@ -325,6 +337,7 @@ int primlist_func(data_dictionary_struct *dictionary_ptr, char *parent_name)
 ******************************************************************************/
 int speclist_func(data_dictionary_struct* dictionary_ptr, char *action_name)
 {
+   int tok;
    char desc_type[TOKEN_LEN],desc_name[TOKEN_LEN];
    while(TRUE) {
       switch(next_token()) {
@@ -342,6 +355,43 @@ int speclist_func(data_dictionary_struct* dictionary_ptr, char *action_name)
             break;
          case REQUIRES:
          case PROVIDES:
+            strcpy(desc_type,token_buffer);
+			strcpy(desc_name,"\0");
+            match_token(OP_BRC);
+			tok = next_token();
+			while (tok!=CL_BRC) {
+				if(tok==ID) {
+					strcat(desc_name,token_buffer);
+					tok=next_token();
+					if(tok==EQUAL)
+						strcat(desc_name,token_buffer);
+					if(tok==PERIOD) {
+						strcat(desc_name,token_buffer);
+						match_token(ID);
+						strcat(desc_name,token_buffer);
+						tok=next_token();
+						strcat(desc_name,token_buffer);
+					}
+					if(tok!=EQUAL)
+						continue;
+					tok=next_token();
+					strcat(desc_name,token_buffer);
+					if(tok==PERIOD) {
+						match_token(ID);
+						strcat(desc_name,token_buffer);
+					}
+					tok = next_token();
+				} else if (tok==AND) {
+					strcat(desc_name,token_buffer);
+					tok = next_token();
+				}
+				else {
+					syntax_error("Invalid require or provide clause\n");
+				}
+			}	
+            data_dict_action_add_desc(dictionary_ptr, action_name,
+                                       desc_type, desc_name);
+            break;
          case INPUT:
          case OUTPUT:
          case CREATES:

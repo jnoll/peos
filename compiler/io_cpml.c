@@ -20,6 +20,10 @@
 /* line count used for the jump err inst */
 static int error_line = 0;
 data_dict_element_struct* root;
+VAR_STRUCT var_list[MAX_VARS];
+int var_list_ptr = 0;
+char* ready_list[MAX_VARS];
+int ready_list_ptr = 0;
 
 /******************************************************************************
 **
@@ -147,8 +151,98 @@ char* print_children(char* output_str, data_dict_element_struct* element_ptr)
 
 /******************************************************************************
 **
+** Function/Method Name: get_actions_query
+** Precondition:	 A list to put the actions in, the place to start in the tree,
+**			 and a flag all need to be passed in.
+** Postcondition:	 The given list will be filled in with actions seperated by spaces.
+** Description:		 The function finds all possible actions that can come next,
+**			 given a place in the process tree.
+**
+******************************************************************************/
+char* get_actions_query(char action_str[1024], data_dict_element_struct* element_ptr, Boolean iteration_flag, char* attr_type)
+{
+	char **name;
+	char **type;
+	char **desc;
+	data_dict_element_list_struct *child_list_ptr = NULL;
+	data_dict_element_struct *child_element_ptr = NULL;
+	data_dict_attribute_list_struct* attr_list = NULL;
+	char temp_str[1024] = "\0";
+	strcpy(action_str,"");
+
+	if ((name = malloc(sizeof(char *))) == NULL) {
+	  printf("\nERROR[get_actions_query]:memory allocation\n");
+          return NULL;
+        }
+	if ((type = malloc(sizeof(char *))) == NULL) {
+	  printf("\nERROR[get_actions_query]:memory allocation\n");
+          return NULL;
+        }
+	if ((desc = malloc(sizeof(char *))) == NULL) {
+	  printf("\nERROR[get_actions_query]:memory allocation\n");
+          return NULL;
+        }
+
+	data_dict_get_type(element_ptr,type);
+	if ((strcmp(*type,"action") == 0) || (strcmp(*type,"branch") == 0)) {
+		attr_list = data_dict_get_attribute_list(element_ptr);
+		data_dict_get_attribute_type(attr_list,type);
+		while (strcmp(attr_type,*type) != 0 && attr_list != NULL) {
+			attr_list = data_dict_get_next_attribute(attr_list);
+			data_dict_get_attribute_type(attr_list,type);
+		}
+		data_dict_get_attribute_desc(data_dict_get_attribute_desc_list(attr_list),desc);
+		sprintf(action_str,"%s ",*desc);
+		free(name);
+		free(type);
+		free(desc);
+		return action_str;
+	}
+	else if ((strcmp(*type,"sequence") == 0) ||
+		(strcmp(*type,"task") == 0)) {
+		child_list_ptr = data_dict_get_child_list(element_ptr);
+		child_element_ptr = data_dict_get_child(child_list_ptr);
+		strcat(action_str,get_actions_query(temp_str,child_element_ptr,FALSE,*type));
+		free(name);
+		free(type);
+		free(desc);
+		return action_str;
+	}
+	else if (strcmp(*type,"iteration") == 0) {
+		child_list_ptr = data_dict_get_child_list(element_ptr);
+		child_element_ptr = data_dict_get_child(child_list_ptr);
+		strcat(action_str,get_actions_query(temp_str,child_element_ptr,FALSE,attr_type));
+		/* there are some times when we do not want to find the actions
+		 * that come after the iteration */
+		if (iteration_flag != TRUE) {
+			element_ptr = get_next_action(element_ptr);
+			if (element_ptr != NULL) {
+				 strcat(action_str,get_actions_query(temp_str,element_ptr,FALSE,attr_type));
+			}
+		}
+		free(name);
+		free(type);
+		free(desc);
+		return action_str;
+	}
+	else if (strcmp(*type,"selection") == 0) {
+		child_list_ptr = data_dict_get_child_list(element_ptr);
+		while (child_list_ptr != NULL) {
+			child_element_ptr = data_dict_get_child(child_list_ptr);
+			strcat(action_str,get_actions_query(temp_str,child_element_ptr,TRUE,attr_type));
+			child_list_ptr = data_dict_get_next_child(child_list_ptr);
+		}
+		free(name);
+		free(type);
+		free(desc);
+		return action_str;
+	}
+}
+
+/******************************************************************************
+**
 ** Function/Method Name: get_actions
-** Precondition:	 A list to but the actions in, the place to start in the tree,
+** Precondition:	 A list to put the actions in, the place to start in the tree,
 **			 and a flag all need to be passed in.
 ** Postcondition:	 The given list will be filled in with actions seperated by spaces.
 ** Description:		 The function finds all possible actions that can come next,
@@ -385,7 +479,7 @@ int write_data(OUTPUT_STRUCT output, data_dict_element_struct* element_ptr,
 			while (temp_string_ptr != NULL)
 			{
 				data_dict_get_attribute_desc(temp_string_ptr,attribute_description);
-				sprintf(temp_str,"\"%s\" ",*attribute_description);
+				sprintf(temp_str,"%s ",*attribute_description);
 				strcat(output_str,temp_str);
 				free(*attribute_description);
 				temp_string_ptr = data_dict_get_next_attribute_desc(temp_string_ptr);
@@ -445,6 +539,9 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	char output_str[1024];
 	char temp_str[1024];
 	char action_str[1024] = "\0";
+	static char var_name[64];
+	char* query_str; 
+	char* temp_ptr;
 	char **name;
 	char **type;
 	data_dict_element_list_struct *child_list_ptr = NULL;
@@ -452,7 +549,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	int temp_line = 0;
 	int new_line = 0;
 	int count = 1;
-	int i;
+	int i,rc;
 	
 	strcpy(output_str, "");
 	name = malloc(sizeof(char *));
@@ -483,11 +580,48 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	}
 	else if (strcmp(*type,"iteration") == 0)
 	{
+		strcpy(output_str,"call select ");
+		strcpy(action_str,get_actions_query(temp_str,element_ptr,FALSE,"requires"));
+		strcpy(var_name,strtok(action_str,". "));
+		rc = check_for_var(var_name);
+		query_str = strtok(NULL,"& ");
+		if (query_str != NULL) {
+			strtok(NULL,". ");
+			temp_ptr = strtok(NULL,"& ");
+			while (temp_ptr != NULL) {
+				strcat(query_str,"&&");
+				strcat(query_str,temp_ptr);
+				strtok(NULL,". ");
+				temp_ptr = strtok(NULL,"& ");
+			}
+			strcat(output_str,query_str);
+		}
+		if (rc == -1)
+			add_var(var_name, query_str);
+		else {
+			sprintf(temp_str,"&&id==$%s", var_name);
+			strcat(output_str,temp_str);
+		}
+		write_cpml_data(current_line,output_str,filetype,output);
+		current_line += 1;
+		if (rc == -1) {
+			sprintf(output_str,"pop %s",var_name);
+		} else
+			strcpy(output_str,"pop ");
+		write_cpml_data(current_line,output_str,filetype,output);
+		current_line += 1;
+		
 		/* save current line so we cna jump back at end of loop */
 		temp_line = current_line;
 		strcpy(output_str,"call set ready ");
 		strcpy(action_str,get_actions(temp_str,element_ptr,FALSE));
 		strcat(output_str,action_str);
+		strcpy(temp_str,action_str);
+		temp_ptr = strtok(temp_str," ");
+		while (temp_ptr != NULL) {
+			add_to_ready(temp_ptr);
+			temp_ptr = strtok(NULL," ");
+		}
 		if (get_next_action(element_ptr) == NULL)
 			strcat(output_str,"end");
 		write_cpml_data(current_line,output_str,filetype,output);
@@ -506,7 +640,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		current_line += 1;
 		sprintf(output_str,"jump %d ",error_line);
 		/* jump to either next line or over the iteration completely */
-		/* path_length counts all lines of iteration loop, so we subtract 5 for the
+		/* path_length counts all lines of iteration loop, so we subtract 7 for the
 		 * lines we already went over up to this point */
 		
 		child_list_ptr = data_dict_get_child_list(element_ptr);
@@ -518,18 +652,18 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		if (strcmp(*type,"iteration") == 0) {
 			if (get_next_action(child_element_ptr) != get_next_action(element_ptr))
 				sprintf(temp_str,"%d %d %d",current_line+1,current_line+1,
-					current_line+path_length(element_ptr)-5);
+					current_line+path_length(element_ptr)-7);
 		}
 		else if (strcmp(*type,"selection") == 0) {
 			for(i=0;i<num_children(child_element_ptr);i++) {
 				sprintf(temp_str,"%d ",current_line+1);
 				strcat(output_str,temp_str);
 			}
-			sprintf(temp_str,"%d",current_line+path_length(element_ptr)-5);
+			sprintf(temp_str,"%d",current_line+path_length(element_ptr)-7);
 		}
 		else
 			sprintf(temp_str,"%d %d",current_line+1,
-				current_line+path_length(element_ptr)-5);
+				current_line+path_length(element_ptr)-7);
 		strcat(output_str,temp_str);
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
@@ -574,9 +708,46 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	}
 	else if (strcmp(*type,"selection") == 0)
 	{
+		strcpy(output_str,"call select ");
+		strcpy(action_str,get_actions_query(temp_str,element_ptr,FALSE,"requires"));
+		strcpy(var_name,strtok(action_str,". "));
+		rc = check_for_var(var_name);
+		query_str = strtok(NULL,"& ");
+		if (query_str != NULL) {
+			strtok(NULL,". ");
+			temp_ptr = strtok(NULL,"& ");
+			while (temp_ptr != NULL) {
+				strcat(query_str,"&&");
+				strcat(query_str,temp_ptr);
+				strtok(NULL,". ");
+				temp_ptr = strtok(NULL,"& ");
+			}
+			strcat(output_str,query_str);
+		}
+		if (rc == -1)
+			add_var(var_name, query_str);
+		else {
+			sprintf(temp_str,"&&id==$%s", var_name);
+			strcat(output_str,temp_str);
+		}
+		write_cpml_data(current_line,output_str,filetype,output);
+		current_line += 1;
+		if (rc == -1) {
+			sprintf(output_str,"pop %s",var_name);
+		} else
+			strcpy(output_str,"pop ");
+		write_cpml_data(current_line,output_str,filetype,output);
+		current_line += 1;
+
 		strcpy(output_str,"call set ready ");
 		strcpy(action_str,get_actions(temp_str,element_ptr,FALSE));
 		strcat(output_str,action_str);
+		strcpy(temp_str,action_str);
+		temp_ptr = strtok(temp_str," ");
+		while (temp_ptr != NULL) {
+			add_to_ready(temp_ptr);
+			temp_ptr = strtok(NULL," ");
+		}
 		write_cpml_data(current_line,output_str,filetype,output);
 		/* compute line so we can jump to end of selection at the end of eack task */
 		temp_line = current_line + path_length(element_ptr);
@@ -739,15 +910,50 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	}
 	else if (strcmp(*type,"action") == 0)
 	{
-		sprintf(output_str,"call set ready %s",*name);
-		write_cpml_data(current_line,output_str,filetype,output);
-		current_line += 1;
-		sprintf(output_str,"jzero %d",error_line);
-		write_cpml_data(current_line,output_str,filetype,output);
-		current_line += 1;
-		strcpy(output_str,"pop");
-		write_cpml_data(current_line,output_str,filetype,output);
-		current_line += 1;
+		if (check_for_ready(*name) == -1) {
+			strcpy(output_str,"call select ");
+			strcpy(action_str,get_actions_query(temp_str,element_ptr,FALSE,"requires"));
+			strcpy(var_name,strtok(action_str,". "));
+			rc = check_for_var(var_name);
+			query_str = strtok(NULL,"& ");
+		 	if (query_str != NULL) {
+		 		strtok(NULL,". ");
+				temp_ptr = strtok(NULL,"& ");
+				while (temp_ptr != NULL) {
+					strcat(query_str,"&&");
+					strcat(query_str,temp_ptr);
+					strtok(NULL,". ");
+					temp_ptr = strtok(NULL,"& ");
+				}
+				strcat(output_str,query_str);
+			}
+			else if (rc != -1)
+				strcat(output_str,var_list[rc].var_desc);
+			if (rc == -1)
+				add_var(var_name, query_str);
+			else {
+				sprintf(temp_str,"&&id==$%s", var_name);
+				strcat(output_str,temp_str);
+			}
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+			if (rc == -1) {
+				sprintf(output_str,"pop %s",var_name);
+			} else
+				strcpy(output_str,"pop ");
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+
+			sprintf(output_str,"call set ready %s",*name);
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+			sprintf(output_str,"jzero %d",error_line);
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+			strcpy(output_str,"pop");
+			write_cpml_data(current_line,output_str,filetype,output);
+			current_line += 1;
+		}
 		sprintf(output_str,"call wait done %s",*name);
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
@@ -757,13 +963,34 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(output_str,"pop");
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		sprintf(output_str,"call assert %s",*name);
+		strcpy(output_str,"call select ");
+		strcpy(action_str,get_actions_query(temp_str,element_ptr,FALSE,"provides"));
+		strcpy(var_name,strtok(action_str,". "));
+		rc = check_for_var(var_name);
+		query_str = strtok(NULL,"& ");
+		if (query_str != NULL) {
+		 	strtok(NULL,". ");
+			temp_ptr = strtok(NULL,"& ");
+			while (temp_ptr != NULL) {
+				strcat(query_str,"&&");
+				strcat(query_str,temp_ptr);
+				strtok(NULL,". ");
+				temp_ptr = strtok(NULL,"& ");
+			}
+			strcat(output_str,query_str);
+		}
+		if (rc == -1)
+			add_var(var_name, query_str);
+		else {
+			sprintf(temp_str,"&&id==$%s",var_name);
+			strcat(output_str,temp_str);
+		}
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		sprintf(output_str,"jzero %d",error_line);
-		write_cpml_data(current_line,output_str,filetype,output);
-		current_line += 1;
-		strcpy(output_str,"pop");
+		if (rc == -1) {
+			sprintf(output_str,"pop %s",var_name);
+		} else
+			strcpy(output_str,"pop ");
 		write_cpml_data(current_line,output_str,filetype,output);
 		free(*name);
 		free(name);
@@ -810,6 +1037,7 @@ int path_length(data_dict_element_struct* element_ptr)
 	int sum = 0;
 	char **type;
 	data_dict_element_list_struct *child_list_ptr = NULL;
+	data_dict_element_list_struct *first_child = NULL;
 	data_dict_element_struct *child_element_ptr = NULL;
 
 	if ((type = malloc(sizeof(char *))) == NULL) {
@@ -817,13 +1045,20 @@ int path_length(data_dict_element_struct* element_ptr)
 		return sum;
 	}
 	child_list_ptr = data_dict_get_child_list(element_ptr);
+	first_child = child_list_ptr;
 	while (child_list_ptr != NULL)
 	{
 		child_element_ptr = data_dict_get_child(child_list_ptr);
 		data_dict_get_type(child_element_ptr, type);
-		if (strcmp(*type,"action") == 0)
-			sum += 9; /* currently an action takes 9 lines of machine code */
-		else
+		if (strcmp(*type,"action") == 0) {
+			data_dict_get_type(element_ptr, type);
+			if (strcmp(*type,"selection") == 0)
+				sum += 5;
+			else if (strcmp(*type,"iteration") == 0 && child_list_ptr == first_child)
+				sum += 5;
+			else
+				sum += 10;
+		} else
 			sum += path_length(child_element_ptr);
 		child_list_ptr = data_dict_get_next_child(child_list_ptr);
 	}
@@ -832,12 +1067,19 @@ int path_length(data_dict_element_struct* element_ptr)
 	 * if the op-code changes at all! */
 	if (strcmp(*type,"branch") == 0)
 		sum += num_children(element_ptr) + 15;
-	else if (strcmp(*type,"action") == 0)
-		sum = 9;
-	else if (strcmp(*type,"iteration") == 0)
-		sum += 8;
+	else if (strcmp(*type,"action") == 0) {
+		 element_ptr = data_dict_get_parent(element_ptr);
+		 data_dict_get_type(element_ptr, type);
+         if (strcmp(*type,"selection") == 0)
+            sum += 5;
+         else if (strcmp(*type,"iteration") == 0 && child_list_ptr == first_child)
+            sum += 5;
+         else
+            sum += 10;
+	} else if (strcmp(*type,"iteration") == 0)
+		sum += 10;
 	else if (strcmp(*type,"selection") == 0)
-		sum += num_children(element_ptr)*2 + 4;
+		sum += num_children(element_ptr)*2 + 6;
 	free(*type);
 	free(type);
 	return sum;
@@ -1056,4 +1298,81 @@ void test_retrieval (OUTPUT_STRUCT output)
     }
     printf ("Failed at %d;either at end or error; compare with text\n", i);
     printf ("\n________________________________________________________\n");
+}
+
+/******************************************************************************
+**
+**    Function/Method Name: add_var
+**    Precondition:  
+**    Postcondition: 
+**
+**    Description:   This function adds a new variable name to var symbol table.
+**
+******************************************************************************/
+void add_var(char* name, char* desc)
+{
+	VAR_STRUCT* new_var = (VAR_STRUCT*) malloc(sizeof(VAR_STRUCT));
+	
+	strcpy(new_var->var_name,name);
+	strcpy(new_var->var_desc,desc);
+	var_list[var_list_ptr] = *new_var;
+	var_list_ptr += 1;
+}
+
+/******************************************************************************
+**
+**    Function/Method Name: check_for_var
+**    Precondition:  
+**    Postcondition: Return value is >= 0 if var is in table ,-1 otherwise
+**
+**    Description:   This function checks for a variable name in var symbol table.
+**
+******************************************************************************/
+int check_for_var(char* name)
+{
+	int i = 0;
+	while (i < var_list_ptr && strcmp(name,var_list[i].var_name) != 0 ) {
+		i += 1;
+	}
+	if (i < var_list_ptr)
+		return i;
+	return -1;
+}
+
+/******************************************************************************
+**
+**    Function/Method Name: add_to_ready
+**    Precondition:  
+**    Postcondition: 
+**
+**    Description:   This function adds an action name to table.
+**
+******************************************************************************/
+void add_to_ready(char* name)
+{
+	char* new_var = (char*) malloc(sizeof(char));
+	
+	strcpy(new_var,name);
+	ready_list[ready_list_ptr] = new_var;
+	ready_list_ptr += 1;
+}
+
+/******************************************************************************
+**
+**    Function/Method Name: check_for_ready
+**    Precondition:  
+**    Postcondition: Return value is >= 0 if var is in table ,-1 otherwise
+**
+**    Description:   This function checks for an action name in table.
+**
+******************************************************************************/
+int check_for_ready(char* name)
+{
+	int i = 0;
+	while (i < ready_list_ptr && strcmp(name,ready_list[i]) != 0 ) {
+		i += 1;
+	}
+	if (i < ready_list_ptr)
+		return i;
+	return -1;
 }

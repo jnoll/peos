@@ -12,10 +12,27 @@ typedef struct output {
 	FILE *fptr;
 } OUTPUT_STRUCT;
 
+typedef struct vars {
+	char var_name[64];
+	char var_desc[128];
+} VAR_STRUCT;
+
+#define MAX_VARS 100
+
+void add_var(char* name, char* desc);
+
+int check_for_var(char* name);
+
+void add_to_ready(char* name);
+
+int check_for_ready(char* name);
+
 Boolean write_cpml(char* pml_filename, data_dictionary_struct* dictionary_ptr,
 			char* filetype);
 
 char* print_children(char* output_str, data_dict_element_struct* element_ptr);
+
+char* get_actions_query(char action_str[1024], data_dict_element_struct* element_ptr, Boolean iteration_flag, char* attr_type);
 
 char* get_actions(char action_str[1024], data_dict_element_struct* element_ptr, Boolean iteration_flag);
 
