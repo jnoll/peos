@@ -175,21 +175,7 @@ public class PeosApp extends JFrame implements ActionListener
                            JOptionPane.YES_NO_OPTION);
 
                     	if (n == JOptionPane.YES_OPTION) {
-
-				if (findTabIndex(pidInt) != -1)
-				{
-					tabbedPane.remove(tabbedPane.getSelectedIndex());
-				}
-			
-				try {
-					//DeleteProcess delPid = new DeleteProcess(pidInt);
-					
-					SetupPath.delete(pidInt);
-				} catch (IOException temp) { System.out.println("actionPerformed delete: tryToDelete FAILED"); }
-	
-				menuBar.removeAll();
-				setJMenuBar(createMenuBar());
-
+                            delete(pidInt);
                     	}
                         
                         else if (n == JOptionPane.NO_OPTION) 
@@ -232,7 +218,20 @@ public class PeosApp extends JFrame implements ActionListener
 		return active.numActive();
 	}
 	
-
+        public void delete(int pidInt)
+        {
+            if (findTabIndex(pidInt) != -1)
+				{
+					tabbedPane.remove(tabbedPane.getSelectedIndex());
+				}
+			
+				try {		
+					SetupPath.delete(pidInt);
+				} catch (IOException temp) { System.out.println("actionPerformed delete: tryToDelete FAILED"); }
+	
+				menuBar.removeAll();
+				setJMenuBar(createMenuBar());         
+        }
 	/*=========== TAB RELATED FUNCTIONS =============*/	
 	public void initTabIndices()
 	{	
@@ -378,7 +377,7 @@ public class PeosApp extends JFrame implements ActionListener
 
 	protected void activeProcess(String xmlFilename, int pidNum, int placement)
 	{
-		ProcessContent content = new ProcessContent(xmlFilename,pidNum);
+		ProcessContent content = new ProcessContent(xmlFilename,pidNum,this);
 		outline = content.getOutline();
 		tabbedPane.add(content.getSplitPanes(),placement);		
 		tabbedPane.setTitleAt(placement,content.getTabName());
@@ -392,7 +391,7 @@ public class PeosApp extends JFrame implements ActionListener
 	}
         protected void activeProcess(String xmlFilename, int placement)
 	{
-		ProcessContent content = new ProcessContent(xmlFilename,placement);
+		ProcessContent content = new ProcessContent(xmlFilename,placement,this);
 		outline = content.getOutline();
 		tabbedPane.add(content.getSplitPanes(),placement);		
 		tabbedPane.setTitleAt(placement,content.getTabName());
