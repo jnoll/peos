@@ -72,7 +72,7 @@ void selectLoop( )
 
 	if ( FD_ISSET( STDIN, &readfds ) )
 	{
-		_debug( __FILE__, __LINE__, 1, "receiving..." ) ;		
+		_debug( __FILE__, __LINE__, 5, "receiving..." ) ;		
 		fgets( queryString, sizeof( queryString), stdin ) ;
 		query_wait( queryString, call, d ) ;
 		queryString[0] = '\0' ;	
@@ -81,11 +81,12 @@ void selectLoop( )
 	{
 		_debug( __FILE__, __LINE__, 5, "timed out...." ) ;
 		poll_vr( ) ;
-		tempQueries = myQueries ;
-		while( tempQueries != NULL )
-		{	
-			printf( "queries seeks %s\n", tempQueries -> oneQuery -> myClauses[0].value ) ;
-			tempQueries = ( queryList * ) tempQueries -> link ;
+		if(myQueries != NULL)
+		{
+			
+			_debug(__FILE__,__LINE__,0, "Pending Queries : " ) ;
+			printQueryList(myQueries) ;
+			_debug(__FILE__,__LINE__,0, "End of Pending Queries\n " ) ;
 		}
 
 	}
@@ -101,7 +102,7 @@ void selectLoop( )
 
 void callback( int size, resultList *listpointer, int *data )
 {	
-	_debug(__FILE__,__LINE__,1,"calling back..." ) ;
+	_debug(__FILE__,__LINE__,5,"calling back..." ) ;
 	printf( "%d record(s) found!\n", size ) ;
 	printResultList( listpointer ) ;
 }

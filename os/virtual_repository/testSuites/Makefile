@@ -66,8 +66,8 @@ test:	$(TESTS)
 	testFSsearchEmpty > FSsearchEmptyActualResult.txt
 	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResult.txt
 	
-#	VRsetup > VRsetupActualResult.txt
-#	diff VRsetupExpectedResult.txt VRsetupActualResult.txt	
+	#VRsetup > VRsetupActualResult.txt
+	#diff VRsetupExpectedResult.txt VRsetupActualResult.txt	
 	
 clean:
 	-rm *.o

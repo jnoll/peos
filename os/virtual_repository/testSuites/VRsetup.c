@@ -12,6 +12,7 @@
 #include "form.h"
 #include "variables.h"
 #include "FSseeker.h"
+#include "EMAILseeker.h"
 #include "setup_repositories.h"
 
 int main( void )
@@ -20,7 +21,7 @@ int main( void )
 	myQueries = NULL;
 	
 	setup_fs( );
-	
+		
 	printf("repos_list[0].name = %s \n", repos_list[0].name);
 	printf("repos_list[0].queryTool = " ) ; 
 	repos_list[0].queryTool(myQueries);

@@ -9,5 +9,5 @@
  ************************************************************************/
 
 void setup_fs( ) ;
-void setup_mail( ) ;
+void setup_email( ) ;
 void setup_vr( ) ;

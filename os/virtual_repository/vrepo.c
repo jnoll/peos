@@ -30,15 +30,16 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 	bool isValidAttribute( char * ) ; 
 	bool isValidOperator( char * ) ; 
 	bool isValidValue( char * ) ;
+	bool isValidConjecture( char *) ;
 	
-	char *word, *toParse ; 		// tokens during string tokenizations 	
-	int numParses, numClauses ;	// keeps track of the token in the tokenizing phase
-					// numClauses stores the number of clauses in the queryString
+	char *word, *toParse ; 			// tokens during string tokenizations 	
+	int numParses, numClauses, numTokens ;	// keeps track of the token in the tokenizing phase
+						// numClauses stores the number of clauses in the queryString
 					 
-	query *newQuery ; 		// stores the new query
+	query *newQuery ; 			// stores the new query
 	
 	newQuery = ( query * ) malloc ( sizeof ( query ) ) ;
-	numParses = numClauses = 0 ;
+	numParses = numClauses = numTokens = 0 ;
 	word = toParse = NULL ;
 	
 	toParse = strtok( queryString, "\n" ) ;	
@@ -48,11 +49,19 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 
 	while( word != NULL )
 	{
+		numTokens++;
+		
+		if(numParses == 4)
+		{
+			numParses = 0;
+			numClauses++;
+		}
+		
 		switch( numParses )
 		{
 			case 0 :	if (isValidAttribute( word) )
 					{
-						newQuery -> myClauses[0].attribute = strdup( word ) ;
+						newQuery -> myClauses[numClauses].attribute = strdup( word ) ;
 						numParses++ ;
 						_debug( __FILE__, __LINE__, 2, "Attribute is %s", word ) ;
 					}
@@ -61,7 +70,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					
 			case 1 :	if( isValidOperator( word ) )
 					{
-						newQuery -> myClauses[0].operator = strdup( word ) ;
+						newQuery -> myClauses[numClauses].operator = strdup( word ) ;
 						numParses++ ;
 						_debug( __FILE__, __LINE__, 2, "Operator is %s", word ) ;
 					}						
@@ -69,18 +78,27 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					
 			case 2 : 	if( isValidValue( word ) )
 					{
-						newQuery -> myClauses[0].value = strdup( word ) ;
+						newQuery -> myClauses[numClauses].value = strdup( word ) ;
+						numParses++ ;
+					}
+					break ;
+			
+			case 3 :	if( isValidConjecture( word ) )
+					{
+						newQuery -> myClauses[numClauses].conjecture = strdup( word ) ;
 						numParses++ ;
 						_debug( __FILE__, __LINE__, 2, "Value is %s", word ) ;
 					}
+					else
+						_debug(__FILE__,__LINE__,2,"invalid conjecture");
 					break ;
-			//case 3 :	numParses++;
 		}
-
+		
+		_debug(__FILE__,__LINE__,5,"parsing word %s number of parses is : %d",word,numParses);
 		word = strtok( NULL, " " ) ;
 	}
 	
-	if( numParses == 3 )
+	if( ((numClauses *4) + numParses )== numTokens )
 	{
 		_debug( __FILE__, __LINE__, 2, "Storing Clause" ) ;
 		newQuery -> callback = cback;
@@ -97,18 +115,29 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 		if( numParses != 0 )
 		{
 			int k ;
-		
+								
+			for( k = 0 ; k != numClauses; k++ )
+			{
+				free( newQuery -> myClauses[k].attribute );
+				free( newQuery -> myClauses[k].operator ) ;
+				free( newQuery -> myClauses[k].value ) ;
+				free( newQuery -> myClauses[k].conjecture ) ;
+			}
+			
 			for( k = 0 ; k < numParses ; k++ )
 			{
 				switch( k )
 				{
-					case 0 : free( newQuery -> myClauses[0].attribute ) ;
+					case 0 : free( newQuery -> myClauses[numClauses].attribute ) ;
 						 break ;
 					
-					case 1 : free( newQuery -> myClauses[0].operator ) ;
+					case 1 : free( newQuery -> myClauses[numClauses].operator ) ;
 						 break ;
 					
-					case 2 : free( newQuery -> myClauses[0].value ) ;
+					case 2 : free( newQuery -> myClauses[numClauses].value ) ;
+						 break ;
+						 
+					case 3 : free( newQuery -> myClauses[numClauses].conjecture ) ;
 						 break ;
 				}
 			}
@@ -137,6 +166,7 @@ void poll_vr( )
 
 	if( myQueries != NULL )
 	{
+		
 		for(i=0; i<repos_ctr ; i++)
 			myQueries = repos_list[i].queryTool(myQueries);
 		
@@ -168,10 +198,10 @@ void poll_vr( )
  *		attribute of the repository. 				*
   ************************************************************************/
 
-bool isValidAttribute( char *attr )
+/*bool isValidAttribute( char *attr )
 {
 	int i ;					// used in for loop
-	char attributes[1][2] = { "ID" } ;	// array that stores repository attributes
+	char attributes[1][2] = { "ID"} ;	// array that stores repository attributes
 		
 	for( i = 0 ; i < sizeof(attributes) / sizeof(attributes[0] ) ; i++ )
 	{
@@ -179,6 +209,22 @@ bool isValidAttribute( char *attr )
 			return false ;
 	}
 	return true ;
+}*/
+
+bool isValidAttribute( char *attr )
+{
+	int i ;						// used in for loop
+	char *attributes[2] = { "ID","DATE"} ;	// array that stores repository attributes
+		
+	if( attr == NULL )
+		return false;
+		
+	for( i = 0 ; i < 2 ; i++ )
+	{
+		if( ( strcmp( attributes[i], attr ) == 0 ) )
+			return true ;
+	}
+	return false ;
 }
 
 /************************************************************************
@@ -203,7 +249,7 @@ bool isValidOperator( char *op )
 
 
 /************************************************************************
- * Function:	isValidOperator						*
+ * Function:	isValidValue						*
  *									*
  * Description:	Returns false if the value is NULL		  	*
  ************************************************************************/
@@ -213,4 +259,29 @@ bool isValidValue( char *val )
 	if ( val == NULL )
 		return false ;
 	return true ;
+}
+
+
+/************************************************************************
+ * Function:	isValidConjecture					*
+ *									*
+ * Description:	Returns true if the operator in the query is a  	*
+ *		operator of the repository. 				*
+ ************************************************************************/
+
+bool isValidConjecture( char *con )
+{
+	int i ;						// used in for loop
+	char *conjecture[2] = { "AND","OR" } ;	// array that stores repository operators
+	
+	if( con == NULL ) 
+		return false;
+	
+	for( i = 0 ; i < 2; i++ )
+	{
+		_debug(__FILE__,__LINE__,5,"in conjecture con is %s conjecture[i] is %s ", con, conjecture[i]);
+		if( ( strcmp( conjecture[i], con ) == 0 ) )
+			return true ;
+	}
+	return false ;
 }

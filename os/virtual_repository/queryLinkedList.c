@@ -29,9 +29,18 @@ void printQueryList( queryList *listpointer )
 	{
     		while ( listpointer != NULL )
 		{
-			printf( "\nquery is %s %s %s", 	listpointer -> oneQuery -> myClauses[0].attribute ,
-							listpointer -> oneQuery -> myClauses[0].operator, 
-							listpointer -> oneQuery -> myClauses[0].value ) ;
+			int i ;
+			printf( "\nquery is");
+			for(i = 0; i <= listpointer -> oneQuery -> numClauses; i++)
+			{
+				printf( " %s %s %s", listpointer -> oneQuery -> myClauses[i].attribute ,
+						     listpointer -> oneQuery -> myClauses[i].operator, 
+						    listpointer -> oneQuery -> myClauses[i].value ) ;
+						    
+				if(listpointer -> oneQuery -> myClauses[i].conjecture != NULL)
+					printf( " %s", 	listpointer -> oneQuery -> myClauses[i].conjecture);
+			}
+			
 			listpointer = ( queryList* ) listpointer -> link ;
 		}
 	}
