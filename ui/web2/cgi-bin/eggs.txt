@@ -1,0 +1,47 @@
+0 add_oil type action mode manual requires { oil pan } provides { pan } agent { user } 
+1 add_egg type action mode manual requires { egg pan } provides { pan } agent { user } 
+2 scramble type action mode manual requires { fork pan } provides { pan } agent { user } 
+3 serve_egg type action mode manual requires { pan plate } provides { plate } agent { user } 
+4 start
+5 push 0 
+6 pop 
+7 call set ready add_oil
+8 jzero 46
+9 pop
+10 call wait done add_oil
+11 jzero 46
+12 pop
+13 call assert 
+14 jzero 46
+15 push 0 
+16 pop 
+17 call set ready add_egg
+18 jzero 46
+19 pop
+20 call wait done add_egg
+21 jzero 46
+22 pop
+23 call assert 
+24 jzero 46
+25 push 0 
+26 pop 
+27 call set ready scramble
+28 jzero 46
+29 pop
+30 call wait done scramble
+31 jzero 46
+32 pop
+33 call assert 
+34 jzero 46
+35 push 0 
+36 pop 
+37 call set ready serve_egg
+38 jzero 46
+39 pop
+40 call wait done serve_egg
+41 jzero 46
+42 pop
+43 call assert 
+44 jzero 46
+45 end
+46 call error

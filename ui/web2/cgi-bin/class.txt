@@ -1,0 +1,63 @@
+0 z type action mode manual requires { R.html } provides { R.html } 
+1 a type action mode manual requires { R.html } provides { R.html } 
+2 b type action mode manual requires { R.html } provides { R.html } 
+3 c type action mode manual requires { R.html } provides { R.html } 
+4 d type action mode manual requires { R.html } provides { R.html } 
+5 start
+6 push 0 
+7 pop 
+8 call set ready z
+9 jzero 62
+10 pop
+11 call wait done z
+12 jzero 62
+13 pop
+14 call assert 
+15 jzero 62
+16 push 0 
+17 pop 
+18 call set ready a end
+19 jzero 62
+20 pop
+21 call wait active a end
+22 jump 62 23 60
+23 call set none end
+24 call wait done a
+25 jzero 62
+26 pop
+27 call assert 
+28 jzero 62
+29 push 0 
+30 pop 
+31 call set ready b
+32 jzero 62
+33 pop
+34 call wait done b
+35 jzero 62
+36 pop
+37 call assert 
+38 jzero 62
+39 push 0 
+40 pop 
+41 call set ready c
+42 jzero 62
+43 pop
+44 call wait done c
+45 jzero 62
+46 pop
+47 call assert 
+48 jzero 62
+49 push 0 
+50 pop 
+51 call set ready d
+52 jzero 62
+53 pop
+54 call wait done d
+55 jzero 62
+56 pop
+57 call assert 
+58 jzero 62
+59 goto 18
+60 call set none a 
+61 end
+62 call error

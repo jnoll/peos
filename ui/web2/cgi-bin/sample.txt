@@ -1,0 +1,63 @@
+0 edit type action mode manual requires { code.type==module } provides { code.status==modified } 
+1 compile type action mode manual requires { code.status==modified } provides { progA.type==executable } 
+2 test type action mode manual requires { progA } provides { progA.status==tested } 
+3 debug type action mode manual requires { progA.status==tested } provides { progA.status==debugged } 
+4 check_in type action mode manual requires { progA.status==tested } provides { progA.status==checked_in } 
+5 start
+6 call select type==module
+7 pop code
+8 call set ready edit end
+9 jzero 62
+10 pop
+11 call wait active edit end
+12 jump 62 13 60
+13 call set none end
+14 call wait done edit
+15 jzero 62
+16 pop
+17 call select status==modified&&id==$code
+18 pop 
+19 call select status==modified&&id==$code
+20 pop 
+21 call set ready compile
+22 jzero 62
+23 pop
+24 call wait done compile
+25 jzero 62
+26 pop
+27 call select type==executable
+28 pop progA
+29 call select type==executable&&id==$progA
+30 pop 
+31 call set ready test
+32 jzero 62
+33 pop
+34 call wait done test
+35 jzero 62
+36 pop
+37 call select status==tested&&id==$progA
+38 pop 
+39 call select status==tested&&status==tested&&id==$progA
+40 pop 
+41 call set ready debug check_in 
+42 jzero 62
+43 pop
+44 call wait active debug check_in 
+45 jump 62 46 53
+46 call set none check_in 
+47 call wait done debug
+48 jzero 62
+49 pop
+50 call select status==debugged&&id==$progA
+51 pop 
+52 goto 61
+53 call set none debug 
+54 call wait done check_in
+55 jzero 62
+56 pop
+57 call select status==checked_in&&id==$progA
+58 pop 
+59 goto 8
+60 call set none edit 
+61 end
+62 call error

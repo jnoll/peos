@@ -1,0 +1,36 @@
+0 submit_proposal type action mode manual script { <p>Submit proposal contents.<p>BAA to which this proposal responds: <input name='baa' type='string' size=16 value='baa-12-96'><br>Proposal title: <input name='title' type='string' size=50 value='Engineering a Procurement Process Architecture'><br>Submitting Institution: <input name='institution' type='string' size=25 value='University of Southern California'><br>Principle Invesigator: <input name='PI' type='string' size=20 value='Walt Scacchi'>Email: <input name='PIemail' type='string' size=20 value='scacchi@gilligan.usc.edu'><br>Contact: <input name='contact' type='string' size=20 value='John Noll'>Email: <input name='contactEmail' type='string' size=12 value='jnoll@usc.edu'><br>Proposal contents file: <INPUT NAME='file' TYPE='file'> } 
+1 submit_budget type action mode manual script { <p>Submit budget.<br>Proposal title: <input name='title' type='string' size=50 value='Engineering a Procurement Process Architecture'><br>Budget file: <INPUT NAME='file' TYPE='file'><br>Email address of contact: <input name='user_id' type='string' value='jnoll@usc.edu'> } 
+2 submit_certs type action mode manual script { <p>Submit electronically signed certifications..<br>File containing signed certifications: <INPUT NAME='file' TYPE='file'><p>User ID of signature: <input name='user_id' type='string' value='jnoll@usc.edu'> } 
+3 start
+4 call select 
+5 pop 
+6 call set ready submit_proposal
+7 jzero 35
+8 pop
+9 call wait done submit_proposal
+10 jzero 35
+11 pop
+12 call select 
+13 pop 
+14 call select 
+15 pop 
+16 call set ready submit_budget
+17 jzero 35
+18 pop
+19 call wait done submit_budget
+20 jzero 35
+21 pop
+22 call select 
+23 pop 
+24 call select 
+25 pop 
+26 call set ready submit_certs
+27 jzero 35
+28 pop
+29 call wait done submit_certs
+30 jzero 35
+31 pop
+32 call select 
+33 pop 
+34 end
+35 call error

@@ -1,0 +1,69 @@
+0 name_1 type branch children ( A B C )
+1 A type action mode manual requires { R.html } provides { R.html } agent { ed } tool { hammer } 
+2 B type action mode manual requires { R.html } provides { R.html } agent { ed } tool { hammer } 
+3 C type action mode manual requires { R.html } provides { R.html } agent { ed } tool { hammer } 
+4 start
+5 push 0 
+6 pop 
+7 call set ready name_1 end
+8 jzero 68
+9 pop
+10 call wait active name_1 end
+11 jump 68 12 66
+12 call set none end
+13 push 0
+14 call fork 32
+15 jzero 68
+16 pop
+17 incr
+18 call fork 43
+19 jzero 68
+20 pop
+21 incr
+22 call fork 54
+23 jzero 68
+24 pop
+25 incr
+26 call join
+27 jzero 68
+28 pop
+29 decr
+30 jzero 65
+31 goto 26
+32 push 0 
+33 pop 
+34 call set ready A
+35 jzero 68
+36 pop
+37 call wait done A
+38 jzero 68
+39 pop
+40 call assert 
+41 jzero 68
+42 call exit
+43 push 0 
+44 pop 
+45 call set ready B
+46 jzero 68
+47 pop
+48 call wait done B
+49 jzero 68
+50 pop
+51 call assert 
+52 jzero 68
+53 call exit
+54 push 0 
+55 pop 
+56 call set ready C
+57 jzero 68
+58 pop
+59 call wait done C
+60 jzero 68
+61 pop
+62 call assert 
+63 jzero 68
+64 call exit
+65 goto 7
+66 call set none name_1 
+67 end
+68 call error

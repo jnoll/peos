@@ -1,0 +1,14 @@
+0 a type action mode manual 
+1 start
+2 call select 
+3 pop 
+4 call set ready a
+5 jzero 13
+6 pop
+7 call wait done a
+8 jzero 13
+9 pop
+10 call select 
+11 pop 
+12 end
+13 call error

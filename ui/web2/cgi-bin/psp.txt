@@ -1,0 +1,41 @@
+0 Start_time_to_TRL type action mode manual input { TRL_Line_entry } output { TRL_Line_entry } agent { programmer } tool { HTML } script { TRL_Instructions } 
+1 Do_part_of_Action type action mode manual input { 'Action'.inputs } output { 'Action'.outputs } agent { 'Action'.agent } tool { 'Action'.tool } script { 'Action'.script } 
+2 Stop_and_duration_time_to_TRL type action mode manual input { TRL_Line_entry } output { TRL_Line_entry } agent { programmer } tool { HTML } script { TRL_Instructions } 
+3 start
+4 call select 
+5 pop 
+6 call set ready Start_time_to_TRL end
+7 jzero 40
+8 pop
+9 call wait active Start_time_to_TRL end
+10 jump 40 11 38
+11 call set none end
+12 call wait done Start_time_to_TRL
+13 jzero 40
+14 pop
+15 call select 
+16 pop 
+17 call select 
+18 pop 
+19 call set ready Do_part_of_Action
+20 jzero 40
+21 pop
+22 call wait done Do_part_of_Action
+23 jzero 40
+24 pop
+25 call select 
+26 pop 
+27 call select 
+28 pop 
+29 call set ready Stop_and_duration_time_to_TRL
+30 jzero 40
+31 pop
+32 call wait done Stop_and_duration_time_to_TRL
+33 jzero 40
+34 pop
+35 call select 
+36 pop 
+37 goto 6
+38 call set none Start_time_to_TRL 
+39 end
+40 call error
