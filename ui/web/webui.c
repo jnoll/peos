@@ -71,29 +71,54 @@ int main() {
     
     /** Finally, print out the complete HTML response page.         **/
     printf("<html>\n") ;
-    printf("<head><title>PML Web Interface</title></head>\n") ;
-    printf("<body background=\"../BackGround.gif\">\n") ;
-   // printf("<h1>PML Web Interface</h1>\n") ;
-	printf("hey\n");	
-    printf("<br><br>Welcome PML Web Interface user (%s/%s). <br>  Your input to the PML engine was: <b>command: %s, action: %s (%s,%s)</b>", username, password, command, action, PARA1, PARA2);
-	printf("<hr>%s<hr><br>", current_msg);
-//  printf("<br><br><form method=\"post\" action = \"webui.cgi\">\n");
-//printf("Command: \n<SELECT NAME=\"command\">\n<OPTION VALUE = \"status\">status\n<OPTION VALUE = \"run\">run\n");
-//printf("<OPTION VALUE = \"done\">done\n<OPTION VALUE = \"create\">create\n</SELECT><BR>\n");
-//printf("Action: \n<INPUT TYPE=\"text\" NAME=\"action\">\n");
- // printf("<input type = \"hidden\" name =\"sessionid\" value=\"%d\">\n",
-//sessionid);
-  //printf("<input type = \"hidden\" name = \"username\"
-//value=\"%s\">\n",username);
-  //printf("<input type = \"hidden\" name = \"password\" value=\"%s\">\n",
-//password);
-  //printf("<br><input type =\"submit\" value = \"Run Command\">\n");
- // printf("</form>\n");
-  
-  printf("User Guide: <ul><li>status<li>run proc act<li>done proc act<li>create modelname</ul>");
-    printf("</body>\n") ;
-    printf("</html>\n") ;
+    printf("<head><title>PML Web Interface</title>\n") ;
 
+
+    printf("<SCRIPT LANGUAGE=\"JavaScript\" SRC=\"commonHeadFunction.js\"></SCRIPT>\n");
+
+    printf("<SCRIPT LANGUAGE=\"JavaScript\" SRC=\"menuResponse.js\"></SCRIPT>\n");
+
+    printf("<SCRIPT LANGUAGE=\"JavaScript\" SRC=\"checkDeleteCookie.js\"></SCRIPT>\n");
+
+    printf("</head>\n");
+
+    printf("<BODY MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 BGCOLOR=\"white\" onResize=\"reloadPage();\">\n");
+    printf("<SCRIPT LANGUAGE=\"JavaScript\" SRC=\"myScript.js\"></SCRIPT>\n");
+
+    printf("<SCRIPT LANGUAGE=\"JavaScript\" TYPE=\"TEXT/JAVASCRIPT\">\n");
+    printf("writePeosTitle();\n");
+    printf("var commandVar = getCookie(\"commnad\");\n");
+    printf("var actionVar = getCookie(\"action\");\n");
+    printf("var sessionidVar = getCookie(\"sessionid\");\n");
+    printf("var userName = getCookie(\"userName\");\n");
+    printf("var passwordVar = getCookie(\"password\");\n");
+    printf("var userType = getCookie(\"userType\");\n");
+    printf("writeMenu(userType);\n");
+    printf("</SCRIPT>\n");
+
+
+    //----------------------------------------------------
+    //here we print the body of the page
+    //----------------------------------------------------
+    printf("<TD VALIGN=\"TOP\" WIDTH=\"100%\" HEIGHT=\"100%\">\n");
+    printf("%s\n", current_msg);
+
+    
+    //----------------------------------------------------
+
+    //----------------------------------------------------
+    //here we print the end of the page
+    //----------------------------------------------------
+    printf("<img src=\"invisibleBar.gif\" width=800 height=1 alt=\"\">\n");
+
+    printf("</TD>\n");
+    printf("</TR>\n");
+    printf("</TABLE>\n");
+
+    printf("</body>\n");
+    printf("</html>\n");
+
+    //----------------------------------------------------
     /** Free anything that needs to be freed **/
     for (i=0; cgivars[i]; i++) free(cgivars[i]) ;
     free(cgivars) ;
