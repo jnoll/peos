@@ -77,8 +77,15 @@ public class testACJU extends TestCase{
         public void testBuildActionList()
         {
             assertEquals("<TABLE border=1><TR align=center><TD>State</TD><TD>Action</TD></TR><tr><td>"
-                +"Ready</td><td>overview</td></tr></TABLE>",map.buildActionList());
+                +"Ready</td><td><a href=\"[1]overview\">overview</a></td></tr></TABLE>",map.buildActionList());
         }
+	public void testParseActionString()
+	{
+		String tester="[0]hello";
+		String result[]= map.parsePid(tester);
+                assertEquals("0", result[0]);
+                assertEquals("hello", result[1]);
+	}
 	protected void setUp()
 	{
 
