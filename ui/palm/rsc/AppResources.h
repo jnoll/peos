@@ -30,6 +30,7 @@
 #define ActionButton							1401
 #define PreviousActionButton						1402
 #define CurrentProcessLabel							1404
+#define CurrentProcessFormMenuBar						1600
 
 //	Resource: tFRM 1100
 #define AboutForm                                 1100	//(Left Origin = 2, Top Origin = 2, Width = 156, Height = 156, Usable = 1, Modal = 1, Save Behind = 1, Help ID = 0, Menu Bar ID = 0, Default Button ID = 0)

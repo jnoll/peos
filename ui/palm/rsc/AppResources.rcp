@@ -54,12 +54,12 @@ END
 
 FORM ID CurrentProcessForm AT (0 0 160 160)
 USABLE HELPID 0
-MENUID 0
+MENUID CurrentProcessFormMenuBar
 BEGIN
 	TITLE "Current Process"
 	BUTTON "Go To Action" ID ActionButton AT (60 140 AUTO AUTO) USABLE FRAME FONT 1
 	BUTTON "PREV" ID PreviousActionButton AT (10 140 AUTO AUTO) USABLE FRAME FONT 1
-	//BUTTON "Back To 
+	
 	SCROLLBAR ID 1002 AT (151 19 7 141) USABLE VALUE 0 MIN 0 MAX 0 PAGESIZE 0
 	LIST ID ActionsList AT (29 41 105 33) USABLE FONT 1 VISIBLEITEMS 3
 	LABEL "Actions:" ID CurrentProcessLabel AT (25 21) USABLE FONT 2
@@ -87,6 +87,19 @@ BEGIN
     MENUITEM "About" 					ID 1000 "A"
     MENUITEM "View Available Processes" ID 1001 "V"
     MENUITEM "Finish started processes" ID 1002 "S"
+    MENUITEM SEPARATOR
+  END
+END 
+
+
+MENU ID CurrentProcessFormMenuBar
+BEGIN
+	PULLDOWN "Options"
+	BEGIN
+    MENUITEM "About" 					ID 1601 "A"
+    MENUITEM "Back To Main"				ID 1602
+    MENUITEM "View Available Processes" ID 1603 "V"
+    MENUITEM "Finish started processes" ID 1604 "S"
     MENUITEM SEPARATOR
   END
 END 

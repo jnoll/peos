@@ -47,7 +47,39 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		//end test	
 		handled = true;
 		break;
-		
+	
+	case menuEvent:
+		switch (pEvent->data.menu.itemID)
+		{
+		case 1601:
+			pForm = FrmInitForm(1100);
+			FrmDoDialog(pForm);					// Display the About Box.
+			FrmDeleteForm(pForm);
+			handled = true;
+			break;
+		case 1602:
+			pForm = FrmInitForm (MainForm);
+			FrmGotoForm (MainForm);
+			FrmDeleteForm (pForm);
+			handled=true;
+			break;
+		//available processes form
+		case 1603:
+			pForm = FrmInitForm(AvailableProcessesForm);			
+			FrmGotoForm (AvailableProcessesForm);
+			FrmDeleteForm(pForm);
+			handled = true;
+			break;
+		//started processes form
+		case 1604:
+			pForm = FrmInitForm(1500);	
+			FrmGotoForm (1500);
+			FrmDeleteForm(pForm);
+			handled = true;
+			break;
+		default: break;
+		}
+
 	case lstSelectEvent:
 		//remember selection
 		pForm = FrmGetActiveForm();
@@ -87,6 +119,18 @@ return handled;
 	
 }
 
+/*
+char ** list_models (UInt16 * size)
+{
+	UInt16 i;
+	char ** list = peos_list_models ();
+	for (i=0; list[i]; i++)
+	{
+		*size=i;
+	}
+	return list;
+}
+*/
 
 Boolean AvailableProcessesHandler (EventType* pEvent)
 {
@@ -94,10 +138,8 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 	FormType* 	pForm;
 	ListType*   list;
 	ControlType* ctl;
-	int numChoices=0;
-
+	UInt16 numChoices=0;
 	char ** listElements2;
-	char * listSelection;
 	
 		
 	
@@ -145,10 +187,15 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 			pForm = FrmGetActiveForm();
 			list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1001));
 
+			//test 1:
 			listElements2 = (char**) malloc (4*2);
 			(char*) listElements2 [0] = "process1";
 			(char*) listElements2 [1] = "proc";
 			numChoices = ( 8 / sizeof (listElements2[0]));
+			
+			//test2:  real
+			//listElements2 = list_models (&numChoices);
+			
 			LstSetListChoices (list, listElements2, numChoices);
 			LstSetSelection (list, -1);
 
