@@ -214,7 +214,7 @@ void mark_iter_nodes(Node n)
 {
     Node iter_end_node;
     int i;
-    if(STATE(n) == ACT_READY) {
+    if((STATE(n) == ACT_READY) || (STATE(n) == ACT_BLOCKED)){
         for(i = 0; i <  ListSize(ITER_END_NODES(n)); i++) {
             iter_end_node = (Node) ListIndex(ITER_END_NODES(n),i);
 	    if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION)) {
@@ -537,6 +537,7 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state stat
             if(state == PROVIDES_TRUE) {
 	        if((STATE(n) = ACT_READY) || (STATE(n) == ACT_RUN) || (STATE(n) == ACT_PENDING)) {
 	            RESOURCE_STATE(n) = PROVIDES_TRUE;
+		    handle_action_change(pid, n->name, ACT_RUN);
 		    return handle_action_change(pid, n->name, ACT_DONE);
 		}
 	    }
@@ -560,7 +561,7 @@ vm_act_state set_node_state(Node n, vm_act_state state)
     switch(state_set) {
         
         case(ACT_READY) : {
-			      if (RESOURCE_STATE(n) == REQUIRES_TRUE) {
+			      if ((RESOURCE_STATE(n) == REQUIRES_TRUE) || (RESOURCE_STATE(n) == PROVIDES_TRUE)) {
 			          STATE(n) = state_set;
 		                  return state_set;
 			      }

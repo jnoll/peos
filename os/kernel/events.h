@@ -21,6 +21,9 @@ extern int peos_run(char *process,peos_resource_t *resources,int num_resources);
  * parameters are the process id, name of the action and the state 
  */
 
+extern vm_exit_code peos_notify(int pid, char *action, peos_event event);
+
+
 extern vm_exit_code peos_set_action_state(int pid,char *act_name,vm_act_state state);
 
 /* 

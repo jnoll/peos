@@ -665,6 +665,8 @@ START_TEST(test_set_act_state_graph_ready)
 	act_0 = make_node("act_0",ACT_NONE,ACTION,1);
 	act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
+	RESOURCE_STATE(act_0) = REQUIRES_TRUE;
+
 
 	g -> source = source;
 	g -> sink = sink;
@@ -805,7 +807,6 @@ main(int argc, char *argv[])
     tc = tcase_create("mark_successors");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_mark_successors);
-
  
     tc = tcase_create("action done");
     suite_add_tcase(s,tc);
