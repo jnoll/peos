@@ -1,5 +1,5 @@
-# VPML has to be built by hand.  This will change, so for now we have
-# a dummy Makefile that will keep the overall build happy.
+all: 
+	cd src; make
 
-all: dummy
-dummy:
+clean:
+	cd src; make clean
