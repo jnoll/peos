@@ -1,0 +1,161 @@
+README File
+
+PML User Interface
+
+PML UI Group: Erik Koskinen, Joel Neuder, Shanthi Ravichandran,
+              Khanh Tran, and Srinivas Vadlakonda
+
+Spring Semester 1999
+CSC 5728  Software Engineering
+
+IMPLEMENTATION:
+
+The PML User's interface is implemented in Tcl/Tk version 8.0. Version 8.0 
+or greater must be used since the namespace construct, which first
+appeared in version 8.0 of Tcl/Tk, is used throughout the source code to
+provide some encapsulation between components. 
+
+The PML User Interface uses a text-based socket through the uiEngConn
+namespace to communicate with the PML Engine Component, which runs as a 
+daemon on a PML remote server (which was oslab-server this semester).
+
+The PML User Interface uses a configuration file to start. The file
+is usually named ".pmlrc" and can be located in either your
+$HOME directory on Unix or C:\ on MS Windows platforms.
+This file contains default information such as the engine host, port number, 
+and web browser command. If no config file is found the default settings are 
+used. (Engine Port: 14175, Engine Host: oslab-server.cudenver.edu, WebBrowser:
+netscape). The config file setting can be modified using the Customize Option 
+from the Options Menu. These options can be set or preserved by using the Open
+or Save options from the File Menu.
+
+COMMAND LINE OPTIONS:
+
+The script which starts the PML User Interface is pmlUI.tcl. Currently,
+all eighteen tcl scripts should be located in the same directory where you wish
+to run the PML User Interface. The following command-line options can be 
+specified. All the command-line arguments listed below are optional.
+
+-f <configfile>   With this option the User can specify a configuration file 
+                  to start the User Interface. If this option is not used a 
+                  .pmlrc file will be used in the local directory. 
+                  If a .pmlrc file is not found there one in the $HOME 
+                  directory will be used. If a .pmlrc file is not located 
+                  in the $HOME directory, then internal default settings will 
+                  be used.
+
+<hostname>:<portnumber>  The host name and the port number of the engine can
+                         be specified. This command-line setting will be used
+                         for connecting to the Engine and will override any 
+                         Engine settings in the configuration file specified.
+
+-debug            This option will print useful debug information to stdout
+                  such as UI/Engine Message traffic socket status and the results
+                  of message parsing and generation.
+
+-test             This option will create a test menu which will display all of
+                  screen not readily available without an engine connection.
+                  This was mostly used to test the layout of the screens and to
+                  provide screen captures for the documentation group.
+
+Example Command Line:
+
+         ./pmlUI.tcl oslab-server.cudenver.edu:14175 -debug
+
+
+MODULE DESCRIPTION:
+
+Each module represents a Tcl/Tk namespace construct. There
+are currently thirteen different modules.
+
+     
+Module Name:   Files:                  Module Description:
+     
+actionHandler  actionHandler.tcl       The module handles the execution of
+                                       Tools or Scripts sent by the Engine.
+                                       The module also has the capability of
+                                       spawning a Web Browser with a specified
+                                       URL. The module is not yet called by
+                                       any other PML UI module.
+
+dynamicWidgets dynamicWidgets.tcl      This module handles the construction
+                                       of screens on the right side of the PML
+                                       UI. The messageMgr components determines
+                                       which routine in this and has the
+                                       appropriate screen construct based on
+                                       data in the uiValues component.
+
+persistentWidgets persistentWidgets.tcl This module handles the login screen
+                                        construction along with the status 
+                                        information displayed at the bottom
+                                        and on the left screen. 
+
+messageMgr     messageMgr.tcl          This module is called by the parser
+                                       module and based on the message sent
+                                       by the parser the messagerMgr determines
+                                       which screens should be created.
+
+inputValidator inputValidator.tcl      Retrieves user input from the screen
+                                       places it in the uiValues component
+                                       and calls the generator with a message
+                                       indicating which message to generate.
+
+generator      generateMesg.tcl        Retrieve user input from the uiValues
+               extractName.tcl         set by the inputValidator constructs
+               buildMesg.tcl           the outgoing message, and sends the
+                                       outgoing message to the uiEngConn
+                                       component for transmission to engine.
+
+parser         readMesgField.tcl       Receives incoming message from the
+               separateIdName.tcl      uiEngConn component, parses the message,
+               parseMesg.tcl           set the appropriate data in the uiValues
+                                       component, and call the messageMgr for
+                                       proper screen construction.
+
+uiConfig       uiConfig.tcl            Parses command-line, Reads config files,
+                                       Creates Options popup, Create Open
+                                       and Save Config File Popups. Acts as a
+                                       container for the engine host,
+                                       engine port, and web browser command.
+
+uiEngConn      uiEngConn.tcl           Transmits and Receives messages from the
+                                       Engine. When transmitting a message the
+                                       connection is established, the message 
+                                       is sent. The component then waits for a
+                                       reply. Once a reply is received, the
+                                       connection is closed and the message is
+                                       sent to the parser component.
+
+uiErrorHandler uiErrorHandler.tcl      Currently has limited functionality,
+                                       creates an Error Dialog box with a
+                                       message passed in.
+
+uiValues       uiValues.tcl            Container class for containing
+                                       information contained in incoming
+                                       and outgoing messages. Used for screen
+                                       construction by messageMgr and by the
+                                       generator for outgoing messages.
+                                       
+uiTest         uiTest.tcl              A module with is used when the -test
+                                       command line argument is specified.
+                                       The module is used for screen
+                                       construction for screen shots.
+
+mainWin        mainWin.tcl             The module is used for creating the
+                                       PML Main Window.
+
+             
+               pmlUI.tcl               Main script for starting the PML UI
+
+
+CURRENT STATUS:
+
+Currently a user can login as user "fred" to the pml engine daemon
+running on oslab-server. The user can then select a process to run.
+
+Most messages work between the ui and engine except the ACTION and 
+ACTIONRESPONSE message where there are format mismatches. 
+The UI can display parts of an pml action message but not all the fields.
+
+This is one issue which needs to be resolved with the engine group.
+Perhaps a re-engineering of how pml actions should handled.
