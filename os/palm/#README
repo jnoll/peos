@@ -1,0 +1,41 @@
+Installation Instructions
+
+-- To 'make' PalmPEOS from source --
+
+You will need to install and set up the PRC-tools, latest PalmOS SDK and
+PilRC on whatever machine you will be using.  These downloads are available 
+for free from Palm's website at http://www.palmos.com/dev/tools/gcc/index.html
+
+Installation and setup instructions are included on the site, and are
+fairly straightforward.  
+
+Once these tools are installed, you can simply 'cd' to the directory
+containing the PalmPEOS source code, and type 'make' at the command
+line.  The PRC-tools contain patches to gcc, etc., to make the
+.c and .h files, and PilRC will then integrate the resource files
+(i.e. the form/interface elements) into a Palm-executable file
+called PalmPEOS.prc.
+
+-- To install/run PalmPEOS --
+
+To run the PalmOS application, you will need to either have a Palm-powered
+device or install the Palm Emulator (POSE).  POSE is available at the prev-
+iously-mentioned address: http://www.palmos.com/dev/tools/gcc/index.html.
+Once again, installation and setup instructions are available on the site.
+
+To install the application, simply select 'Install' on the Palm Desktop (if
+you are using an actual device), or right-click and select "Install application/
+database" if you are using POSE. Then select the file PalmPEOS.prc to install,
+and click on its icon on the device/emulator after it's been installed.
+
+To add model files, compile them from pml format to .txt using peos' compiler
+(see peos/src/compiler/ for further instructions).  Once you have compiled the
+model file to .txt format, simply run it through txt2PEOS (available in the
+PalmPEOS source-code directory) by typing: "txt2PEOS -c desiredNameOnDevice modelName.txt 
+modelName.pdb" at the command line.  To run properly, txt2PEOS must be in the PATH.
+
+After txt2PEOS runs, you will have a modelName.pdb file in your current directory; simply 
+this file to the device/POSE in exactly the same way as you installed the app-
+lication (see above instructions).  PalmPEOS is configured to automatically
+detect all relevant model files installed on the device on which it is running
+(where 'relevant' implies all those that been created using the txt2PEOS tool).
