@@ -17,6 +17,9 @@ void doNothing();
 #define is_requires_true(...) 1
 #define is_provides_true(...) 1
 
+//for bison 
+#define EINTR 4
+
 #define BUFSIZ 8192
 
 #include <include/stdio.h>
