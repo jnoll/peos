@@ -2,11 +2,11 @@
 echo -n "."
 
 rm proc_table.dat
-export QUERY_STRING="model_list=eggs"
+export QUERY_STRING="model_list=test_action"
 
 do_create.cgi > /dev/null
 
-if !(grep eggs.pml proc_table.dat > /dev/null)
+if !(grep test_action.pml proc_table.dat > /dev/null)
 then
   echo
   echo Failed create process.
