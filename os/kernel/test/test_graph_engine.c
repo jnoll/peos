@@ -23,11 +23,26 @@ extern Tree make_op_tree(Tree left, int op, char* value);
 extern Tree make_con_tree(Tree left, Tree right, int op, char* value);
 extern List make_list(Item i1, Item i2, Item i3, Item i4, Item i5);
 
+
 peos_context_t *peos_get_context(int pid)
 {
 	return pid == 0 ? &(process_table[pid]) : NULL;
 }
 
+char *act_state_name(vm_act_state state)
+{
+    return "READY";
+}
+
+void log_event(char *msg)
+{
+    return;
+}
+
+int delete_entry(int pid)
+{
+    return 1;
+}
 
 START_TEST(test_mark_successors)
 {
@@ -71,6 +86,9 @@ START_TEST(test_action_done)
 
     act_0 = make_node("act_0",ACT_RUN,ACTION,1);
     act_1 = make_node("act_1",ACT_NONE,ACTION,2);
+
+    RESOURCE_STATE(act_0) = PROVIDES_TRUE;
+    RESOURCE_STATE(act_1) = REQUIRES_TRUE;
 
     g->source = source;
     g-> sink = sink;
@@ -612,7 +630,7 @@ START_TEST(test_initialize_graph)
 		
 	initialize_graph(g);
 
-	fail_unless(STATE(act_0) == ACT_READY, "act 0 not ready");
+	fail_unless(STATE(act_0) == ACT_BLOCKED, "act 0 not blocked");
 	fail_unless(STATE(act_1) == ACT_NONE, "act 1 not none");
 	fail_unless(ORDER(source) == 0, "source order");
 	fail_unless(ORDER(act_0) == 1, "act_0 order");

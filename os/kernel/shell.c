@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.23 2003/11/17 07:29:59 jnoll Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.24 2003/11/26 19:50:39 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -77,7 +77,7 @@ void list_actions()
 	}
     }
 }    
-	   
+  
    
 
 void list(int argc, char *argv[])    
@@ -220,7 +220,7 @@ void run_action(int argc, char *argv[])
     pid = atoi(argv[1]);
     action = argv[2];
     printf("Performing action %s\n", action);
-    if ((status = peos_set_action_state(pid, action,ACT_RUN)) == VM_ERROR 
+    if ((status = peos_notify(pid, action, PEOS_EVENT_START)) == VM_ERROR 
 	|| status == VM_INTERNAL_ERROR) {
 	printf("process executed an illegal instruction and has been terminated\n");
     } 
@@ -250,9 +250,45 @@ void finish_action(int argc, char *argv[])
     pid = atoi(argv[1]);
     action = argv[2];
     printf("Performing action %s\n", action);
-    if ((status = peos_set_action_state(pid, action,ACT_DONE)) == VM_ERROR 
+    if ((status = peos_notify(pid, action,PEOS_EVENT_FINISH)) == VM_ERROR 
 	|| status == VM_INTERNAL_ERROR) {
 	printf("process executed an illegal instruction and has been terminated\n");
+    }
+}
+
+void fire_resource_event_requires(int argc, char *argv[])
+{
+    char *action;
+    int pid;
+    vm_exit_code status;
+
+    if (argc < 3) {
+        printf("usage: %s pid action\n", argv[0]);
+	return;
+    }
+    pid = atoi(argv[1]);
+    action = argv[2];
+    if ((status = peos_notify(pid, action,PEOS_EVENT_REQUIRES)) == VM_ERROR 
+	|| status == VM_INTERNAL_ERROR) {
+	printf("process encountered an illegal event and has been terminated\n");
+    }
+}
+
+void fire_resource_event_provides(int argc, char *argv[])
+{
+    char *action;
+    int pid;
+    vm_exit_code status;
+
+    if (argc < 3) {
+        printf("usage: %s pid action\n", argv[0]);
+	return;
+    }
+    pid = atoi(argv[1]);
+    action = argv[2];
+    if ((status = peos_notify(pid, action,PEOS_EVENT_PROVIDES)) == VM_ERROR 
+	|| status == VM_INTERNAL_ERROR) {
+	printf("process encountered an illegal event and has been terminated\n");
     }
 }
 
@@ -270,6 +306,8 @@ COMMAND cmds[] = {
     { "resource_list", list_resources, "list resources associated with model" },
     { "resources", list_resource_binding, "list resources associated with model" },
     { "run", run_action, "perform a ready action" },
+    { "requires", fire_resource_event_requires, "requires true"},
+    { "provides", fire_resource_event_provides, "provides true"},
     { "select", run_action, "perform a ready action" },
     { "finish", finish_action, "finish a running action" },
     { "done", finish_action, "finish a running action" },

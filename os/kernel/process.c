@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.19 2003/11/17 07:29:59 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.20 2003/11/26 19:50:39 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -57,6 +57,18 @@ char *act_state_name(vm_act_state state)
 	    break;
       case ACT_NONE:
 	    return "NONE";
+	    break;
+      case ACT_BLOCKED:
+            return "BLOCKED";
+            break;
+      case ACT_STOPPED:
+            return "STOPPED";
+            break;
+      case ACT_DEAD:
+            return "DEAD";	    
+	    break;
+      case ACT_PENDING:
+	    return "PENDING";
 	    break;
       default:
 	    return "unknown syscall";

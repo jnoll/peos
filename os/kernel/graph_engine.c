@@ -10,12 +10,11 @@
 #include "graph_engine.h"
 
 
-
-
 void handle_selection(Node n);
 void mark_successors(Node n, vm_act_state state);
 void add_iteration_lists(Graph g);
 void set_rendezvous_state(Node n);
+vm_act_state set_node_state (Node n, vm_act_state state);
 
 void sanitize(Graph g)
 {
@@ -243,8 +242,8 @@ void set_super_nodes_run(Node n)
     int i;
     for(i = 0; i <  ListSize(SUPER_NODES(n)); i++) {
         super = (Node) ListIndex(SUPER_NODES(n),i);
-	STATE(super) = ACT_RUN;
-	STATE(super -> matching) = ACT_RUN;
+	set_node_state(super, ACT_RUN);
+	set_node_state(super -> matching, ACT_RUN);
 	mark_iter_nodes(super);
     }
 }
@@ -263,7 +262,7 @@ void mark_successors(Node n, vm_act_state state)
     int i;
     Node child;
     if (n -> type == ACTION) {
-        STATE(n) = state;
+	set_node_state(n, state);    
 	mark_iter_nodes(n);
 	return;
     }
@@ -271,9 +270,9 @@ void mark_successors(Node n, vm_act_state state)
     if((n -> type == BRANCH) || (n -> type == SELECTION) || (n -> type == JOIN))
     {
         if((n->type == BRANCH) || (n->type == SELECTION)) {
-	    STATE(n) = state;
+	    set_node_state(n, state);	
 	    mark_iter_nodes(n);
-	    STATE(n->matching) = state;
+	    set_node_state(n -> matching,state);
 	}
 	for(i = 0; i < ListSize(n -> successors); i++) {
 	    child = (Node) ListIndex(n -> successors, i);
@@ -300,8 +299,8 @@ void propogate_join_done(Node n)
     int i;
     Node child;
     if (n -> type == JOIN) {
-        STATE(n) = ACT_DONE;
-	STATE(n -> matching) = ACT_DONE;
+	set_node_state(n, ACT_DONE);    
+        set_node_state(n -> matching, ACT_DONE);
 	for(i = 0; i < ListSize(n->successors); i++) {
 	    child = (Node) ListIndex(n->successors,i);
 	    propogate_join_done(child);
@@ -333,8 +332,8 @@ void set_rendezvous_state(Node n)
 	    }
 	 }
 	 if (status == 1) {
-	     STATE(n) = ACT_DONE;
-	     STATE(n -> matching) = ACT_DONE;
+	     set_node_state(n, ACT_DONE);
+             set_node_state(n -> matching, ACT_DONE);	     
 	     for(i = 0; i< ListSize(n -> successors); i++) {
 	         child = (Node) ListIndex(n -> successors,i);
 		 if(child -> type == JOIN) {
@@ -364,8 +363,8 @@ void set_process_state(Graph g)
     }
     
     if (status == 1) {
-        STATE(g -> source) = ACT_DONE;
-	STATE(g -> sink) = ACT_DONE;
+	STATE(g -> source) = ACT_DONE;
+        STATE(g -> sink) =  ACT_DONE;	
     }
 }
 
@@ -376,7 +375,7 @@ int action_run(Graph g, char *act_name)
 
     n = find_node(g, act_name);
     if(n != NULL) {
-        STATE(n) = ACT_RUN;
+	set_node_state(n, ACT_RUN);    
 	mark_iter_nodes(n);  /* handle iterations */
 	handle_selection(n); /* handle selections */
 	set_super_nodes_run(n); /*set super nodes to run */
@@ -431,7 +430,7 @@ vm_exit_code action_done(Graph g, char *act_name)
 
     n = find_node(g,act_name);
     if(n != NULL) {
-        STATE(n) = ACT_DONE;
+	set_node_state(n, ACT_DONE);    
 	num_successors = ListSize(n -> successors);
 	for(i = 0; i < num_successors; i++) {
 	    child = (Node) ListIndex(n -> successors, i);
@@ -490,7 +489,8 @@ void initialize_graph(Graph g)
     for(n = g -> source; n != NULL; n = n -> next) {
         n -> data = (void *) malloc (sizeof (struct data));
 	sanitize_node(n);
-        STATE(n) = ACT_NONE;
+	STATE(n) = ACT_NONE;
+	RESOURCE_STATE(n) = REQUIRES_FALSE;
         ORDER(n) = i;
         i++;
         ITER_START(n) = FALSE;
@@ -507,19 +507,124 @@ void initialize_graph(Graph g)
 }
 
 
+vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state state)
+{
+    Graph g;
+    Node n;
+    peos_context_t *context = peos_get_context(pid);
+    
+    g = context -> process_graph;
+    if(g == NULL) {
+        fprintf(stderr,"Handle Action Error: Unable to find graph");
+	return VM_INTERNAL_ERROR;
+    }
+
+    n = find_node(g,action);
+
+    if(n != NULL) {
+	if(state == REQUIRES_TRUE) {
+            if(STATE(n) == ACT_BLOCKED) {
+	        RESOURCE_STATE(n) = state;
+	        set_node_state(n, ACT_READY);
+	        return VM_CONTINUE;
+	    }
+	    else {
+	        RESOURCE_STATE(n) = state;
+	        return VM_CONTINUE;
+	    }
+        }
+        else {
+            if(state == PROVIDES_TRUE) {
+	        if((STATE(n) = ACT_READY) || (STATE(n) == ACT_RUN) || (STATE(n) == ACT_PENDING)) {
+	            RESOURCE_STATE(n) = PROVIDES_TRUE;
+		    return handle_action_change(pid, n->name, ACT_DONE);
+		}
+	    }
+	    else return VM_CONTINUE;
+	}
+    }
+    else
+        return VM_INTERNAL_ERROR;
+}
+
+
+vm_act_state set_node_state(Node n, vm_act_state state)
+{
+    vm_act_state state_set = state;
+    
+    if(n->type != ACTION) {
+        STATE(n) = state_set;
+	return state_set;
+    }
+
+    switch(state_set) {
+        
+        case(ACT_READY) : {
+			      if (RESOURCE_STATE(n) == REQUIRES_TRUE) {
+			          STATE(n) = state_set;
+		                  return state_set;
+			      }
+	                      else {
+		                  if (RESOURCE_STATE(n) == REQUIRES_FALSE) {
+		                      state_set = ACT_BLOCKED;
+				      STATE(n) = state_set;
+	                              return state_set;
+				  }
+				  else {
+				      return STATE(n);
+				  }
+			      }
+			      break;
+			  }
+        case(ACT_DONE) : {
+			     if(RESOURCE_STATE(n) == PROVIDES_TRUE) {
+			         STATE(n) = state_set;
+				 return state_set;
+			     }
+			     else {
+			         state_set = ACT_PENDING;
+				 STATE(n) = state_set;
+				 return state_set;
+			     }
+			     break;
+			 }
+			 
+			  
+	default: {
+		     STATE(n) = state_set;
+		 }
+			      				  
+    }
+    return state_set;
+}
+	    
+
 vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
 {
     Graph g;
+    char msg[256], *this_state;
     vm_exit_code exit_status;
-    
+       
     peos_context_t *context = peos_get_context(pid);
+
+    this_state = act_state_name(state);
+    sprintf(msg, "jnoll %s %s %d ", this_state, action, pid);
+    log_event(msg);
 
     g = context -> process_graph;
     if(g == NULL) {
         fprintf(stderr,"Handle Action Error: Unable to find graph");
         return VM_INTERNAL_ERROR;
     }
-    exit_status = set_act_state_graph(g,action,state);
+
+    if ((exit_status =  set_act_state_graph(g, action, state)) == VM_DONE) {
+        sprintf(msg,"jnoll DONE %s %d", context->model, pid);
+        log_event(msg);
+        delete_entry(context->pid);
+        context->status = PEOS_DONE;
+	return exit_status;
+    }
+    
     if(exit_status == VM_INTERNAL_ERROR) {  
         fprintf(stderr, "Handle Action Error: Unable to change action state");
         return exit_status;
@@ -540,7 +645,7 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
 	    case(ACT_READY) : {
 			          Node n = find_node(g,action);
 				  if (n!=NULL) {
-				      STATE(n) = ACT_READY;
+				      set_node_state(n, ACT_READY);
 				      return VM_CONTINUE;
 				  }
 				  else 
@@ -557,8 +662,8 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
              case(ACT_NONE) :  {
 			           Node n = find_node(g,action);
 				   if (n != NULL) {
-			               STATE(n) = ACT_NONE;	 
-		                       return VM_CONTINUE;
+				       set_node_state(n, ACT_NONE);
+				       return VM_CONTINUE;
 				   }
 				   else
 				       return VM_INTERNAL_ERROR;
@@ -567,7 +672,7 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
             case(ACT_SUSPEND) : {
 	                            Node n = find_node(g,action);
 				    if (n != NULL) {
-				        STATE(n) = ACT_SUSPEND;
+					set_node_state(n, ACT_SUSPEND);    
 				        return VM_CONTINUE;
 				    }
 				    else
@@ -577,8 +682,8 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
              case(ACT_ABORT) : {
 			           Node n = find_node(g,action);
 				   if (n != NULL) {
-			               STATE(n) = ACT_ABORT;	 
-	                               return VM_CONTINUE;
+				       set_node_state(n, ACT_ABORT);	   
+			               return VM_CONTINUE;
 				   }
 				   else
 				       return VM_INTERNAL_ERROR;
@@ -587,7 +692,7 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
               case(ACT_NEW) :   {
 				    Node n = find_node(g,action);
 				    if (n != NULL) {
-				        STATE(n) = ACT_NEW;
+					set_node_state(n, ACT_NEW);    
 				        return VM_CONTINUE;
 				    }
 				    else

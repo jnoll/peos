@@ -23,6 +23,8 @@ peos_context_t *peos_get_context(int pid)
     return &context;
 }
 
+
+
 char *act_state_name(vm_act_state s)
 {
     return "action state name here";
@@ -41,6 +43,11 @@ void log_event(char *msg)
 int delete_entry(int pid)
 {
     return 1;
+}
+
+vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state state)
+{
+    return VM_CONTINUE;
 }
 
 char *get_script(int pid, char *action_name)

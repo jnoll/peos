@@ -70,25 +70,42 @@ char **peos_list_models()
 
 vm_exit_code peos_set_action_state(int pid, char *action, vm_act_state state)
 {
-    char msg[256], *this_state;
-    vm_exit_code exit_status;
-
-   
-    this_state = act_state_name(state);
-    sprintf(msg, "jnoll %s %s %d ", this_state, action, pid);
-    log_event(msg);
-    
-    if ((exit_status =  handle_action_change(pid, action, state)) == VM_DONE) {
-	peos_context_t *context = peos_get_context(pid);
-	sprintf(msg,"jnoll DONE %s %d", context->model, pid);
-	log_event(msg);
-	delete_entry(context->pid);
-	context->status = PEOS_DONE; 
-    }
-
-    return exit_status;
+    return handle_action_change(pid, action, state);
 }
 	    
+vm_exit_code peos_notify(int pid, char *action, peos_event event)
+{
+    switch (event) {
+        case(PEOS_EVENT_REQUIRES): 
+		return handle_resource_event(pid, action, REQUIRES_TRUE);
+		break;
+	
+	case(PEOS_EVENT_PROVIDES):
+		return handle_resource_event(pid, action, PROVIDES_TRUE);
+		break;
+	
+	case(PEOS_EVENT_START):
+		return peos_set_action_state(pid, action, ACT_RUN);
+		break;
+		
+	case(PEOS_EVENT_SUSPEND):
+		return peos_set_action_state(pid, action, ACT_SUSPEND);
+		break;
+		
+	case(PEOS_EVENT_ABORT):
+		return peos_set_action_state(pid, action, ACT_ABORT);
+		break;
+
+	case(PEOS_EVENT_FINISH):
+		return peos_set_action_state(pid, action, ACT_DONE);
+		break;
+
+	default:
+		fprintf(stderr, "Unknown Event\n");
+		return VM_INTERNAL_ERROR;
+    }
+}
+
 
 peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
 {
