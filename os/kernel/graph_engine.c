@@ -535,7 +535,7 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_state stat
         }
         else {
             if(state == PROVIDES_TRUE) {
-	        if((STATE(n) = ACT_READY) || (STATE(n) == ACT_RUN) || (STATE(n) == ACT_PENDING)) {
+	        if((STATE(n) == ACT_READY) || (STATE(n) == ACT_RUN) || (STATE(n) == ACT_PENDING)) {
 	            RESOURCE_STATE(n) = PROVIDES_TRUE;
 		    handle_action_change(pid, n->name, ACT_RUN);
 		    return handle_action_change(pid, n->name, ACT_DONE);
