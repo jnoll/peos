@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.48 2004/09/30 21:09:01 ppozdnya Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.49 2005/01/18 07:56:18 sbeeby Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -26,7 +26,11 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "graph.h"
+
+#if PALM==0
 #include "tclinterp.h"
+#endif
+
 #include "process_table.h"
 #include "graph_engine.h"
 #include "resources.h"

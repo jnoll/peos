@@ -1,5 +1,6 @@
 # compiler:
 CC = gcc
+PALM_CC = m68k-palmos-gcc
 
 CFLAGS = -g -I../.. -Wall
 
@@ -28,6 +29,17 @@ process.o \
 resources.o \
 predicate_evaluator.o \
 
+
+PALM_CORE_OBJS = \
+action.o \
+events.o \
+graph.o \
+graph_engine.o \
+process_table.o \
+process.o \
+resources.o \
+predicate_evaluator.o \
+
 # sources
 SOURCES = $(OBJS:.o=.c)
 HEADERS = $(wildcard *.h)
@@ -35,7 +47,10 @@ HEADERS = $(wildcard *.h)
 all: test shell lib peos
 
 peos: peos.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) 
+	$(CC) $(LDFLAGS) -dPALM=0 -o $@ $^ $(CORE_LIBS) $(LIBS) 
+
+palmpeos: peos.o $(PALM_CORE_OBJS)
+	$(PALM_CC) $(LDFLAGS) -dPALM=1 -o $@ $^ $(CORE_LIBS) $(LIBS) 
 
 daemon: enactment_daemon.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap

@@ -14,7 +14,10 @@
 #include "graph_engine.h"
 #include "process.h"
 #include "resources.h"
+
+#if PALM==0
 #include "tclinterp.h"
+#endif
 
 #undef NO_TCL
 #undef PE_LOG

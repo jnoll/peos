@@ -7,7 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#if PALM==0
 #include "tclinterp.h"
+#endif
 #include "events.h"
 #include "process_table.h"
 #include "pmlheaders.h"

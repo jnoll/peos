@@ -10,7 +10,9 @@
 #include "action.h"
 #include "process_table.h"
 #include "graph.h"
+#if PALM==0
 #include "tclinterp.h"
+#endif
 #include "predicate_evaluator.h"
 
 
