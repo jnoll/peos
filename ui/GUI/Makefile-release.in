@@ -27,8 +27,8 @@ SPLINT_ARGS=
 #OPT_DEBUG= -g3 -O3
 OPT_DEBUG= -g3
 #CC_WARN=
-#CC_WARN= -Wall
-CC_WARN= -Wall -W -Werror
+#CC_WARN= -Wall -W
+CC_WARN= -Wall -Werror
 #MISC_CC= -M
 MISC_CC=
 CFLAGS=	@@@I_LIST@@@ \
@@ -61,9 +61,6 @@ runpeos: ${C_OBJ}
 	  ${C_OBJ} \
 	  -o runpeos
 
-megahack.o: megahack.c
-	${CC} ${CFLAGS} megahack.c -c
-
 .c.o:
 	${CC} ${CFLAGS} -c $<
 
@@ -81,7 +78,7 @@ which_headers: ${C_SRC}
 # utility rules
 #
 clean:
-	rm -f ${C_OBJ} megahack.o
+	rm -f ${C_OBJ} 
 
 clobber: clean
 	rm -f runpeos proc* core*
