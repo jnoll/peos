@@ -61,6 +61,10 @@ int main() {
 		if (strcasecmp(COMMAND,"create") == 0) {
 			pml_create(PARA1);
 		}
+		if (strcasecmp(COMMAND,"running") == 0) {
+			pml_running(PARA1,PARA2);
+		}
+
 	}
 	else {
 		current_msg = add_message(current_msg,"Could not find config file.<br>\n");
@@ -168,8 +172,7 @@ char *tempCommand;
                         if (cgivars[i+1][0] == '1') {
                             createForm = 1;
                             tempCommand = cgivars[i+1]+1;
-                            strncpy(cgivars[i+1], tempCommand, 8);
-                            //cgivars[i+1] = "create";
+                            strncpy(cgivars[i+1], tempCommand, 10);
                         }
 
 			command = cgivars[i+1];
@@ -223,23 +226,24 @@ int pml_available()
 {
 	s = contact(s,NAME,PASS);
 	if (strlen(s.errmessage) == 0) {	// Login successfully
-		current_msg = add_message(current_msg,"These are your available actions. Read action details below.<br>\n<br>\n");
-		current_msg = add_message(current_msg,"Please enter one in the CGI form below.<br>\n<br>\n");
+		current_msg = add_message(current_msg,"<big><b>Available Actions</b></big><br><br>\n");
+		//current_msg = add_message(current_msg,"Please enter one in the CGI form below.<br>\n<br>\n");
 
-		current_msg = add_message(current_msg,"Task summary<br>\n");
-		current_msg = add_message(current_msg,"--------------------------------------------------------------------------------<br>\n");
-		current_msg = summary(s,current_msg);
-		current_msg = add_message(current_msg,"* To get the list of available model name, use the below action.<br>\n");
-		current_msg = add_message(current_msg,"action: create<br>\n");
-		current_msg = add_message(current_msg,"--------------------------------------------------------------------------------<br>\n<br>\n");
+		current_msg = add_message(current_msg,"<b>Task summary</b>\n");
+		//current_msg = add_message(current_msg,"<hr>\n");
+		current_msg = summary(s,current_msg, createForm);
+		//current_msg = add_message(current_msg,"* To get the list of available model name, use the below action.<br>\n");
+		//current_msg = add_message(current_msg,"action: create<br>\n");
+		current_msg = add_message(current_msg,"<br>\n<br>\n");
 
-		current_msg = add_message(current_msg,"You have the following task(s) available:<br>\n<br>\n");
+		current_msg = add_message(current_msg,"<b>Detailed task summary:</b><br><br>\n");
+		current_msg = add_message(current_msg,"\n");
 		current_msg = available(s,current_msg);
-		current_msg = add_message(current_msg,"--------------------------------------------------------------------------------<br>\n<br>\n");
+		current_msg = add_message(current_msg,"\n");
 
-		current_msg = add_message(current_msg,"You have the following task(s) running:<br>\n<br>\n");
-		current_msg = running(s,current_msg);
-		current_msg = add_message(current_msg,"--------------------------------------------------------------------------------<br>\n<br>\n");
+		//current_msg = add_message(current_msg,"You have the following task(s) running:<br>\n<br>\n");
+		//current_msg = running(s,current_msg);
+		//current_msg = add_message(current_msg,"--------------------------------------------------------------------------------<br>\n<br>\n");
 
 		logout(s);
 	}
@@ -254,12 +258,12 @@ int pml_run(char *process,char *task)
 			current_msg = add_message(current_msg," ");
 			current_msg = add_message(current_msg,task);
 			current_msg = add_message(current_msg," is now set to run.<br>\n<br>\n");
-			current_msg = add_message(current_msg,"When you finish this task, simply enter the below action into the CGI form below and it will be set to done automatically.<br>\n<br>\n");
-			current_msg = add_message(current_msg,"action: done ");
-			current_msg = add_message(current_msg,PARA1);
-			current_msg = add_message(current_msg," ");
-			current_msg = add_message(current_msg,PARA2);
-			current_msg = add_message(current_msg,"<br>\n");
+			//current_msg = add_message(current_msg,"When you finish this task, simply enter the below action into the CGI form below and it will be set to done automatically.<br>\n<br>\n");
+			//current_msg = add_message(current_msg,"action: done ");
+			//current_msg = add_message(current_msg,PARA1);
+			//current_msg = add_message(current_msg," ");
+			//current_msg = add_message(current_msg,PARA2);
+			//current_msg = add_message(current_msg,"<br>\n");
 		}
 		else {
 			current_msg = add_message(current_msg,process);
@@ -270,6 +274,18 @@ int pml_run(char *process,char *task)
 		logout(s);
 	}
 }
+
+int pml_running(char *process,char *task)
+{
+	s = contact(s,NAME,PASS);
+	if (strlen(s.errmessage) == 0) {	// Login successfully
+		current_msg = add_message(current_msg,"<b>Running Tasks:</b><br>\n");
+                current_msg = running(s,current_msg, createForm);
+		current_msg = add_message(current_msg,"<br>\n<br>\n");
+		logout(s);
+	}
+}
+
 
 int pml_done(char *process,char *task)
 {
@@ -287,7 +303,7 @@ int pml_done(char *process,char *task)
 			current_msg = add_message(current_msg,task);
 			current_msg = add_message(current_msg," can not be found or not currently running.<br>\n<br>\n");
 		}
-		current_msg = add_message(current_msg,"To get your available tasks, try STATUS below.<br>\n");
+		//current_msg = add_message(current_msg,"To get your available tasks, try STATUS below.<br>\n");
 		logout(s);
 	}
 }
@@ -300,7 +316,7 @@ int pml_create(char *model)
 		if (create(s,model)) {
 			current_msg = add_message(current_msg,model);
 			current_msg = add_message(current_msg," is successfully created.<br>\n<br>\n");
-			current_msg = add_message(current_msg,"To get your next available task, reply this message.<br>\n");
+			//current_msg = add_message(current_msg,"To get your next available task, reply this message.<br>\n");
 		}
 		else {
 
@@ -308,7 +324,7 @@ int pml_create(char *model)
 			//if (strlen(model) != 0)
 			//	current_msg = add_message(current_msg," can not be found.<br>\n<br>\n");
 			current_msg = add_message(current_msg,"<b>Please use the following model(s):</b>\n");
-			current_msg = list(s,current_msg);
+			current_msg = list(s,current_msg, createForm);
 
 		}
 		logout(s);

@@ -36,16 +36,16 @@ function writeMenu(userType){
     document.writeln("<p><A href=\"javascript:invokeAction('create', '')\">List models<a>");
     document.writeln("<p><A href=\"javascript:invokeAction('1create', '')\">Create models<a>");
     document.writeln("<p><p><A href=\"javascript:invokeAction('status', '')\">List available actions<a>");
-    document.writeln("<p><A href=\"run.html\">Run processes<a>");
+    document.writeln("<p><A href=\"javascript:invokeAction('1status', '')\">Run processes<a>");
     document.writeln("<p><p><A href=\"javascript:invokeAction('running', '')\">List running processes<a>");
-    document.writeln("<p><A href=\"done.html\">Terminate processes<a>");
+    document.writeln("<p><A href=\"javascript:invokeAction('1running', '')\">Terminate processes<a>");
 
     document.writeln("<p><A href=\"logout.html\">Log out</a>");
 
     if(userType==1){
         document.writeln("<p><A href=\"stub.html\">user type 1 actions</a>");
     }
-    else if(userType==1){
+    else if(userType==2){
         document.writeln("<p><A href=\"stub.html\">user type 2 actions</a>");
     }
     else{

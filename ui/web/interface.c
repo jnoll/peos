@@ -193,7 +193,7 @@ void logout(simplesock s)
 	fflush(s.S_out);
 }
 
-char *summary(simplesock s,char *ret_value)
+char *summary(simplesock s,char *ret_value, int createForm)
 {
 engine_response *response;
 engine_reply *reply;
@@ -203,21 +203,61 @@ engine_reply *reply;
 	if (LOGLVL > 1) {
 		fprintf(LOG,"   WebUI: available<br>\n");
 	}
+
+        if(!createForm){
+            ret_value = add_message(ret_value,"<ul>\n");
+        }
+        else{
+            ret_value = add_message(ret_value, "<form method=post name=\"actionSelection\">\n");
+            ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('run')\">\n");
+            ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\"><hr>\n");
+        }
+            
+
 	do {
 		response = engineresponse(s);
 		if (response != NULL)
 		if (response->cont ==1) {
-			reply = enginereply(response->value);
-			ret_value = add_message(ret_value,"action: run ");
-			ret_value = add_message(ret_value,reply->process);
-			ret_value = add_message(ret_value," ");
-			ret_value = add_message(ret_value,reply->task);
-			ret_value = add_message(ret_value,"<br>\n");
-			freereply(reply);
+                    if(!createForm){
+                        reply = enginereply(response->value);
+                        //ret_value = add_message(ret_value,"action: run ");
+                        ret_value = add_message(ret_value,"<li>");
+                        ret_value = add_message(ret_value,reply->process);
+                        ret_value = add_message(ret_value," ");
+                        ret_value = add_message(ret_value,reply->task);
+                        ret_value = add_message(ret_value,"<br>\n");
+                        freereply(reply);
+                    }
+                    else{
+                        reply = enginereply(response->value);
+
+                        ret_value = add_message(ret_value, "<p><input type=\"radio\" name=\"model_action\"");
+                        ret_value = add_message(ret_value, " value=\"");
+                        ret_value = add_message(ret_value, reply->process);
+                        ret_value = add_message(ret_value, " ");
+                        ret_value = add_message(ret_value,reply->task);
+                        ret_value = add_message(ret_value, "\">"); 
+                        ret_value = add_message(ret_value, reply->process);
+                        ret_value = add_message(ret_value, " ");
+                        ret_value = add_message(ret_value,reply->task);
+                        ret_value = add_message(ret_value, "\n");
+                        freereply(reply);
+                    }
 		}
 		freeresponse(response);
 	} while(response->cont == 1);
+   
+        if(!createForm){
+            ret_value = add_message(ret_value,"</ul>\n");
+        }
+        else{
+           ret_value = add_message(ret_value, "<hr>\n");
+           ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('run')\">\n");
+           ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\">\n");
+           ret_value = add_message(ret_value, "</form>\n");
+        }
 
+        /*
 	fprintf(s.S_out,"running\n");
 	fflush(s.S_out);
 	if (LOGLVL > 1) {
@@ -237,10 +277,11 @@ engine_reply *reply;
 		}
 		freeresponse(response);
 	} while(response->cont == 1);
+        */
 	return(ret_value);
 }
 
-char *list(simplesock s,char *ret_value)
+char *list(simplesock s,char *ret_value, int createForm)
 {
 engine_response *response;
 int tempcont;
@@ -252,23 +293,49 @@ int modelcount = 0;
 	if (LOGLVL > 1) {
 		fprintf(LOG,"	WebUI: list<br>\n");
 	}
-
-        ret_value = add_message(ret_value,"<ul>\n");
+        if(!createForm){
+            ret_value = add_message(ret_value,"<ul>\n");
+        }
+        else{
+           ret_value = add_message(ret_value, "<form method=post name=\"actionSelection\">\n");
+           ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('create')\">\n");
+           ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\"><hr>\n");
+        }
 
 	do {
 		response = engineresponse(s);
 		if (response == NULL) return(NULL);
 		tempcont = response->cont;
 		if (response->cont == 1) {
+                    if(!createForm){
+                        modelcount++;
                         ret_value = add_message(ret_value,"<li>");
-			modelcount++;
-			ret_value = add_message(ret_value,response->value);
-			ret_value = add_message(ret_value,"<br>\n");
+                        ret_value = add_message(ret_value,response->value);
+                        ret_value = add_message(ret_value,"<br>\n");
+                    }
+                    else{
+                        modelcount++;
+                        ret_value = add_message(ret_value, "<p><input type=\"radio\" name=\"model_action\"");
+                        ret_value = add_message(ret_value, " value=\"");
+                        ret_value = add_message(ret_value, response->value);
+                        ret_value = add_message(ret_value, "\">"); 
+                        ret_value = add_message(ret_value, response->value);
+                        ret_value = add_message(ret_value, "\n");
+                    }
 		}
 		freeresponse(response);
 	} while(response->cont == 1);
 
-        ret_value = add_message(ret_value,"</ul>\n");
+        if(!createForm){
+            ret_value = add_message(ret_value,"</ul>\n");
+        }
+        else{
+           ret_value = add_message(ret_value, "<hr>\n");
+           ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('create')\">\n");
+           ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\">\n");
+           ret_value = add_message(ret_value, "</form>\n");
+        }
+
 
 	if (modelcount == 0) ret_value = add_message(ret_value,"None.<br>\n<br>\n");
 	return(ret_value);
@@ -322,7 +389,7 @@ int taskcount = 0;
 	return(ret_value);
 }
 
-char *running(simplesock s,char *ret_value)
+char *running(simplesock s,char *ret_value, int createForm)
 {
 engine_response *response;
 engine_reply *reply;
@@ -335,12 +402,23 @@ int taskcount = 0;
 		if (LOGLVL > 1) {
 			fprintf(LOG,"	WebUI: running<br>\n");
 		}
+
+        if(!createForm){ 
+           ret_value = add_message(ret_value, "<br>\n"); 
+        }
+        else{
+           ret_value = add_message(ret_value, "<form method=post name=\"actionSelection\">\n");
+           ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('done')\">\n");
+           ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\"><hr>\n");
+        }
+
 		
         do {
                 response = engineresponse(s);
                 if (response == NULL) return(NULL);
                 tempcont = response->cont;
                 if (response->cont == 1) {      // Has some reply
+                    if(!createForm){
                         taskcount++;
                         reply = enginereply(response->value);
                         ret_value = add_message(ret_value,"Process : ");
@@ -361,10 +439,37 @@ int taskcount = 0;
                         ret_value = add_message(ret_value,reply->script);
 
 			ret_value = add_message(ret_value,"<br>\n<br>\n");
+
+                    }
+                    else{
+                        taskcount++;
+                        reply = enginereply(response->value);
+                        ret_value = add_message(ret_value, "<p><input type=\"radio\" name=\"model_action\"");
+                        ret_value = add_message(ret_value, " value=\"");
+                        ret_value = add_message(ret_value, reply->process);
+                        ret_value = add_message(ret_value, " ");
+                        ret_value = add_message(ret_value,reply->task);
+                        ret_value = add_message(ret_value, "\">"); 
+                        ret_value = add_message(ret_value, reply->process);
+                        ret_value = add_message(ret_value, " ");
+                        ret_value = add_message(ret_value,reply->task);
+                        ret_value = add_message(ret_value, "\n");
+                    }
+
 			freereply(reply);
                 }
                 freeresponse(response);
         } while(response->cont == 1);
+
+        if(createForm){
+           ret_value = add_message(ret_value, "<hr>\n");
+           ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('done')\">\n");
+           ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\">\n");
+           ret_value = add_message(ret_value, "</form>\n");
+        }
+
+
+
         if (taskcount == 0) ret_value = add_message(ret_value,"None.<br>\n<br>\n");
 	return(ret_value);
 }
@@ -445,3 +550,5 @@ char *add_message(char *msg_address,char *txt2add)
 	}
 	return(msg_address);
 }
+
+
