@@ -239,7 +239,7 @@ main (int argc, char **argv)
 		       printf("To create a process: peos -c name_of_model_file\n");
 	               printf("To start an action: peos -n process_id action_name event\n");
 	               printf("Event can be: start or finish or abort or suspend\n");
-	               printf("To update all processes: peos -u \n");
+	               printf("To update states of all processes (daemon simulation): peos -u \n");
 	               printf("To get a list of instances: peos -i\n");
 		       printf("To bind resources: peos -r pid resource_name resource_value\n");
 		       printf("To delete a process: peos -d pid\n");
