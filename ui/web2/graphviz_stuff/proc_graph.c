@@ -95,8 +95,10 @@ void makedot(Node n, char *filename)
 	mapout = (char *) calloc(2*strlen(filename) + 52, sizeof(char));
 	gifout = (char *) calloc(2*strlen(filename) + 52, sizeof(char));
 
-	strcat(mapout, "/home/jntestuser/bin/bin/dot -Timap ");
-	strcat(gifout, "/home/jntestuser/bin/bin/dot -Tgif ");
+	strcat(mapout, DOT_BIN);
+	strcat(gifout, DOT_BIN);
+	strcat(mapout, " -Timap ");
+	strcat(gifout, " -Tgif ");
 	strcat(filename,".dot");
 	strcat(mapout, filename);
 	strcat(gifout,filename);
