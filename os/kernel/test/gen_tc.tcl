@@ -1,138 +1,286 @@
 #!/usr/bin/env tclsh
-proc preamble {tfile pfile {iterations 1} {fill_proc_table 0} {shell ../../shell}} {
 
-    puts $tfile "model: $pfile"
-    puts $tfile "shell: ../../shell"
-    puts $tfile "iterations: $iterations"
-    if {$fill_proc_table} {
-	puts $tfile "fill_proc_table: 1"
+proc open_pfile {fname} {
+    global indent act_id
+    set output [open ${fname}.pml "w"]
+    puts $output "process $fname \{"
+    set act_id 0
+    set indent 0
+    return $output
+}
+
+proc close_pfile {stream} {
+    global indent
+
+    puts $stream "\}"
+    incr indent -1
+    close $stream
+}
+
+proc indent {stream} {
+    global indent
+    for {set i 0} {$i < $indent} {incr i} {
+	puts -nonewline $stream " "
     }
 }
 
-proc action {pfile tfile num_act type} {
-    global act 
+proc preamble {tfile pfile {shell ../../shell}} {
+    
+    puts $tfile "model: ${pfile}.pml"
+    puts $tfile "shell: $shell"
+    puts $tfile "script:"
+}
+
+proc action {pfile num_act} {
+    global act_id
 
-    set indent [expr {$type == "action" ? "  " : "    "}]
-
+    set actions {}
     for {set i 0} {$i < $num_act} {incr i} {
-	puts $pfile "${indent}action act_${act} \{\}"
-	if {$type != "selection"  || $i == 0} {
-	    puts -nonewline $tfile "act_${act} "
+	set act "act_${act_id}"
+	puts $pfile "[indent $pfile]action $act \{\}"
+	lappend actions $act
+	incr act_id
+    }
+    return $actions
+}
+
+proc control_struct {name pfile num_act} {
+    global indent
+    puts $pfile "[indent $pfile]${name}  \{"
+    incr indent
+    set actions [action $pfile $num_act]
+    incr indent -1
+    puts $pfile "[indent $pfile]\}"
+    return $actions
+}
+
+proc nest {inner outer pfile num_act} {
+    global indent iteration_workaround
+
+    puts $pfile "[indent $pfile]${outer}  \{"
+    incr indent
+    if {$inner == "iteration" \
+	&& [info exists iteration_workaround] && $iteration_workaround > 0} {
+	    puts $pfile "[indent $pfile]sequence \{"
+	    incr indent
+    }
+
+    set actions [$inner $pfile $num_act]
+    if {$inner == "iteration" \
+	&& [info exists iteration_workaround] && $iteration_workaround > 0} {
+	    puts $pfile "[indent $pfile]\}"
+	    incr indent -1
+    }
+
+    incr indent -1
+    puts $pfile "[indent $pfile]\}"
+
+    if {$outer == "iteration"\
+	&& [info exists iteration_workaround] && $iteration_workaround > 0} {
+	lappend actions [action $pfile 1]
+    }
+
+    return $actions
+}
+
+proc follow {first second pfile num_act} {
+    global indent
+
+    set actions [concat [$first $pfile $num_act] [$second $pfile $num_act]]
+    return $actions
+}
+
+proc sequence {pfile num_act} {
+    return [control_struct "sequence" $pfile $num_act]
+}
+
+proc iteration {pfile num_act} {
+    global iteration_workaround 
+
+    set actions  [control_struct "iteration" $pfile $num_act]
+    if {[info exists iteration_workaround] && $iteration_workaround > 0} {
+	lappend actions [action $pfile 1]
+    }
+    return $actions
+}
+
+proc branch {pfile num_act} {
+    return [control_struct "branch" $pfile $num_act]
+}
+
+proc selection {pfile num_act} {
+    set actions [control_struct "selection" $pfile $num_act]
+    # Select the middle action.
+    return [lindex $actions [expr {[llength $actions]/2}]]
+}
+
+proc emit_act {tfile pid act} {
+    puts $tfile "act_state $pid $act ready"
+    puts $tfile "do $pid $act"
+    puts $tfile "act_state $pid $act active"
+    puts $tfile "done $pid $act"
+}
+
+proc emit_concurrent {tfile pname actions iterations} {
+    global proc_table_size
+    set i 0
+    while {$i < $iterations} {
+	for {set j 0} {$j < $proc_table_size && ($i + $j) < $iterations} {incr j} {
+	    puts $tfile "create_proc $pname"
 	}
-	incr act
+	for {set j 0} {$j < $proc_table_size && ($i + $j) < $iterations} {incr j} {
+	    foreach act $actions {
+		emit_act $tfile $j $act
+	    }
+	    puts $tfile "proc_done $pid $pname"
+	}
+	incr i $j
     }
 }
 
-proc nested {inner outer num_act iterations fill_proc_table shell} {
-    global act
-    set act 0
-    set fname ${inner}-in-${outer}-${iterations}-${num_act}
-    if {$fill_proc_table} {
-	append fname "-fill"
+proc emit_sequential {tfile pname actions iterations} {
+    set pid 0
+    for {set i 0} {$i < $iterations} {incr i} {
+	puts $tfile "create_proc $pname"
+	foreach act $actions {
+	    emit_act $tfile $pid $act
+	}
+	puts $tfile "proc_done $pid $pname"
     }
-    set pfile [open "${fname}.pml" "w"]
-    set tfile [open "${fname}.tc" "w"]
-    preamble $tfile "${fname}.pml" $iterations $fill_proc_table $shell
-
-    puts $pfile "process p \{"
-    puts $pfile "  $outer \{"
-
-    if {$inner != "action"} {
-	puts $pfile "    $inner \{"
-    }
-
-    puts -nonewline  $tfile "actions: "
-    action $pfile $tfile $num_act $inner
-
-    if {$inner != "action"} {
-	puts $pfile "    \}"
-    }
-    puts $pfile "  \}"
-    puts $pfile "\}"
-
-    close $pfile
-    close $tfile
 }
 
-proc follows {first second num_act iterations fill_proc_table shell} {
-    global act
-    set act 0
-    set fname ${first}-${second}-${iterations}-${num_act}
-    if {$fill_proc_table} {
-	append fname "-fill"
+proc emit_tc {pname actions mode} {
+    global iterations shell
+
+    set tfile [open ${pname}_${iterations}.tc "w"]
+
+    puts $tfile "model: ${pname}.pml"
+    puts $tfile "shell: $shell"
+    puts $tfile "script:"
+
+    switch -glob $mode {
+	par* -
+	conc* {
+	    emit_concurrent $tfile $pname $actions $iterations
+	}
+
+	default -
+	seq* {
+	    emit_sequential $tfile $pname $actions $iterations
+	}
+	close $tfile
     }
-    set pfile [open "${fname}.pml" "w"]
-    set tfile [open "${fname}.tc" "w"]
-    preamble $tfile "${fname}.pml" $iterations $fill_proc_table $shell
-
-    puts $pfile "process p \{"
-
-    if {$first != "action"} {
-	puts $pfile "  $first \{"
-    }
-
-    puts -nonewline $tfile "actions: "
-    action $pfile $tfile $num_act $first
-
-    if {$first != "action"} {
-	puts $pfile "  \}"
-    }
-
-    if {$second != "action"} {
-	puts $pfile "  $second \{"
-    }
-
-    action $pfile $tfile $num_act $second
-
-    if {$second != "action"} {
-	puts $pfile "  \}"
-    }
-
-    puts $pfile "\}"
-
-    close $pfile
-    close $tfile
 }
 
+
+proc baseline {{mode sequential}} {
+    global indent num_act
 
+    set pname "baseline_${num_act}"
+    set pfile [open_pfile $pname]
+    incr indent
+    set actions [action $pfile $num_act]
+    close_pfile $pfile
+
+    emit_tc $pname $actions $mode
+}
+
+
+proc inventory {{mode sequential}} {
+    global indent num_act control
+
+    foreach construct $control {
+	set pname "${construct}_${num_act}"
+	set pfile [open_pfile $pname]
+	incr indent
+	set actions [$construct $pfile $num_act]
+	close_pfile $pfile
+
+	emit_tc $pname $actions $mode
+    }
+}
+
+proc nested {{mode sequential}} {
+    global indent num_act control
+
+    foreach outer $control {
+	foreach inner $control {
+	    set pname "${inner}_in_${outer}_${num_act}"
+	    set pfile [open_pfile $pname]
+	    incr indent
+	    set actions [nest $inner $outer $pfile $num_act]
+	    close_pfile $pfile
+
+	    emit_tc $pname $actions $mode
+	}
+    }
+}
+
+proc follows {{mode sequential}} {
+    global indent num_act control
+
+    foreach first $control {
+	foreach second $control {
+	    set pname "${first}_${second}_${num_act}"
+	    set pfile [open_pfile $pname]
+	    incr indent
+	    set actions [follow $first $second $pfile $num_act]
+	    close_pfile $pfile
+	    emit_tc $pname $actions $mode
+	}
+    }
+}
+
+proc combinations {{mode sequential}} {
+    nested $mode
+    follows $mode
+}
+
 set control [list iteration sequence branch selection]
 set fields [list provides requires script agent tool]
 set values [list \"a string\" Identifier Identifier.attribute predicate clause]
 set ops [list "==" "!=" "<" "<=" ">" "=>"]
-set act 0
+set act_id 0
 
-set fill_proc_table 0
-
+set iterations 1
+set proc_table_size 10
+set num_act 1
+set tests {}
+set shell "../../shell"
+set mode sequential
+set iteration_workaround 1
 set i 0
 while {$i < $argc} {
-  set arg [lindex $argv $i]
-  switch -exact -- $arg {
-    -shell {
-      incr i
-      set shell [lindex $argv $i]
+    set arg [lindex $argv $i]
+    switch -exact -- $arg {
+	-shell {
+	    incr i
+	    set shell [lindex $argv $i]
+	}
+	-iterations {
+	    incr i
+	    set iterations [lindex $argv $i]
+	}
+	-num_act {
+	    incr i
+	    set num_act [lindex $argv $i]
+	}
+	-baseline {
+	    lappend tests baseline
+	}
+	-inventory {
+	    lappend tests inventory
+	}
+	-combinations {
+	    lappend tests combinations
+	}
+	-concurrent {
+	    set mode concurrent
+	}
     }
-    -iterations {
-      incr i
-      set iterations [lindex $argv $i]
-    }
-    -fill_proc_table {
-      set fill_proc_table 1
-    }
-    -num_act {
-	incr i
-	set num_act [lindex $argv $i]
-    }
-  }
-  incr i
+    incr i
 }
 
-foreach outer $control {
-    nested "action" $outer $num_act $iterations $fill_proc_table $shell
-    follows "action" $outer $num_act $iterations $fill_proc_table $shell
-    follows $outer "action" $num_act $iterations $fill_proc_table $shell
-
-    foreach inner $control {
-	nested $outer $inner $num_act $iterations $fill_proc_table $shell
-	follows $outer $inner $num_act $iterations $fill_proc_table $shell
-    }
+foreach test $tests {
+    $test $mode
 }

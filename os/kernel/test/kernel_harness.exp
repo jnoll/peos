@@ -35,6 +35,11 @@ proc read_tc {tc_name} {
 		continue
 	    }
 
+	    script: {
+		upvar script script
+		set script [read $input]
+	    }
+
 	    default {
 		set var [string trimright $field ":"]
 		upvar $var $var
@@ -53,25 +58,38 @@ proc trace {level msg} {
 
 proc error_msg {op act} {
     global expect_out
-    puts "FAILURE: while performing '$op' on '$act': $expect_out(0,string)"
+    puts -nonewline "FAILURE: while performing '$op' on '$act'"
+    if [info exists expect_out(0,string)] {
+	puts ": $expect_out(0,string)"
+    } else {
+	puts ""
+    }
     exit
 }
 
-proc create_expect {model} {
+proc create_proc {model} {
     send "create $model\n"
     expect {
-	"Created pid" {
-	    trace 1 "$model created"
+	-re "Created pid = \(\[0-9\]+\)" {
+	    upvar pid pid
+	    set pid $expect_out(1,string)
+	    trace 1 "$model created pid=$pid"
 	}
 	"error: couldn't create process" {
 	    error_msg create $model
 	}
+	timeout {
+	    error_msg create $model
+	}
+	default {
+	    error_msg create $model
+	}
     }
 
-    expect "\n> \n"
+    expect "\n> "
 }
 
-proc act_expect {op act {pid 0}} {
+proc do_act {op pid act} {
     send "$op $pid $act\n"
     expect {
 	"Error" {
@@ -80,67 +98,64 @@ proc act_expect {op act {pid 0}} {
 	"Performing" {
 	    trace 2 "$op $act"
 	} 
-	default {
+	timeout {
 	    error_msg $op $act
 	}
-	timeout {
+	default {
 	    error_msg $op $act
 	}
     }  
 
-    expect "\n> \n"
+    expect "\n> "
 }
 
-proc list_expect {act state} {
+proc do {pid act} { 
+    return [do_act do $pid $act]
+}
+
+proc done {pid act} { 
+    return [do_act done $pid $act]
+}
+
+proc act_state {pid act state} {
     send "actions\n"
     expect {
-	-re "$act.*($state)" {
-	    trace 1 "${act} found to be $state" 
+	-re "$pid\[ \]+$act.*($state)" {
+	    trace 1 "${act} ${pid} found to be $state" 
 	}
 
-	"\n> \n" {
+	"\n> " {
+	    error_msg actions $act
+	}
+
+	timeout {
 	    error_msg actions $act
 	}
     }
 
-    expect "\n> \n"
+    expect "\n> "
 }
 
-proc done_expect {model} {
+proc proc_done {pid model} {
     send "actions\n"
     expect {
-	-re "\n\[ \]*\[0-9\]+\[ \]+\[A-Za-z0-9_\]+\[ \]+.*\n> " {
-	    error_msg done_expect "not done"
+	-re "\n\[ \]*${pid}\[ \]+\[A-Za-z0-9_\]+\[ \]+.*\n> " {
+	    error_msg proc_done "not done"
 	}
 
-	-re "status\[) \n\r\]*\n> " {
+	-re "\n> " {
 	    trace 1 "$model completed successfully."
 	}
 
 	timeout {
-	    error_msg done_expect timeout
+	    error_msg proc_done timeout
 	}
-    }
-}
-
-proc run_proc {actions} {
-    foreach act $actions {
-	# Look for act to be ready.
-	list_expect $act ready
-
-	# Perform act.
-	act_expect do $act
-
-	# Look for act to be active.
-	list_expect $act active
-
-	# Finish act.
-	act_expect done $act
     }
 }
 
 
 # defaults
+set timeout 1
 set verbosity 0
 log_user 0
 set shell "../shell"
@@ -154,7 +169,7 @@ read_tc $tc_name
 
 if {$verbosity > 0} {
     puts stderr "model: $model"
-    puts stderr "actions: $actions"
+    puts stderr "script: $script"
     puts stderr "iterations: $iterations"
 }
 
@@ -167,34 +182,16 @@ if {$verbosity >= 3} {
     log_user 1
 }
 spawn ${shell}
-expect "\n> \n"
-
-if {[info exists fill_proc_table]} {
-    set full 0
-    # Fill process table.
-    while {!$full} {
-	send "create $model\n"
-	expect {
-	    "Created pid" {}
-	    "error: couldn't create process" {
-		trace 2 "Process table is full, or other error."
-		set full 1
-	    }
-	}
-	expect "\n> \n"
+expect {
+    "> " {}
+    timeout {
+	error_msg shell-spawn timeout
     }
-    # Run a process to completion, to create space for one more.
-    run_proc $actions
 }
-
 
 for {set i 0} {$i < $iterations} {incr i} {
-    create_expect $model
-    run_proc $actions
+    eval $script
 }
-
-done_expect $model
-
 
 send "quit\n"
 expect "Exiting"

@@ -1,32 +1,87 @@
-HARNESS = ../kernel_harness.exp
-RUNTESTS = -for f in *.tc ; do $(HARNESS) $$f 2> /dev/null | grep FAILURE; done 
-test: inventory bounds
+HARNESS = ../kernel_harness.exp -- -verbosity 3
+RUNTESTS = -for f in *.tc ; do $(HARNESS) $$f 2> /dev/null ; done 
+CASES = $(wildcard *.tc)
+LOGS = $(CASES:tc=log)
+NUM_ACTS = 1 3 31 53 73 113 187 213 271 301
 
-# Happy path tests of all control construct combinations.
-inventory: clean
-	../gen_tc.tcl -iterations 1 -num_act 2 -shell "../../shell"
-	$(RUNTESTS)
+all:
+	@echo "type 'make gen' to generate test cases"
+	@echo "type 'make run' to run generated test cases"
+gen: clean test_cases
+test:  run
+test_cases: baseline inventory combinations bounds
 
-# Some boundary tests.
+# Run the tests.
+run: $(LOGS)
+	grep FAIL *.log
 
-bounds: full max_iterations max_actions
 
-full: clean
-	../gen_tc.tcl -iterations 1 -num_act 1 -fill_proc_table -shell "../../shell"
-	$(RUNTESTS)
+#
+# Baseline
+# Basic sequential processes with varying numbers of actions.
+#
+baseline:
+	for n in $(NUM_ACTS) ; do ../gen_tc.tcl -baseline -num_act $$n; done
 
-# 21 iterations causes failure tests with iterations.
-max_iterations: clean
-	../gen_tc.tcl -iterations 21 -num_act 2 -shell "../../shell"
-	$(RUNTESTS)
+#
+# Inventory
+# Happy path tests of all control constructs and combinations.
+#
+inventory:
+	../gen_tc.tcl -inventory -num_act 2
 
-max_actions: clean
-	../gen_tc.tcl -iterations 1 -num_act 50 -shell "../../shell"
 
+#
+# Combinations.
+#
+combo: combinations
+combinations:
+	../gen_tc.tcl -combinations -num_act 2
+
+#
+# Trends analysis.
+# 
+trends: base_trend inv_trend combo_trend
+	echo "Caution: this takes a long time to execute!'
+
+base_trend:
+	i=1; while [ $$i -lt 50 ] ; do \
+	    ../gen_tc.tcl -baseline -num_act $$i; i=`expr $$i + 1`; \
+	done
+
+inv_trend:
+	i=1; while [ $$i -lt 50 ] ; do \
+	../gen_tc.tcl -inventory -num_act $$i; i=`expr $$i + 1`; \
+	done
+
+combo_trend:
+	i=1; while [ $$i -lt 50 ] ; do \
+	../gen_tc.tcl -combinations -num_act $$i; i=`expr $$i + 1`; \
+	done
+
+
+#
+# Push the boundaries.
+#
+bounds: proc_table
+# Process table has 10 entries.
+proc_table:
+	../gen_tc.tcl -baseline -num_act 2 -iterations 11 -mode concurrent
+	../gen_tc.tcl -inventory -num_act 2 -iterations 11 -mode concurrent
+	../gen_tc.tcl -combinations -num_act 2 -iterations 11 -mode concurrent
+
+
+#
+# How to run tests.
+#
+%.log: %.tc
+	$(HARNESS) $<  > $@ 2>&1
 
 clean:
-	-rm *.tc *.pml
+	-rm *.tc *.pml *.log
 
 reallyclean: clean
 	-rm  core*
 
+log_clean:
+	-rm *.log

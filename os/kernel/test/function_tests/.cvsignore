@@ -1,3 +1,5 @@
 *.tc
 *.pml
 *.dat
+*.log
+core
