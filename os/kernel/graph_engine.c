@@ -31,6 +31,20 @@ void sanitize(Graph g)
  * XXX this function depends on all iteration begins to appear before
  * their respective iteration ends in the node list.
  */
+
+
+/* 
+ * Find Iteration begin and End Nodes. If the node is a beginning of an 
+ * iteration, then the flag ITER_START is set to true. If the node is at the 
+ * end of an iteration, then the flag ITER_END will be set to true. 
+ * All the nodes in the node list are arranged in lexicographic order. 
+ * We start with the first node after the source and mark it. If a node 
+ * has its predecessor which is not marked, then the predecessor is 
+ * the end of an iteration. Similarly, if the node has a successor 
+ * which is marked, then the successor is the start of an iteration 
+ *
+ */
+
 void mark_for_iteration(Graph g)
 {
     Node node,parent,child;
@@ -56,6 +70,24 @@ void mark_for_iteration(Graph g)
 
 }
 
+/* 
+ * At the beginning of an iteration, the first action(or a selection or a 
+ * branch) in an iteration and the action following that iteration will be 
+ * ready. When an iteration starts, we need to set the action 
+ * (or selection or branch) following that iteration to ACT_NONE and 
+ * vice versa. So there is a list of nodes associated with each action. 
+ * The list ITER_END_NODES will be associated with a starting node of 
+ * an iteration and it contains the list of nodes following the iteration 
+ * for which this node is a start node.There can be more than one 
+ * iterations with a given node as a start node and hence this list can 
+ * have more than one node. Similarly, the list ITER_START_NODES is 
+ * associated with contains the list of all nodes which are the 
+ * starting nodes of the iterations with this node as the node following 
+ * that iteration. And since more than one iteration can end at a given 
+ * node, this is also a list of nodes rather than a single node. This function 
+ * just makes these lists for each node.
+ *
+ */
 
 void add_iteration_lists(Graph g)
 {
@@ -92,6 +124,22 @@ void add_iteration_lists(Graph g)
     }
 }
 
+/* 
+ * Every action node will also have a list of super nodes associated with it. 
+ * These nodes are the control flow nodes (selection or branch) under whose 
+ * influence the given action node falls. For example for the folowing 
+ * PML program: 
+ * selection s1 {
+ *   selection s2 {
+ *      action a {} -- super nodes : s1,s2
+ *      action b {} -- super nodes : s1.s2
+ *      }
+ *   action c {}  -- super nodes: s1
+ *   }
+ * 
+ * This function adds these lists.
+ *
+ */
 				
 void add_super_node_lists(Graph g)
 {
@@ -110,7 +158,13 @@ void add_super_node_lists(Graph g)
 }
 				    
 
-
+/*
+ * When a action gets set to run, it has to be checked if that action is 
+ * part of an iteration. If yes, then the nodes, following that 
+ * iteration should be set to none. This function does that. Also we have 
+ * to do this recursively, because there can be iterations within iterations.
+ *
+ */
 
 
 void set_iter_none(Node n, Node original)
@@ -143,6 +197,19 @@ void set_iter_none(Node n, Node original)
 	
 }
 
+/*
+ * When a node is set to ready and that node is the start node of an iteration,
+ * then all the nodes following that iteration should also be ready. The 
+ * first part of this function does that. Also, when a node is set to ACT_RUN 
+ * and the node is  a start node of an iteration, then all the nodes following 
+ * that iteration are set to none. And if the node is the end of an iteration, 
+ * then the start of that iteration is to be set to NONE. This is done by 
+ * calling the set_iter_none(node,original) function. The original node is 
+ * the same node when called for the first time. This to prevent that node 
+ * from being set to ACT_NONE, since it can be a member of ITER_START_NODES 
+ * and ITER_END_NODES lists of other nodes.  
+ *
+ */
 
 void mark_iter_nodes(Node n)
 {
@@ -163,6 +230,13 @@ void mark_iter_nodes(Node n)
     }
 }
 
+/*
+ * This function sets all the super nodes of an action node to RUN. Every 
+ * time a node is set to ACT_RUN, iterations have to be handled. Hence the 
+ * call to mark_iter_nodes(..) after setting the state to ACT_RUN.
+ *
+ */
+
 void set_super_nodes_run(Node n)
 {
     Node super;
@@ -174,8 +248,15 @@ void set_super_nodes_run(Node n)
 	mark_iter_nodes(super);
     }
 }
-			
 
+/* 
+ * This function marks the state of a given action/construct to the specified 
+ * state. If the given node is a control flow construct, then it recursively 
+ * traverses the successors of that node until it finds an action node and 
+ * sets it state  to the state passed as an argument. After setting the 
+ * state to ACT_RUN mark_iter_nodes is called to handle iterations.
+ *
+ */
 
 void mark_successors(Node n, vm_act_state state)
 {
@@ -202,7 +283,18 @@ void mark_successors(Node n, vm_act_state state)
     else
         return;
 }
-			       	
+
+/* 
+ * 
+ * This function is called after an action is done and the node following it 
+ * is a join node. It sets the join and the selection to ACT_DONE and since
+ * this join can be followed by another join (for selection within selection)
+ * or a rendezvous (for selection within branch), it recursively calls itself
+ * and then calls the function to set the state of the rendezvous.
+ *
+ */
+
+
 void propogate_join_done(Node n)
 {
     int i;
@@ -220,6 +312,13 @@ void propogate_join_done(Node n)
         return;
 }
 		
+
+/*
+ * 
+ * Same as propogate_join_done(..) except that the rendezvous will not be 
+ * done before all the nodes in that branch are done.
+ *
+ */
 
 void set_rendezvous_state(Node n)
 {
@@ -249,7 +348,9 @@ void set_rendezvous_state(Node n)
     else
         return;
 }
-	
+
+
+
 void set_process_state(Graph g)
 {
     Node parent;
@@ -276,10 +377,10 @@ int action_run(Graph g, char *act_name)
     n = find_node(g, act_name);
     if(n != NULL) {
         STATE(n) = ACT_RUN;
-	mark_iter_nodes(n);
-	handle_selection(n);
-	set_super_nodes_run(n);
-        sanitize(g);
+	mark_iter_nodes(n);  /* handle iterations */
+	handle_selection(n); /* handle selections */
+	set_super_nodes_run(n); /*set super nodes to run */
+        sanitize(g); /* sanitize the markers used */
     }
     else {
         fprintf(stderr, "Error in run_action");
@@ -288,6 +389,12 @@ int action_run(Graph g, char *act_name)
     return 1;
 }
 
+/* 
+ * This function handles selections. When an action within a selection is set 
+ * to ACT_RUN, then all the siblings have to be set to ACT_NONE. Also, there 
+ * can be recursive selections. So this function has to be recursive.  
+ *
+ */
 
 void handle_selection(Node n)
 {
@@ -328,10 +435,19 @@ vm_exit_code action_done(Graph g, char *act_name)
 	num_successors = ListSize(n -> successors);
 	for(i = 0; i < num_successors; i++) {
 	    child = (Node) ListIndex(n -> successors, i);
+	    /*
+	     * (num_successors == 1) is a check to see that it is 
+	     * not an iteration.
+	     */
 	    if((child -> type == JOIN) && (num_successors == 1)) {
 	        propogate_join_done(child);
 	    }
 	    if(child -> type != RENDEZVOUS) {
+		/* 
+		 * if a child is not a rendezvous or a join, it has to 
+		 * be a selection or branch or action, so mark it ready. If 
+		 * its sink, that is handled again by set_process_state(..) 
+		 */
 	        mark_successors(child, ACT_READY);
 	    }
 	    else {
@@ -383,11 +499,10 @@ void initialize_graph(Graph g)
         ITER_END_NODES(n) = ListCreate();
 	SUPER_NODES(n) = ListCreate();
     }
-    add_super_node_lists(g);
-    mark_for_iteration(g);
-    sanitize(g);
-    add_iteration_lists(g);
-    sanitize(g);
+    add_super_node_lists(g); /* add the node lists */
+    mark_for_iteration(g); /* mark beginning and end of iterations */
+    add_iteration_lists(g);  /* add the iteration lists */
+    sanitize(g); /* sanitize markers */
     mark_successors(g->source->next,ACT_READY);
 }
 
