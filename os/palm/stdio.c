@@ -21,7 +21,9 @@ FILE * fopen(const char *name, const char *mode_str)
 {
 	FileHand *f;
 	UInt32 mode = cut_mode(mode_str);
-	*f = FileOpen(0, name, 0, 0, mode, err);
+	f = (FileHand *) malloc(sizeof(FileHand));
+	*f =FileOpen(0, name, 0, 0, mode, err); 
+
 	return f; 
 }
 

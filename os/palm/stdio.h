@@ -13,8 +13,6 @@ void doNothing();
 #define get_resource_list_action(...) NULL
 #define get_resource_list_action_provides(...) NULL
 #define get_resource_list_action_requires(...) NULL
-#define get_resource_list(...) NULL
-#define find_model_file(...) NULL
 #define log_event(...) doNothing();
 #define is_requires_true(...) 1
 #define is_provides_true(...) 1
@@ -23,12 +21,14 @@ void doNothing();
 
 #include <include/stdio.h>
 #include <FileStream.h>
-#include <PalmOS.h>
+#include <PalmTypes.h>
+#include <SystemPublic.h>
 #include <stdlib.h>
 #include <string.h>
 
 typedef FileHand FILE;
 
+UInt32 cut_mode(const char*);
 FILE * fopen(const char*, const char*);
 char* strdup(char*s);
 char getc(FILE *);

@@ -12,6 +12,8 @@
 #include <pml/tree.h>
 #include <pml/features.h>
 #include "segments.h"
+#include <action.h>
+#include <resources.h>
 
 #include "TestDB.h"
 
@@ -69,6 +71,42 @@ static void test_peos_list_models(){
 	if (ret == NULL)
 		ASSERT_STR_EQUAL("yo", "YOU");
 	ASSERT_STR_EQUAL("yo", ret[0]);
+}
+
+static void test_load()
+{
+	UInt32 i;
+	int num_resources=-1;
+	peos_resource_t *resources;
+	char *model;
+	model = strdup("timesheet");
+	resources = get_resource_list(model, &num_resources);
+	ASSERT_STR_EQUAL(model, find_model_file(model));
+	free(model);
+	ASSERT_INT32_EQUAL(0, num_resources);
+/*	for(i=0; i< num_resources; i++)
+	{
+		strcpy(resources[i].value, "$$");
+	}*/
+//	ASSERT_INT32_EQUAL(0, peos_run(model, resources, num_resources));
+}
+static void test_fread()
+{
+	char * model;
+	char * stream=malloc(32);
+	FILE  in;
+	LocalID x;
+	Err err;
+	model = strdup("timesheet");
+	x=DmFindDatabase(0, model);
+	DmOpenDatabase(0, x, dmModeReadOnly);
+	err = DmGetLastErr();
+	ASSERT_INT32_EQUAL(0,err);
+//	ASSERT_INT32_EQUAL(0,x);
+//	in = fopen(model, "r");
+//	in = FileOpen(0, model, 0,0, cut_mode("r"), &err);
+//	fread(stream, 1, 7, in);
+	
 }
 static void test_ListCreate()
 {
@@ -133,6 +171,8 @@ void initialize_suite() {
   add_test_case(group, "TreeCreate", test_TreeCreate);
   add_test_case(group, "TreeDelete", test_TreeDelete);
   add_test_case(group, "ListModels", test_peos_list_models);
+  add_test_case(group, "FileRead", test_fread);
+//  add_test_case(group, "LoadProcess", test_load);
 }
 
 void terminate_suite() {
