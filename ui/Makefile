@@ -1,4 +1,4 @@
-SUBDIRS=email web
+SUBDIRS=email web tk-gui java-gui
 
 all: dummy
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i; done

@@ -1,4 +1,4 @@
-SUBDIRS=compiler os  ui vpml
+SUBDIRS=compiler os  ui vpml win-vpml 
 
 all: dummy
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i; done
