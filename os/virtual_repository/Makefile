@@ -27,6 +27,10 @@ test_search: $(TEST_OBJECTS)
 test_search.o: test_search.c vrepo.o FSseeker.o
 	$(CC) $(CFLAGS) test_search.c
 test:	
+	make test_search 
+	make test_setup
+	test_setup > actualSetup.txt
+	diff expectedSetup.txt actualSetup.txt
 	test_search test.dat > actualResult.txt
 	diff expectedResult.txt actualResult.txt
 clean:
