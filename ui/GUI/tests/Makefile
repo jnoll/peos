@@ -42,7 +42,7 @@ CORE_OBJS=interface.o callbacks.o engine.o glo.o  \
 	  parse.o tree.o html.o viewmenu.o        \
 	  global_error.o htmllinkage.o notebook.o \
 	  deletemenu.o
-	  
+
 TEST_OBJS= $(CORE_OBJS) test_util.o set_test.o \
 	  set_globals.o 
 # sources
@@ -54,11 +54,7 @@ TESTS=test_engine test_htmllinkage
 ## Make Rules
 all:	test 
 
-
-.c.o:
-	$(CC) $(CFLAGS) $(OPT_DEBUG) -c $<
-
-test:	unit_tests
+test:	 $(CORE_OBJS) unit_tests
 
 suite:	unit_tests
 
@@ -78,15 +74,21 @@ test_htmllinkage:	test_htmllinkage.o $(TEST_OBJS)
 			$(CC) $(LDFLAGS) $(OPT_DEBUG) -o $@ \
 			$< $(TEST_OBJS) \
 			$(TEST_LIBS)
-	
+
+test_%: test_%.o $(TEST_OBJS)
+	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) $(TEST_LIBS) 
+
+%.o: ../%.c
+	$(CC) -c $(CFLAGS) $< 
+
 xref:	ctags -x $(SOURCES) > $@
 
 TAGS:	$(SOURCES)
 	etags $(SOURCES)
-	
+
 tags:	$(SOURCES)
 	ctags $(SOURCES)
-	
+
 clean:	
 	rm *.o
 
@@ -104,7 +106,7 @@ depend:	.depend
 
 .depend:	$(SOURCES)
 		$(CC) $(CFLAGS) -MM $^ > $@
-	
+
 	  
 		    
 	  
