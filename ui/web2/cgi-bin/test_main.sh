@@ -1,7 +1,8 @@
 #!/bin/sh
-echo -n "."
-echo TEST_MAIN.SH
-rm proc_table.dat
+echo -n "$0..."
+
+test -e proc_table.dat && rm proc_table.dat
+
 export QUERY_STRING="name=proc_table&pw=test"
 create_testtable
 main.cgi > output
@@ -49,5 +50,7 @@ then
   echo
 fi
 
-rm output
-rm proc_table.dat
+test -e output && rm output
+test -e proc_table.dat && rm proc_table.dat
+
+echo done

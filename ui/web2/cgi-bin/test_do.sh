@@ -1,6 +1,5 @@
 #!/bin/sh
-echo -n "."
-echo TEST_DO.SH......
+echo -n "$0..."
 
 rm proc_table.dat
 create_testtable
@@ -43,3 +42,5 @@ fi
 
 rm output
 rm proc_table.dat
+
+echo "done"

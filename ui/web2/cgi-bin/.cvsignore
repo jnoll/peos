@@ -3,3 +3,4 @@ core
 core.*
 *.dat
 create_testtable
+event.log

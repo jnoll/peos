@@ -1,11 +1,11 @@
 #!/bin/sh
-echo -n "."
-echo TEST_ACTION_PAGE.SH......
+echo -n "$0..."
+
 export QUERY_STRING="0+test_script=ready"
 create_testtable
 action_page.cgi > output
 
-if !(grep "Action: test_script   (ready)" output > /dev/null)
+if !(grep '<h1>test_script</h1>' output > /dev/null)
 then
   echo
   echo Failed Action header.
@@ -63,6 +63,7 @@ then
   echo Failed Back button.
   echo
 fi
-
 rm output
 rm proc_table.dat
+
+echo "done"

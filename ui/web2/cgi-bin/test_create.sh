@@ -1,6 +1,5 @@
 #!/bin/sh
-echo -n "."
-echo TEST_CREATE.SH......
+echo -n "$0..."
 
 create.cgi > output
 
@@ -14,3 +13,4 @@ do
   fi
 done
 
+echo "done"

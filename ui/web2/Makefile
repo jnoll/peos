@@ -19,3 +19,4 @@ install:
 	$(MAKE) -C cgi-bin  install INSTALL_DIR=$(INSTALL_DIR)
 	$(MAKE) -C images install INSTALL_DIR=$(INSTALL_DIR)
 
+

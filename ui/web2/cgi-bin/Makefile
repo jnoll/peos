@@ -1,18 +1,21 @@
-KERNEL_DIR = ../../../os/kernel
+OS_DIR = ../../../os
+KERNEL_DIR = $(OS_DIR)/kernel
 
 CC = gcc
-CFLAGS = -g -I$(KERNEL_DIR)
+CFLAGS = -g -I$(OS_DIR)
 
 LD = gcc
 LIBS = -lpml
 LDFLAGS = -g -L../../../pml
 
 
-OBJECTS = $(KERNEL_DIR)/events.o \
+KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
 	$(KERNEL_DIR)/graph_engine.o \
 	$(KERNEL_DIR)/process_table.o \
 	$(KERNEL_DIR)/process.o \
 	$(KERNEL_DIR)/action.o 
+
+OBJECTS = html.o
 
 TESTS = test_main.sh \
 	test_action_page.sh \
@@ -27,9 +30,8 @@ PML = test_action.pml ../readme.pml
 all: test
 
 test: $(CGI) create_testtable
-	@ echo -n "running unit tests"
 	@for t in $(TESTS) ; do $$t ; done
-	@ echo "done."
+
 
 install: 
 	[ -d $(INSTALL_DIR)/cgi-bin ] && cp $(CGI) $(INSTALL_DIR)/cgi-bin
@@ -38,9 +40,10 @@ install:
 	chmod a+r $(INSTALL_DIR)/cgi-bin/*.pml
 
 create_testtable: create_testtable.o
-	$(LD) -o $@ $(LDFLAGS) $< $(OBJECTS) $(LIBS)
+	$(LD) -o $@ $(LDFLAGS) $< $(KERNEL_OBJECTS) $(LIBS)
 
 # How to create cgi programs from respective sources.
-%.cgi: %.o 
-	$(LD) -o $@ $(LDFLAGS) $< $(OBJECTS) $(LIBS)
+%.cgi: %.o $(OBJECTS)
+	$(LD) -o $@ $(LDFLAGS) $< $(OBJECTS) $(KERNEL_OBJECTS) $(LIBS)
 
+main.o action_page.o create.o do.o do_create.o resource.o: html.h

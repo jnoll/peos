@@ -1,6 +1,7 @@
 #!/bin/sh
 
-echo TEST_RESOURCE.SH
+echo -n "$0..."
+
 create_testtable
 export QUERY_STRING="model_list=test_action"
 resource.cgi > output
@@ -20,3 +21,5 @@ fi
 
 rm output
 rm proc_table.dat
+
+echo "done"

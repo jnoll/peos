@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../../../os/kernel/vm.h"
-#include "../../../os/kernel/process_table.h"
-#include "../../../os/kernel/events.h"
+#include <kernel/vm.h>
+#include <kernel/process_table.h>
+#include <kernel/events.h>
 
 void get_resources(char *model);
 
@@ -18,7 +18,7 @@ int main()
   printf("<style type=\"text/css\">\n");
   printf("<!--\n");
   printf(".myTable {\n");
-  printf("background-image:url(../images/bg_logoblack.jpg);\n");
+  printf("background-image:url(../images/peos_bar.jpg);\n");
   printf("background-repeat:no-repeat;\n");
   printf("background-position:center top; }\n");
   printf("-->\n");
