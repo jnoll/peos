@@ -48,7 +48,7 @@ process martini {
 	}
       }
     } /* end branch */
-  }
+} 
   iteration pour_loop {
     action pour manual {
       requires {"martini-glass"}
