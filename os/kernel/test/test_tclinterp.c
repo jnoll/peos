@@ -237,6 +237,25 @@ START_TEST(test_peos_tcl_link_var)
 }
 END_TEST
 
+START_TEST(test_peos_tcl_script)
+{
+    int status;
+    peos_tcl p;
+    started=0;
+    peos_tcl_start(&p);
+    fail_unless(started, "TCL interpreter is not initialized");
+    system("touch tcl_file_for_testing");
+    system("echo \"puts stdout {testing TCL script running functionality. if you see this, it's working.} \"> tcl_file_for_testing");
+    status = Tcl_EvalFile(p.interp, "tcl_file_for_testing");
+    if (*p.interp->result != 0){
+        printf("Issue Running Script: %s\n", p.interp->result); 
+    }
+    printf("Script ran, result: %s\n", status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
+    fail_unless (status == TCL_OK,"Failed b/c status is not TCL_OK after executing a valid tcl script file");
+    system("rm tcl_file_for_testing");
+}
+END_TEST
+
 int
 main(int argc, char *argv[])
 {
@@ -263,6 +282,10 @@ main(int argc, char *argv[])
     tc = tcase_create("link_variable_in_tcl");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_peos_tcl_link_var);
+    
+    tc = tcase_create("run_a_tcl_script");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_peos_tcl_script);
     
 /*   to do 
     tc = tcase_create("execute_script_in_tcl");
