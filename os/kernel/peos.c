@@ -143,7 +143,9 @@ main (int argc, char **argv)
     int l = 0; /* l == 1 iff login option is passed */
     char *login = "proc_table"; /* default login name */
     opterr = 0;
-   
+    system ("echo '#######################################################################' >  pelog");
+    system ("echo '#######################################################################' >> pelog");
+    system ("echo '#######################################################################' >> pelog");
     while ((c = getopt (argc, argv, "+c:n:ihr:d:ul:")) != -1) {
         switch (c) {
             case 'l': {
