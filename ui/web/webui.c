@@ -74,7 +74,7 @@ void main() {
     printf("<head><title>PML Web Interface</title></head>\n") ;
     printf("<body bgcolor = \"white\">\n") ;
     printf("<h1>PML Web Interface</h1>\n") ;
-	
+	printf("hey\n");	
     printf("<br><br>Welcome PML Web Interface user (%s/%s).  Your input to the PML engine was: <b>command: %s, action: %s (%s,%s)</b>", username, password, command, action, PARA1, PARA2);
 	printf("<hr>%s<hr><br>", current_msg);
   printf("<br><br><form method=\"post\" action = \"webui.cgi\">\n");
