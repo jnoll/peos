@@ -49,7 +49,7 @@ TEST_OBJS= $(CORE_OBJS) test_util.o set_test.o \
 SOURCES=$(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 
 # unit tests
-TESTS=test_engine test_htmllinkage
+TESTS=test_engine test_htmllinkage test_parse
 
 ## Make Rules
 all:	test 
@@ -75,6 +75,11 @@ test_htmllinkage:	test_htmllinkage.o $(TEST_OBJS)
 			$< $(TEST_OBJS) \
 			$(TEST_LIBS)
 
+test_parse:      	test_parse.o $(TEST_OBJS)
+			$(CC) $(LDFLAGS) $(OPT_DEBUG) -o $@ \
+			$< $(TEST_OBJS) \
+			$(TEST_LIBS)
+			
 test_%: test_%.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) $(TEST_LIBS) 
 
@@ -95,7 +100,7 @@ clean:
 
 clobber:	clean
 	rm $(TESTS)
-	rm proc_table* message
+	rm proc_table* message event.log .depend
 
 # Dependencies
 include .depend
