@@ -32,6 +32,12 @@ HEADERS = $(wildcard *.h)
 
 all: test shell
 
+daemon: daemon
+
+daemon: enactment_daemon.o $(CORE_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
+
+
 # Compile the program
 shell: shell.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap

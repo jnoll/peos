@@ -530,9 +530,13 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
 	        return VM_CONTINUE;
 	    }
 	    else {
-	        REQUIRES_STATE(n) = TRUE;
-		set_node_state(n, ACT_AVAILABLE);
-	        return VM_CONTINUE;
+		if(STATE(n) != ACT_READY) {
+		    REQUIRES_STATE(n) = TRUE;
+		    set_node_state(n, ACT_AVAILABLE);
+	            return VM_CONTINUE;
+		}
+		else
+		    return VM_CONTINUE;
 	    }
         }
         else {
