@@ -1,7 +1,7 @@
 /************************************************************************
  * File:	local.c							*
  *                                                                      *
- * Version: $Revision: 1.2 $
+ * Version: $Revision: 1.3 $
  *									*
  * Description:	This file contains the public and private function	*
  *		definitions for the local data-flow checks.		*
@@ -60,14 +60,18 @@ static void CheckTree (tree, node)
     if (IS_ID_TREE (tree)) {
 	if (node -> requires != NULL)
 	    if (IsConsumed (TREE_ID (tree), node -> requires))
-		return;
+                   return;
 
 	printf ("%s:%d: action ", filename, TREE_LINE (tree));
 	printf ("'%s' provides but does not require ", node -> name);
 	printf ("%s\n", TREE_ID (tree));
 
     } else {
-	CheckTree (tree -> left, node);
+        if(TREE_OP (tree) != QUALIFIER)
+          CheckTree (tree -> left, node);
+        else
+	  CheckTree (tree -> right, node);
+
 
 	if (TREE_OP (tree) == OR || TREE_OP (tree) == AND)
 	    CheckTree (tree -> right, node);
@@ -181,6 +185,9 @@ void DoLocalChecks (graph)
 /************************************************************************
  *
  * $Log: local.c,v $
+ * Revision 1.3  2003/08/26 16:13:28  dweeks
+ * Local checking now supports qualifiers.
+ *
  * Revision 1.2  2003/08/26 05:38:24  dweeks
  * PMLCheck now compiles with new pml grammer.
  * Local checks are performed.
