@@ -69,7 +69,7 @@ echo $EXPORT PATH=$PATH:/bin:/usr/bin:$HOME/bin
 PEOS_DIR=/home/${USER}/.peos
 
 # Need to check to see if PEOS_DIR is a valid directory.
-if [ -d $PEOS_DIR ]
+if [ -d my ]
 then 
 	# Defualt path to known directory.
         cd "/home/${USER}/.peos" && $PEOS -c $MODEL
@@ -82,7 +82,15 @@ else
    		export PATH=$PATH:/bin:/usr/bin:/$PREFIX/${USER}/bin
 	fi
 
-        cd "${PREFIX}/${USER}/.peos" && $PEOS -c $MODEL
+	#check to see if directory exists
+	if [ -d $PREFIX/$USER/.peos ]
+	then
+        	cd "${PREFIX}/${USER}/.peos" && $PEOS -c $MODEL
+	else
+		echo "Directory ${PEFIX}/${USER}/.peos does not exist"
+		exit
+	fi
+
 fi 
 
 # XXX Should check exit code before sending mail, but unfortunately
