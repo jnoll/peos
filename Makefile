@@ -4,7 +4,7 @@
 
 INSTALL_DIR=$(HTML_DIR)/PEOS
 
-SUBDIRS = pml os/kernel ui/web2
+SUBDIRS = pml os/kernel ui/GUI ui/java-gui ui/web2 
 
 all: build install
 
