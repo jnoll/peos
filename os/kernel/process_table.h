@@ -2,6 +2,7 @@
 #define _PROCESS_TABLE_H
 #include "action.h"
 #include "pmlheaders.h"
+//#include "tclinterp.h"
 
 #define PEOS_MAX_PID (10)
 
@@ -26,6 +27,7 @@ typedef struct peos_context_tag {
     int num_resources;
     char model[PATH_MAX]; 
     peos_resource_t *resources;
+  //  peos_tcl* interpreter;	/* tcl interpreter for this process */
 } peos_context_t;
 
 extern int get_lock(int filedes);

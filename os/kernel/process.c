@@ -105,7 +105,7 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
         strcpy(context->model, model_file);
         context->status = PEOS_READY;
 	initialize_graph(context->process_graph, context->pid);
-        return (context->pid); 
+	return (context->pid); 
     }
     
     return -1;

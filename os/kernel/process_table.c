@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.43 2004/06/19 04:07:29 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.44 2004/08/07 00:57:02 ppozdnya Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -26,10 +26,12 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "graph.h"
+#include "tclinterp.h"
 #include "process_table.h"
 #include "graph_engine.h"
 #include "resources.h"
 #include "process.h"
+
 
 
 /* Globals. */
@@ -392,7 +394,7 @@ load_context(FILE *in, peos_context_t *context)
     }
 
     if (num_actions) free(actions);
-    if (num_other_nodes) free(other_nodes);
+    if (num_other_nodes) free(other_nodes); 
     return 1;
 }
 

@@ -9,24 +9,16 @@
 #   include <varargs.h>
 #endif
 
-//static const
+#undef TCLINTERP_DEBUG
 #define  DEFAULT_CAPACITY 30
-static int debug =0;
-static int started=0;
+
 typedef struct{
   Tcl_Interp *interp;
-  //Tcl_Obj    *objv1[default_capacity];
-  //Tcl_Obj    **objv;//[DEFAULT_CAPACITY];//=objv1;
-  //Tcl_Obj     *objv[default_capacity];
-  //int         argc;//=0;
-  int         objv_size;// =default_capacity;
-  //int         is_cmd_cached;//=0;
-  //Tcl_CmdInfo cmd_info;
 }peos_tcl;
 
 
 // Start the TCL interpreter (initialize)
-extern int peos_tcl_start(peos_tcl* ptcl);
+extern int peos_tcl_start(peos_tcl** ptcl);
 // Execute a TCL command contained in a string
 extern int peos_tcl_exec_cmd TCL_VARARGS_DEF(Tcl_Interp*, arg1);
 //int peos_tcl_exec_cmd_from_string(peos_tcl* ptcl, char* cmd);
@@ -43,7 +35,7 @@ extern int peos_tcl_link_var(peos_tcl* ptcl, char* var_name, char* var_addr, int
 // Global variable
 //peos_tcl ptcl01;
 extern int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_str );
-
+//peos_tcl* p;
 #endif
 
 /**eof**/

@@ -7,11 +7,7 @@
 #include "process_table.h"
 #include "graph.h"
 #include "tclinterp.h"
-/*
- ******* this variable is global
- */
-peos_tcl p;
-/*********/
+
 void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier) 
 {
     int i = 0;
@@ -82,7 +78,7 @@ void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int
 peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *total_resources)
 {
 
-    char* result_str=NULL; /*********/
+    char* result_str=NULL;
     Graph g;
     Node n;
     int i,j;
@@ -91,21 +87,16 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *proc_resources = context -> resources;
     int num_proc_resources = context -> num_resources;
-
     peos_resource_t *act_resources;
-    /************/
-    if(debug)fprintf(stderr,"___________________get_resource_list_action_requires____________\n");
-    if(started==0){
-       if(peos_tcl_start(&p)==TCL_ERROR){
-          if(debug)fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-          return TCL_ERROR;
-       }
+peos_tcl* interpreter;
+    if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+       fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+       return NULL;
     }
     if(!result_str){
        result_str = (char*)malloc(sizeof(char)*(255));
     }
-    started =1;
-    /***************/
+
     g = context -> process_graph;
     if(g != NULL) {
         n = find_node(g,act_name);
@@ -120,20 +111,13 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
 	*total_resources = num_resources;
         for(i = 0; i < num_resources; i++) {
             for(j = 0; j < num_proc_resources; j++) {
+	            peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
 	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
-		    /********/
-		    peos_tcl_eval(&p,proc_resources[j].name , proc_resources[j].value, result_str );
-		    
-		    //peos_tcl_eval(&p,"something" , "value", result_str );
-		    if(debug)fprintf(stderr,"action requires = %s\n",proc_resources[j].value);
-		    if(debug)fprintf(stderr,"ar result_str = %s\n", result_str);
-	            strcpy(act_resources[i].value,result_str);//proc_resources[j].value);
-		    /*******/
+	            strcpy(act_resources[i].value,result_str);
 		    break;
 		}
 	    }
 	}
-        if(debug)fprintf(stderr,"________________________________________________________________\n");
 	if(result_str) free(result_str);
         return act_resources;
     }    
@@ -147,7 +131,7 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
 peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
 		*total_resources)
 {
-    char* result_str=NULL; /*********/
+    char* result_str=NULL;
     Graph g;
     Node n;
     int i,j;
@@ -156,23 +140,17 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *proc_resources = context -> resources;
     int num_proc_resources = context -> num_resources;
- 
     peos_resource_t *act_resources;
-    /************/
-    if(debug)fprintf(stderr,"___________________get_resource_list_action_provides____________\n");
-    if(started==0){
-       if(peos_tcl_start(&p)==TCL_ERROR){
-          if(debug)fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-          return TCL_ERROR;
-       }
+peos_tcl* interpreter;   
+    if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+       fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+       return NULL;
     }
     if(!result_str){
        result_str = (char*)malloc(sizeof(char)*(255));
     }
-    started =1;
-    /***************/
+    
     g = context -> process_graph;   
-
     if(g != NULL) {
         n = find_node(g,act_name);
         if(n == NULL) {
@@ -185,20 +163,14 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
         *total_resources = num_resources;
         for(i = 0; i < num_resources; i++) {
             for(j = 0; j < num_proc_resources; j++) {
+	        peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
                 if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
-		     /********/
-		    peos_tcl_eval(&p,proc_resources[j].name , proc_resources[j].value, result_str );
-		    
-		    //peos_tcl_eval(&p,"something" , "value", result_str );
-		    if(debug)fprintf(stderr,"action provides = %s\n",proc_resources[j].value);
-		    if(debug)fprintf(stderr,"ap result_str = %s\n", result_str);
-	            strcpy(act_resources[i].value,result_str);//proc_resources[j].value);
-		    /*******/
-                    //strcpy(act_resources[i].value,proc_resources[j].value);
+	            strcpy(act_resources[i].value,result_str);
                     break;
                 }
             }
         }
+	if(result_str) free(result_str);
         return act_resources;
     }
     else
@@ -208,7 +180,7 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
 
 peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_resources)
 {
-    char* result_str=NULL; /*********/
+    char* result_str=NULL;
     Graph g;
     Node n;
     int i,j;
@@ -218,19 +190,14 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
     peos_resource_t *proc_resources = context -> resources;
     int num_proc_resources = context -> num_resources;
     peos_resource_t *act_resources;
-    /************/
-    if(debug)fprintf(stderr,"___________________get_resource_list_action____________\n");
-    if(started==0){
-       if(peos_tcl_start(&p)==TCL_ERROR){
-          if(debug)fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-          return TCL_ERROR;
-       }
+peos_tcl* interpreter;
+    if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+       fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+       return NULL;
     }
     if(!result_str){
        result_str = (char*)malloc(sizeof(char)*(255));
     }
-    started =1;
-    /***************/
     g = context -> process_graph;
     if(g != NULL) {
         n = find_node(g,act_name);
@@ -246,16 +213,9 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 	*total_resources = num_resources;
 	for(i = 0; i < num_resources; i++) {
 	    for(j = 0; j < num_proc_resources; j++) {
+	       peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
  	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
-		     /*******/
-		    peos_tcl_eval(&p,proc_resources[j].name , proc_resources[j].value, result_str );
-		    
-		    //peos_tcl_eval(&p,"something" , "value", result_str );
-		    if(debug)fprintf(stderr,"list action = %s\n",proc_resources[j].value);
-		    if(debug)fprintf(stderr,"list action result_str = %s\n", result_str);
-	            strcpy(act_resources[i].value,result_str);//proc_resources[j].value);
-		    /*******/
-		    //strcpy(act_resources[i].value,proc_resources[j].value);
+	            strcpy(act_resources[i].value,result_str);
 		    break;
 		}
 	    }
