@@ -293,6 +293,27 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 
                 tree.setCellRenderer(new Renderer(readyIcon,blockedIcon,noneIcon,availIcon,suspendIcon,
 						  runIcon,pendIcon,doneIcon,outline,map,pidNum));
+                try{
+                    if (outline.checkForPid(pidNum) == false)
+                    {
+                        JTextField hello = new JTextField("Hello everyone!");
+                        hello.setEnabled(true);
+                        splitPane.removeAll();
+                        splitPane = 
+                            new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, hello, new JTextField("BYE"));
+                        splitPane.setDividerLocation(220);
+                        splitPane.setDividerSize(0);
+                        splitPane.setVisible(true);
+                        
+                        
+                        
+                    }
+                        
+                }
+                catch(Exception ee)
+                {
+                    System.err.println(ee);
+                }
   	}
   
 	/***************** Button actions ***********************/

@@ -14,8 +14,7 @@ public class testPOJU extends TestCase{
 	{
 		String line1, line2;
 		try{
-			LoadProcess p1=new LoadProcess("testfiles/oldtimec.pml");
-			p1.tryToLoad();
+			SetupPath.load("testfiles/oldtimec.pml");
 			test1=new displayPO("proc_table.dat.xml");
 			test1.convertDOM(0);
 			ActionMap testA=test1.getActions();

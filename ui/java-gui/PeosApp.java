@@ -299,8 +299,7 @@ public class PeosApp extends JFrame implements ActionListener
                         file = fileChooser.getSelectedFile();
 			
 			try {
-				LoadProcess process = new LoadProcess(file.getAbsolutePath());
-				int pidNum = process.tryToLoad();	
+				int pidNum = SetupPath.load(file.getAbsolutePath());
 				activeProcess("proc_table.dat.xml", pidNum);
 				currPagePID = pidNum;
 				

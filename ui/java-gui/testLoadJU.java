@@ -9,9 +9,8 @@ public class testLoadJU extends TestCase{
 	}
 	public void testBadPath()
 	{
-		try{
-			LoadProcess proc1=new LoadProcess("/ver/123/whatever.pml");
-			int result=proc1.tryToLoad();
+		try{			
+			int result=SetupPath.load("/ver/123/whatever.pml");
 			assertTrue(result==-2);
 		}
 		catch(IOException err)
@@ -22,8 +21,7 @@ public class testLoadJU extends TestCase{
 	public void testGoodPath()
 	{
 		try{
-			LoadProcess proc1=new LoadProcess("./testfiles/oldtime.pml");
-			int s1=proc1.tryToLoad();
+			int s1=SetupPath.load("./testfiles/oldtime.pml");
 			assertTrue(s1>=0);
 		}
 		catch(IOException err)
@@ -34,9 +32,8 @@ public class testLoadJU extends TestCase{
 	
 	public void testGoodPathBadFile()
 	{
-		try{
-			LoadProcess proc1=new LoadProcess("./testfiles/timesheet.pml");
-			int s1=proc1.tryToLoad();
+		try{	
+			int s1=SetupPath.load("./testfiles/timesheet.pml");
 			assertTrue(s1==-1);
 		}
 		catch(IOException err)

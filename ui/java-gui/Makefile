@@ -3,16 +3,7 @@ j=	-classpath ./include/xercesImpl.jar:./include/xmlParserAPIs.jar:.
 
 all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class DisabledPreferencesFactory.class Help.class
 
-test: testSFAS.class testPO.class testAC.class testLoad.class displayPO.class
-	rm -f proc_table.dat
-	rm -f proc_table.dat.xml
-	java ${j} testPO
-	rm -f proc_table.dat
-	rm -f proc_table.dat.xml
-	java ${j} testLoad
-	java ${j} testSFAS
-	java ${j} testAC
-jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class LoadProcess.class testACJU.class testSFASJU.class \
+jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.class testSFASJU.class \
 	testPOJU.class testCRJU.class
 
 	rm -f proc_table.dat
@@ -30,10 +21,7 @@ jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class LoadProces
 setup: SetupPath.class
 	java ${j} SetupPath
 	xprop -root -remove _MOTIF_DEFAULT_BINDINGS
-disp: displayPO.class
-#	java -classpath ./include/xercesImpl.jar:./include/xmlParserAPIs.jar:. displayPO
-#mt: MyTest.class
-#	java -classpath ./include/xercesImpl.jar:./include/xmlParserAPIs.jar:. MyTest
+
 dist:
 	rm -rf peos_app
 	mkdir peos_app

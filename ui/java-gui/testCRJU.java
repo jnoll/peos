@@ -3,8 +3,7 @@ import junit.framework.*;
 
 public class testCRJU extends TestCase{
 
-	private static displayPO test1;
-        private static LoadProcess p1;
+	private static displayPO test1;       
         private static int pid;
         
 	public static Test suite()
@@ -14,8 +13,7 @@ public class testCRJU extends TestCase{
         public static void setupTest134()
         {
                 try{
-                    LoadProcess p1=new LoadProcess("testfiles/oldtimec.pml");
-                    pid=p1.tryToLoad();
+                    pid=SetupPath.load("testfiles/oldtimec.pml");                    
                 }
                 catch(IOException e)
                 {
@@ -46,8 +44,8 @@ public class testCRJU extends TestCase{
 	{
 		String[] output=null;
 		try{
-			LoadProcess p1=new LoadProcess("testfiles/oldtimed.pml");
-			int pid=p1.tryToLoad();
+                        int pid=SetupPath.load("testfiles/oldtimed.pml");
+			
 			displayPO test2=new displayPO("proc_table.dat.xml");
 			test2.convertDOM(pid);
 			String[] result = test2.getResourceList(pid);
@@ -64,8 +62,8 @@ public class testCRJU extends TestCase{
 	{
 		String[] output={"time_sheet"};//{"time_sheet","good_times"};
 		try{
-			LoadProcess p1=new LoadProcess("testfiles/oldtimec.pml");
-			int pid=p1.tryToLoad();
+			int pid = SetupPath.load("testfiles/oldtimec.pml");
+			
 			test1=new displayPO("proc_table.dat.xml");
 			test1.convertDOM(pid);
                         test1.changeSetValue("time_sheet", "whatever",pid);
@@ -85,8 +83,7 @@ public class testCRJU extends TestCase{
 	{
 		String[] output={"time_sheet", "good_times"};//{"time_sheet","good_times"};
 		try{
-			LoadProcess p1=new LoadProcess("testfiles/oldtimec.pml");
-			int pid=p1.tryToLoad();
+			int pid=SetupPath.load("testfiles/oldtimec.pml");
 			test1=new displayPO("proc_table.dat.xml");
 			test1.convertDOM(pid);
                         test1.changeSetValue("time_sheet", "whatever",pid);
