@@ -1,0 +1,75 @@
+#!/usr/bin/expect -f
+#
+
+# Argument parsing.
+if {$argc < 2} {
+    puts "Usage: expect $argv0 host port"
+    exit
+}
+
+set host [lindex $argv 0]
+set port [lindex $argv 1]
+
+# Connect to PEOS server via telnet.
+set timeout -1
+spawn telnet $host $port
+match_max 100000
+# Look for response from telnet indicating connection established.
+expect  "Escape*\r"
+
+# We are connected; send login command to PEOS and wait for reply.
+send -- "login jnoll test\r"
+expect  "100 login successful\r"
+
+# Login successful; get available tasks by sending 'available' message.
+send -- "available\r"
+
+# Successful requests are acknowledged with "100" reply lines.  "500"
+# indicates an error.  
+expect {
+    "100\[ \t\r\n\]" {
+	# Expect puts the output from the server into the TCL array element
+	# expect_out(buffer).  We can use this to extract the actions into 
+	# a TCL list.
+	
+	# Split the output by lines.
+	set lines [split $expect_out(buffer) "\n"]
+	puts stderr "[llength $lines] lines"
+
+	# Grab the process and action from each line.
+	set actions {}
+	foreach l $lines {
+	    puts stderr "line: $l"
+	    # Regexp compares a string to a regular expression, and optionally
+	    # extracts subexpressions into variables.   The following looks 
+	    # for a regular expression consisting of the string "100-",
+	    # followed by a subexpression (the process name) consisting of 
+	    # any characters except a space, followed by a space, followed by
+	    # another subexpression (the action name) consisting of non-space
+	    # characters, followed by the rest of the line.
+	    
+	    # (See regexp(n) man page.)
+	    if {[regexp "100-(\[^ \]+)\[ \t\]+(\[^ \]+)\[ \].*" $l dummy process action]==1} {
+		puts stderr "match: $process $action"
+		lappend actions [list $process $action]
+	    }
+	}
+	
+	# Now print out the list of actions.
+	foreach act $actions {
+	    set process [lindex $act 0]
+	    set action [lindex $act 1]
+	    puts stdout [format "Process: %s Action: %s" $process $action]
+	}
+    }
+    "500*\r" {
+	puts stdout [format "Error processing available command: %s" $output(buffer)]
+    }
+}
+
+# Exit PEOS session.
+send -- "exit\r"
+expect  "Connection closed by foreign host.\r"
+
+# Wait for end of file from telnet before ending expect session.
+expect eof
