@@ -1,5 +1,5 @@
 # compiler
-CC = ../../compiler/compiler
+CC = ../../bin/compiler
 
 #PML flags
 CCFLAGS =
@@ -12,7 +12,10 @@ OBJS = Analysis.pml \
 	RepositorySynchronize.pml \
 	RiskIdentification.pml \
 	SourceCodeEdit.pml \
-	Milestone2.pml 
+	FunctionalRequirements.pml \
+	NonFunctionalRequirements.pml \
+	Milestone2.pml \
+	Milestone3.pml
 
 # Compile the program
 

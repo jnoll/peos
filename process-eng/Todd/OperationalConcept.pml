@@ -2,9 +2,9 @@ process OperationalConcept {
 	action OperationalConceptEdit manual {
 		agent { "PEOS user" }
 		script { "description of the agent's operational concept" }
-		tool { "editor" }
+		tool { "create SourceCodeEdit" }
 		input { "SourceCodeEdit.pml" }
-		requires { "op-concept.body" }
-		provides { "op-concept.html" }
+		requires { "requirements/$PROJ/op-concept.body" }
+		provides { "requirements/$PROJ/out/op-concept.html" }
 	}
 }

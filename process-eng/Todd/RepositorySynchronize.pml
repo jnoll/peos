@@ -3,7 +3,7 @@ process RepositorySynchronize {
 		action Update executable {
 			agent { "PEOS user" }
 			script { "updates the existing tree with the repository" }
-			tool { "CVS" }
+			tool { "i/usr/bin/cvs" }
 			requires { "previously checked out code" }
 			provides { "merged source code" }
 		}
@@ -11,7 +11,7 @@ process RepositorySynchronize {
 		action ConflictResolution manual {
 			agent { "PEOS user" }
 			script { "resolves merging conflicts" }
-			tool { "editor" }
+			tool { "create SourceCodeEdit" }
 			input { "SourceCodeEdit.pml" }
 			requires { "updated source code from the repository" }
 			provides { "source code with conflicts resolved" }

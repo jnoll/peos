@@ -2,9 +2,9 @@ process ProjectLog {
 	action Log manual {
 		agent { "PEOS user" }
 		script { "ongoing project log" }
-		tool { "editor" }
+		tool { "create SourceCodeEdit" }
 		input { "SourceCodeEdit.pml" }
-		requires { "log.body" }
-		provides { "log.html" }
+		requires { "plan/$PROJ/log.body" }
+		provides { "plan/$PROJ/out/log.html" }
 	}
 }

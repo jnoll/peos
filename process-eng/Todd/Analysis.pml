@@ -2,9 +2,9 @@ process analysis {
 	action StakeholderIdentification manual {
 		agent { "PEOS user" }
 		script { "identifies the stakeholders" }
-		tool { "editor" }
+		tool { "create SourceCodeEdit" }
 		input { "SourceCodeEdit.pml" }
-		requires { "analysis.body" }
-		provides { "analysis.html" }
+		requires { "requirements/$PROJ/analysis.body" }
+		provides { "requirements/$PROJ/out/analysis.html" }
 	}
 }

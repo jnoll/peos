@@ -2,9 +2,9 @@ process RiskIdentification {
 	action IdentifyRisks manual {
 		agent { "PEOS user" }
 		script { "identifies the project risks" }
-		tool { "editor" }
+		tool { "create SourceCodeEdit" }
 		input { "SourceCodeEdit.pml" }
-		requires { "risks.body" }
-		provides { "risks.html" }
+		requires { "plan/$PROJ/risks.body" }
+		provides { "plan/$PROJ/out/risks.html" }
 	}
 }

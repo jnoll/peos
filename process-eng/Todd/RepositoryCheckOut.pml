@@ -3,7 +3,7 @@ process RepositoryCheckOut {
 		action Login executable {
 			agent { "PEOS User" }
 			script { "logs the agent in the CVS Server" }
-			tool { "Concurrent Versioning System(CVS)" }
+			tool { "/usr/bin/cvs" }
 			requires { "username, password, CVS root" }
 			provides { "access to CVS server" }
 		}
@@ -11,7 +11,7 @@ process RepositoryCheckOut {
 		action CheckOut executable {
 			agent { "PEOS User" }
 			script { "copies files in the repository to specified location" }
-			tool { "CVS" }
+			tool { "/usr/bin/cvs" }
 			requires { "login" }
 			provides { "current version of files in repository" }
 			input { "root directory" }
