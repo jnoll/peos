@@ -105,6 +105,7 @@ char* peos_tcl_get_tclf_dir(peos_tcl* ptcl, char* file_name)
     char * path = NULL;
     char * query = NULL;
     char * TCLF_DIR = getenv("TCLF_DIR");
+    sprintf(stderr, "###Looking for %s\n", file_name);
     if(!path) path = (char*) malloc(sizeof(char)*256);
     if(!query) query = (char*) malloc(sizeof(char)*256);
     if(!path || !query) return NULL;//strcat((char*)malloc(sizeof(char)*256),"./");
@@ -136,25 +137,33 @@ int peos_tcl_script(peos_tcl* ptcl, char* file_name)
     char * path = NULL;
     char * query = NULL;
     char * TCLF_DIR = getenv("TCLF_DIR");
+    //fprintf(stderr, "## hi %s\n", file_name);
     if(!path) path = (char*) malloc(sizeof(char)*256);
     if(!query) query = (char*) malloc(sizeof(char)*256);
     if(!path || !query) return TCL_ERROR;
+    
     if (TCLF_DIR == NULL){
-	sprintf(query,"exec find ./ -name %s", file_name);
+	sprintf(query,"exec find ./ -name %s  -maxdepth 1", file_name);
 	Tcl_Eval(ptcl->interp, query);
 	strcpy(query,"");
 	path[0]='\0';
 	while(!strcmp(ptcl->interp->result,"") && (max_depth-- > 0)){
+	        //fprintf(stderr, "## #%d\n", max_depth);
 		path=strcat(path,"../");
-		sprintf(query,"exec find %s -name %s", path,file_name);;
+		sprintf(query,"exec find %s -name %s -maxdepth 1", path,file_name);;
+		//fprintf(stderr, "## %s\n", query);
         	Tcl_Eval(ptcl->interp, query);
 	}
 	if (max_depth<=0){
+	        //fprintf (stderr, "#1 file_name %s \n", file_name);
 		sprintf(path,"./%s", file_name);
 	}else{
+	       // fprintf (stderr, "#2 res %s \n", ptcl->interp->result);
 		sprintf(path,"%s", ptcl->interp->result);
 	}
+	//fprintf(stderr, "## ????\n");
     }else{
+      // fprintf (stderr, "#3 file_name %s \n", file_name);
        sprintf(path,"./%s", file_name);
     }
     status = Tcl_EvalFile(ptcl->interp, path);

@@ -135,55 +135,7 @@ int pe_byname(char* func_name, char* argument)
 	return return_val;
 	
 }
-/*
-int pe_byname(char* func_name, char* argument)
-{
-	peos_tcl* interpreter;
-	char* args=NULL;
-	int return_val=0;
-	char* file_name = (char*)malloc(sizeof(char)*255);
-#ifdef PE_LOG
-	if(!pe_log) pe_log = fopen ("pelog", "a");
-#endif
-	if(!file_name) return 0;
-	strcpy(file_name,"tclf_");
-	strcat(file_name,func_name);
-	strcat(file_name, ".tcl");
-	if (!pe_file_exists(file_name)) return 0;
-#ifdef PE_DEBUG_B
-	fprintf(pe_log,"CALL pe_byname (func_name:%s,argument:%s) \n\tfilename:%s\n", func_name, argument, file_name);
-#endif
-#ifdef NO_TCL
-	return 1;
-#endif
-	if(!strcmp(func_name,"$$")) return 0;
-	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
-		fprintf(pe_log,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-		return 0;
-	}
-	if(!args){
-		args = (char*)malloc(sizeof(char)*(255));
-	}
-	sprintf(args, "tclf_%s %s", func_name, argument);
-#ifdef PE_DEBUG_B
-	fprintf(pe_log,"\tIs this what i want? %s\n", args);
-#endif
-	peos_tcl_script(interpreter, file_name);
-	Tcl_Eval(interpreter->interp, args);
-	
-#ifdef PE_DEBUG_B
-	fprintf(pe_log,"\tResult for pe_byname\n\t(file: %s args: %s result: %s)\n", file_name, args, interpreter->interp->result);
-#endif
-        if(args) free (args);
-	sscanf(interpreter->interp->result,"%d", &return_val);
 
-	peos_tcl_delete(interpreter);
-#ifdef PE_RETURN
-	fprintf(pe_log,"RETURN pe_byname %d\n", return_val);
-#endif
-	return return_val;
-	
-}*/
 int pe_isdirempty(char* path)
 {
 
@@ -486,7 +438,8 @@ int pe_perform_predicate_eval(int pid, Tree t)
 			}
 			else if(TREE_OP(t->left) == DOT){
 				if(!strcmp("spellchecked", TREE_ID(t->left->right)) ||
-				   !strcmp("spell_checked", TREE_ID(t->left->right)))
+				   !strcmp("spell_checked", TREE_ID(t->left->right))
+				   )
 					return (pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left))) 
 					== pe_perform_predicate_eval(pid, t->right));
 				else if(!strcmp("clean", TREE_ID(t->left->right)))
