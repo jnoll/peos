@@ -12,86 +12,159 @@ and then change to the peos directory.  From the command line, run
 the Makefile using the command "make".
 
 
-(2) How to Install
+(2) How to Install Dependencies of Peos
 
-  a) In order to run the PEOS program you first need to locate the programs dependencies and download the tarballs from the sites that are listed into your home directory.  If you are doing a manual install then you must uncomment the manual make and comment out the system make in the Makefile.
 
-Presupposotion: >= gnome-1.1 with libcapplet-1.5.0 installed: If gnome-1.1 is not installed then ask permission from administrator to install the package.
-gtkhtml-1.1.10 installation depends on the following packages:
+  a) In order to run the PEOS program you first need to locate the dependencies of Peos and download the tarballs into your home directory.  Inside your home directory un-tar all of the packages by typing the following command for each package: tar -zxvf [package-name].
 
-These packages must be installed in the system's directories using root privelage.
-Package >=                              Location
+Peos build depends on the following packages:
+
+Package                                 Location
 -----------------------------------------------------------------------------------------------------
-
-libcapplet-1.5.0                http://mirrors.geekbone.org/gnome/sources/libcapplet/1.5/libcapplet-1.5.0.tar.gz
-gdk-pixbuf-1.0                  http://ftp.acc.umu.se/pub/gnome/sources/gdk-pixbuf/0.8/gdk-pixbuf-0.8.0.tar.gz
-gnome-print-0.36                http://ftp.acc.umu.se/pub/gnome/sources/gnome-print/0.36/gnome-print-0.36.tar.gz
-gal-0.24                        http://ftp.acc.umu.se/pub/gnome/sources/gal/0.24/gal-0.24.tar.gz
-
-In order to build PEOS the following packages are needed:
-
-These packages must be installed in the system's directories using root privelage.  Also, these packages must be installed in any directory using the following command: ./configure --prefix/usr && make && make install
-Pacage >=                               Location
------------------------------------------------------------------------------------------------------
-
-GConf-1.2.1                     http://ftp.gnome.org/pub/gnome/desktop/2.6/2.6.0/sources/GConf-2.6.0.tar.gz
-gnome-libs-1.4.2                http://ftp.acc.umu.se/pub/gnome/sources/gnome-libs/1.4/gnome-libs-1.4.2.tar.gz
-glib-2.0.0                      ftp://ftp.gtk.org/pub/gtk/v2.0/glib-2.0.0.tar.gz
-pango-1.0.0                     ftp://ftp.gtk.org/pub/gtk/v2.0/pango-1.0.0.tar.gz
-ORBit-0.1                       http://ftp.acc.umu.se/pub/gnome/sources/ORBit/0.1/ORBit-0.1.tar.gz
-
-Thes packages are to be installed into your home directory.
-Package >=				Location                 
------------------------------------------------------------------------------------------------------
-
-libxml2-2.6.0                   ftp://xmlsoft.org/libxml2-2.6.0.tar.gz                   
+pkgconfig-0.14.0                ftp://ftp.gnome.org/pub/gnome/sources/pkgconfig/0.14/pkgconfig-0.14.0.tar.gz
+glib-1.2.10                     ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
 gtk-1.2.10                      ftp://ftp.gtk.org/pub/gtk/v1.2/gtk+-1.2.10.tar.gz
-pkgconfig-0.15.0                http://ftp.gnome.org/pub/gnome/desktop/2.6/2.6.2/sources/pkgconfig-0.15.0.tar.gz
-gtkhtml-1.1.10                  http://www.zentek-international.com/mirrors/gnome/sources/gtkhtml/1.1/gtkhtml-1.1.10.tar.gz 
-(>= libart-2.0)
-libart_lgpl-2.3.5               http://ftp.acc.umu.se/pub/gnome/sources/libart_lgpl/2.3/libart_lgpl-2.3.5.tar.gz
+db-3.1.17                       ftp://sleepycat1.inetu.net/releases/db-3.1.17.tar.gz
+imlib-1.9                       ftp://ftp.gnome.org/pub/gnome/sources/imlib/1.9/imlib-1.9.0.tar.gz
+ORBit-0.5.17                    ftp://ftp.gnome.org/pub/gnome/sources/ORBit/0.5/ORBit-0.5.17.tar.gz
+audiofile-0.1.8                 ftp://ftp.gnome.org/pub/gnome/sources/audiofile/0.1/audiofile-0.1.8.tar.gz
+esound-0.2.8                    ftp://ftp.gnome.org/pub/gnome/sources/esound/0.2/esound-0.2.8.tar.gz
+gnome-libs-1.4.2                http://ftp.acc.umu.se/pub/gnome/sources/gnome-libs/1.4/gnome-libs-1.4.2.tar.gz
+libxml-1.8.8                    ftp://ftp.gnome.org/pub/gnome/sources/libxml/1.8/libxml-1.8.8.tar.gz
+gdk-pixbuf-0.8.0                ftp://ftp.gnome.org/pub/gnome/sources/gdk-pixbuf/0.8/gdk-pixbuf-0.8.0.tar.gz
+gnome-print-0.29                ftp://ftp.gnome.org/pub/gnome/sources/gnome-print/0.29/gnome-print-0.29.tar.gz
+libglade-0.17                   ftp://ftp.gnome.org/pub/gnome/sources/libglade/0.17/libglade-0.17.tar.gz
+gal-0.24                        ftp://ftp.gnome.org/pub/gnome/sources/gal/0.24/gal-0.24.tar.gz
+libcapplet-1.5.11               ftp://ftp.gnome.org/pub/gnome/sources/libcapplet/1.5/libcapplet-1.5.11.tar.gz
+oaf-0.2.0                       ftp://ftp.gnome.org/pub/gnome/sources/oaf/0.2/oaf-0.2.0.tar.gz
+GConf-1.0.9                     ftp://ftp.gnome.org/pub/gnome/sources/GConf/1.0/GConf-1.0.9.tar.gz
+gtkhtml-1.1.10                  ftp://ftp.gnome.org/pub/gnome/sources/gtkhtml/1.1/gtkhtml-1.1.10.tar.gz
+libxml2-2.4.28                  ftp://ftp.gnome.org/pub/gnome/sources/libxml2/2.4/libxml2-2.4.28.tar.gz
 
 
-  b) If you are doing a manual install then it is best to follow these steps exactly. 
-     
-Step1: 
-In your home directory type:
-mkdir libxml2-build
+  b) If you are doing a manual install then it is best to follow these steps exactly.  If the preprocessor on the system 
+that you are using has a problem locating the include paths, then type:
+  env CPPFLAGS=-I/home/[user]/include LDFLAGS=-I/home/[user]/lib <specified-env_variables> ./configure --prefix=/home/[user] <specified-commands>
+The arguments in the angle brackets are only used when specified in one of the steps below.  During the configuration of any
+of the packages, if there is an error that reports: Checking for C compiler default output... configure: error: C compiler
+cannot create executables, then type: export CFLAGS= CXXFLAGS=
+It is recommended to export these two variables if there is any C compiler or preprocessor error during the configuration phase.
+These variables may not have been set to null because a build did not complete successfully.  This will affect the preprocessor's search
+when configuring a package.  
 
-Download libxml2-2.6.0 and save it in libxml2-build.
-In libxml2-build Type: 
-./configure --prefix=/home/[user] && make && make install /* /home/[user] is your home directory */
-cd ~/bin
-mv xml2-config xml2new-config
-cd ~/[peos source with makefile]
-vi Makefile 
+  Note:  You cannot build a package without first correctly configuring the package, and that means including the correct paths to 
+the headers and libraries.  If you need to re-configure because of a build error, then it is recommended that you 
+first type: make uninstall && make clean 
+Also, if the package that you are trying to re-configure has a config.cache file, then you must remove it before you configure.
+       
+Step1:  Install pkgconfig-0.14.0
 
-Go to system install and comment out the macro for the system config (i.e., XML2-CONFIG=xml2-config)
-Go to manual install and uncomment the macro XML2-CONFIG.
+	export PATH=$PATH:/home/[user]/bin
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/[user]/lib
+	export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/home/[user]/lib/pkgconfig
+	cd ~/pkgconfig-0.14.0
+	./configure --prefix=/home/[user] (/home/[user] is your home directory)
+	make && make install
 
-Type: 
-cd ~/libxml2-build
-chmod -R 0777 libxml2-2.6.0
-rm -r libxml2-2.6.0
+Step2:  Install glib-1.2.10
 
-Step2:
-cd ~
-mkdir gtk-build
+	cd ~/glib-1.2.10
+	./configure --prefix=/home/[user] && make && make install
+	
+Step3:  Install gtk-1.2.10
 
-Do the same exact steps as in step1 but with gtk and replace the gtk-config with gtknew-config in ~/bin.
+	cd ~/gtk-1.2.10
+	./configure --prefix=/home/[user] && make && make install
 
-Step3:
-cd ~
-mkdir pkg-build
-Do the same exact steps as in step1 but with pkg and replace the pkg-config with pkgnew-config in ~/bin.
-This is the only package that may require this one more step.  
-Type this while in your cwd: export PKG_CONFIG_PATH=/home/jmontana/gtkhtml-build/gtkhtml-1.1.10
+Step4:  Install db-3.1.17
 
-Step4:
-For the remaining package you will follow the exact steps except that there will be no [package]-config for you 
-to change in ~/bin.  You will have to manually add these remaining packages to pkg-config.
+	cd ~/db-3.1.17/build_unix
+	../dist/configure --prefix=/home/[user] --enable-compat185
+	cd /home/[user]/lib
+	ln -s libdb.a libdb-3.a
+	
+Step5:  Install imlib-1.9.0
 
-  c) Developer: After the compilation and link phase are done (i.e., PEOS is loaded) 
+	cd ~/imlib-1.9.0
+	./configure --prefix=/home/[user] && make && make install
+
+Step6:  Install ORBit-0.5.17
+
+	cd ~/ORBit-0.5.17
+	./configure --prefix=/home/[user] && make && make install
+
+Step7:  Install audiofile-0.1.8
+	cd ~/audiofile-0.1.8
+	./configure --prefix=/home/[user] && make && make install
+
+Step8:  Install esound-0.2.8
+
+	cd ~/esound-0.2.8
+	./configure --prefix=/home/[user] 
+	vi esddsp.c (on line   change #define REAL_LIBC RTLD_NEXT to #define REAL_LIBC 0)
+	make && make install
+
+Step9:  Install gnome-libs-1.4.2
+
+	cd ~/gnome-libs-1.4.2
+	env LIBS=-lpthread ./configure --prefix=/home/[user] && make && make install
+
+Step10: Install libxml-1.8.8
+
+	cd ~/libxml-1.8.8
+	./configure --prefix=/home/[user] && make && make install
+
+Step11: Install gdk-pixbuf-0.8.0
+
+	cd ~/gdk-pixbuf-0.8.0
+	env CPPFLAGS=-I/home/[user]/include ./configure --prefix=/home/[user] && make && make install
+
+Step12: Install gnome-print-0.29
+
+	cd ~/gnome-print-0.29
+	./configure --prefix=/home/[user] && make && make install
+
+Step13: Install libglade-0.17
+
+	cd ~/libglade-0.17
+	env CPPFLAGS=-I/home/[user]/include ./configure --prefix=/home/[user] && make && make install
+
+Step14: Install gal-0.24
+
+	cd ~/gal-0.24
+	env CPPFLAGS=-I/home/[user]/include ./configure --prefix=/home/[user] && make && make install
+
+Step15: Install libcapplet-1.5.11
+
+	cd ~/libcapplet-1.5.11
+	./configure --prefix=/home/[user] && make && make install
+
+Step16: Install oaf-0.2.0
+
+	cd ~/oaf-0.2.0
+	./configure --prefix=/home/[user] 
+	vi ./oafd/ac-query-parse.y (on line 2 replace #define YYSTACK_USE_ALLOCA with #define YYSTACK_USE_ALLOCA (1)
+	make && make install
+
+Step17: Install GConf-1.0.9
+
+	cd ~/GConf-1.0.9
+	cd /home/[user]/include/gnome-xml
+	ln -s . libxml
+	./configure --prefix=/home/[user] && make && make install
+
+Step18: Install gtkhtml-1.1.10
+
+	cd ~/gtkhtml-1.1.10
+	./configure --prefix=/home/[user] && make && make install
+
+Step19: Install libxml2-2.4.28
+
+	cd ~/libxml2-2.4.28
+	./configure --prefix=/home/[user] && make && make install
+	  	
+	
+  c) Developer: After the compilation and link phase are complete (i.e., PEOS is loaded) 
      Type the following make commands:
 
 #Compiles and loads PEOS.
