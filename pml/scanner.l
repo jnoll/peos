@@ -11,7 +11,9 @@
 # include <pml/list.h>
 # include <pml/tokens.h>
 # include <pml/scanner.h>
-
+#ifdef PALM
+#include <PalmOS.h>
+#endif
 
 /* Public variable definitions */
 

@@ -1,8 +1,10 @@
-CC	= gcc 
-CFLAGS	= -I.. -g -Wall
-LIB	= libpml.a
+CC	= m68k-palmos-gcc 
+CFLAGS	= -DPALM -I.. -g -Wall
+PalmCUnit= ~/PalmCUnit/PalmCUnit
 
-OBJS	= graph.o list.o parser.o tree.o scanner.o
+LIB = libpalmpml.a
+
+OBJS	= graph.o list.o parser.o tree.o scannerPalm.o
 SRCS	= parser.c scanner.c y.tab.h
 YFLAGS	= -d
 

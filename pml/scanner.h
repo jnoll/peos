@@ -8,14 +8,19 @@
 # ifndef SCANNER_H
 # define SCANNER_H
 # include <pml/features.h>
-
+#ifdef PALM
+#include <FileStream.h>
+#endif
 
 /* Variable declarations */
 
 extern int lineno;
 extern String filename;
+#ifndef PALM
 extern FILE *yyin;
-
+#else
+FileHand yyin;
+#endif
 
 /* Function declarations */
 
