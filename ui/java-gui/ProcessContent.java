@@ -116,9 +116,10 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		splitPane2.setDividerLocation(450);
 		
 		//Add previous split pane and scrolling tree to another split pane
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeScroll,splitPane2);
-		splitPane.setDividerLocation(220);
-		splitPane.setDividerSize(5);
+                this.setTopComponent(treeScroll);
+                this.setBottomComponent(splitPane2);
+                this.setDividerLocation(220);
+                this.setDividerSize(5);
 		
 		//TreeModel model = tree.getModel();
                 map.setToFirstAction(pidNum);
@@ -152,10 +153,11 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 			return tabName.substring(pos+1);
 	}
 	
+        /*
 	public JSplitPane getSplitPanes()
 	{
 		return splitPane;
-	}	
+	}	*/
 
 	private JPanel createBPanel()
 	{
@@ -517,7 +519,11 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                         
 
   	}
-  	
+  	public void viewAction(String actionName)
+        {
+            LinkNode n = map.getLNodeByName(pidNum, actionName);
+            createTextPane(n, n.getElement().getAttribute("name"));
+        }
  	public void valueChanged(TreeSelectionEvent e)
  	{
 		final DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
@@ -585,8 +591,8 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 				    "<br> " + outline.getPR(n.getElement()) + 
 				    "<br> Script: " + "   " + script;
 
-		//TreePath path = tree.getNextMatch((String)map.printCurrentName(pidNum),0,Position.Bias.Forward);
-                //tree.setSelectionPath(path);
+		TreePath path = tree.getNextMatch((String)map.printCurrentName(pidNum),0,Position.Bias.Forward);
+                tree.setSelectionPath(path);
 		if(outline.resumeLabelOk(map.getCurrentAction(pidNum)))	
 			start.setText("Resume");
 		else

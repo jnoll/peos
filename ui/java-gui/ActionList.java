@@ -52,6 +52,8 @@ public class ActionList extends JEditorPane implements ActionListener, Hyperlink
                     System.out.println(path);
                     System.out.println("Pid:" +map.parsePid(path)[0]);
                     System.out.println("Name:" +map.parsePid(path)[1]);
+                    String[] fixedPath=map.parsePid(path);
+                    this.topLevel.switchToProcess(fixedPath);
  		}
  	}
 

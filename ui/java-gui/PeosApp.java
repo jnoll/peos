@@ -78,8 +78,9 @@ public class PeosApp extends JFrame implements ActionListener
                 {   
                     System.err.println(temp);
                 }
+                this.switchToActionView();
 	}
-    
+
 	protected JMenuBar createMenuBar() 
 	{
 		fileMenu = new JMenu("File");
@@ -195,37 +196,12 @@ public class PeosApp extends JFrame implements ActionListener
                     JOptionPane.ERROR_MESSAGE);
                 }
                 if ("ActionMode".equals(e.getActionCommand()))
-                {                              
-                    switchView.setText("Switch to Process Mode");
-                    switchView.setActionCommand("ProcessMode");
-
-                    getContentPane().remove(tabbedPane);
-
-                    testViewer = new ActionList(outline,this);
-                    getContentPane().add(testViewer);
-                    deleteB.setEnabled(false);
-                    
-                    show();
-                    testViewer.setVisible(true);
-                    currentViewMode=1;
-
-
+                {                   
+                    this.switchToActionView();
                 }
                 else if ("ProcessMode".equals(e.getActionCommand()))
                 {                              
-                    switchView.setText("Switch to Action Mode");
-                    switchView.setActionCommand("ActionMode");
-                    //getContentPane().setVisible(true);
-                    getContentPane().remove(testViewer);
-                    getContentPane().add(tabbedPane,BorderLayout.CENTER);
-                    deleteB.setEnabled(true);
-                    testViewer.setVisible(false);
-                    tabbedPane.setVisible(true);
-                    hide();
-                    show();
-                    currentViewMode=0;
-                    
-                
+                    this.switchToProcessView();                
                 }
                 else if ("load".equals(e.getActionCommand()))
 		{
@@ -418,6 +394,46 @@ public class PeosApp extends JFrame implements ActionListener
                 
 		
 	}
+        private void switchToActionView()
+        {
+            switchView.setText("Switch to Process Mode");
+            switchView.setActionCommand("ProcessMode");
+                                
+            getContentPane().remove(tabbedPane);
+            
+            testViewer = new ActionList(outline,this);
+            getContentPane().add(testViewer);
+            deleteB.setEnabled(false);
+            
+            show();
+            testViewer.setVisible(true);
+            currentViewMode=1;
+        }
+        private void switchToProcessView()
+        {
+            switchView.setText("Switch to Action Mode");
+            switchView.setActionCommand("ActionMode");
+
+            getContentPane().remove(testViewer);
+            getContentPane().add(tabbedPane,BorderLayout.CENTER);
+            deleteB.setEnabled(true);
+            testViewer.setVisible(false);
+            tabbedPane.setVisible(true);
+            hide();
+            show();
+            currentViewMode=0;
+        }
+        public void switchToProcess(String[] processInfo)
+        {
+            int index = Integer.parseInt(processInfo[0]);
+            menuBar.removeAll();
+            setJMenuBar(createMenuBar());
+            tabbedPane.setSelectedIndex(findTabIndex(index)); 
+            currPagePID = index;
+            ((ProcessContent)tabbedPane.getSelectedComponent()).viewAction(processInfo[1]);
+            
+            this.switchToProcessView();
+        }		
 	
 	/*=========================================== LOAD PROCESS ===============================================*/	
 	protected void loadProcess()
@@ -540,7 +556,7 @@ public class PeosApp extends JFrame implements ActionListener
 	{
 		ProcessContent content = new ProcessContent(outline,pidNum,this);
 		//outline = content.getOutline();
-		tabbedPane.add(content.getSplitPanes(),placement);		
+		tabbedPane.add(content,placement);		
 		tabbedPane.setTitleAt(placement,content.getTabName());
 		tabbedPane.setToolTipTextAt(placement,"pid: " + pidNum);
 	        tabbedPane.setVisible(true);
@@ -555,7 +571,7 @@ public class PeosApp extends JFrame implements ActionListener
 	{
 		ProcessContent content = new ProcessContent(outline, placement,this);
 		//outline = content.getOutline();
-		tabbedPane.add(content.getSplitPanes(),placement);		
+		tabbedPane.add(content,placement);		
 		tabbedPane.setTitleAt(placement,content.getTabName());
 		tabbedPane.setToolTipTextAt(placement,"pid: " + placement);
 	        tabbedPane.setVisible(true);
