@@ -14,9 +14,10 @@ the Makefile using the command "make".
 
 (2) How to Install
 
-  a) In order to run the PEOS program you first need to locate the programs dependencies and download the tarballs from the      sites that are listed.
+  a) In order to run the PEOS program you first need to locate the programs dependencies and download the tarballs from the      sites that are listed into your home directory.
 
-Presupposotion: >= gnome-1.1 installed: If gnome-1.1 is not installed then ask permission from administrator to install the package.
+Presupposotion: >= gnome-1.1 with libcapplet-1.5.0 installed: If gnome-1.1 is not installed then ask permission from administrator to install the package.
+libcapplet-1.5.0 can be downloaded at http://mirrors.geekbone.org/gnome/sources/libcapplet/1.5/libcapplet-1.5.0.tar.gz
 
 Package >=				Location                 
 -----------------------------------------------------------------------------------------------------
