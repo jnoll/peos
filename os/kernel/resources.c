@@ -248,6 +248,7 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
         return NULL;
     }
 }
+#endif
 
 /*  
  * Get the list of resource names for a process. 
@@ -259,7 +260,6 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
     Node n;
     int num_resources = 0;
     peos_resource_t *resource_list;
-
     g = makegraph(model);
     if(g != NULL) {	
 	resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
@@ -274,10 +274,12 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
 	return resource_list;
     }
     else
+	{
+	*total_resources = 386; /* checking path test is going down */
         return NULL;
+	}
 }
 
-#endif
 
 
 #ifdef UNIT_TEST

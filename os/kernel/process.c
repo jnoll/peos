@@ -91,6 +91,11 @@ char *find_model_file(char *model)
         return NULL;
     }
 }
+#else
+char *find_model_file(char *model)
+{
+	return strdup(model);
+}
 #endif
 
 int peos_create_instance(char *model_file,peos_resource_t *resources,int num_resources)

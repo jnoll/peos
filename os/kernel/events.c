@@ -253,6 +253,7 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *
 
     return resources;
 }
+#endif
 
 
 
@@ -273,7 +274,6 @@ peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
     return resources;
 
 }
-#endif
 
 peos_resource_t *peos_get_resource_list_context(int pid, int *num_resources)
 {

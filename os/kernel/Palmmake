@@ -9,8 +9,8 @@ CFLAGS = -DPALM -g -I../palm -I../.. -I/usr/m68k-palmos -Wall
 .KEEP_STATE:
 
 # lib
-LIBRARY = libpalmpeos.a
-LIBS = $(LIBRARY) ../../pml/libpalmpml.a ../palm/stdio.o
+LIBRARY = libpeos.a
+LIBS = $(LIBRARY) ../../pml/libpml.a ../palm/stdio.o
 PARSER = ../../pml/
 
 CORE_LIBS = -lPalmOSGlue
