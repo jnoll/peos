@@ -1,0 +1,148 @@
+# required symbols
+#
+SHELL= /bin/sh
+
+# install variables
+#
+path=peos
+gtk= ${INSTALL_PREFIX}/share/peos_gui/images/gtk
+image= ${INSTALL_PREFIX}/share/peos_gui/images/image
+# tools used
+#
+CC= gcc 
+V= @
+GNOME_CONFIG = gnome-config
+PKG_CONFIG= pkg-config
+MKDIR= mkdir
+
+# C compiler flags
+#
+SPLINT_ARGS=
+#OPT_DEBUG= -g3 -O3
+OPT_DEBUG= -g3
+#CC_WARN=
+#CC_WARN= -Wall
+#CC_WARN= -Wall -W -Werror
+CC_WARN= -Wall
+#MISC_CC= -M
+MISC_CC=
+
+GNOME_CONFIG_CFLAGS= ${GNOME_CONFIG} --cflags xml2
+PKG_CONFIG_CFLAGS= ${PKG_CONFIG} --cflags gtkhtml-1.1
+GNOME_CONFIG_LDFLAGS= ${GNOME_CONFIG}  --libs xml2
+PKG_CONFIG_LDFLAGS= ${PKG_CONFIG} --libs gtkhtml-1.1
+CFLAGS=	`${GNOME_CONFIG_CFLAGS}` `${PKG_CONFIG_CFLAGS}` \
+	${OPT_DEBUG} ${CC_WARN} ${MISC_CC}
+LDFLAGS= `${GNOME_CONFIG_LDFLAGS}` `${PKG_CONFIG_LDFLAGS}` \
+ 	 ${OPT_DEBUG}
+
+# our source
+#
+H_SRC= buttonimages.h callbacks.h ctrlimages.h deletemenu.h \
+	engine.h glo.h html.h htmllinkage.h images.h interface.h \
+	menu.h menuimages.h notebook.h parse.h support.h text.h \
+	global_error.htree.h treeimages.h viewmenu.h
+	
+C_SRC=	main.c interface.c callbacks.c engine.c \
+	glo.c parse.c tree.c html.c viewmenu.c  \
+	global_error.c deletemenu.c htmllinkage.c notebook.c
+	
+C_OBJ=	main.o interface.o callbacks.o engine.o \
+	glo.o parse.o tree.o html.o viewmenu.o  \
+	global_error.o deletemenu.o htmllinkage.o notebook.o
+
+# default rule
+#
+all: makefiles build
+
+makefiles:
+
+build: script peos-gui
+
+# compile gtkpeos using system installed libs
+#
+peos-gui: ${C_OBJ}
+	${V}${CC} ${LDFLAGS} ${C_OBJ} -o peos-gui
+
+.c.o:
+	${V}${CC} ${CFLAGS} -c $<
+
+clean:
+	rm -f ${C_OBJ}
+
+clobber: clean
+	rm -f gtkpeos peos-gui proc* core*
+
+uninstall:
+	${V}echo "...uninstalling gtk-gui........"
+	${V}rm -f file
+	${V}rm -f ${gtkpeos} ${peos-gui}
+	${V}rm -f ${bin}/peos ${PEOS_HOME}/message \
+	${PEOS_HOME}/proc* ${PEOS_HOME}/event.log \
+	${PEOS_HOME}/pelog
+	${V}rm -rf ${gtk} ${image}
+	${V}echo "...done uninstalling gtk-gui..."
+
+install: script
+	${V}echo "...installing gtk-gui........"
+	${V}[ -d "${bin}" ] || ${MKDIR} -p ${bin}
+	${V}cp -fu ../../os/kernel/peos ${bin}
+	${V}[ -d "${PEOS_HOME}" ] || ${MKDIR} -p ${PEOS_HOME}
+	${V}[ -d "${share}" ] || ${MKDIR} -p ${share}
+	${V}[ -d "${peos_gui}" ] || ${MKDIR} -p ${peos_gui}
+	${V}[ -d "${images}" ] || ${MKDIR} -p ${images}
+	${V}[ -d "${pml}" ] || ${MKDIR} -p ${pml}
+	${V}cp -rfu ../../models/* ${pml}
+	${V}[ -d "${gtk}" ] || ${MKDIR} -p ${gtk}
+	${V}cp -rfu ./gtk/* ${gtk}
+	${V}rm -f ${gtk}/NEWS ${gtk}/README
+	${V}cp -u ./gtkpeos ${gtkpeos}
+	${V}cp -u ./peos-gui ${peos-gui}
+	${V}[ -d "${image}" ] || ${MKDIR} -p ${image}
+	${V}cp -u ./image/* ${image}
+	${V}echo "...done installing gtk-gui..."
+
+script:
+	${V}echo "...creating gtkpeos executable in gtk-gui........"
+	${V}echo "" >gtkpeos
+	${V}echo "runApp=0" >>gtkpeos
+	${V}echo "test -w ." >>gtkpeos
+	${V}echo 'if test $$? -eq 1' >>gtkpeos
+	${V}echo "then" >>gtkpeos
+	${V}echo "      echo Working directory must have write-permission." >>gtkpeos
+	${V}echo "      runApp=1;" >>gtkpeos
+	${V}echo "fi" >>gtkpeos
+	${V}echo "which ${path} > /dev/null" >>gtkpeos
+	${V}echo "if test $$? -eq 1" >>gtkpeos
+	${V}echo "then" >>gtkpeos
+	${V}echo "      echo 'peos' binary does not have execute permissions or does not exist." >>gtkpeos
+	${V}echo "      runApp=1" >>gtkpeos
+	${V}echo "fi" >>gtkpeos
+	${V}echo "test -r ${pml}" >>gtkpeos
+	${V}echo 'if test $$? -eq 1' >>gtkpeos
+	${V}echo "then" >>gtkpeos
+	${V}echo "echo '<Warning>Default PML directory is not readable or does not exist.'" >>gtkpeos
+	${V}echo "fi" >>gtkpeos
+	${V}echo 'if test $$runApp -eq 0' >>gtkpeos
+	${V}echo "then" >>gtkpeos
+	${V}echo "[ -d '~/.peos' ] || ${MKDIR} -p ~/.peos" >>gtkpeos
+	${V}echo "cd ~/.peos" >>gtkpeos
+	${V}rm -f ${HOME}/.gconfd/lock/ior >>gtkpeos
+	${V}echo "        if [ ! -d 'gtk' ]; then" >>gtkpeos
+	${V}echo "                ln -s ${gtk} gtk" >>gtkpeos
+	${V}echo "        else" >>gtkpeos
+	${V}echo "                echo 'The gtk directory exists in current directory.'" >>gtkpeos
+	${V}echo "        fi" >>gtkpeos
+	${V}echo "        if [ ! -d 'image' ]; then" >>gtkpeos
+	${V}echo "                ln -s ${image} image" >>gtkpeos
+	${V}echo "        else" >>gtkpeos
+	${V}echo "                echo 'The image directory exists in current directory.'" >>gtkpeos
+	${V}echo "        fi" >>gtkpeos
+	${V}echo "chmod -f 0644 proc* pelog message event.log" >>gtkpeos
+	${V}echo "rm -f proc_table.dat.xml" >>gtkpeos
+	${V}echo "${bin}/peos-gui" >>gtkpeos
+	${V}echo "rm gtk image" >>gtkpeos
+	${V}echo "fi" >>gtkpeos
+	${V}chmod +x gtkpeos
+	${V}echo "...done creating gtkpeos executable in gtk-gui..."
+	${V}echo ""

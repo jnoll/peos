@@ -1,0 +1,2 @@
+install: XERCES is required for the java GUI and the path needs to be
+         specified in the top-level Makefile.
