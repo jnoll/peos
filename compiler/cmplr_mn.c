@@ -29,10 +29,7 @@ int main (int argc, char *argv[])
    data_dictionary_struct data_dictionary;
    int returnval;
 
-   printf("\nINFO:[main]-PML Compiler Version 2.0");
-
-   /* this must be done before using the dictionary */
-   data_dictionary.root = NULL;
+   printf("\nINFO:[main]-PML Compiler Version 2.0\n");
 
    /* reset strings */
    memset(pml_filename, 0, 80);
@@ -56,8 +53,7 @@ int main (int argc, char *argv[])
       return FALSE;
    }
 
-   /* check to be sure the data dictionary is not empty */
-   if (data_dictionary.root == NULL)
+   /*if (data_dictionary.root == NULL)
    {
       printf("\nERROR:[main]-Data dictionary is empty!\n");
       return FALSE;
@@ -68,7 +64,7 @@ int main (int argc, char *argv[])
       printf("\nERROR:[main]-Unable to parse the following PML file: %s\n",
              pml_filename);
       return FALSE;
-   }
+   }*/
 
    /* generate the appropriate CPML output file */
    if (write_cpml(pml_filename, &data_dictionary, output_file_type) == FALSE)
@@ -84,19 +80,17 @@ int main (int argc, char *argv[])
 
 
 /******************************************************************************
-**    Function/Method Name: validate_inputs
-**    Precondition:
-**    Postcondition:       
-**    Description:          validiate the users inputs 
+**
+**    Description:          validiate the user's inputs before running
+**			    source through the compiler. 
 **                          
 ******************************************************************************/
 int validate_inputs(int argc, char *argv[], char *pml_filename,
                     char *output_file_type)
 {
-   //FILE *fp;
    int fp;
    int returnval = TRUE;
-   int i;
+   int i,j;
   
    char *filename = NULL;
    char *output = NULL;
@@ -136,6 +130,16 @@ int validate_inputs(int argc, char *argv[], char *pml_filename,
 	    output = (char *)malloc(strlen(argv[i])-1);
 	    strcpy(output,argv[i]+2);
 	 }
+	 for (j = 0; j < strlen(output); j++) {
+	    output[j] = tolower(output[j]);
+	 }
+	 if ((strcmp(output,TEXT_MODE) !=0) &&
+	     (strcmp(output,GDBM_MODE) !=0) &&
+	     (strcmp(output,CPML_MODE) !=0)) {
+	    printf("\nERROR:[validate_inputs]-");
+	    printf("\'%s\' not a valid output format",output);
+	    returnval = FALSE;
+	} 
       } else {	
 	 ptr = (strrchr(argv[i],'.'));
 	 if (ptr == NULL) {
@@ -159,13 +163,10 @@ int validate_inputs(int argc, char *argv[], char *pml_filename,
    }
    if (returnval == TRUE) { 
       if (output != NULL) {
-	 for (i = 0; i < strlen(output); i++) {
-	    output[i] = tolower(output[i]);
-	 }
   	 strcpy(output_file_type, output);
 	 free(output);
       } else {
-	 strcpy(output_file_type, TEXT_MODE);
+	 strcpy(output_file_type, GDBM_MODE);
       }
       strcpy(pml_filename, filename);
 

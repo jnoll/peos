@@ -11,8 +11,8 @@
 #include "datadict.h"
 
 
-#define TOKEN_LEN      255      /* token buffer length */
-#define IN_BUF_SIZE    255      /* input buffer size */
+#define TOKEN_LEN      4096/* token buffer length */
+#define IN_BUF_SIZE    4096/* input buffer size */
 #define EOS            '\0'    /* string termination symbol */
 
 
@@ -54,8 +54,9 @@ static struct resword rw[] = {
 
 static char *error_message[] = {
     NULL,
-    "Too long string!",
+    " - string too long (max length = 4096)!",
     " - syntax error!",
+    " - error parsing comments!",
 };
 
 

@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 
 #include <gdbm.h>
@@ -813,8 +814,8 @@ int num_children(data_dict_element_struct* element_ptr)
 char * create_cpml_filename (char *pml, char *cpml, char* filetype)
 {
 
-    char    *ptr = NULL;
-    char    *ext_ptr;
+    char *ptr = NULL;
+    char *ext_ptr;
 
 	ext_ptr = strrchr(pml,'.');
 	ext_ptr++;

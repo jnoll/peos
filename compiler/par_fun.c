@@ -18,8 +18,9 @@
 ******************************************************************************/
 void syntax_error(char *msg)
 {
-   printf("\nLine %d: %s", line_no, msg);
-   error_flag=FALSE;
+   printf("\nLine %d: %s\n", line_no, msg);
+   exit(-1);
+  // error_flag=FALSE;
 }
 
 
@@ -74,6 +75,8 @@ int lexical_analyzer()
    while((in_char=fgetc(in_fptr))!=EOF) {
       if(in_char==' '||in_char=='\t'||in_char=='\r')
          continue;      /* skip white space */
+      
+      /* Process comments */
       else if(in_char=='/') {
 		if((in_char2=fgetc(in_fptr))=='*') 
 		  do {
@@ -81,19 +84,22 @@ int lexical_analyzer()
                     if(in_char2=='*'&&(in_char2=fgetc(in_fptr))=='/')
                        break;
                   } while(in_char2!=EOF);
+
 		else if (in_char2=='/')
 		  do {
 		    in_char2=fgetc(in_fptr);
 		  } while(in_char2!='\n');
+
                 else {
 		   sprintf(token_buffer,"%c",in_char);	
-		   syntax_error(strcat(token_buffer,error_message[2]));
+		   syntax_error(strcat(token_buffer,error_message[3]));
                    clear_token_buffer();
                    ungetc(in_char2,in_fptr);
                 }
 		continue;	
-	} 
-	else if(isalpha(in_char)) {
+      } 
+
+      else if(isalpha(in_char)) {
            int bb=0;
            while(isalnum(in_char)||in_char=='_') {
                token_buffer[bb]=tolower(in_char);
@@ -103,6 +109,7 @@ int lexical_analyzer()
            token_buffer[bb]=EOS;
            ungetc(in_char,in_fptr);
            return check_resword();
+
       } else if(in_char=='{') {
          sprintf(token_buffer,"%c",in_char);
          return OP_BRC;
@@ -114,15 +121,25 @@ int lexical_analyzer()
       else if(in_char=='\"') {
               int bb=0;
               in_char=fgetc(in_fptr);
-              while(isalnum(in_char)||in_char=='-'||in_char==' '
-                  ||in_char=='_' ||in_char=='.'||in_char=='*'
-                  ||in_char==',' ||in_char==':'||in_char==';'
-                  ||in_char=='\\'||in_char=='/'||in_char=='+' 
-                  ||in_char=='(' ||in_char==')'||in_char=='\t') { 
-                  token_buffer[bb]=in_char;
-                  in_char=fgetc(in_fptr);   bb++;
-                  if(bb>=IN_BUF_SIZE) syntax_error(error_message[1]);
-              }
+
+	      while(((in_char == '\t') || 
+		    ((in_char >= 32) && (in_char <= 126))) &&
+		     (in_char != '\"')) {
+		 if(in_char == '\\') {
+		    in_char2 = fgetc(in_fptr);
+	            if(in_char2 != '\n') {
+		       ungetc(in_char2,in_fptr);
+		    } else {
+		       in_char = fgetc(in_fptr);
+		       continue;
+	            }
+	  	 }
+                 token_buffer[bb]=in_char;
+		 in_char = fgetc(in_fptr);
+		 bb++;
+                 if(bb>=IN_BUF_SIZE) syntax_error(error_message[1]);
+	      }
+
               token_buffer[bb]=EOS;
               if(in_char=='\"')
                   return STRING;
@@ -202,6 +219,14 @@ int parse_pml(char* pml_filename, data_dictionary_struct* dictionary_ptr)
    primlist_func(dictionary_ptr, parent_name);
    match_token(CL_BRC);
    fclose(in_fptr);
+  
+   if (error_flag == TRUE) {
+      error_flag = add_level_info_to_data_dictionary(dictionary_ptr);
+      if (error_flag == FALSE) {
+         printf("\nERROR:[par_fun]-Unable to parse ");
+         printf("the following PML file: %s\n", pml_filename);
+      }
+   }
    return error_flag;
 }
 

@@ -14,8 +14,8 @@
 #define DD_MAX_NAME_LEN       80
 #define DD_MAX_TYPE_LEN       80
 #define DD_MAX_MODE_LEN       80
-#define DD_MAX_ATTR_LEN       255 /* there is a bug in the code that forces  */
-#define DD_MAX_ATTR_DESC_LEN  255 /* these two strings to be the same size */
+#define DD_MAX_ATTR_LEN       4096/* there is a bug in the code that forces  */
+#define DD_MAX_ATTR_DESC_LEN  4096/* these two strings to be the same size */
 
 
 /* linked list of strings */
