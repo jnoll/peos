@@ -456,6 +456,7 @@ vm_exit_code action_done(Graph g, char *act_name)
     int i,num_successors;
     vm_act_state state_set;
 
+    if(action_run(g, act_name) == -1) return VM_INTERNAL_ERROR;
     n = find_node(g,act_name);
     if(n != NULL) {
         state_set = set_node_state(n, ACT_DONE);    

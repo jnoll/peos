@@ -878,7 +878,56 @@ START_TEST(test_action_run_iteration)
 END_TEST
 
 
+START_TEST(test_action_done_iteration)
+{
+	Graph g = (Graph) malloc (sizeof(struct graph));
+        Node source,sink,act_0,act_1,act_2;
+                                                                        
+        source = make_node("p",ACT_NONE,PROCESS,0);
+        sink = make_node("p",ACT_NONE,PROCESS,4);
+        act_0 = make_node("act_0",ACT_READY,ACTION,1);
+	act_1 = make_node("act_1",ACT_NONE,ACTION,2);
+	act_2 = make_node("act_2",ACT_READY,ACTION,3);
 
+	source -> successors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+	act_0 -> successors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+	act_0 -> predecessors = (List) make_list(source,act_1,NULL,NULL,NULL);
+	act_1 -> successors = (List) make_list(act_2,act_0,NULL,NULL,NULL);
+	act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+	act_2 -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+	act_2 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+	sink -> predecessors = (List) make_list(act_2,NULL,NULL,NULL,NULL);
+
+	ITER_END_NODES(act_0) = (List) make_list(act_2,NULL,NULL,NULL,NULL);
+	ITER_START_NODES(act_2) = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+
+	source -> next = act_0;
+	act_0 -> next = act_1;
+	act_1 -> next = act_2;
+	act_2 -> next = sink;
+	sink -> next = NULL;
+                                                                         
+        g -> source = source;
+        g -> sink = sink;
+
+        source -> matching = sink;
+        sink -> matching = source;
+
+	requires_index = 0;
+	provides_index = 0;
+
+	requires_state[1] = 1;
+	requires_state[2] = 1;
+	provides_state[1] = 1;
+	
+                                                                         
+	
+        fail_unless(action_done(g,act_0->name) == VM_CONTINUE,"return value");
+	fail_unless(STATE(act_0) == ACT_DONE, "act_0 not done");
+	fail_unless(STATE(act_1) == ACT_READY, "act_1 not ready");
+	fail_unless(STATE(act_2) == ACT_NONE, "act_2 not none");
+}
+END_TEST
 
 START_TEST(test_mark_iter_nodes)
 {
@@ -1241,6 +1290,7 @@ main(int argc, char *argv[])
     tcase_add_test(tc,test_action_done);
     tcase_add_test(tc, test_action_done_selection);
     tcase_add_test(tc,test_propogate_join_done);
+    tcase_add_test(tc,test_action_done_iteration);
 
     tc = tcase_create("set_rendezvous_state");
     suite_add_tcase(s,tc);
