@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rm proc_table.dat
-export QUERY_STRING="model_list=eggs"
+export QUERY_STRING="model_list=test_action"
 
 do_create.cgi 
 
