@@ -15,7 +15,7 @@
 #include "process.h"
 #include "resources.h"
 
-#if PALM==0
+#ifndef PALM
 #include "tclinterp.h"
 #endif
 

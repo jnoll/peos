@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#if PALM==0
+#ifndef PALM
 #include "tclinterp.h"
 #endif
 #include "events.h"
