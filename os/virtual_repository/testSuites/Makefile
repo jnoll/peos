@@ -21,7 +21,8 @@ testFSsearchInvalid \
 testFSsearchEmpty \
 testUNITandResult \
 testUNITorResult \
-testUnitquerywait
+testUnitquerywait \
+testUpdateTestSite
 #testEmail
 
 FS_ACTUAL_RESULT_FILES = \
@@ -69,6 +70,8 @@ copyvr:
 
 test:	$(TESTS)
 
+	testUpdateTestSite
+	
 	testFSsearchEnd2End > FSsearchEnd2EndActualResult.txt
 	diff FSsearchEnd2EndExpectedResult.txt FSsearchEnd2EndActualResult.txt
 	

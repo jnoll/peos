@@ -20,7 +20,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#define BUFFER 1000
+#define BUFFER_SIZE 1000
 
 int main( void )
 {	
@@ -29,7 +29,7 @@ int main( void )
 	void setSeekResult( char *, FILE * ) ;
 	void setTestData ( char *, FILE * ) ;
 	
-	char queryString[1000] ;
+	char queryString[BUFFER_SIZE] = { '\0' } ;
 	char *testString ;
 	int *d, index ;
 	queryList *tempQueries ;
@@ -39,7 +39,7 @@ int main( void )
 	repos_ctr = 0;
 	myQueries = NULL;
 	
-	setup_vr( );
+	setup_fs( );
 	_debug( __FILE__, __LINE__, 5, "sentinel" ) ;	
 	call = callback ;
 	_debug( __FILE__, __LINE__, 5, "sentinel" ) ;
@@ -84,7 +84,7 @@ void callback( int size, resultList *listpointer, int *data )
 
 void setSeekResult( char *queryValue, FILE *expectedResultSeekFile )
 {
-	char seekString[BUFFER] = "queries seeks " ;
+	char seekString[BUFFER_SIZE] = "queries seeks " ;
 	
 	strcat( seekString, queryValue ) ;
 	strcat( seekString, "\n" ) ;
@@ -94,15 +94,15 @@ void setSeekResult( char *queryValue, FILE *expectedResultSeekFile )
 void setTestData ( char *queryString, FILE *testQuery ) 
 {
  	char *token, *value, *pQuery ;
-	char cwd[BUFFER] = { '\0' } ;
-	char tempQuery[BUFFER] = { '\0' } ;
-	char testString[BUFFER] = { '\0' } ;
+	char cwd[BUFFER_SIZE] = { '\0' } ;
+	char tempQuery[BUFFER_SIZE] = { '\0' } ;
+	char testString[BUFFER_SIZE] = { '\0' } ;
 	
 	strcpy( tempQuery, queryString ) ;	
 		
 	if ( strstr( queryString, "///" ) != NULL ) 
 	{
-		if( getcwd ( cwd , BUFFER ) == NULL )
+		if( getcwd ( cwd , BUFFER_SIZE ) == NULL )
 		{
 			puts( "error" ) ;
 		}

@@ -182,3 +182,102 @@ Subject: Don't miss such opportunity  now
 	This is Message 6.
 	
 	
+
+From MAILER-DAEMON Tue Oct  8 12:26:20 PDT 2002
+Received: from hpux31.dc.engr.scu.edu
+(hpux31.dc.engr.scu.edu [129.210.16.31])
+	by server8.engr.scu.edu (8.10.2/8.10.2) with ESMTP id g98JQGv23514
+	for <psaw@smtp.dc.engr.scu.edu>; Tue, 8 Oct 2002 12:26:18 -0700 (PDT)
+Received: from localhost (localhost)
+	by hpux31.dc.engr.scu.edu (8.9.3 (PHNE_25184)/8.9.3) with internal id MAA28947;
+	Tue, 8 Oct 2002 12:25:52 -0700 (PDT)
+Date: Tue, 6 Feb 2003 12:25:52 -0700 (PDT)
+From: Mail Delivery Subsystem <MAILER-DAEMON@students.engr.scu.edu>
+Message-Id: <200000000000.MAA28947@hpux31.dc.engr.scu.edu>
+To: psaw@hpux31.dc.engr.scu.edu
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+	boundary="MAA28947.1034105152/hpux31.dc.engr.scu.edu"
+Subject: Returned mail: Host unknown (Name server: yah00.c0m: host not found)
+Auto-Submitted: auto-generated (failure)
+X-Keywords: 
+Content-Length: 2034
+Status: RO
+X-Status: $$$$
+X-UID: 0000000004
+X-Dt-Delete-Time: 3E930CDF
+
+This is a MIME-encapsulated message
+
+--MAA28947.1034105152/hpux31.dc.engr.scu.edu
+
+The original message was received at Tue, 8 Oct 2002 12:25:52 -0700 (PDT)
+from psaw@localhost
+
+	----- The following addresses had permanent fatal errors -----
+pecksan@yah00.c0m
+
+	----- Transcript of session follows -----
+550 pecksan@yah00.c0m... Host unknown (Name server: yah00.c0m: host not found)
+
+--MAA28947.1034105152/hpux31.dc.engr.scu.edu
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; hpux31.dc.engr.scu.edu
+Arrival-Date: Tue, 8 Oct 2002 12:25:52 -0700 (PDT)
+
+Final-Recipient: RFC822; pecksan@yah00.c0m
+Action: failed
+Status: 5.1.2
+Remote-MTA: DNS; yah00.c0m
+Last-Attempt-Date: Tue, 8 Oct 2002 12:25:52 -0700 (PDT)
+
+--MAA28947.1034105152/hpux31.dc.engr.scu.edu
+Content-Type: message/rfc822
+
+Return-Path: <psaw>
+Received: (from psaw@localhost)
+	by hpux31.dc.engr.scu.edu (8.9.3 (PHNE_25184)/8.9.3) id MAA28945
+	for pecksan@yah00.c0m; Tue, 8 Oct 2002 12:25:52 -0700 (PDT)
+Date: Tue, 8 Oct 2002 12:25:52 -0700 (PDT)
+From: Peck-San Saw <psaw>
+Message-Id: <200210081925.MAA28945@hpux31.dc.engr.scu.edu>
+To: pecksan@yah00.c0m
+Mime-Version: 1.0
+Content-Type: multipart/mixed;boundary=d37_2f49-1f53_1d23-7106_6aba
+
+
+--d37_2f49-1f53_1d23-7106_6aba
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Content-MD5: AAAAAAAAAAAAAAAAAAAAAA==
+X-Sun-Data-Type: text
+
+
+--d37_2f49-1f53_1d23-7106_6aba
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Content-MD5: 4LyHnd2FqlOKi4jx0XfDDw==
+Content-Disposition: inline; filename="activity.txt"
+Content-Description: activity.txt
+X-Sun-Data-Type: text
+
+Name: Peck San Saw
+Date: 8 October 2002
+
+Activiy for last week:
+
+Read the Article, Integrating  Diverse Information Repositiries: 
+A Distributed Hytext Approach.
+
+Group meeting for the first draft of problem statement.
+
+Activity for this week:
+
+Continue to work on the problem statement that is due
+on 11 October.
+--d37_2f49-1f53_1d23-7106_6aba--
+
+--MAA28947.1034105152/hpux31.dc.engr.scu.edu--
+
+	This is Message 7.
