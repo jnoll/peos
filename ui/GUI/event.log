@@ -5886,3 +5886,7 @@ Sep 03 2004 16:38  (null) start /users/student/jmontana/PEOS_KNOBBY/peos/src/ui/
 Sep 03 2004 16:38 (null) RUN Fill_name 2 
 Sep 03 2004 16:38 (null) DONE Fill_name 2 
 Sep 03 2004 16:38 (null) RUN Fill_name 2 
+Sep 03 2004 16:49  (null) start /users/student/jmontana/PEOS_KNOBBY/peos/src/ui/peos/src/ui/GUI/Timesheet.pml 0
+Sep 03 2004 16:49 (null) RUN Fill_total_hours 0 
+Sep 03 2004 16:50  (null) start /users/student/jmontana/GUI/web_test.pml 1
+Sep 03 2004 16:51  (null) start /users/student/jmontana/PEOS_KNOBBY/peos/src/ui/peos/src/ui/GUI/Timesheet.pml 0
