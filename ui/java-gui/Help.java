@@ -44,8 +44,8 @@ public class Help extends JPanel
     private static boolean DEBUG = false;
 
     public Help() {
-        super(new GridLayout(1,0));
-
+        super(new GridLayout(1,0));        
+       
         //Create the nodes.
         DefaultMutableTreeNode top =
             new DefaultMutableTreeNode("Peos Virtual Help Book");
@@ -86,7 +86,18 @@ public class Help extends JPanel
         //Add the split pane to this panel.i
         add(splitPane);
     }
-
+    private static String convertPath(String path)
+    {
+         if (path.charAt(0)=='.')
+        {
+            path=System.getProperty("user.dir") + path.substring(1);         
+        }
+        if (path.charAt(0)=='~')
+        {
+            path=System.getProperty("user.home") + path.substring(1);         
+        }    
+        return path;
+    }
     /** Required by TreeSelectionListener interface. */
     public void valueChanged(TreeSelectionEvent e) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -115,11 +126,17 @@ public class Help extends JPanel
         public URL bookURL;
 
         public BookInfo(String book, String filename) {
-            bookName = book;
-            bookURL = Help.class.getResource(filename);
-            if (bookURL == null) {
-                System.err.println("Couldn't find file: "
-                                   + filename);
+            bookName = book; 
+            try{ 
+                bookURL = new URL(filename); //Help.class.getResource(filename);
+                if (bookURL == null) {
+                    System.err.println("Couldn't find file: "
+                                       + filename);
+                }
+            }
+            catch(Exception e)
+            {
+                System.err.println(e);
             }
         }
 
@@ -129,12 +146,19 @@ public class Help extends JPanel
     }
 
     private void initHelp() {
-        String s = System.getProperty("peos.help") +"/intro.htm";
-        helpURL = Help.class.getResource(s);
-        if (helpURL == null) {
-            System.err.println("Couldn't open help file: " + s);
-        } else if (DEBUG) {
-            System.out.println("Help URL is " + helpURL);
+        String s = "file://" + convertPath(System.getProperty("peos.help")) +"/intro.htm";
+        
+        try{
+            helpURL = new URL(s);           
+            if (helpURL == null) {
+                System.err.println("Couldn't open help file: " + s);
+            } else if (DEBUG) {
+                System.out.println("Help URL is " + helpURL);
+            }
+        }
+        catch(Exception e)
+        {
+            System.err.println(e);
         }
 
         displayURL(helpURL);
@@ -164,7 +188,7 @@ public class Help extends JPanel
         top.add(category);
 
         book = new DefaultMutableTreeNode(new BookInfo
-            ("What is Peos?", System.getProperty("peos.help") +
+            ("What is Peos?", "file://" + convertPath(System.getProperty("peos.help")) +
             "/what_is_peos.htm"));
         category.add(book);
 
@@ -172,17 +196,17 @@ public class Help extends JPanel
         top.add(category);
 
         book = new DefaultMutableTreeNode(new BookInfo
-            ("Open a Process", System.getProperty("peos.help") +
+            ("Open a Process", "file://" + convertPath(System.getProperty("peos.help")) +
              "/open_process.htm"));
         category.add(book);
 
         book = new DefaultMutableTreeNode(new BookInfo
-            ("View a Process", System.getProperty("peos.help") +
+            ("View a Process", "file://" + convertPath(System.getProperty("peos.help")) +
              "/view_process.htm"));
         category.add(book);
         
         book = new DefaultMutableTreeNode(new BookInfo
-            ("Delete a Process", System.getProperty("peos.help") +
+            ("Delete a Process", "file://" + convertPath(System.getProperty("peos.help")) +
              "/delete_process.htm"));
         category.add(book);
         
@@ -190,17 +214,17 @@ public class Help extends JPanel
         top.add(category);
         
         book = new DefaultMutableTreeNode(new BookInfo
-            ("Buttons", System.getProperty("peos.help") +
+            ("Buttons", "file://" + convertPath(System.getProperty("peos.help")) +
              "/button_description.htm"));
         category.add(book);
 
         book = new DefaultMutableTreeNode(new BookInfo
-            ("Tree Icons", System.getProperty("peos.help") +
+            ("Tree Icons","file://" +  convertPath(System.getProperty("peos.help")) +
              "/tree_icon_colors.htm"));
         category.add(book);
         
         book = new DefaultMutableTreeNode(new BookInfo
-            ("Submit Action Name", System.getProperty("peos.help") +
+            ("Submit Action Name","file://" +  convertPath(System.getProperty("peos.help")) +
              "/submitActionName.htm"));
         category.add(book);
 
@@ -208,17 +232,17 @@ public class Help extends JPanel
         top.add(category);
         
         book = new DefaultMutableTreeNode(new BookInfo
-            ("Homepage", System.getProperty("peos.help") +
+            ("Homepage","file://" +  convertPath(System.getProperty("peos.help")) +
              "/homepage.htm"));
         category.add(book);
 
         book = new DefaultMutableTreeNode(new BookInfo
-            ("Feedback", System.getProperty("peos.help") +
+            ("Feedback","file://" +  convertPath(System.getProperty("peos.help")) +
              "/feedback.htm"));
         category.add(book);
 
         book = new DefaultMutableTreeNode(new BookInfo
-            ("Acknowledge", System.getProperty("peos.help") +
+            ("Acknowledge","file://" +  convertPath(System.getProperty("peos.help")) +
              "/acknowledge.htm"));
         category.add(book);
     }
