@@ -9,3 +9,6 @@
 #define DoneButton 1002
 
 #define ProcessNameLabel 1003
+#define SelectProcessForm 1004
+#define ProcessList 1005
+#define ListProcessesButton 1006
