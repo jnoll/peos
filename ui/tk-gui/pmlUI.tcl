@@ -1,6 +1,6 @@
 #!/bin/sh
 #######################################################################
-## File Information: $Id: pmlUI.tcl,v 1.6 2000/05/08 23:23:40 nmodi Exp $
+## File Information: $Id: pmlUI.tcl,v 1.7 2000/05/09 01:59:43 nmodi Exp $
 #######################################################################
 
 #
@@ -34,16 +34,16 @@ source uiProcessHandler.tcl
 source uiActionHandler.tcl
 
 # Perform Some Initialization
- ::uiConfig::Init
- ::mainWin::widgetMgr
+# ::uiConfig::Init
+# ::mainWin::widgetMgr
 
 
 # Show Login Window After Initialization
-if {$::uiConfig::TestMode} then {
-  source uiTest.tcl
-} else {
-  after idle {
-     persistentWidgets::makeLoginWin
-#      uiInputValidator::uiLoginScreen
-  }
-}
+#if {$::uiConfig::TestMode} then {
+#  source uiTest.tcl
+#} else {
+#  after idle {
+ #    persistentWidgets::makeLoginWin
+     uiInputValidator::uiLoginScreen
+#  }
+#}

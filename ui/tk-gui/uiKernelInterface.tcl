@@ -29,7 +29,7 @@ proc ::uiKernelInterface::EstablishConnection {} {
 #	if {$DebugOn} then {
 #	    puts stdout [format "%s Configuring Socket Event Handler" ]
 #	}
-#	uiProcessHandler::uiProcessScreen
+	uiProcessHandler::uiProcessScreen
 
  #   }
 return $UIEngineSocket

@@ -64,6 +64,8 @@ pack .uiactionwin.alistframe.sbar -side left -anchor n -fill y \
 
 button .uiactionwin.abut.execute -text Execute
 
+button .uiactionwin.abut.done -text Done
+
 button .uiactionwin.abut.info -text Info \
        -command {uiActionHandler::uiActionInfo}
        
@@ -74,7 +76,7 @@ button .uiactionwin.abut.back -text Back \
 button .uiactionwin.abut.logout -text Logout \
        -command { exit }
 
-pack .uiactionwin.abut.execute .uiactionwin.abut.info .uiactionwin.abut.back .uiactionwin.abut.logout -side left 
+pack .uiactionwin.abut.execute .uiactionwin.abut.done .uiactionwin.abut.info .uiactionwin.abut.back .uiactionwin.abut.logout -side left 
 
 }
 
