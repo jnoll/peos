@@ -47,6 +47,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 	if( toParse != NULL )
 		word = strtok( toParse, " " ) ;
 
+	
 	while( word != NULL )
 	{
 		numTokens++;
@@ -94,7 +95,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					break ;
 		}
 		
-		_debug(__FILE__,__LINE__,5,"parsing word %s number of parses is : %d",word,numParses);
+		_debug(__FILE__,__LINE__,1,"parsing word %s number of parses is : %d number of tokens: %d",word,numParses,numTokens);
 		word = strtok( NULL, " " ) ;
 	}
 	
@@ -201,7 +202,7 @@ void poll_vr( )
 /*bool isValidAttribute( char *attr )
 {
 	int i ;					// used in for loop
-	char attributes[1][2] = { "ID"} ;	// array that stores repository attributes
+	char attributes[1][2] = { "ID" } ;	// array that stores repository attributes
 		
 	for( i = 0 ; i < sizeof(attributes) / sizeof(attributes[0] ) ; i++ )
 	{
@@ -214,16 +215,16 @@ void poll_vr( )
 bool isValidAttribute( char *attr )
 {
 	int i ;						// used in for loop
-	char *attributes[2] = { "ID","DATE"} ;	// array that stores repository attributes
+	char *attributes[3] = { "ID","DATE", "NAME" } ;	// array that stores repository attributes
 		
 	if( attr == NULL )
 		return false;
 		
-	for( i = 0 ; i < 2 ; i++ )
+	for( i = 0 ; i < 3 ; i++ )
 	{
 		if( ( strcmp( attributes[i], attr ) == 0 ) )
 			return true ;
-	}
+	}     
 	return false ;
 }
 

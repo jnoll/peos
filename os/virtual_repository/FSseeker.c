@@ -25,7 +25,9 @@ static char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configura
 char directoryPath[BUFFER_SIZE] ;	// the path of the local user
 int doneDirectoryPath = 0 ;		// boolean-like sentinel for the extracting of directoryPath
 resultList *dateResults ;
+resultList *nameResults ;
 char queryDate[11] ;
+char queryName[BUFFER_SIZE] ;
 
 /************************************************************************
  * Function:	FSqueryTool						*
@@ -41,6 +43,8 @@ queryList* FSqueryTool( queryList *listpointer )
 	void getDirectoryPath( ) ;
 	resultList* attributeID( query *, int ) ;
 	void attributeDATE( char*, int ) ;
+	void attributeNAME( ) ;
+
 	
    	char oneLine[BUFFER_SIZE] ;	// one line from the an opened file
    	char *word ;			// a token during string tokenization
@@ -102,6 +106,34 @@ queryList* FSqueryTool( queryList *listpointer )
 					}
 				}
 			}
+			
+			
+			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "NAME" ) == 0 )
+			{
+				nameResults = NULL;
+				_debug( __FILE__, __LINE__, 5, "attribute is NAME") ;
+				strcpy( queryName, tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
+				attributeNAME( ) ;
+				if( numClauses == 0 )
+				{
+					tempResults = nameResults ;
+				}
+				else
+				{
+					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
+					{
+						_debug( __FILE__, __LINE__, 5, "conjecture is AND") ;
+						tempResults = andResult( tempResults, nameResults ) ;
+					}
+					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
+					{
+						_debug( __FILE__, __LINE__, 5, "conjecture is OR") ;
+						tempResults = orResult( tempResults, nameResults ) ;
+					}
+				}
+				
+			}
+			
 		}
 	
 		while ( tempResults != NULL )
@@ -164,6 +196,14 @@ void attributeDATE( char *value, int numClauses )
 	getFSQueryDate( value ) ;
 	_debug( __FILE__, __LINE__, 5, "queryDate is %s", queryDate ) ;
 	ftw( searchPath, getDate, 5 ) ;
+}
+
+void attributeNAME( ) 
+{
+	int getFile( const char *filename, const struct stat *statptr, int flag );
+	
+	_debug( __FILE__, __LINE__, 2, "queryName is %s", queryName ) ;	
+	ftw( searchPath, getFile, 5 ) ;
 }
 
 int getDate( const char *filename, const struct stat *statptr, int flag )
@@ -405,7 +445,7 @@ void getDirectoryPath( )
  *		recursively while searching for matching filename	*
  ************************************************************************/
      
-/*int getFile( const char *filename, const struct stat *statptr, int flag )
+int getFile( const char *filename, const struct stat *statptr, int flag )
 {
 	char* position ;		// pointer to the requested filename
 	char target[BUFFER_SIZE] ;		// value of the requested filename
@@ -421,17 +461,18 @@ void getDirectoryPath( )
 					index *= -1;
 
     				strcpy( target, filename + index + 1 ) ;
-	    											
-				if( strncmp( searchFile, target, strlen( searchFile) ) == 0 )
+    				
+    					    											
+				if( strstr(target,queryName ) != NULL )
 				{
-					ftwQuery -> results = addResultItem ( ftwQuery -> results, filename );
-				    	ftwQuery -> numFound++ ;
+					nameResults = addResultItem ( nameResults, filename );
+					_debug(__FILE__,__LINE__,2,"adding name result");
 				}
 				break ;
 	}
 	
 	return 0 ;
-}*/
+}
 
 
 

@@ -81,6 +81,31 @@ queryList* EMAILqueryTool( queryList *listpointer )
 					}
 				}	
 			} 
+			
+			if ( strcmp ( tempQueries -> oneQuery ->myClauses[numClauses].attribute, "NAME" ) == 0 )
+   			{
+   				_debug( __FILE__, __LINE__, 5, "date attribute is %s", tempQueries -> oneQuery ->myClauses[numClauses].attribute ) ;
+   				_debug( __FILE__, __LINE__, 5, "date value is %s", tempQueries -> oneQuery ->myClauses[numClauses].value ) ;
+   				getMailBox( mailPath ) ;
+   				attributeType = 3 ;
+   				if( numClauses == 0 )
+					tempResults = EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ;
+				else
+				{
+					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
+					{
+						_debug( __FILE__, __LINE__, 5, "conjecture is AND") ;
+						tempResults = andResult( tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
+					}
+
+					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
+					{
+						_debug( __FILE__, __LINE__, 5, "conjecture is OR") ;
+						tempResults = orResult(tempResults, EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ) ;
+					}
+				}	
+			}
+			
 		
 			if ( strcmp ( tempQueries -> oneQuery ->myClauses[numClauses].attribute, "ID" ) == 0 )
 			{
@@ -296,6 +321,7 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 	char messageLine[BUFFER] = {'\0'} ;
 	char messageID[BUFFER] = {'\0'} ;
 	char dateLine[BUFFER] = {'\0'} ;
+	char subjectLine[BUFFER] = {'\0'} ;
 	int msgStage, fromStage, lineNumber, blankLine, fromLine, msgResult, numAttributes ;
 	resultList *tempResults ;
 	
@@ -348,6 +374,15 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 				numAttributes++ ;
 				_debug( __FILE__, __LINE__, 5, "date numAttributes is %d\n", numAttributes ) ;
 			}
+			
+			if( strcmp( "Subject:", token ) == 0 )
+			{
+				oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
+				strcpy( subjectLine, oneLine ) ;
+				_debug( __FILE__, __LINE__, 5, "subjectLine is %s\n", subjectLine ) ;
+				//numAttributes++ ;
+				_debug( __FILE__, __LINE__, 5, "subject numAttributes is %d\n", numAttributes ) ;
+			}
 		}
 		
 		if( numAttributes == 2 )
@@ -365,6 +400,11 @@ resultList* msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, cha
 					_debug( __FILE__, __LINE__, 5, "attributeType is %d", attributeType ) ;
 					numAttributes = msgStage = 0 ;
 					break ;
+				
+				case 3:	msgResult = EMAILsubjectCompare ( queryValue, subjectLine ) ;
+					_debug( __FILE__, __LINE__, 5, "attributeType is %d", attributeType ) ;
+					numAttributes = msgStage = 0 ;
+					break ;				
 			}
 		}
 		
@@ -450,6 +490,19 @@ int EMAILdateCompare ( char *queryValue, char *dateLine )
 	_debug( __FILE__, __LINE__, 5, "mailDate is %s, queryDate is %s", mailDate, queryDate ) ;
 	
 	if( strcmp( queryDate, mailDate ) == 0 )
+		return 1 ;
+	else
+		return 0 ;	
+}
+
+
+int EMAILsubjectCompare ( char *queryValue, char *subjectLine )
+{
+	_debug( __FILE__, __LINE__, 1, "subjectLine is %s", subjectLine ) ;
+	_debug( __FILE__, __LINE__, 1, "strpbrk(subjectLine," ") %s", (strpbrk(subjectLine," ") +1) ) ;
+	_debug( __FILE__, __LINE__, 1, "queryValue %s", queryValue ) ;
+			
+	if( strstr( (strpbrk(subjectLine," ") +1), queryValue) != NULL )
 		return 1 ;
 	else
 		return 0 ;	
