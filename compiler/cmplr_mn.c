@@ -90,7 +90,7 @@ int validate_inputs(int argc, char *argv[], char **pml_filename,
 	char *cppenv = NULL;
 	char *cpppath = NULL;
 
-	char *cppcmd = "/usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/cpp";
+	char *cppcmd = "/usr/bin/cpp";
 	pid_t pid;
 
 	/*
