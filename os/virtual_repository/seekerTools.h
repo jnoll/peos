@@ -6,7 +6,7 @@
  
 resultList* andResult( resultList*, resultList* ) ;
 resultList* orResult( resultList*, resultList* ) ;
-void compactString( char *oneLine ) ;
+resultList* sortResult( resultList* ) ;
 void getPath(char *, char *) ;
 
 
