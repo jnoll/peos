@@ -13,11 +13,13 @@
 #include "graph_engine.h"
 #include "process.h"
 #include "resources.h"
+#include "tclinterp.h"
 
 
 typedef int PE_CONDITION;
 typedef int PE_METHOD;
 #undef PE_DEBUG
+#undef PE_DEBUG_A
 #define PE_COND_RA_RA 1 /* Resource-Attrib, Resource-Attrib */
 #define PE_METH_FILE_TIMESTAMP 1 /* Will compare file time stamps */
 #define PE_COND_FILE 2 /* Node is a file */
@@ -32,6 +34,37 @@ extern char *act_state_name(vm_act_state state);
 
 
 
+char* pe_get_resval(int pid,char* resource_name)
+{
+	peos_context_t *context = peos_get_context(pid);
+	peos_resource_t *proc_resources = context -> resources;
+	int num_proc_resources = context -> num_resources;
+	int j;
+	char* result_str=NULL;
+	peos_tcl* interpreter;
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return NULL;
+	}
+	if(!result_str){
+		result_str = (char*)malloc(sizeof(char)*(255));
+	}
+	for(j = 0; j < num_proc_resources; j++) {
+		peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
+		if(!strcmp(resource_name,proc_resources[j].name)) {
+#ifdef PE_DEBUG_A
+			fprintf(stderr, "Resource: name:%s value%s tclvalue:%s\n ", proc_resources[j].name,
+			proc_resources[j].value, result_str );
+#endif
+			return result_str;
+		}
+	}
+#ifdef PE_DEBUG_A
+			fprintf(stderr, "Resource didnt match returned: %s\n", resource_name);
+#endif
+	return resource_name;
+	
+}
 
 /****************************************************************
 *  Purpose: Compare the resources according to the condition and
@@ -41,13 +74,13 @@ extern char *act_state_name(vm_act_state state);
 *  Postcondition: Returns 1,0,-1 if the condition evaluates to
 *	true, false, and error, respectively.
 ****************************************************************/
-int pe_eval(PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
+int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 {
 	struct stat buf1;
 	struct stat buf2;
 	
 	if(cond_type == PE_COND_RA_RA && meth_type == PE_METH_FILE_TIMESTAMP){
-		if(stat(TREE_ID(t->left->left), &buf1) == -1) {
+		if(stat(pe_get_resval(pid, TREE_ID(t->left->left)), &buf1) == -1) {
 	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
 #ifdef PE_DEBUG
 		    	fprintf(stderr, "error 1 ENOENT \n");
@@ -59,7 +92,7 @@ int pe_eval(PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 		        return -1;
 	            }
 	        }
-		if(stat(TREE_ID(t->right->left), &buf2) == -1) {
+		if(stat(pe_get_resval(pid, TREE_ID(t->right->left)), &buf2) == -1) {
 	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
 #ifdef PE_DEBUG
 		        fprintf(stderr, "error 2 ENOENT \n");
@@ -99,7 +132,7 @@ int pe_eval(PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 		
 	}
 	else if(cond_type == PE_COND_FILE && meth_type == PE_METH_FILE_EXISTS){
-		if(stat(TREE_ID(t), &buf1) == -1) {
+		if(stat(pe_get_resval(pid, TREE_ID(t)), &buf1) == -1) {
 	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
 #ifdef PE_DEBUG
 		    	fprintf(stderr, "error 3 ENOENT \n");
@@ -123,11 +156,11 @@ int pe_eval(PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 *  Precondition: tree (for now, non-TCL)
 *  Postcondition: if the tree is valid, result is displayed.
 ****************************************************************/
-int pe_perform_predicate_eval(Tree t)
+int pe_perform_predicate_eval(int pid, Tree t)
 {
 	int res= 0;
 	if (IS_ID_TREE(t)){
-		if((res = pe_eval(PE_COND_FILE, PE_METH_FILE_EXISTS, t))==1){
+		if((res = pe_eval(pid, PE_COND_FILE, PE_METH_FILE_EXISTS, t))==1){
 #ifdef PE_DEBUG
 			fprintf(stderr,"pe_update1 says TRUE!\n");
 #endif
@@ -147,7 +180,7 @@ int pe_perform_predicate_eval(Tree t)
 	}else if(TREE_OP(t) >= EQ && TREE_OP(t) <= GT){
 		if(TREE_OP(t->left) == DOT && TREE_OP(t->right) == DOT){
 			if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->right->right))){
- 				if((res = pe_eval(PE_COND_RA_RA, PE_METH_FILE_TIMESTAMP, t))==1){
+ 				if((res = pe_eval(pid, PE_COND_RA_RA, PE_METH_FILE_TIMESTAMP, t))==1){
 #ifdef PE_DEBUG
  					fprintf(stderr,"pe_update says TRUE!\n");
 #endif
@@ -174,7 +207,7 @@ int pe_perform_predicate_eval(Tree t)
 
 
 int
-pe_make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier)
+pe_make_resource_list(int pid , Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier)
 {
 //    char *qual = qualifier;	
     peos_resource_t *resource_list = *rlist;
@@ -190,7 +223,7 @@ pe_make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *
 	    if(!fnd)printf("\nn-  - - - - DOT treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
 	    if(!fnd)fnd=!fnd;
 #endif
-	    eval_result = (eval_result && pe_make_resource_list(t->left, &resource_list, num_resources, rsize, "\0")) ? 1 : 0;
+	    eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list, num_resources, rsize, "\0")) ? 1 : 0;
 	    break;
 	    case EQ: 
 #ifdef PE_DEBUG
@@ -222,9 +255,9 @@ pe_make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *
 	    if(!fnd)printf("\nn-  - - - - GT treeIdLeft:%d treeIdRight:%d\n",TREE_OP(t->left),TREE_OP(t->right));
 	    if(!fnd)fnd=!fnd;
 #endif
-		eval_result = (eval_result && pe_make_resource_list(t->left, &resource_list, num_resources, rsize, "\0")) ? 1 : 0;
-		eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list, num_resources, rsize, "\0")) ? 1 : 0;
-		eval_result = (eval_result && pe_perform_predicate_eval(t)) ? 1 : 0;
+		eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list, num_resources, rsize, "\0")) ? 1 : 0;
+		eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list, num_resources, rsize, "\0")) ? 1 : 0;
+		eval_result = (eval_result && pe_perform_predicate_eval(pid, t)) ? 1 : 0;
 	        
 	    }
 	    break;
@@ -233,7 +266,7 @@ pe_make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *
 	      if(!fnd)printf("\nn-  - - - - QUALIFIER treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
 	      if(!fnd)fnd=!fnd;
 #endif
-eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list, num_resources, rsize, TREE_ID(t->left))) ? 1 : 0;
+eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list, num_resources, rsize, TREE_ID(t->left))) ? 1 : 0;
 	    }
 	    break;
 	    case AND: {
@@ -241,9 +274,9 @@ eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list, nu
 	    if(!fnd)printf("\nn-  - - - - AND treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
 	    if(!fnd)fnd=!fnd;
 #endif
-                eval_result = (eval_result && pe_make_resource_list(t->left, &resource_list,num_resources, rsize, "\0")  ) ? 1 : 0;
+                eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list,num_resources, rsize, "\0")  ) ? 1 : 0;
 		
-	        eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
+	        eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
 			      
 	    }
 	    break;
@@ -252,9 +285,9 @@ eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list, nu
 	    if(!fnd)printf("\nn-  - - - - OR treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
 	    if(!fnd)fnd=!fnd;
 #endif
-                eval_result = (eval_result && pe_make_resource_list(t->left, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
+                eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
 		
-	        eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list,num_resources, rsize, "\0")) ? 1 : 0;
+	        eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list,num_resources, rsize, "\0")) ? 1 : 0;
 			      
 	    }
             break;		      
@@ -265,15 +298,15 @@ eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list, nu
 	    if(!fnd)printf("\nn-  - - - - insertresource %s \n", TREE_ID(t));
 	    if(!fnd)fnd=!fnd;
 #endif
-	    eval_result = (eval_result && pe_perform_predicate_eval(t)) ? 1 : 0;
+	    eval_result = (eval_result && pe_perform_predicate_eval(pid, t)) ? 1 : 0;
 	} else { 
 #ifdef PE_DEBUG
 	   if(!fnd)printf("\nn-  - - - - else else\n");                      
 	   if(!fnd)fnd=!fnd;
 #endif
-	    eval_result = (eval_result && pe_make_resource_list(t->left, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
+	    eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
 	    
-	    eval_result = (eval_result && pe_make_resource_list(t->right, &resource_list,num_resources, rsize, "\0")) ? 1 : 0;
+	    eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list,num_resources, rsize, "\0")) ? 1 : 0;
 	}
     }
     *rlist = resource_list;
@@ -306,9 +339,9 @@ pe_get_resource_list_action_requires(int pid, char *act_name, int
 			}
 	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 	if(t == PE_RESOURCE_REQUIRES)
-		return pe_make_resource_list(n -> requires, &act_resources, &num_resources, &rsize, "\0");
+		return pe_make_resource_list(pid, n -> requires, &act_resources, &num_resources, &rsize, "\0");
 	else if (t == PE_RESOURCE_PROVIDES)
-		return pe_make_resource_list(n -> provides, &act_resources, &num_resources, &rsize, "\0");
+		return pe_make_resource_list(pid, n -> provides, &act_resources, &num_resources, &rsize, "\0");
 	else return 0;
 	}
 	if(result_str) 

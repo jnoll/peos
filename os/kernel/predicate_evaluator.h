@@ -17,7 +17,7 @@ typedef int PE_METHOD;
 *  Postcondition: Returns 1,0,-1 if the condition evaluates to
 *	true, false, and error, respectively.
 ****************************************************************/
-int pe_eval(PE_CONDITION cond_type, PE_METHOD meth_type, Tree t);
+int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t);
 
 /****************************************************************
 *  Purpose: Make sure the tree is valid, only then pass it to 
@@ -26,13 +26,13 @@ int pe_eval(PE_CONDITION cond_type, PE_METHOD meth_type, Tree t);
 *  Precondition: tree (for now, non-TCL)
 *  Postcondition: if the tree is valid, result is displayed.
 ****************************************************************/
-void pe_perform_predicate_eval(Tree t);
+void pe_perform_predicate_eval(int pid, Tree t);
 
 
 int
 pe_get_resource_list_action_requires(int pid, char *act_name, int
 		*total_resources, int t);
-int pe_make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier);
+int pe_make_resource_list(int pid, Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier);
 int pe_is_requires_eval_true(int pid, char *act_name, int t);
 
 int is_requires_true(int pid, char *act_name);
