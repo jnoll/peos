@@ -28,11 +28,11 @@ suite: unit_tests function accept
 
 unit_tests:  $(TESTS) 
 	@echo "running unit tests..."
-	@-for i in $^ ; do $$i -f -q; done
+	@-for i in $^ ; do ./$$i -f -q; done
 	@echo "done."
 
 test_list_actions: 
-	test_list_actions_API
+	./test_list_actions_API
 
 function:
 	$(MAKE) -C function_tests 
