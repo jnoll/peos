@@ -47,7 +47,7 @@ char **peos_list_models()
 	if (dbc == 0)
 		return NULL;
 	/* need to use palm memhandles*/
-	list = malloc( dbc * sizeof(char *));
+	list = malloc( (dbc +1) * sizeof(char *));
 
 	for (i=0; i< dbc; i++) /* scan through all DB */
 	{
@@ -58,6 +58,7 @@ char **peos_list_models()
 		list[i]=malloc(sizeof(nameP));
 		list[i]=strdup(nameP);		
 	}
+	list[i]=NULL;
 //	return NULL;
 	return list; 
 }
