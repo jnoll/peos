@@ -57,7 +57,7 @@ test_%: test_%.o $(TEST_OBJS)
 %.o: ../%.c test_%.c
 	$(CC) -c $(CFLAGS) $< 
 
-test_%.o: ../%.c test_%.c test_util.h
+test_%.o: ../%.c test_%.c test_util.o test_util.h
 	$(CC) -o $@ -c $(CFLAGS) -DUNIT_TEST $<  
 
 %.o: %.c
