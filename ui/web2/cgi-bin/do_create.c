@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "vm.h"
-#include "process_table.h"
-#include "events.h"
+#include "../../../os/kernel/vm.h"
+#include "../../../os/kernel/process_table.h"
+#include "../../../os/kernel/events.h"
 
 void create_process(char *model);
 
@@ -11,6 +11,7 @@ int main()
 {
   char *input, *model_name;
 
+  model_name = calloc(200, sizeof(char));
   printf("%s%c%c\n","Content-Type:text/html;charset=iso-8859-1",13,10);
 
   input = getenv("QUERY_STRING");
