@@ -20,6 +20,9 @@ all:
 		PML/*.class \
 		Utils/*.class
 
+install:
+	cp ${JAVA_CLASS_PATH}/pml_gui.jar ../../../bin/.
+
 clean:
 	cd PML; make clean
 	cd Utils; make clean
