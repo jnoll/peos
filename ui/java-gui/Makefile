@@ -1,6 +1,6 @@
 #these lines are for modification.
 images= ./images/
-path= ./bin/peos
+path= /home/shinobi/peos/src/ui/java-gui/bin/peos 
 help= ./help/
 pml= ./testfiles/ 
 XERCES_PATH=./include/
@@ -18,7 +18,7 @@ all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class Disable
 	SetupPath.class MyFileFilter.class 
 	
 	jar cf java-gui.jar *.class
-	mv java-gui.jar ./bin
+	mv java-gui.jar ./include
 
 jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.class testSFASJU.class \
 	testPOJU.class testCRJU.class
@@ -44,28 +44,29 @@ dist:
 	mkdir peos_app
 	cp *.txt peos_app
 	cp *.java peos_app
-	cp runpeos peos_app
+	rm -r peos_app/test*.java
 	cp Makefile peos_app
 	mkdir peos_app/include
 	mkdir peos_app/testfiles
 	mkdir peos_app/images
 	mkdir peos_app/help
 	mkdir peos_app/help/images
-	rm -rf include/CVS
-	rm -rf testfiles/CVS
-	rm -rf images/CVS
-	rm -rf help/images/CVS
-	rm -rf help/CVS
-	cp include/* peos_app/include/
-	cp testfiles/* peos_app/testfiles/
-	cp images/* peos_app/images/
+	cp -r include/* peos_app/include/
+	cp -r testfiles/* peos_app/testfiles/
+	cp -r images/* peos_app/images/
 	cp -r help/* peos_app/help/
+	rm -rf peos_app/include/CVS
+	rm -rf peos_app/testfiles/CVS
+	rm -rf peos_app/images/CVS
+	rm -rf peos_app/help/images/CVS
+	rm -rf peos_app/help/CVS
 	tar cf peos_app.tar peos_app
 	rm -r peos_app
 clean:
 	rm -rf *.class
 	rm -f event.log
 	rm -f proc_table*
+	rm -rf include/java-gui.jar
 
 script:
 	echo "runApp=0" >runpeos
@@ -89,7 +90,7 @@ script:
 	echo 'if test $$runApp -eq 0' >>runpeos
 	echo "then" >>runpeos
 	echo "	xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >>runpeos
-	echo "java -classpath :./include//xercesImpl.jar:./include//xmlParserAPIs.jar:./include//junit.jar:./include/java-gui.jar:. -Dpeos.images=./images/ -Dpeos.path=./bin/peos -Dpeos.help=./help/ -Dpeos.pml=./testfiles/  PeosApp" >>runpeos
+	echo "java ${java} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml}  PeosApp" >>runpeos
 	echo "fi" >>runpeos
 	chmod 700 runpeos
 
