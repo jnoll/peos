@@ -9,7 +9,8 @@
 
 void setup_fs( )
 {
-	repos_ctr ++;
+	
 	repos_list[repos_ctr].queryTool = FSqueryTool;
 	repos_list[repos_ctr].name = "file" ;
+	repos_ctr ++;
 }

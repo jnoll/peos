@@ -116,6 +116,7 @@ void poll_vr( )
 	if( myQueries != NULL )
 	{
 		myQueries = FSqueryTool( myQueries ) ;
+		
 			
 		tempQueries = myQueries ;
 	
