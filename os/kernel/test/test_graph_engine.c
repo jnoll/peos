@@ -811,10 +811,19 @@ END_TEST
 START_TEST(test_update_context)
 {
 	int i;
+	int nbytes,abytes;
+        FILE *file;
+        char expected[BUFSIZ],actual[BUFSIZ];
+        char times[20];
+        struct tm *current_info;
+        time_t current;
+				    
 	Graph g = (Graph) malloc (sizeof (struct graph));
 	Node source,sink,act_0,act_1,sel,branch,join,rendezvous;
 	peos_context_t *context = &(process_table[0]);
 
+	strcpy(context->model,"test.pml");
+	context->pid = 1;
 	context -> status = PEOS_READY;
 	context -> num_actions = 2;
 	context -> actions = (peos_action_t *) calloc(context->num_actions, sizeof(peos_action_t));
@@ -852,9 +861,25 @@ START_TEST(test_update_context)
         rendezvous -> next = join;
         join -> next = sink;
         sink -> next = NULL;
-									         sel -> matching = join;
+        sel -> matching = join;
         branch -> matching = rendezvous;
 
+	time(&current);
+        current_info = localtime(&current);
+        current = mktime(current_info);
+        strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
+        file = fopen("expected_event.log", "a");
+        fprintf(file, "%s jnoll end test.pml %d\n", times, 1);
+        fclose(file);
+                                                                        
+        mark_point();
+                                                                             
+        file = fopen("expected_event.log","r");
+        memset(expected,0,BUFSIZ);
+        nbytes = fread(expected,sizeof(char),BUFSIZ,file);
+        fclose(file);
+        mark_point();
+							
 	
         fail_unless(update_context(g,context) == 1, "return value");
 	fail_unless(context -> status == PEOS_DONE, "status not peos_done");
@@ -863,6 +888,16 @@ START_TEST(test_update_context)
 	fail_unless(context->other_nodes[0].state == ACT_RUN, "sel state not run");
 	fail_unless(context->other_nodes[1].state == ACT_READY, "br state not ready");
 
+	file = fopen("event.log", "r");
+        memset(actual,0,BUFSIZ);
+        abytes = fread(actual,sizeof(char),BUFSIZ,file);
+        fail_unless(abytes == nbytes, "file size");
+        fclose(file);
+        mark_point();
+		                                                                         
+        fail_unless(strcmp(actual,expected) == 0, "event.log differs");
+        unlink("event.log");
+        unlink("expected_event.log");
 
 }
 END_TEST
@@ -1073,7 +1108,7 @@ main(int argc, char *argv[])
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_annotate_graph);
 
-    tc = tcase_create("update context");
+   tc = tcase_create("update context");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_update_context);
 

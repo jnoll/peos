@@ -15,7 +15,7 @@ extern int p1_num_act;
 
 
 
-#define TEST_PROC_NAME "test.cpml"
+#define TEST_PROC_NAME "test.pml"
 extern char *test_proc[];
 extern int test_proc_size;
 extern int test_proc_PC;

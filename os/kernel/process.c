@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.9 2003/09/06 22:57:13 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.10 2003/09/09 18:49:51 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -91,6 +91,18 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
     struct tm *current_info;
     time_t current;
     char times[20], *this_state;
+    peos_resource_t *resources;
+    int num_resources;
+    int i;
+
+    resources = (peos_resource_t *) get_resource_list_action(pid,action,&num_resources);
+
+    if(resources == NULL)
+    {
+	fprintf(stderr,"Error in Retrieving Resources\n");
+	return VM_INTERNAL_ERROR;
+    }
+    
 
     this_state = act_state_name(state);
 
@@ -101,7 +113,14 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
     strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
 
     file = fopen("event.log", "a");
-    fprintf(file, "%s jnoll %s %s resource(x)\n", times, this_state, action);
+    fprintf(file, "%s jnoll %s %s resource(s):", times, this_state, action);
+    if(num_resources == 0) fprintf(file," no resources");
+    for(i = 0; i < num_resources; i++)
+       {
+	   fprintf(file," %s",resources[i].name);
+            if(i != num_resources-1) fprintf(file,",");
+       }
+     fprintf(file,"\n");
     
     fclose(file);
 

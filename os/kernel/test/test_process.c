@@ -36,12 +36,24 @@ peos_context_t *find_free_entry()
     return &(process_table[0]);
 }
 
+peos_resource_t *get_resource_list_action(int pid,char *action, int *num_resources)
+{
+peos_resource_t *resources = (peos_resource_t *) calloc(2,sizeof(peos_resource_t));  
+
+*num_resources = 2;	
+
+strcpy(resources[0].name,"a");
+strcpy(resources[1].name,"b");
+
+return resources;
+}
+  
+
 
 int load_actions(char *file, peos_action_t **actions, int *num_actions, peos_other_node_t **other_nodes, int *num_other_nodes)
 {
     return stub_load_actions(file, actions, num_actions,other_nodes,num_other_nodes);
 }
-
 
 
 
@@ -107,6 +119,47 @@ START_TEST(test_find_model_file)
     unlink("model.pml");
 }
 END_TEST
+
+START_TEST(test_handle_action_change_run)
+{
+
+  int nbytes,abytes;
+  FILE *file;
+  char expected[BUFSIZ],actual[BUFSIZ];
+  char times[20];
+  struct tm *current_info;
+  time_t current;
+
+  time(&current);
+  current_info = localtime(&current);
+  current = mktime(current_info);
+  strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
+  file = fopen("expected_event.log", "a");
+  fprintf(file, "%s jnoll RUN act_0 resource(s): a, b\n", times);
+  fclose(file);
+								                                                                                     
+  mark_point();
+									                                                                                 
+  file = fopen("expected_event.log","r");
+  memset(expected,0,BUFSIZ);
+  nbytes = fread(expected,sizeof(char),BUFSIZ,file);
+  fclose(file);
+  mark_point();
+                                                                                              fail_unless(handle_action_change(1,"act_0",ACT_RUN) == VM_DONE, "failed to change act state");
+											      file = fopen("event.log", "r");
+											     memset(actual,0,BUFSIZ);
+   abytes = fread(actual,sizeof(char),BUFSIZ,file);
+   fail_unless(abytes == nbytes, "file size");
+   fclose(file);
+   mark_point();
+
+    fail_unless(strcmp(actual,expected) == 0, "event.log differs");
+   unlink("expected_event.log");
+   unlink("event.log");
+
+}
+END_TEST
+										     
 
 
 
@@ -215,6 +268,12 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_create_instance);
     tcase_add_test(tc, test_create_instance_noexist);
 
+    tc = tcase_create("handle action change");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_handle_action_change_run);
+
+
+    
     tc = tcase_create("action accessors");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_get_field_first);

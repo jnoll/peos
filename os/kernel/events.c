@@ -126,7 +126,7 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
     current = mktime(current_info);
     strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
     file = fopen("event.log", "a");
-    fprintf(file, "%s jnoll start %s %d\n", times, process, pid);
+    fprintf(file, "%s jnoll start %s %d\n", times, model_file, pid);
     fclose(file);
     
     if (pid >= 0) 

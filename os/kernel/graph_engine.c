@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "action.h"
 #include "pmlheaders.h"
 #include "vm.h"
@@ -670,8 +671,13 @@ int update_context(Graph g, peos_context_t *context)
 {
 	int i;
         Node n;
+	FILE *file;
+        struct tm *current_info;
+        time_t current;
+        char times[20];
+		    
                                                                    
-        for(n = g -> source; n!= NULL; n = n -> next)
+        for(n = g -> source -> next; n!= NULL; n = n -> next)
         {
          if(n -> type == ACTION)
           {
@@ -697,7 +703,16 @@ int update_context(Graph g, peos_context_t *context)
 	      if(n->type == PROCESS)
 	      {
 		      if (STATE(n) == ACT_DONE)
-			      context -> status = PEOS_DONE;
+		      {
+			 time(&current);
+                         current_info = localtime(&current);
+			 current = mktime(current_info);
+			  strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
+			  file = fopen("event.log", "a");
+		    fprintf(file, "%s jnoll end %s %d\n", times, context->model,context->pid);
+			       fclose(file);
+			       context -> status = PEOS_DONE;
+		      }
 	      }
 	    }
           }
