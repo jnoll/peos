@@ -1,7 +1,8 @@
 
 #ifndef _PREDICATE_EVALUATOR_H
 #define _PREDICATE_EVALUATOR_H
-
+#include <pml/tree.h>
+#include "action.h"
 
 int pe_spellcheck(char* filename);
 int pe_timestamp(char* file1, char*file2);
