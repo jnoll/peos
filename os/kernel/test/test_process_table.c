@@ -122,6 +122,38 @@ START_TEST(test_peos_set_resource_value_no_resource)
 }
 END_TEST
 
+START_TEST(test_make_node_lists)
+{
+    Graph g;
+    peos_action_t *actions;
+    peos_other_node_t *other_nodes;
+    int num_actions,num_other_nodes;
+
+    g = stub_makegraph("some file");
+
+    /* action */
+
+    fail_unless(make_node_lists(g, &actions, &num_actions, &other_nodes, &num_other_nodes) == 1, "return value");
+
+    /* post */
+
+   fail_unless(num_actions == 2,"num actions wrong");
+   fail_unless(num_other_nodes == 1 ," num_other_nodes wrong");
+
+   
+  fail_unless(strcmp(actions[0].name,"act_0") == 0, "act_0 name wrong");
+  fail_unless(strcmp(actions[1].name,"act_1") == 0, "act_1 name wrong");
+  fail_unless(strcmp(other_nodes[0].name,"sel") == 0, "sel name wrong");
+  fail_unless(actions[0].state == ACT_NONE, "act_0 state wrong");
+  fail_unless(actions[1].state == ACT_NONE, "act_1 state wrong");
+  fail_unless(other_nodes[0].state == ACT_NONE, "sel state wrong");
+  fail_unless(strcmp(actions[0].script,"test script") == 0, "act_0 script wrong");
+  fail_unless(strcmp(actions[1].script,"test script") == 0, "act_1 script wrong");
+
+}
+END_TEST
+
+
 START_TEST(test_save_proc_table)
 {
     int i, j, nbytes, abytes;
@@ -429,6 +461,10 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_get_pid);
     tcase_add_test(tc, test_get_pid_last);
 
+    tc = tcase_create("make node lists");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_make_node_lists);
+    
 
     tc = tcase_create("table io");
     suite_add_tcase(s, tc);
