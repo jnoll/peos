@@ -28,5 +28,6 @@ install:
 	chmod 2664 ~tools/workspace/summer99/Engine/src/model/*.gdbm
 
 clean:
+	rm -f core
 	rm -f *.gdbm
 	rm -f *.pml.pp
