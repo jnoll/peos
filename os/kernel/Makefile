@@ -8,7 +8,7 @@ CFLAGS = -g -I../.. -Wall
 
 # lib
 LIBRARY = libpeos.a
-LIBS = ../../pml/libpml.a $(LIBRARY)
+LIBS = $(LIBRARY) ../../pml/libpml.a 
 
 CORE_LIBS = 
 LDFLAGS = -g -L../../lib
@@ -48,7 +48,7 @@ $(LIBRARY): $(OBJS)
 
 # Compile the program
 shell: shell.o $(LIBRARY)
-	$(CC) $(LDFLAGS) -o $@ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
+	$(CC) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
 
 # Unit tests.
 test: $(CORE_OBJS)
