@@ -1,26 +1,28 @@
 # example of a test case.
-shell: ../shell
+shell: kernel_wrapper
 model: simple.pml
 iterations: 1
 script:
 create_proc simple
 create_proc simple
-act_state 0 act_1 ready 
-do 0 act_1
-act_state 0 act_1 active
-done 0 act_1
-act_state 0 act_2 ready
-do 0 act_2
-act_state 0 act_2 active
-done 0 act_2
-proc_done 0 $model
+assert 0 act_1 READY 
+notify 0 act_1 start
+assert 0 act_1 RUN
+notify 0 act_1 finish
+assert 0 act_1 DONE
+assert 0 act_2 READY
+notify 0 act_2 start
+assert 0 act_2 RUN
+notify 0 act_2 finish
+assert_done 0 $model
 
-act_state 1 act_1 ready 
-do 1 act_1
-act_state 1 act_1 active
-done 1 act_1
-act_state 1 act_2 ready
-do 1 act_2
-act_state 1 act_2 active
-done 1 act_2
-proc_done 1 $model
+assert 1 act_1 READY 
+notify 1 act_1 start
+assert 1 act_1 RUN
+notify 1 act_1 finish
+assert 1 act_1 DONE
+assert 1 act_2 READY
+notify 1 act_2 start
+assert 1 act_2 RUN
+notify 1 act_2 finish
+assert_done 1 $model
