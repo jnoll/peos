@@ -5,16 +5,69 @@
 	<title>P.E.O.S</title>
 </head>
 
-<body background="BackGround.gif" title="User Login">
-Enter Your UserName and Password to Start a Session
-<form action="cgi-bin/login.cgi" method = "POST">
-	User Name: <input type="text" name="username" value="" size="16" maxlength="16"><br>
-	Password: <input type="password" name="password" value="" size="16" maxlength="16"><br>
-        <input type="submit" value="Continue with PML Interface">
+<SCRIPT LANGUAGE="JavaScript">
+
+
+var origWidth = window.innerWidth;
+var origHeight = window.innerHeight;
+
+function reloadPage() {//Fixes funky netscape behavior when window is resized
+    if (navigator.appName=="Netscape") {
+        if (origWidth != window.innerWidth || origHeight != window.innerHeight) {
+            location.reload();
+        }
+    }
+}
+
+</SCRIPT>
+
+<BODY MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 onResize="reloadPage();">
+
+<TABLE CELLSPACING="0"  CELLPADDING="10" BORDER="0" WIDTH="100%" HEIGHT="100%" ALIGH="CENTER">
+
+<TR><TD HEIGHT="60" ALIGH="CENTER" COLSPAN=2 BGCOLOR="94D6E7">
+<P><img src="peos_title.jpg" width=470 height=75 alt="" border=0></TD>
+</TR>
+
+<TR><TD WIDTH="120" VALIGN="TOP" ALIGH="CENTER" BGCOLOR="94D6E7" HEIGHT="100%">
+<p><A href="http://oslab-server.cudenver.edu/">General Information </a>
+<p><A href="http://www.cudenver.edu/~jnoll/5728/">CSC5728 Home Page</a>
+<p><A href="http://www.cudenver.edu/~jnoll/5728/cvs-info.html"> CVS Info </a>
+<p><A href="http://oslab-server.cudenver.edu/">FAQ</a>
+<p><A href="http://oslab-server.cudenver.edu/">PEOS Exaplained</a>
+<p><A href="http://oslab-server.cudenver.edu/">Research Paper</a>
+<p><A href="http://oslab-server.cudenver.edu/sgml-tools-guide/guide.html"> SGML-Tools User's Guide </A>
+<p><A href="http://www.cudenver.edu/">CU Denver Home Page</a>
+</TD>
+
+<TD VALIGN="TOP">
+
+<b> Enter Your User Name and Password to Start a Session </b>
+<form action="login.cgi" method = "POST">
+
+<TABLE width="375" border="1" cellpadding="3" bordercolor="#EFEFEF" cellspacing="0" WIDTH="100%" HEIGHT="100%">
+<TR> 
+<TD width="100%"> 
+<TABLE width="100%" border="0" bgcolor="#EFEFEF" cellpadding="2" cellspacing="0">
+<TR bgcolor="#FFFFFF" valign="top" nowrap> 
+<TD align="left"> <FONT size="3"><B>User Name:</B></A>:</FONT></TD>
+<TD><INPUT type="text" name="username" size="30"><BR></TD></TR>
+<TR bgcolor="#FFFFFF" valign="top" nowrap> 
+<TD align="left"> 
+<FONT size="3"><B>Password:</B>:</FONT>
+</TD>
+<TD> 
+<INPUT type="password" name="password" size="30">
+<BR></TD></TR>
+</TABLE></TD></TR></TABLE>
+
+<BR>
+
+<input type="submit" value="submit">
+
 </form>
 
-<Br>
-<Br>
+
 <Br>
 <FONT color="red">
 <p>NOTE: The interface to the backend server is not working yet.  To see the general 
@@ -22,8 +75,14 @@ functionality of this login page, please enter any user name and a password that
 with the number 1, 2, or 3 appended to it.  These numbers are used to simulate different kind of users with
 different kind of allowable operations.
 <p>For example, for the user name of "Bob" the password should be "Bob1", "Bob2", or "Bob3".
-<p><A HREF="mailto:5728-dl@oslab-server.cudenver.edu">Email us</A> if you have any questions</P>
+<P>Entering an unmatched user name and password will cause the authentication process to fail.
+<p>Email us at <A HREF="mailto:5728-dl@oslab-server.cudenver.edu">5728-dl@oslab-server.cudenver.edu</A> if you have any questions</P>
 </FONT>
+
+</TD>
+</TR>
+</TABLE>
+
 
 </body>
 </html>
