@@ -7,6 +7,9 @@
 HOST=linux103
 PORT=14176
 
+#for output...so we don't see pmlvm's output onscreen
+O=/dev/null
+
 #NOTE: If a previous timesheet process has been started
 #  but not finished, its state may be saved in files
 #  pmlstate.dat, ".idx - and this script may not run
@@ -28,7 +31,7 @@ set timeout 10
 (
 echo "login Engine mark"; sleep 1 
 #echo "list" ; sleep 1
-echo "create timesheet"; sleep 2
+echo "create timesheet"; sleep 3
 
 #echo "help" ; sleep 1
 #echo "sample" ; sleep 1
