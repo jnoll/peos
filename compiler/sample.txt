@@ -113,7 +113,7 @@
 112 call exit
 113 push 0 
 114 pop 
-115 call set ready pour_one end
+115 call set ready end
 116 jzero 129
 117 pop
 118 call wait active pour_one end
