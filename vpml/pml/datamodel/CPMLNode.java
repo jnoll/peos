@@ -107,7 +107,7 @@ abstract public class CPMLNode extends CGraphNode
         // Basically we're going to read in a word at a time.  If the
         // total line length is greater than 80 (std screen width) then 
         // start a newline until we've completed all the comment conversion
-        for ( int WordStartIndex = 0; WordStartIndex < m_Comments.length(); )
+        for ( int WordStartIndex = 0; WordStartIndex < m_Comments.length(); WordStartIndex++)
         {
             // First locate the length of the next word looking for spaces here
             while ( m_Comments.charAt( WordStartIndex + WordLength++ ) != ' ' &&

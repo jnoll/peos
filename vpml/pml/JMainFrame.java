@@ -33,6 +33,9 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
      * in future PML programs this will be the name of the process and it's associated
      * filename
      */
+
+    private JStatusArea statusArea = null;
+    private Container contentPane = null;
     public JMainFrame()
     {
         // Call the base class and pass the new frame title along.  In this case it's
@@ -47,7 +50,7 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
 		    JMenuBar MenuBar = new JMenuBar();
         MenuBar.setBorder( new SoftBevelBorder( SoftBevelBorder.RAISED ) );
         setJMenuBar( MenuBar );
-        
+
         // Create our model view components - these should be created after
         // the menu and so forth because they will make use of these resources
         m_DataModel = new JPMLDataModel();
@@ -56,31 +59,35 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
 
         // Set the window's title so we include the filename
         setApplicationTitle();
-        
+
         // Create a split pane so we can have the tree view on one side
         // and the Graph View on the right side
         JSplitPane sp = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT, jt, m_DataView );
-        
+
         // Now add the view to the content pane so we're off and running
-        getContentPane().add( sp, BorderLayout.CENTER );
-        
+        contentPane = getContentPane();
+        contentPane.add( sp, BorderLayout.CENTER );
+
         // Setup the basics of the DataView
 // TO DO: Set the frame to the limits of the screen. Figure this out later!
 		Insets ins = getInsets();
 		setSize(ins.left + ins.right + 640,ins.top + ins.bottom + 480);
-		
+
         // Add a window event listener so we can catch window events
         addWindowListener( this );
+
+        statusArea = JStatusArea.getInstance();
+        statusArea.createStatusArea(contentPane);
     }
-    
+
     // Private members go here
     private String m_ApplicationTitle = "Visual PML";
     private JPMLDataModel m_DataModel;
     private String m_Filename;
     private JPMLDataView m_DataView;
-    
+
     /********** Private helpers *************/
-    
+
     /**
      * Private utility to build and set the mainframe title
      *
@@ -90,8 +97,8 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
         // Set the window's title so we include the filename
         setTitle( m_ApplicationTitle + " - " + m_Filename );
      }
-     
-     /** 
+
+     /**
       * This presents an overwrite confirmation to the user
       * and returns true if they overwrote the file and false if
       * they didn't
@@ -103,7 +110,7 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
         JOptionPane op = new JOptionPane();
         if ( m_DataModel.isDirty() )
         {
-            if ( op.showConfirmDialog( this, 
+            if ( op.showConfirmDialog( this,
                                        "Save Changes to Present Model?",
                                        "Save Changes",
                                        JOptionPane.YES_NO_OPTION ) == JOptionPane.YES_OPTION )
@@ -119,34 +126,34 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
         }
         else
             return true;
-        
+
      }
-    
+
 
     /*********** Implement the window listener methods **********/
     public void windowActivated( WindowEvent e )
     {
-       // Nothing to do right now   
+       // Nothing to do right now
     }
-    
-    /** 
+
+    /**
      * basic window closing event.  Of course we want to capture
      * the event and make sure the user has had a chance to save a document
      * to disk and tidy up any last minute program details
      *
      * @param e The actual Window Closing event with closure information
      */
-    public void windowClosing( WindowEvent e )  
+    public void windowClosing( WindowEvent e )
     {
         // TODO Add a check for the dirty flag on the document and
         // save the document if the user wants
-        
+
         // Close the program for good
         System.exit( 0 );
     }
-    
+
     /**
-     * Default window event handler - doesn't do anything but required 
+     * Default window event handler - doesn't do anything but required
      * by WindowListener interface
      *
      * @param e WindowEvent
@@ -155,53 +162,53 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
     {
         // Nothing to do here now
     }
-    
+
     /**
-     * Default window event handler - doesn't do anything but required 
+     * Default window event handler - doesn't do anything but required
      * by WindowListener interface
      *
      * @param e WindowEvent
      */
     public void windowDeactivated( WindowEvent e )
     {
-        // Nothing to do right now   
+        // Nothing to do right now
     }
-    
+
     /**
-     * Default window event handler - doesn't do anything but required 
+     * Default window event handler - doesn't do anything but required
      * by WindowListener interface
      *
      * @param e WindowEvent
      */
     public void windowDeiconified( WindowEvent e )
     {
-        // Nothing to do right now   
+        // Nothing to do right now
     }
-    
+
     /**
-     * Default window event handler - doesn't do anything but required 
+     * Default window event handler - doesn't do anything but required
      * by WindowListener interface
      *
      * @param e WindowEvent
      */
     public void windowIconified( WindowEvent e )
     {
-        // Nothing to do right now   
+        // Nothing to do right now
     }
-    
+
     /**
-     * Default window event handler - doesn't do anything but required 
+     * Default window event handler - doesn't do anything but required
      * by WindowListener interface
      *
      * @param e WindowEvent
      */
     public void windowOpened( WindowEvent e )
     {
-        // Nothing to do right now   
+        // Nothing to do right now
     }
-    
+
     /******* Action Listener Implementation and Handled Actions *****/
-    
+
     // NOTE:  This mainframe handles all file based events because it's
     // an application functon.  You should handle all Edit and PML menu events
     // in the appropriate view
@@ -210,27 +217,29 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
         // Handle the new menu selection
         if ( e.getActionCommand().equals( "New" ) )
             fileNew();
-            
+
         // Handle open from the file menu
         if ( e.getActionCommand().equals( "Open" ) )
             fileOpen();
-            
+
         // Handle the save menu selection
         if ( e.getActionCommand().equals( "Save" ) )
             fileSave( false );
-            
+
         // Handle the save as case
         if ( e.getActionCommand().equals( "Save As" ) )
             fileSave( true );
-            
+
         // Handle exit event
         if ( e.getActionCommand().equals( "Exit" ) )
             fileExit();
-            
+
         // Handle PML generation
-        if ( e.getActionCommand().equals( "Generate PML" ) )
+        if ( e.getActionCommand().equals( "Generate PML" ) ) {
             pmlGeneratePML();
-            
+            m_DataView.revalidate();
+        }
+
 /*****TEST - uncomment the following to see debugging menu msgs
         // Print out the action received and who received it
         System.out.println( "[JMainFrame] " + e );
@@ -347,7 +356,7 @@ public class JMainFrame extends JFrame implements java.io.Serializable,
         
         // Set the window's title so we include the new filename
         setApplicationTitle();
-        
+
     }
     
     /**
