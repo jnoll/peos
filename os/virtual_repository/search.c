@@ -60,10 +60,8 @@ void selectLoop( )
 		if ( strcmp ( "test\n", queryString ) == 0 )
 		{
 			testFile = fopen ( "test.dat", "r" ) ;
-			puts("here");
 			while ( !feof( testFile ) ) 
 			{
-				puts("here1");
 				fgets ( queryString, sizeof ( queryString ), testFile ) ;
 				if( strlen( queryString ) )
 				{
