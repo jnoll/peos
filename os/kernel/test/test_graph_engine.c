@@ -14,6 +14,7 @@
 
 /* Globals. */
 peos_context_t process_table[PEOS_MAX_PID+1];
+Graph global_graph = NULL;
 
 /* Stubs. */
 extern Node make_node(char *name, vm_act_state, int type,int order);
@@ -26,6 +27,7 @@ extern List make_list(Item i1, Item i2, Item i3, Item i4, Item i5);
 
 peos_context_t *peos_get_context(int pid)
 {
+	process_table[0].process_graph = global_graph;
 	return pid == 0 ? &(process_table[pid]) : NULL;
 }
 
@@ -43,6 +45,140 @@ int delete_entry(int pid)
 {
     return 1;
 }
+
+START_TEST(test_handle_resource_event_1)
+{
+    
+    Graph g = (Graph) malloc(sizeof(struct graph));
+    
+    Node source,sink,act_0,act_1;
+    source = make_node("p",ACT_NONE,PROCESS,0);
+    sink = make_node("p",ACT_NONE,PROCESS,3);
+
+    act_0 = make_node("act_0",ACT_BLOCKED,ACTION,1);
+    act_1 = make_node("act_1",ACT_NONE,ACTION,2);
+
+    RESOURCE_STATE(act_0) = REQUIRES_FALSE;
+    RESOURCE_STATE(act_1) = REQUIRES_FALSE;
+
+    g->source = source;
+    g-> sink = sink;
+    source->next = act_0;
+    act_0->next = act_1;
+    act_1->next = sink;
+    
+    act_0 -> predecessors = (List) make_list(source,NULL,NULL,NULL,NULL);
+    act_0 -> successors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    act_1 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+    sink -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    source -> successors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    sink -> next = NULL;
+
+    global_graph = g;
+
+    fail_unless(handle_resource_event(0,"act_0",REQUIRES_TRUE) == VM_CONTINUE, "Return Value");
+    
+    fail_unless(STATE(act_0) == ACT_READY, "act_0 not ready");
+    fail_unless(STATE(act_1) == ACT_NONE, "act_1 not none");
+    fail_unless(RESOURCE_STATE(act_0) == REQUIRES_TRUE, "act_0 requires not true");
+    
+    fail_unless(RESOURCE_STATE(act_1) == REQUIRES_FALSE, "act_1 requires not false");
+    
+}
+END_TEST
+    
+		    
+
+START_TEST(test_handle_resource_event_2)
+{
+    
+    Graph g = (Graph) malloc(sizeof(struct graph));
+    
+    Node source,sink,act_0,act_1;
+    source = make_node("p",ACT_NONE,PROCESS,0);
+    sink = make_node("p",ACT_NONE,PROCESS,3);
+
+    act_0 = make_node("act_0",ACT_READY,ACTION,1);
+    act_1 = make_node("act_1",ACT_NONE,ACTION,2);
+
+    RESOURCE_STATE(act_0) = REQUIRES_TRUE;
+    RESOURCE_STATE(act_1) = REQUIRES_FALSE;
+
+    g->source = source;
+    g-> sink = sink;
+    source->next = act_0;
+    act_0->next = act_1;
+    act_1->next = sink;
+    
+    act_0 -> predecessors = (List) make_list(source,NULL,NULL,NULL,NULL);
+    act_0 -> successors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    act_1 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+    sink -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    source -> successors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    sink -> next = NULL;
+
+    global_graph = g;
+
+
+    fail_unless(handle_resource_event(0,"act_0",PROVIDES_TRUE) == VM_CONTINUE, "Return Value");
+    
+    fail_unless(STATE(act_0) == ACT_DONE, "act_0 not done");
+    fail_unless(STATE(act_1) == ACT_BLOCKED, "act_1 not blocked");
+    fail_unless(RESOURCE_STATE(act_0) == PROVIDES_TRUE, "act_0 provides not true");
+    
+    fail_unless(RESOURCE_STATE(act_1) == REQUIRES_FALSE, "act_1 requires not false");
+    
+}
+END_TEST
+
+
+START_TEST(test_handle_resource_event_3)
+{
+    
+    Graph g = (Graph) malloc(sizeof(struct graph));
+    
+    Node source,sink,act_0,act_1;
+    source = make_node("p",ACT_NONE,PROCESS,0);
+    sink = make_node("p",ACT_NONE,PROCESS,3);
+
+    act_0 = make_node("act_0",ACT_NONE,ACTION,1);
+    act_1 = make_node("act_1",ACT_NONE,ACTION,2);
+
+    RESOURCE_STATE(act_0) = REQUIRES_FALSE;
+    RESOURCE_STATE(act_1) = REQUIRES_FALSE;
+
+    g->source = source;
+    g-> sink = sink;
+    source->next = act_0;
+    act_0->next = act_1;
+    act_1->next = sink;
+    
+    act_0 -> predecessors = (List) make_list(source,NULL,NULL,NULL,NULL);
+    act_0 -> successors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    act_1 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+    sink -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    source -> successors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    sink -> next = NULL;
+
+    global_graph = g;
+
+
+    fail_unless(handle_resource_event(0,"act_0",REQUIRES_TRUE) == VM_CONTINUE, "Return Value");
+    
+    fail_unless(STATE(act_0) == ACT_AVAILABLE, "act_0 not available");
+    fail_unless(STATE(act_1) == ACT_NONE, "act_1 not none");
+    fail_unless(RESOURCE_STATE(act_0) == REQUIRES_TRUE, "act_0 requires not true");
+    
+    fail_unless(RESOURCE_STATE(act_1) == REQUIRES_FALSE, "act_1 requires not false");
+    
+}
+END_TEST
+
+
+
 
 START_TEST(test_mark_successors)
 {
@@ -611,8 +747,6 @@ START_TEST(test_initialize_graph)
         act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
 	sink -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
 	sink -> successors = (List) make_list(NULL,NULL,NULL,NULL,NULL);
-
-		 
 	
 	g -> source = source;
 	g -> sink = sink;
@@ -626,7 +760,6 @@ START_TEST(test_initialize_graph)
 	act_0 -> next = act_1;
 	act_1 -> next = sink;
 	sink -> next = NULL;
-
 		
 	initialize_graph(g);
 
@@ -916,8 +1049,12 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_set_node_state_done);
     tcase_add_test(tc, test_set_node_state_done_1);
     tcase_add_test(tc, test_set_node_state_none);
-    
-    
+
+    tc = tcase_create("test handle resource event");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc, test_handle_resource_event_1);
+    tcase_add_test(tc, test_handle_resource_event_2);
+    tcase_add_test(tc, test_handle_resource_event_3);
 
 
     
