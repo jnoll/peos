@@ -7,7 +7,7 @@ CFLAGS = -g -Wall -I. -I.. -I../../.. -I/home/jnoll/include
 .KEEP_STATE:
 
 # lib
-LIBS = ../../../pml/libpml.a
+LIBS = ../../../pml/libpml.a  -ltcl 
 TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib
 
@@ -19,7 +19,7 @@ TEST_OBJS = test_util.o action.o graph.o
 SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 
 # These are in order of use.
-TESTS = test_resources test_graph test_action test_events test_process test_process_table test_graph_engine test_assertions test_predicate_evaluator
+TESTS =  test_resources test_graph test_action test_events test_process test_process_table test_graph_engine test_assertions test_predicate_evaluator test_tclinterp
 
 
 all: test_list_actions_API test kernel_wrapper 
