@@ -6,8 +6,8 @@ CC = gcc
 CFLAGS = -w -g -Wall -I$(OS_DIR) -I../../.. -I/usr/include/libxml2
 
 LD = gcc
-LIBS = -lpml -lcrypt -lxml2 -lz -lm
-LDFLAGS = -g -L../../../pml -L/usr/lib
+LIBS = -lpml -lcrypt -lxml2 -lz -lm -lpeos -ltcl
+LDFLAGS = -g -L../../../os/kernel -L../../../pml -L/usr/lib 
 
 
 KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
