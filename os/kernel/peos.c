@@ -92,6 +92,27 @@ int notify(int pid, char *action, char *event)
     return -1;
 }
 
+int update_state() {
+
+    int i=0;
+    peos_action_t *tempalist;
+    char **result = peos_list_instances();	
+	
+    while((i <= PEOS_MAX_PID)) {
+	if (result[i] != NULL) {
+	    int temp_num_actions;	
+	    tempalist = peos_list_actions(i,&temp_num_actions);	
+	    if(tempalist) {
+                if(peos_notify(i, "dummy_action", PEOS_EVENT_RESOURCE_CHANGE) == VM_INTERNAL_ERROR) {
+	            printf("Error in notifying resource change event\n");
+	            return -1;
+	        }
+	    }
+	}
+	i++;
+    }
+    return 1;
+}
 
 int
 main (int argc, char **argv)
@@ -105,7 +126,7 @@ main (int argc, char **argv)
     char *model;
     opterr = 0;
     	
-    c = getopt (argc, argv, "+c:n:ihr:d:");
+    c = getopt (argc, argv, "+c:n:ihr:d:u");
     if (c != -1) { 
         switch (c) {
             case 'c': {
@@ -184,7 +205,7 @@ main (int argc, char **argv)
 		   
 	 case 'd': {
                        if(argc != 3) {
-		           fprintf(stderr, "Usage: peos -r pid resource_name resource_value\n");
+		           fprintf(stderr, "Usage: peos -d pid \n");
 			   exit(EXIT_FAILURE);
 		       }
 		       else {
@@ -197,10 +218,28 @@ main (int argc, char **argv)
 		       }		   
                        break;
 		   }
+
+	 case 'u': {
+                       if(argc != 2) {
+		           fprintf(stderr, "Usage: peos -u\n");
+			   exit(EXIT_FAILURE);
+		       }
+		       else {
+			   if(update_state() < 0) {
+			       fprintf(stderr, "Could not update process state\n");
+		               exit(EXIT_FAILURE);
+			   }
+	                   else return 1;
+		       }		   
+                       break;
+		   }
+
+		   
 	 case 'h': {
 		       printf("To create a process: peos -c name_of_model_file\n");
 	               printf("To start an action: peos -n process_id action_name event\n");
 	               printf("Event can be: start or finish or abort or suspend\n");
+	               printf("To update all processes: peos -u \n");
 	               printf("To get a list of instances: peos -i\n");
 		       printf("To bind resources: peos -r pid resource_name resource_value\n");
 		       printf("To delete a process: peos -d pid\n");

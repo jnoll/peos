@@ -16,7 +16,7 @@ fi
 
 if test -s proc_table.dat 
 then 
-mv proc_table.dat new_proc_table.dat
+mv proc_table.dat old_proc_table.dat
 fi
 
 #create a process
@@ -220,6 +220,44 @@ then
   echo Failed process creation action c tag.
   echo
 fi
+
+rm proc_table.dat.xml
+rm proc_table.dat
+rm peos_test.pml 
+rm output
+
+#test update state
+
+echo "process p {" > peos_test.pml
+echo "action a {}" >> peos_test.pml
+echo "action b {}" >> peos_test.pml
+echo "action c {}" >> peos_test.pml
+echo "}" >> peos_test.pml
+
+peos -c peos_test.pml > output
+peos -u
+
+if !(grep '<action name=\"a\" state=\"READY\">' proc_table.dat.xml > /dev/null)
+then
+  echo
+  echo Failed update state action a tag.
+  echo
+fi
+
+if !(grep '<action name=\"b\" state=\"AVAILABLE\">' proc_table.dat.xml > /dev/null)
+then
+  echo
+  echo Failed update state action b tag.
+  echo
+fi
+
+if !(grep '<action name=\"c\" state=\"AVAILABLE\">' proc_table.dat.xml > /dev/null)
+then
+  echo
+  echo Failed update state action c tag.
+  echo
+fi
+
 
 rm proc_table.dat.xml
 rm proc_table.dat
