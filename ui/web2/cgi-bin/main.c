@@ -11,11 +11,11 @@
 
 int main()
 {
-  int j, pid=0, action_count=0;
+  int i=0, j, pid=0, action_count=0;
   char *state;
+  char **result;
   peos_action_t *alist;
   peos_resource_t *resource;
-  int num_actions;
 
   state = (char *)calloc(10, sizeof(char));
   print_header("Worklist");
@@ -44,50 +44,57 @@ int main()
 
   load_proc_table("proc_table.dat");
 
-  alist = peos_list_actions(pid, &num_actions);
-  if(alist){
-    for(j = 0; j < num_actions; j++){
-      switch(alist[j].state){
-	case 1:  
-          strcpy(state, "ready");
+  result = peos_list_instances();
+  while(pid <= PEOS_MAX_PID){
+    int num_actions;
+    if(result[pid] != ""){
+      alist = peos_list_actions(pid, &num_actions);
+      if(alist){
+        for(j = 0; j < num_actions; j++){
+          switch(alist[j].state){
+	    case 1:  
+              strcpy(state, "ready");
+	      break;
+	    case 2:
+    	      strcpy(state, "active");
+	      break;
+	    case 3:
+	      strcpy(state, "done");
+	      break;
+	    case 4:
+	      strcpy(state, "suspend");
+	      break;
+	    case 5:
+	      strcpy(state, "abort");
+	      break;
+	    case 6:
+	      strcpy(state, "new");
+	      break;
+	    default:
+	      strcpy(state, "none");
 	  break;
-	case 2:
-	  strcpy(state, "active");
-	  break;
-	case 3:
-	  strcpy(state, "done");
-	  break;
-	case 4:
-	  strcpy(state, "suspend");
-	  break;
-	case 5:
-	  strcpy(state, "abort");
-	  break;
-	case 6:
-	  strcpy(state, "new");
-	  break;
-	default:
-	  strcpy(state, "none");
-	  break;
-      }
+	  }
 	  
-      if(alist[j].state == 1 || alist[j].state == 2 || alist[j].state == 4){
-        printf("<tr>\n");
-        printf("<td width=\"100px\" valign=\"top\">\n"); 
-        printf("%s\n", state);
-        printf("</td>\n");
-        printf("<td width=\"150\" valign=\"top\">");
-        print_action(pid, alist[j].name, state);
-        printf("</td>\n");
-        printf("<td width=\"300\" valign=\"top\">");
-        print_resource(pid, alist[j].name);
-        printf("</td>\n");
-        printf("<td width=\"300\" valign=\"top\">");
-        print_script(pid, alist[j].name);
-        printf("</td>\n");
-        printf("</tr>\n");
+          if(alist[j].state == 1 || alist[j].state == 2 || alist[j].state == 4){
+            printf("<tr>\n");
+            printf("<td width=\"100px\" valign=\"top\">\n"); 
+            printf("%s\n", state);
+            printf("</td>\n");
+            printf("<td width=\"150\" valign=\"top\">");
+            print_action(pid, alist[j].name, state);
+            printf("</td>\n");
+            printf("<td width=\"300\" valign=\"top\">");
+            print_resource(pid, alist[j].name);
+            printf("</td>\n");
+            printf("<td width=\"300\" valign=\"top\">");
+            print_script(pid, alist[j].name);
+            printf("</td>\n");
+            printf("</tr>\n");
+          }
+	}
       }
     }
+      pid++;
   } 
 
   save_proc_table("proc_table.dat");
