@@ -67,17 +67,11 @@ void
 on_Start_clicked(GtkButton *menuitem, gpointer user_data)
 {
 
-  char *cmd;
-  char buf[3];
-  int i;
-  char *name;
-  char *res_qual;
-  char *res_val;
+  char *cmd = NULL, buf[3], *name = NULL, *res_qual = NULL, *res_val = NULL;
+  int i, size = 0;
 
   static GtkWidget *input_dialog = NULL;
-  res_qual = res_val = name = NULL;
-  xmlNode *cur;
-  cur = NULL;
+  xmlNode *cur = NULL;
 
   for ( cur = table[cur_pid].page.curr->children; cur;cur = cur->next) {
        	if (cur->name && 
@@ -116,16 +110,17 @@ on_Start_clicked(GtkButton *menuitem, gpointer user_data)
             				gdk_window_raise(input_dialog->window);
            			}
     			} else if (strcmp (res_val,"$$") != 0){
-				
-  				cmd = (char *) malloc (sizeof (char ) * (strlen (exec_path) + 40 
-						+ strlen (xmlGetProp(table[cur_pid].page.curr, "name"))));
+				name = xmlGetProp (table[cur_pid].page.curr, "name");
+  				sprintf(buf, "%d", cur_pid);
+			        size = strlen(exec_path) + strlen(" -n ") + strlen(buf) + strlen(" ") + strlen(name)
+                                                + strlen(" start ") + 1;	
+ 				cmd = (char *) malloc(size*sizeof(char ));
+				size = 0;
   				strcpy (cmd, exec_path);
   				strcat (cmd, " -n ");
-  				sprintf(buf, "%d", cur_pid);
   				strcat (cmd, buf);
   				strcat (cmd, " ");
-				name = xmlGetProp (table[cur_pid].page.curr, "name");
-  				strcat (cmd, xmlGetProp(table[cur_pid].page.curr, "name"));
+  				strcat (cmd, name);
   				strcat (cmd, " start ");
   				runPeos(cmd);
   				free(cmd);
@@ -237,7 +232,7 @@ on_about_activate(GtkMenuItem *menuitem, gpointer user_data)
   }
 }
 
-void
+int
 on_OK_clicked(GtkButton *button, gpointer user_data)
 {
   char *cmd, buf[3], *buf2, *input, *tmp, *name, *enter, *enter_tmp;
@@ -246,10 +241,11 @@ on_OK_clicked(GtkButton *button, gpointer user_data)
   input =  gtk_entry_get_text(GTK_ENTRY (entry1));
   if(input == NULL) {
   	perror("Inefficient memroy: input is NULL. Aborting.");
+	RTN_ON_OK_CLICKED = EXIT_FAILURE;
 	exit(1);
   } else {
   	size = strlen("\'") + strlen(input) + strlen("\'") + 1;
-  	enter = malloc (size);
+  	enter = (char *) malloc (size*sizeof(char));
 	strcpy (enter, "\'");
   	strcat (enter, input);
   	strcat (enter, "\'");
@@ -258,6 +254,7 @@ on_OK_clicked(GtkButton *button, gpointer user_data)
 
   if (table[cur_pid].process != NULL ) {
   	if (input != NULL) {
+		sprintf(buf, "%d", cur_pid); /* Moved here to satisfy below */
 		name = xmlGetProp(table[cur_pid].page.curr,"name");
 		size = strlen(exec_path) + strlen(" -n") + sizeof(cur_pid) + strlen(buf)
 			+ strlen(" ") + strlen(name) + strlen(" start ") + 1;
@@ -266,7 +263,6 @@ on_OK_clicked(GtkButton *button, gpointer user_data)
 
 		strcpy (cmd, exec_path);
 		strcat (cmd, " -n ");
-		sprintf(buf, "%d", cur_pid);
 		strcat (cmd, buf);
 		strcat (cmd, " ");
 		strcat (cmd, name);
@@ -294,37 +290,53 @@ on_OK_clicked(GtkButton *button, gpointer user_data)
 		tmp = get_current_dir_name();
 		if(tmp == NULL) {
   			perror("No current directory found. Aborting. \n");
+			RTN_ON_OK_CLICKED = EXIT_FAILURE;
 	 		exit(1);
  		} else {
-			size = strlen(tmp) + strlen("/") + strlen(enter_tmp) + 1;
-			buf2 = (char *) malloc(size);
+			//size = strlen(tmp) + strlen("/") + strlen(enter_tmp) + 1;
+			size = strlen(tmp) + strlen("/") + 1;
+			buf2 = (char *) malloc(size*sizeof(char));
 			size = 0;
 			strcpy(buf2, tmp);
+			strcat(buf2,"/");
 		}
 
-		strcat(buf2,"/");
 		if(enter == NULL) {
 			perror("Memory alloc error: enter = NULL \n");
+			RTN_ON_OK_CLICKED = EXIT_FAILURE;
 			exit(1);
 		} else 	enter[strlen(enter)] = '\0';
 
 		/* to eliminate the quotes and -2 in alloc to take into acount: '"', '"' */
-		size = sizeof(enter) - 2;
-		enter_tmp = (char *) malloc(size);
-		for(i = 1; i < strlen(enter); i++) {
+		size = strlen(enter) + 1;
+		enter_tmp = (char *) malloc(size*sizeof(char));
+		strcpy(enter_tmp, enter);
+		
+		int j = 0;
+		for(i = 1; i < size-3; i++) {
+			 
 			/* integer value for the single quote character */
-			if(enter[i] != 39)
-				enter_tmp[i-1] = enter[i];
-			else enter_tmp[i-1] = '\0';
+			if(enter[i] != 39) {
+				enter_tmp[j] = enter[i];
+				j++;
+			}
 		}
 
-		enter_tmp[strlen(enter_tmp)] = '\0';
-		strcat(buf2, enter_tmp);
+		enter_tmp[strlen(enter_tmp)-1] = '\0';
+		/* need more memory */
+		char *buf2_temp = NULL;
+		size = 0;
+		size = strlen(buf2) + strlen(enter_tmp) + 1;
+		buf2_temp = (char *) malloc(size*sizeof(char));
+		strcpy(buf2_temp, buf2);
+		free(buf2);
+		buf2 = NULL;
+		strcat(buf2_temp, enter_tmp);
 
 		free(enter_tmp);
 		enter_tmp = NULL;
-		free(buf2);
-		buf2 = NULL;
+		free(buf2_temp);
+		buf2_temp = NULL;
 
 		runPeos (cmd);
 		free (cmd);
@@ -354,6 +366,10 @@ on_OK_clicked(GtkButton *button, gpointer user_data)
 	/* check to maintain the next and previous states */
 	check_state();
   }
+
+  /* return global EXIT_SUCCESS */
+  RTN_ON_OK_CLICKED = EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
 
 void
@@ -365,6 +381,7 @@ on_Finish_clicked(GtkButton *button, gpointer user_data)
 	int i, size;
 
 	if (table[cur_pid].process != NULL ) {
+		sprintf(buf, "%d", cur_pid);	/* Put this up here: fix */
 		name =  xmlGetProp(table[cur_pid].page.curr, "name");
 		size = strlen(exec_path) + strlen(" -n ") + sizeof(cur_pid)
 			+ strlen(buf) + strlen(" ") + strlen(name) + strlen(" finish ") + 1;
@@ -372,7 +389,6 @@ on_Finish_clicked(GtkButton *button, gpointer user_data)
 
 		strcpy (cmd, exec_path);
 		strcat (cmd, " -n ");
-		sprintf(buf, "%d", cur_pid);
 		strcat (cmd, buf);
 		strcat (cmd, " ");
 		strcat (cmd, name);
@@ -554,8 +570,8 @@ on_ok_fileselection_clicked(GtkWidget *file, GtkFileSelection *fs)
   char *cmd, buf[MAX_BUF];
   GtkWidget *error_dialog = NULL;
 
-  size = strlen(exec_path) + strlen(" -c ") + strlen(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)));
-  cmd = (char *) malloc (size);
+  size = strlen(exec_path) + strlen(" -c ") + strlen(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs))) + 1;
+  cmd = (char *) malloc (size*sizeof(char));
   strcpy (cmd, exec_path);
   strcat (cmd, " -c ");
   strcat (cmd, gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)));

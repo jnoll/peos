@@ -2,8 +2,10 @@
 #define _CALLBACKS_H
 #include <gtk/gtk.h>
 #include <string.h>
+#include <stdlib.h>
 #include "engine.h"
 #include "parse.h"
+#include "global_error.h"	/* Goblabl error values for PEOS */ 
 
 void
 filter (GtkWidget *file_list);
@@ -31,7 +33,7 @@ void
 on_about_activate                      (GtkMenuItem     *menuitem,
                                         gpointer         user_data);
 
-void
+int
 on_OK_clicked                   (GtkButton       *button,
                                         gpointer         user_data);
 

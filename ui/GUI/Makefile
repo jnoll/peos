@@ -48,13 +48,15 @@ LDFLAGS= `${GNOME_CONFIG_LDFLAGS}` `${PKG_CONFIG_LDFLAGS}` \
 H_SRC= buttonimages.h callbacks.h ctrlimages.h deletemenu.h \
 	engine.h glo.h html.h htmllinkage.h images.h interface.h \
 	menu.h menuimages.h notebook.h parse.h support.h text.h \
-	tree.h treeimages.h viewmenu.h
+	global_error.htree.h treeimages.h viewmenu.h
+	
 C_SRC=	main.c interface.c callbacks.c engine.c \
 	glo.c parse.c tree.c html.c viewmenu.c  \
-	deletemenu.c htmllinkage.c notebook.c
+	global_error.c deletemenu.c htmllinkage.c notebook.c
+	
 C_OBJ=	main.o interface.o callbacks.o engine.o \
 	glo.o parse.o tree.o html.o viewmenu.o  \
-	deletemenu.o htmllinkage.o notebook.o
+	global_error.o deletemenu.o htmllinkage.o notebook.o
 
 # build location
 #

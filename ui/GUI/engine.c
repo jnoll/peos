@@ -1,5 +1,3 @@
-/* XXX - unistd.h under RH9 fails to declare get_current_dir_name correctly */
-extern char *get_current_dir_name(void);
 #include "engine.h"
 #include "glo.h"
 #include <stdio.h>
@@ -54,23 +52,24 @@ runPeos (char *cmd)
  *	NULL ==> no peos found
  */
 /*@null@*/
-static char *
+char *
 peos_in_dir(char *dirname)
 {
+    #define EXIT_FAIL NULL
     size_t size;	/* malloc string size */
     char *peos;		/* potential location of peos */
 
     /* firewall */
     if (dirname == NULL) {
-	return NULL;
+	return EXIT_FAIL;
     }
 
     /* form $PWD/peos */
-    size = strlen(dirname) + sizeof(SLASH_PEOS);
-    peos = malloc(size+1);
+    size = strlen(dirname) + sizeof(SLASH_PEOS) + 1;
+    peos = (char *) malloc((size_t) size);
     if (peos == NULL) {
 	perror("malloc of dirname/peos failed");
-	return 0;
+	return EXIT_FAIL;
     }
     peos[0] = '\0';
     (void) snprintf(peos, size, "%s%s", dirname, SLASH_PEOS);
@@ -81,6 +80,7 @@ peos_in_dir(char *dirname)
 	/* no peos in directory, return NULL */
 	free(peos);
 	peos = NULL;
+        return EXIT_FAIL;
     }
     return peos;
 }

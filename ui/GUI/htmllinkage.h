@@ -2,6 +2,7 @@
 #define _HTMLLINKAGE_H
 /* HEADER FILE FOR HTML.H FUCNTION */
 
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <gconf/gconf.h>
@@ -16,8 +17,8 @@ void set_glist(xmlNode *child, int pid);
 void set_glist_NULL();
 void destroy_glist();
 void set_html_links(xmlNode *action, char * buf1);
-int lookup_rsc_name(char * name);
+int lookup_rsc_name(GList *cur_glist, char *name);
 char *set_contents(char * content);
-void set_href(char * buf1, GList *glist);
+int set_href(char * buf1, GList *glist, resource *data);
 
 #endif

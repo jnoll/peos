@@ -5822,3 +5822,15 @@ Aug 17 2004 11:51  (null) start /users/student/jmontana/peos/src/ui/GUI/web_test
 Aug 17 2004 11:51  (null) start /users/student/jmontana/peos/src/ui/GUI/web_test.pml 2
 Aug 17 2004 11:51  (null) start /users/student/jmontana/peos/src/ui/GUI/submit_hw.pml 3
 Aug 17 2004 11:52  (null) start /users/student/jmontana/peos/src/ui/GUI/Timesheet.pml 4
+Aug 30 2004 12:00  (null) start /users/student/jmontana/repBed/peos/src/ui/GUI/Timesheet.pml 0
+Aug 30 2004 12:00 (null) RUN Fill_name 0 
+Aug 30 2004 12:00  (null) start /users/student/jmontana/repBed/peos/src/ui/GUI/submit_hw.pml 1
+Aug 30 2004 12:01  (null) start /users/student/jmontana/repBed/peos/src/ui/GUI/web_test.pml 2
+Aug 30 2004 12:01  (null) start /users/student/jmontana/repBed/peos/src/ui/GUI/Timesheet.pml 3
+Aug 30 2004 12:01 (null) RUN Fill_name 3 
+Aug 30 2004 12:01  (null) start /users/student/jmontana/repBed/peos/src/ui/GUI/Timesheet.pml 4
+Aug 30 2004 12:01 (null) RUN Fill_name 4 
+Aug 30 2004 12:01 (null) RUN Fill_name 4 
+Aug 30 2004 12:01 (null) ABORT Fill_name 4 
+Aug 30 2004 12:01 (null) DONE Fill_name 4 
+Aug 30 2004 12:01 (null) RUN Fill_name 4 
