@@ -55,7 +55,7 @@ else
 fi
 
 PEOS=/home/jmontana/bin/peos
-echo $EXPORT PATH=$PATH:/bin:/usr/bin:$HOME/bin
+$EXPORT PATH=$PATH:/bin:/usr/bin:$HOME/bin
 
 # Create model.  Model must be a full path, since the process is
 # likely not being invoked from a directory containing models.
@@ -69,17 +69,24 @@ echo $EXPORT PATH=$PATH:/bin:/usr/bin:$HOME/bin
 PEOS_DIR=/home/${USER}/.peos
 
 # Need to check to see if PEOS_DIR is a valid directory.
-if [ -d my ]
+if [ -d $PEOS_DIR ]
 then 
 	# Defualt path to known directory.
         cd "/home/${USER}/.peos" && $PEOS -c $MODEL
 else
 	# Need to set prefix if home directory files are not in /home .
 	if [ "$PREFIX" = "" ]; then 
-		# Setting prefix to know directory.
-		PREFIX=`dirname $HOME_PREFIX`
-   		PEOS=/$PREFIX/${USER}/bin/peos
-   		export PATH=$PATH:/bin:/usr/bin:/$PREFIX/${USER}/bin
+
+		# Check to see if root directory of $HOME path exists.
+		if [ -d $HOME_PREFIX ]
+		then
+			# Setting prefix to root directory of $HOME path.
+			PREFIX=`dirname $HOME_PREFIX`
+   			PEOS=/$PREFIX/${USER}/bin/peos
+   			export PATH=$PATH:/bin:/usr/bin:/$PREFIX/${USER}/bin
+		else
+			echo "$HOME_PREFIX does not exist.  Set the HOME envirnment variable to the correct home directory."
+		fi	
 	fi
 
 	#check to see if directory exists
