@@ -527,6 +527,7 @@ on_Previous_clicked                    (GtkButton       *button,
 {
   #define PREV       2
   #define MINUS_ONE -1
+  parse();
   set_item_select(MINUS_ONE, PREV);
 }
 
@@ -537,7 +538,9 @@ on_Next_clicked                        (GtkButton       *button,
 {
   #define NEXT     1
   #define PLUS_ONE 1
+  parse();
   set_item_select(PLUS_ONE, NEXT);
+  
 }
 
 void
