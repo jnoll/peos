@@ -26,7 +26,7 @@
 
 #define PE_RESOURCE_PROVIDES 100
 #define PE_RESOURCE_REQUIRES 200
-#undef OLD
+#define OLD
 
 FILE* pe_log;
 
@@ -189,11 +189,11 @@ int pe_timestamp(char* file1, char*file2)
 	peos_tcl_script(interpreter, "tclf_timestamp.tcl");
 	Tcl_Eval(interpreter->interp, args);
 	if(result_str) free (result_str);
-	if(args) free (result_str);
+	if(args) free (args);
 #ifdef PE_DEBUG_B
 	fprintf(pe_log, "\t Result for pe_timestamp(%s, %s): %s\n", file1, file2, interpreter->interp->result);
 #endif
-        result = strcmp(interpreter->interp->result,"1") ? 0 : 1;
+        result = (strcmp(interpreter->interp->result,"1")==0) ? 1 : 0;
 	peos_tcl_delete(interpreter);
 #ifdef PE_RETURN
 	fprintf(pe_log,"RETURN pe_timestamp %d\n", result);
@@ -596,7 +596,7 @@ int is_requires_true(int pid, char *act_name)
 	fprintf(pe_log, "***RETURN from is_requires_true : %d\n", i);
 #endif
 	fclose(pe_log);
-	return i;
+	return (i || is_requires_true_old(pid, act_name));
 }
 
 int is_provides_true(int pid, char *act_name)
@@ -612,7 +612,7 @@ int is_provides_true(int pid, char *act_name)
 	fprintf(pe_log, "***RETURN from is_provodes_true : %d\n", i);
 #endif
        fclose(pe_log);
-	return i;
+       return (i || is_provides_true_old(pid, act_name));
 }
 #ifdef OLD
 int is_requires_true_old(int pid, char *act_name)

@@ -48,8 +48,7 @@ START_TEST(test_is_provides_true)
  
     fptr = fopen("resource_file", "w");
 
-    //fail_unless(is_provides_true(0, "some_name") == 1, "is_provides_true failed");
-
+    fail_unless(is_provides_true(0, "some_name") == 1, "is_provides_true failed");
     if(resources) free(resources);
 
     unlink("resource_file");
@@ -74,8 +73,7 @@ START_TEST(test_is_requires_true)
 
     fptr = fopen("resource_file", "w");
 
-    //fail_unless(is_requires_true(0, "some_name") == 1, "is_requires_true failed");
-
+    fail_unless(is_requires_true(0, "some_name") == 1, "is_requires_true failed");
     if(resources) free(resources);
 
     unlink("resource_file");
@@ -96,8 +94,7 @@ START_TEST(test_is_requires_true_1)
     global_resources = resources;
     global_num_resources = 1;
 
-    //fail_unless(is_requires_true(0, "some_name") == 1, "is_requires_true failed");
-
+    fail_unless(is_requires_true(0, "some_name") == 1, "is_requires_true failed");
     if(resources) free(resources);
 
     unlink("resource_file");
@@ -117,8 +114,7 @@ START_TEST(test_is_provides_true_1)
     global_resources = resources;
     global_num_resources = 1;
 
-    //fail_unless(is_provides_true(0, "some_name") == 1, "is_provides_true failed");
-
+    fail_unless(is_provides_true(0, "some_name") == 1, "is_provides_true failed");
     if(resources) free(resources);
 
     unlink("resource_file");
@@ -141,7 +137,7 @@ START_TEST(test_is_requires_true_2)
     global_resources = resources;
     global_num_resources = 2;
 
-    //fail_unless(is_requires_true(0, "some_name") == 0, "is_requires_true 2  failed");
+    fail_unless(is_requires_true(0, "some_name") == 0, "is_requires_true 2  failed");
 
     if(resources) free(resources);
 
@@ -166,7 +162,6 @@ START_TEST(test_is_provides_true_2)
     global_num_resources = 2;
 
     fail_unless(is_provides_true(0, "some_name") == 0, "is_provides_true 2  failed");
-
     if(resources) free(resources);
 
     unlink("resource_file");
@@ -174,82 +169,7 @@ START_TEST(test_is_provides_true_2)
 }
 END_TEST
 
-//----------------------
-START_TEST(test_pe_perform_predicate_eval)
-{
-/*
-	int TREE_OP_t = EQ,
-	    TREE_OP_t_left = DOT,
-	    TREE_OP_t_right = DOT;
-	    
-	char* TREE_ID_t_left_right ="timestamp",* TREE_ID_t_right_right="timestamp";
-	// normal case 
-	if(TREE_OP_t >= EQ && TREE_OP_t <= GT){
-		if(TREE_OP_t_left == DOT && TREE_OP_t_right == DOT){
-			if(!strcmp("timestamp", TREE_ID_t_left_right) && !strcmp("timestamp", TREE_ID_t_right_right)){
-				// this should be accessed
-			}else 
-				fail ("Should never have gotten here!");
-		}
-	}
-	
-	
-	TREE_OP_t = EQ-1;
-	// bad case 1 
-	if(TREE_OP_t >= EQ && TREE_OP_t <= GT){
-		if(TREE_OP_t_left == DOT && TREE_OP_t_right == DOT){
-			if(!strcmp("timestamp", TREE_ID_t_left_right) && !strcmp("timestamp", TREE_ID_t_left_right)){
-				fail ("Should never have gotten here!");
-			}
-		}
-	}
-	
-	TREE_OP_t = GT;
-	TREE_OP_t_left=EQ;
-	
-	
-	// bad case 2 
-	if(TREE_OP_t >= EQ && TREE_OP_t <= GT){
-		if(TREE_OP_t_left == DOT && TREE_OP_t_right == DOT){
-			if(!strcmp("timestamp", TREE_ID_t_left_right) && !strcmp("timestamp", TREE_ID_t_left_right)){
-				fail ("Should never have gotten here!");
-			}
-		}
-	}
-*/
-}
-END_TEST
 
-START_TEST(test_pe_eval)
-{
-/*
-
-	-1 return conditions:
-	* buf1 resource file is not found
-	* buf2 resource file is not found
-	* the TREE_IP was not found
-	* condition and method of evaluation flags do not any one's implemented
-	
-	1 return conditions:
-	* TREE OP condition evaluated to true
-	0 return conditions:
-	* TREE OP condition evaluated to false
-
-	int resource_one_exists = 1,
-	    resource_two_exists = 1,
-	    cond_meth_satisfied = 1;
-	    
-	 
-   	if(cond_meth_satisfied){
-		if(resource_one_exists && resource_two_exists)
-		
-		fail_unless(resource_one_exists && resource_two_exists,
-			"resources do not exist, no comparison should be made");
-		
-	}
-*/
-}
-END_TEST
 /*
 int pe_file_exists(char* filename)
 
@@ -278,25 +198,31 @@ END_TEST
 
 START_TEST(test_pe_byname)
 {
-    fail_unless(pe_byname("filecount", "./")==1, "pe_byname failed");
+    system("rm -rf mytempdir");
+    system("mkdir mytempdir");
+    system("touch mytempdir/one");
+    fail_unless(pe_byname("filecount", "mytempdir")==1, "pe_byname failed");
+    system("rm mytempdir/one");
+    system("rm -rf mytempdir");
 }
 END_TEST
 
 START_TEST(test_pe_isdirempty)
 {
-    fail_unless(pe_isdirempty("./")!=0
-    , "pe_isdirempty returned 1 with non-existent filename");
+    system("rm -rf mytempdir");
+    system("mkdir mytempdir");
+    fail_unless(pe_isdirempty("mytempdir")==1, "pe_isdirempty failed");
 }
 END_TEST
 
 START_TEST(test_pe_timestamp)
 {
-    system ("touch file1");
-   // sleep("5");
-    system("touch file2");
-    fail_unless(pe_timestamp("file1", "file2")!=1, "pe_timestamp failed");
-    system("rm file1");
-    system("rm file2");
+    
+    system("touch file");
+    fail_unless(pe_timestamp("peos", "file")==0, "pe_timestamp failed");
+    system("rm file");
+  
+    
 }
 END_TEST
 
@@ -313,7 +239,10 @@ END_TEST
 START_TEST(test_pe_file_size)
 {
     system("touch file1");
-    fail_unless(pe_file_size("file1")!=0, "pe_file_size failed");
+    fail_unless(pe_file_size("file1")==0, "pe_file_size failed");
+    system("echo 'file size is no longer zero' > file1");
+    fail_unless(pe_file_size("file1")>0, "pe_file_size failed");
+    system("rm file1");
 }
 END_TEST
 
@@ -327,7 +256,8 @@ main(int argc, char *argv[])
     SRunner *sr;
     Suite *s = suite_create("predicate_evaluator");
     TCase *tc;
-
+    //system("echo `pwd`");
+    system("cp -f ../tclf_*tcl ./");
     parse_args(argc, argv);
     tc = tcase_create("is_provides_true");
     suite_add_tcase(s,tc);
@@ -341,14 +271,7 @@ main(int argc, char *argv[])
     tcase_add_test(tc,test_is_requires_true);
     tcase_add_test(tc,test_is_requires_true_1);
     tcase_add_test(tc,test_is_requires_true_2);
-    
-    tc = tcase_create("testing_pe_eval");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_pe_eval);
-        
-    tc = tcase_create("testing_pe_perform_predicate_eval");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_pe_perform_predicate_eval);
+  
     
     tc = tcase_create("testing_pe_file_exists");
     suite_add_tcase(s,tc);
@@ -361,7 +284,7 @@ main(int argc, char *argv[])
     tc = tcase_create("testing_pe_isdirempty");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_pe_isdirempty);
-    
+     
     tc = tcase_create("testing_pe_timestamp");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_pe_timestamp);
@@ -382,5 +305,6 @@ main(int argc, char *argv[])
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
     suite_free(s);
+    system("rm -f ./tclf_*tcl");
     return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
