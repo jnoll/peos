@@ -14,7 +14,7 @@ void print_row(int pid, char *name, char *state)
 {
     printf("<tr>");
     printf("<td style=\"vertical-align: top;\">%d<br></td>", pid);
-    printf("<td style=\"vertical-align: top;\"><a href = action_page.cgi?pid=%d&act_name=%s&state=%s&process_filename=%s>%s</a><br></td>",pid, name, state, process_filename, name);
+    printf("<td style=\"vertical-align: top;\"><a href = action_page.cgi?pid=%d&act_name=%s&process_filename=%s>%s</a><br></td>",pid, name, process_filename, name);
     printf("<td style=\"vertical-align: top;\">%s<br></td>", state);
     printf("<td style=\"vertical-align: top;\"><br></td>");
     printf("</tr>");

@@ -17,6 +17,7 @@ int main()
     int pid;
     char *action_name;
     char *state;
+    char *script;
     char *process_filename;
     int num_req_resources;
     int num_prov_resources;
@@ -29,14 +30,13 @@ int main()
  
     pid = atoi((char *) getvalue("pid", cgivars));
     action_name = (char *) getvalue("act_name", cgivars);
-    state = (char *) getvalue("state", cgivars);
     process_filename = (char *) getvalue("process_filename", cgivars);
    
     peos_set_process_table_file(process_filename);
 
-    req_resources = peos_get_resource_list_action_requires(pid, action_name, &num_req_resources);
-     
-    prov_resources = peos_get_resource_list_action_provides(pid, action_name, &num_prov_resources);
+    state = peos_get_act_state(pid, action_name);
+    script = peos_get_script(pid, action_name);
+    
      
     print_header("Action Details");
 
@@ -56,31 +56,8 @@ int main()
     printf("</tr>");
 
     printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">Required Resources<br></td>");
-    printf("<td style=\"vertical-align: top;\">");
-
-    for(i=0; i < num_req_resources; i++)
-    {
-        printf("%s", req_resources[i].name);
-        if (i < num_req_resources-1) printf(",");
-    }
-  
-    printf("<br></td>");
-    printf("</tr>");
-
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">Provided Resources<br></td>");
-    printf("<td style=\"vertical-align: top;\">");
-    
-    
-    for(i=0; i < num_prov_resources; i++)
-    {
-        printf("%s", prov_resources[i].name);
-        if (i < num_prov_resources-1) printf(",");
-    }
-    
-    
-    printf("<br></td>");
+    printf("<td style=\"vertical-align: top;\">Script<br></td>");
+    printf("<td style=\"vertical-align: top;\">%s<br></td>",script);
     printf("</tr>");
 
     printf("</tbody>");
@@ -112,8 +89,5 @@ int main()
     for (i=0; cgivars[i]; i++) free(cgivars[i]) ;
     free(cgivars) ;
 
-    if(req_resources) free(req_resources);
-
-    if(prov_resources) free(prov_resources);
 
 }
