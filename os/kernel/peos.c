@@ -114,6 +114,18 @@ int update_state() {
     return 1;
 }
 
+void set_login_name(char *loginname)
+{
+    char *process_filename;
+    
+    process_filename = (char *) malloc((strlen(loginname) + strlen(".dat") +1) * sizeof(char));
+    strcpy(process_filename, loginname);
+    strcat(process_filename, ".dat"); 
+
+    peos_set_process_table_file(process_filename);
+    peos_set_loginname(loginname);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -124,53 +136,96 @@ main (int argc, char **argv)
     char *res_name;
     char *res_val;
     char *model;
+    int l = 0; /* l == 1 iff login option is passed */
+    char *login = "proc_table"; /* default login name */
     opterr = 0;
     	
-    c = getopt (argc, argv, "+c:n:ihr:d:u");
-    if (c != -1) { 
+    while ((c = getopt (argc, argv, "+c:n:ihr:d:ul:")) != -1) {
         switch (c) {
+            case 'l': {
+	                  l = 1;
+                          login = strdup(optarg);
+                          break;
+		      }
+	            		      
             case 'c': {
-		           if(argc != 3) {
-		               fprintf(stderr, "Usage: peos -c process_file\n");
-	                       exit(EXIT_FAILURE);
-	                   }
-			   else {
-                               model = argv[2];
-			       if(create_process(model) < 0) {
-			           fprintf(stderr, "Could not Create Process\n");
-			           exit(EXIT_FAILURE);
+			   if(l == 0) {   
+		               if(argc != 3) {
+		                   fprintf(stderr, "Usage: peos -c process_file\n");
+	                           exit(EXIT_FAILURE);
+	                       }
+			       else {
+			           model = argv[2];
 			       }
-			       else return 1;
 			   }
+			   else {
+			       if(argc !=5) {
+		                   fprintf(stderr, "Usage: peos -l login_name -c process_file\n");
+	                           exit(EXIT_FAILURE);
+			       }
+			       else {
+                                   model = argv[4];
+			       }
+			   }
+			   set_login_name(login);
+			   if(create_process(model) < 0) {
+			       fprintf(stderr, "Could not Create Process\n");
+			       exit(EXIT_FAILURE);
+			   }
+			   else return 1;
 		           break;
 		      }
 		      
            case 'n': {
-		         if(argc != 5) {
-		             fprintf(stderr, "Usage: peos -n pid act_name start|finish|suspend|abort\n");
-	                     exit(EXIT_FAILURE);
-	                 }
-			 else {
-                             pid = atoi(argv[2]);
-                             act_name = argv[3];
-                             event = argv[4];
-			     if(notify(pid, act_name, event) < 0) {
-			         fprintf(stderr, "Could not %s action %s\n",event, act_name);
-		                 exit(EXIT_FAILURE);
+			 if(l == 0) {    
+		             if(argc != 5) {
+		                 fprintf(stderr, "Usage: peos -n pid act_name start|finish|suspend|abort\n");
+	                         exit(EXIT_FAILURE);
+	                     }
+			     else {
+                                 pid = atoi(argv[2]);
+                                 act_name = argv[3];
+                                 event = argv[4];
 			     }
-	                     else return 1;
 			 }
+			 else {
+			     if(argc != 7) {	 
+		                 fprintf(stderr, "Usage: peos -l login_name -n pid act_name start|finish|suspend|abort\n");
+	                         exit(EXIT_FAILURE);
+	                     }
+			     else {
+                                 pid = atoi(argv[4]);
+                                 act_name = argv[5];
+                                 event = argv[6];
+			     }
+			 }
+			 set_login_name(login);
+			 if(notify(pid, act_name, event) < 0) {
+			     fprintf(stderr, "Could not %s action %s\n",event, act_name);
+		             exit(EXIT_FAILURE);
+			 }
+	                 else return 1;
 			 break;
 		     }
 		     
 	 case 'i': {
-                       if(argc != 2) {
-		           fprintf(stderr, "Usage: peos -i \n");
-			   exit(EXIT_FAILURE);
+		       if(l == 0) {
+                           if(argc != 2) {
+		               fprintf(stderr, "Usage: peos -i \n");
+			       exit(EXIT_FAILURE);
+		           }
 		       }
 		       else {
+                           if(argc != 5) {
+		               fprintf(stderr, "Usage: peos -l login_name -i \n");
+			       exit(EXIT_FAILURE);
+		           }
+		       }
+		       {
 		           int i;
-		           char **result = peos_list_instances(result);
+		           char ** result;
+		           set_login_name(login);
+		           result = peos_list_instances(result);
 		           if (result != NULL) {
 		               for (i = 0; i <= PEOS_MAX_PID; i++) {
 		                   printf("%d %s\n", i, result[i]);
@@ -180,57 +235,93 @@ main (int argc, char **argv)
 		           else {
 		               fprintf(stderr, "error getting instances\n");
 	                       exit(EXIT_FAILURE);
-		           }
-		       }		   
+	                   }
+		       }
                        break;
                    }
 		   
 	 case 'r': {
-                       if(argc != 5) {
-		           fprintf(stderr, "Usage: peos -r pid resource_name resource_value\n");
-			   exit(EXIT_FAILURE);
+		       if(l == 0) {
+                           if(argc != 5) {
+		               fprintf(stderr, "Usage: peos -r pid resource_name resource_value\n");
+			       exit(EXIT_FAILURE);
+		           }
+			   else {
+                               pid = atoi(argv[2]);
+			       res_name = argv[3];
+			       res_val = argv[4];
+			   }
 		       }
 		       else {
-                           pid = atoi(argv[2]);
-                           res_name = argv[3];
-                           res_val = argv[4];
-			   if(peos_set_resource_binding(pid, res_name, res_val) < 0) {
-			       fprintf(stderr, "Could not bind resources");
-		               exit(EXIT_FAILURE);
+		           if(argc != 7) {
+		               fprintf(stderr, "Usage: peos -l login_name -r pid resource_name resource_value\n");
+			       exit(EXIT_FAILURE);
+		           }
+			   else {
+                               pid = atoi(argv[4]);
+			       res_name = argv[5];
+			       res_val = argv[6];
 			   }
-	                   else return 1;
-		       }		   
+		       }
+		       set_login_name(login);
+		       if(peos_set_resource_binding(pid, res_name, res_val) < 0) {
+		           fprintf(stderr, "Could not bind resources");
+		           exit(EXIT_FAILURE);
+		       }
+	               else return 1;
+		       		   
                        break;
                    }
 		   
 	 case 'd': {
-                       if(argc != 3) {
-		           fprintf(stderr, "Usage: peos -d pid \n");
-			   exit(EXIT_FAILURE);
+		       if(l == 0) {	   
+                           if(argc != 3) {
+		               fprintf(stderr, "Usage: peos -d pid \n");
+			       exit(EXIT_FAILURE);
+		           }
+			   else {
+                               pid = atoi(argv[2]);
+			   }
 		       }
 		       else {
-                           pid = atoi(argv[2]);
-			   if(peos_delete_process_instance(pid) < 0) {
-			       fprintf(stderr, "Could not delete process instance\n");
-		               exit(EXIT_FAILURE);
+                           if(argc != 5) {
+		               fprintf(stderr, "Usage: peos -l login_name -d pid \n");
+			       exit(EXIT_FAILURE);
+		           }
+		           else {
+                               pid = atoi(argv[4]);
 			   }
-	                   else return 1;
-		       }		   
+		       }
+		       set_login_name(login);
+		       if(peos_delete_process_instance(pid) < 0) {
+			   fprintf(stderr, "Could not delete process instance\n");
+		           exit(EXIT_FAILURE);
+		       }
+	               else return 1;
+		       		   
                        break;
 		   }
 
 	 case 'u': {
-                       if(argc != 2) {
-		           fprintf(stderr, "Usage: peos -u\n");
-			   exit(EXIT_FAILURE);
+		       if(l == 0) {	   
+                           if(argc != 2) {
+		               fprintf(stderr, "Usage: peos -u\n");
+			       exit(EXIT_FAILURE);
+		           }
 		       }
 		       else {
-			   if(update_state() < 0) {
-			       fprintf(stderr, "Could not update process state\n");
-		               exit(EXIT_FAILURE);
-			   }
-	                   else return 1;
-		       }		   
+                           if(argc != 4) {
+		               fprintf(stderr, "Usage: peos -l login_name -u\n");
+			       exit(EXIT_FAILURE);
+		           }
+		       }
+		       set_login_name(login);
+		       if(update_state() < 0) {
+		           fprintf(stderr, "Could not update process state\n");
+		           exit(EXIT_FAILURE);
+		       }
+	               else return 1;
+		       		   
                        break;
 		   }
 
@@ -258,10 +349,11 @@ main (int argc, char **argv)
 		
          default:
               abort ();
-         }
-    }
-    else {
-        printf("Invalid Invocation. Please type peos -h for help\n");
+	}
     }
     return 0;
 }
+		   
+	
+
+		   
