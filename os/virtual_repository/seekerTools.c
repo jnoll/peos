@@ -15,6 +15,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#define BUFFER_SIZE 1000
+
 /************************************************************************
  * Function:	andResult						*
  *									*
@@ -115,4 +117,38 @@ resultList* orResult( resultList* tempResults, resultList* newResults )
 	}
 	
 	return orResultList ;
+}
+
+/************************************************************************
+ * Function:	compactString						*
+ *									*
+ * Description:	Given a line, it returns a compacted line without	*
+ *		whitespaces in it				 	*
+ ************************************************************************/
+ 
+void compactString( char *oneLine ) 
+{
+	int i, j ;	
+	char newLine[BUFFER_SIZE] = { '\0' } ;
+
+	if( oneLine != NULL )
+	{	
+		_debug( __FILE__, __LINE__, 5, "oneLine is %s\n", oneLine ) ;
+		_debug( __FILE__, __LINE__, 5, "strlen( oneLine ) is %d", strlen( oneLine ) ) ;
+
+		for( i = j = 0 ; i < strlen( oneLine ) ; i++ )
+		{
+			//_debug( __FILE__, __LINE__, 5, "%d, character is %c\n", i, oneLine[i] ) ;
+			if( oneLine[i] != ' ' )
+				 newLine[j++] = oneLine[i] ;
+		}	
+		
+		newLine[j++] = '\n' ;
+		newLine[j] = '\0' ;
+		_debug( __FILE__, __LINE__, 5, "newLine is %s\n", newLine ) ;
+		_debug( __FILE__, __LINE__, 5, "strlen( newLine ) is %d", strlen( newLine ) ) ;
+		strcpy( oneLine, newLine ) ;
+		_debug( __FILE__, __LINE__, 5, "oneLine is %s\n", oneLine ) ;
+		_debug( __FILE__, __LINE__, 5, "strlen( oneLine ) is %d", strlen( oneLine ) ) ;
+	}
 }

@@ -21,12 +21,13 @@ testFSsearchInvalid \
 testFSsearchEmpty \
 testUNITandResult \
 testUNITorResult \
+testUNITquerywait \
+testUNITcompactString \
 testUpdateTestSite \
 testEMAILsearchEnd2End \
 testEMAILsearchInvalid \
 testUNITquerywait \
 testUNITgetPath 
-
 
 FS_ACTUAL_RESULT_FILES = \
 VRsetupActualResult.txt \
@@ -38,10 +39,9 @@ UNITandResultActualResult.txt \
 UNITorResultActualResult.txt \
 UNITquerywaitActualResult.txt \
 UNITcompactStringActualResult.txt \
+UNITgetPathActualResult.txt  \
 EMAILsearchEnd2EndActualResult.txt \
-EMAILsearchInvalidActualResult.txt \
-UNITgetPathActualResult.txt 
-
+EMAILsearchInvalidActualResult.txt
 
 FS_EXPECTED_RESULT_FILES = \
 FSsearchEnd2EndExpectedResult.txt \
@@ -55,7 +55,6 @@ UNITcompactStringExpectedResult.txt \
 EMAILsearchEnd2EndExpectedResult.txt \
 EMAILsearchInvalidExpectedResult.txt 
 	 
- 
 all: $(TESTS)
 
 $(LIB): $(OBJECTS)
@@ -103,6 +102,9 @@ test:	$(TESTS)
 
 	testUNITquerywait > UNITquerywaitActualResult.txt
 	diff UNITquerywaitExpectedResult.txt UNITquerywaitActualResult.txt
+	
+	testUNITcompactString > UNITcompactStringActualResult.txt
+	diff UNITcompactStringExpectedResult.txt UNITcompactStringActualResult.txt
 		
 	cp testvr.rc vr.rc
 	testUNITgetPath > UNITgetPathActualResult.txt
