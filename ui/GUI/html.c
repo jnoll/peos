@@ -92,9 +92,9 @@ GtkWidget *action_detail( xmlNode *action)
 					value = xmlGetProp (child, "value");
 	
 					if (strcmp (value, "$$") != 0) {
-						glist_index = lookup_rsc_name(table[cur_pid].res, name);
+						glist_index = lookup_rsc_name(name);
 						glist = g_list_nth(table[cur_pid].res, (guint) glist_index);
-						set_href(buf1, glist, glist->data);
+						set_href(buf1, glist);
 	
 					} else strcat(buf1,name);
 					
@@ -114,9 +114,9 @@ GtkWidget *action_detail( xmlNode *action)
 					value = xmlGetProp (child, "value");
 
 					if (strcmp (value, "$$") != 0) {
-						glist_index = lookup_rsc_name(table[cur_pid].res, name);
+						glist_index = lookup_rsc_name(name);
 						glist = g_list_nth(table[cur_pid].res, (guint) glist_index);
-						set_href(buf1, glist, glist->data);
+						set_href(buf1, glist);
 
 					} else strcat(buf1,name);
 				strcat(buf1,"<br>");

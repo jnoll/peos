@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "htmllinkage.h"
 
 void glist(xmlNode *action, int pid)
@@ -28,11 +29,11 @@ void glist(xmlNode *action, int pid)
 void set_glist(xmlNode *child, int pid)
 {
 
-  resource *element = NULL;
+  resource *element;
   guint i, length;
-  GList *cmp = NULL;
-  char *name = NULL, *value = NULL;
-  resource *data = NULL;
+  GList *cmp;
+  char *name,*value;
+  resource *data;
 
   data = g_new (resource, 1); /*GTK MALLOC */
   name = (char *)xmlGetProp(child, (const xmlChar *)"name");
@@ -133,14 +134,13 @@ void set_html_links(xmlNode *action, char * buf1)
 			}
 			id[i] = '\0';
 
-                         
-			glist_index = lookup_rsc_name(table[cur_pid].res, id);
+			glist_index = lookup_rsc_name(id);
 			glist = g_list_nth(table[cur_pid].res, (guint) glist_index);
 
 			if (glist) element = (resource *)glist->data;
 
 			if (glist && strcmp (element->value, "$$") != 0) {
-				set_href(buf1, glist, glist->data);
+				set_href(buf1, glist);
 			} else {
 				if (glist) strcat (buf1, element->name);
 			}
@@ -152,25 +152,23 @@ void set_html_links(xmlNode *action, char * buf1)
   }
 }
 
-int lookup_rsc_name(GList *cur_glist, char *name)
+int lookup_rsc_name(char * name)
 {
 
   guint i;
-  guint length = -1;
-  GList * glist = NULL;
-  resource *element = NULL;
-                                                                                                             
-  length = g_list_length(cur_glist);
-  if(length == -1) return -1;
-                                                                                                             
+  guint length;
+  GList * glist;
+  resource *element;
+  length = g_list_length(table[cur_pid].res);
+
   for(i = 0; i < length; i++) {
-        /* try to locate the string in the glist */
-        glist = g_list_nth( cur_glist, (gint) i);
-        if (glist) element = (resource *) glist->data;
-        if(glist && (strcmp(element->name, name) == 0))
-        {
-                return i;
-        }
+  	/* try to locate the string in the glist */
+  	glist = g_list_nth( table[cur_pid].res, (gint) i);
+	if (glist) element = (resource *) glist->data;
+	if(glist && (strcmp(element->name, name) == 0))
+	{
+	        return i;
+	}
   }
   return -1;
 
@@ -206,49 +204,36 @@ char *set_contents(char * content)
 
 }
 
-int
-set_href(char *buf1, GList *glist, resource *data)
+void set_href(char *buf1, GList* glist)
 {
 
-  int  length = -1;
-  char *temp = NULL;
-  size_t size;
+  guint glist_index, length = 0;
+  resource *element;
+  char *temp;
+  int size;
 
-#ifdef DEBUG
-  g_list_length(NULL); 
-  printf("\ncur_pid = %d \n", cur_pid);
-#endif
+  length = g_list_length(table[cur_pid].res);
 
-  /* test to assure current process' id is valid */
-  if((cur_pid > -1) && (cur_pid <12)) {
-  	length = g_list_length(glist);
-  } else return 1;  /* **error** */
-
-  if ( (glist != NULL) && (length > 0) ) {
-        if((cwd ==  NULL) || (data->value == NULL)) {
-		return 1;
-        }
-	size = 			strlen("<a href=\"file:") +
+  if ((glist != NULL) && (glist_index >= 0) && (glist_index <= length)) {
+  	element = (resource *)glist->data;
+	size = 			sizeof("<a href=\"file:") +
 			        strlen(cwd) +
-				strlen("/") +
-				strlen(data->value) +
-				strlen("\">") +
-				strlen(data->value) +
-				strlen("</a>") + 1;
-	temp = (char *) malloc((size_t) size);
+				sizeof("/") +
+				strlen(element->value) +
+				sizeof("\">") +
+				strlen(element->value) +
+				sizeof("</a>") + 1;
+	temp = (char *) malloc(size);
 
 	strcpy(temp,"<a href=\"file:");	/* copy NULL */
 	strcat(temp,cwd);
 	strcat(temp,"/");
-	strcat(temp,data->value);
+	strcat(temp,element->value);
 	strcat(temp,"\">");
-	strcat(temp,data->value);
+	strcat(temp,element->value);
 	strcat(temp,"</a>");
-        if(buf1 == NULL) return 1;
 	strcat(buf1,temp);
 	free(temp);
 	temp = NULL;
   }
-  return 0;
 }
-
