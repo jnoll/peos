@@ -21,9 +21,13 @@ typedef int PE_METHOD;
 #undef PE_DEBUG
 #undef PE_DEBUG_A
 #define PE_COND_RA_RA 1 /* Resource-Attrib, Resource-Attrib */
-#define PE_METH_FILE_TIMESTAMP 1 /* Will compare file time stamps */
 #define PE_COND_FILE 2 /* Node is a file */
-#define PE_METH_FILE_EXISTS 1 /* File Exists */
+#define PE_COND_RA_R 3 /* Resource-Attrib, Resource-Attrib */
+
+#define PE_METH_FILE_TIMESTAMP 1 /* Will compare file time stamps */
+#define PE_METH_FILE_EXISTS 2 /* File Exists */
+#define PE_METH_FUNCTION 3 /* File Exists */
+
 
 #define PE_RESOURCE_PROVIDES 100
 #define PE_RESOURCE_REQUIRES 200
@@ -88,7 +92,6 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 	                return -1;
 	            }
 	            else {
-	                fprintf(stderr, "Required Resource Detection Error in pe_eval\n");
 		        return -1;
 	            }
 	        }
@@ -100,7 +103,6 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 	                return -1;
 	            }
 	            else {
-	                fprintf(stderr, "Required Resource Detection Error in pe_eval\n");
 		        return -1;
 	            }
 	        }
@@ -124,7 +126,6 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 				return buf1.st_mtime > buf2.st_mtime ? 1 : 0;
 				break;
 			default:
-				fprintf(stderr, "switch defaulted in pe_eval.\n");
 				return -1;
 		}
 		
@@ -135,18 +136,42 @@ int pe_eval(int pid, PE_CONDITION cond_type, PE_METHOD meth_type, Tree t)
 		if(stat(pe_get_resval(pid, TREE_ID(t)), &buf1) == -1) {
 	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
 #ifdef PE_DEBUG
-		    	fprintf(stderr, "error 3 ENOENT \n");
+		    	fprintf(stderr, "error 3 ENOENT %s\n",pe_get_resval(pid, TREE_ID(t)));
 #endif
 	                return -1;
 	            }
 	            else {
-	                fprintf(stderr, "Required Resource Detection Error in pe_eval\n");
 		        return -1;
 	            }
 	        }
 		return 1;
 	}
-	fprintf(stderr, "eeek!\n");
+	else if(cond_type == PE_COND_RA_R && meth_type == PE_METH_FUNCTION){
+#ifdef PE_DEBUG
+	fprintf(stderr,"---  SPELLCHECKING --- %s\n", TREE_ID(t->left->left));
+#endif
+		/* This is where a pe_get_resval will call one of functions
+		defined in TCL.. 
+		such as Spellcheck 
+		instead of returning a value to stat()
+		*/
+		if(stat(pe_get_resval(pid, TREE_ID(t->left->left)), &buf1) == -1) {
+#ifdef PE_DEBUG
+		fprintf(stderr,"--- SPELLCHECKING -2- \n");
+#endif
+	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
+#ifdef PE_DEBUG
+		    	fprintf(stderr, "error 4 ENOENT \n");
+#endif
+	                return -1;
+	            }
+	            else {
+		        return -1;
+	            }
+	        }
+		return 1;
+	}
+	//fprintf(stderr, "No Condition Match found!\n");
  	return -1;
 }
 /****************************************************************
@@ -160,46 +185,83 @@ int pe_perform_predicate_eval(int pid, Tree t)
 {
 	int res= 0;
 	if (IS_ID_TREE(t)){
+		if(strlen(TREE_ID(t))>0){
+			if (TREE_ID(t)[0]=='\"') 
+			{
+#ifdef PE_DEBUG
+				fprintf(stderr,"-------- LITERAL -------- %s\n", TREE_ID(t));
+#endif
+	    			return 1;
+			}
+#ifdef PE_DEBUG
+			else fprintf(stderr,"-------- NOT A LITERAL -------- %s\n", TREE_ID(t));
+#endif
+		}
 		if((res = pe_eval(pid, PE_COND_FILE, PE_METH_FILE_EXISTS, t))==1){
 #ifdef PE_DEBUG
-			fprintf(stderr,"pe_update1 says TRUE!\n");
+			fprintf(stderr,"pe_perform_predicate_eval: File Exists? says TRUE!\n");
 #endif
 			return 1;
 		}
 		else if(res == 0){
 #ifdef PE_DEBUG
-			fprintf(stderr,"pe_update1 says FALSE!\n");
+			fprintf(stderr,"pe_perform_predicate_eval: File Exists? says FALSE!\n");
 #endif
 			return 0;
 		}else{
 #ifdef PE_DEBUG
-			fprintf(stderr,"pe_update1 says ERROR!\n");
+			fprintf(stderr,"pe_perform_predicate_eval: File Exists? says ERROR!\n");
 #endif
 			return 0;
 		}
 	}else if(TREE_OP(t) >= EQ && TREE_OP(t) <= GT){
+#ifdef PE_DEBUG
+ 	fprintf(stderr,"====? %s %s\n", TREE_ID(t->left), TREE_ID(t->right));
+#endif        
 		if(TREE_OP(t->left) == DOT && TREE_OP(t->right) == DOT){
 			if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->right->right))){
  				if((res = pe_eval(pid, PE_COND_RA_RA, PE_METH_FILE_TIMESTAMP, t))==1){
 #ifdef PE_DEBUG
- 					fprintf(stderr,"pe_update says TRUE!\n");
+ 					fprintf(stderr,"pe_perform_predicate_eval: Timestamp? says TRUE!\n");
 #endif
 					return 1;
 				}
  				else if(res == 0){
 #ifdef PE_DEBUG
-					fprintf(stderr,"pe_update says FALSE!\n");
+					fprintf(stderr,"pe_perform_predicate_eval: Timestamp?  says FALSE!\n");
 #endif
 					return 0;
 				}else{
 #ifdef PE_DEBUG
-					fprintf(stderr,"pe_update says ERROR!\n");
+					fprintf(stderr,"pe_perform_predicate_eval: Timestamp?  says ERROR!\n");
+#endif
+					return 0;
+				}
+			}
+		}
+		else if(TREE_OP(t->left) == DOT){
+			if(!strcmp("spellchecked", TREE_ID(t->left->right))/* && !strcmp("\"True\"", (TREE_ID(t->right)))*/){
+ 				if((res = pe_eval(pid, PE_COND_RA_R, PE_METH_FUNCTION, t))==1){
+#ifdef PE_DEBUG
+ 					fprintf(stderr,"pe_perform_predicate_eval: Spellchecked? says TRUE!\n");
+#endif
+					return 1;
+				}
+ 				else if(res == 0){
+#ifdef PE_DEBUG
+					fprintf(stderr,"pe_perform_predicate_eval: Spellchecked? says FALSE!\n");
+#endif
+					return 0;
+				}else{
+#ifdef PE_DEBUG
+					fprintf(stderr,"pe_perform_predicate_eval: Spellchecked? says ERROR!\n");
 #endif
 					return 0;
 				}
 			}
 		}
 	}
+	
 	return 1;
 }
 	
@@ -209,7 +271,6 @@ int pe_perform_predicate_eval(int pid, Tree t)
 int
 pe_make_resource_list(int pid , Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier)
 {
-//    char *qual = qualifier;	
     peos_resource_t *resource_list = *rlist;
 #ifdef PE_DEBUG
     int fnd =0;
@@ -320,12 +381,9 @@ pe_get_resource_list_action_requires(int pid, char *act_name, int
 	char* result_str=NULL;
 	Graph g;
 	Node n;
-//	int i,j;
 	int rsize = 256;
 	int num_resources = 0;
 	peos_context_t *context = peos_get_context(pid);
-//	peos_resource_t *proc_resources = context -> resources;
-//	int num_proc_resources = context -> num_resources;
 	peos_resource_t *act_resources;
 	if(!result_str){
 		result_str = (char*)malloc(sizeof(char)*(255));

@@ -76,7 +76,12 @@ void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int
 	    }
 	} else  
 	if (IS_ID_TREE(t)) {
-	    insert_resource(TREE_ID(t), &resource_list, num_resources, rsize, qual);
+		if(strlen(TREE_ID(t))>0){
+			if (TREE_ID(t)[0]!='\"'){
+	    			insert_resource(TREE_ID(t), &resource_list, num_resources, rsize, qual);
+			}
+		}
+		
 	} else { 
 	    make_resource_list(t->left, &resource_list,num_resources, rsize, "\0");
 	    make_resource_list(t->right, &resource_list,num_resources, rsize, "\0");
