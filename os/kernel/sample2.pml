@@ -1,12 +1,14 @@
 process sample2 {
-        action a {}
+      iteration i1 {
          iteration i {
-         selection s {
            action x {}
            action y {}
             }
+           action z {}
+           }
+          action a {}
          }
-         action p {}
-         action q {}
-     }
+
+
+
 

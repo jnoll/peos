@@ -18,7 +18,8 @@
 # define JOIN 285
 # define PROCESS 266
 
-
+void handle_selection(Node n);
+void mark_successors(Node n, vm_act_state state);
 
 int  annotate_graph(Graph g, peos_context_t *context)
 {
@@ -37,6 +38,15 @@ int  annotate_graph(Graph g, peos_context_t *context)
 return 1;   
 }
 
+void sanitize(Graph g)
+{
+	Node n;
+	for(n = g -> source; n != NULL; n = n -> next)
+	{
+		MARKED(n) = FALSE;
+	}
+}
+
 
 Graph makegraph(char *file)
 {
@@ -47,7 +57,10 @@ Graph makegraph(char *file)
 	if(yyin)
 	{
 	fclose (yyin);
+	if(program != NULL)
+	{
 	initialize_graph(program);
+	}
 	return program;
 	}
 	else
@@ -60,7 +73,7 @@ Node find_node(Graph g, char *node_name)
 	Node n;
 	for(n = g -> source; n!= NULL; n = n -> next)
 	{
-	  if(n -> name)
+	  if((n -> name) && (n -> type == ACTION))
 	  {
 	    if (strcmp((n -> name),node_name) == 0)
 	    {
@@ -83,8 +96,9 @@ void mark_successors(Node n, vm_act_state state)
 	else
 		if((n -> type == BRANCH) || (n -> type == SELECTION) || (n -> type == JOIN))
 		{
-			for(i = 0; (child = (Node) ListIndex(n -> successors, i)); i++)
+			for(i = 0; i < ListSize(n -> successors); i++)
 			{
+				child = (Node) ListIndex(n -> successors, i);
 				mark_successors(child,state);
 			}
 		}
@@ -96,27 +110,14 @@ void mark_successors(Node n, vm_act_state state)
 int action_run(Graph g, char *act_name)
 {
 	Node n;
-	Node parent;
-	Node child;
-	int i,j;
 	
 	n = find_node(g, act_name);
 	if(n != NULL)
 	{
 		STATE(n) = ACT_RUN;
-		for (i = 0; (parent = (Node) ListIndex(n -> predecessors, i)); i++)
-		{
-			if ((parent -> type) == SELECTION)
-			{
-				for(j=0;(child = (Node) ListIndex(parent -> successors,j));j++)
-				{
-					if (strcmp((child->name),act_name) != 0)
-					{
-						mark_successors(child,ACT_NONE);
-					}
-				}
-			}
-		}
+		 handle_selection(n);
+                 sanitize(g);
+								 
 	}
 	else {
 		fprintf(stderr, "Error in run_action");
@@ -124,6 +125,42 @@ int action_run(Graph g, char *act_name)
 	}
 	return 1;
 }
+
+
+
+void handle_selection(Node n)
+{
+ int i,j;
+ Node parent;
+ Node child;
+ if ((n -> predecessors == NULL) || (MARKED(n) == TRUE))
+        return;
+					                                                                         
+ MARKED(n) = TRUE;
+ for(i = 0; i < ListSize(n -> predecessors); i++)
+   {
+      parent = (Node) ListIndex(n -> predecessors,i);
+      if ((parent -> type) == SELECTION)
+        {
+         for(j=0; j < ListSize(parent -> successors); j++)                                {
+											    child = (Node) ListIndex(parent -> successors,j);
+											    if(strcmp((child->name),n->name) != 0)
+											     {
+											      mark_successors(child,ACT_NONE);
+											     }
+											 }
+										     }
+										     handle_selection(parent);
+										   }
+}
+
+
+
+
+
+
+
+
 					
 int action_done(Graph g, char *act_name)
 {
@@ -135,8 +172,9 @@ int action_done(Graph g, char *act_name)
 	if(n != NULL)
 	{
 		STATE(n) = ACT_DONE;
-		for(i = 0; (child = (Node) ListIndex(n -> successors, i)); i++)
+		for(i = 0; i < ListSize(n -> successors); i++)
 		{
+			child = (Node) ListIndex(n -> successors, i);
 			mark_successors(child, ACT_READY);
 		}
 	}
@@ -156,12 +194,12 @@ void initialize_graph(Graph g)
         
         for(n = g -> source; n != NULL; n = n -> next)
 	{
-	 if (n -> type == ACTION)
-	  {
+	 
+	  
 	    n -> data = (void *) malloc (sizeof (struct data));
             MARKED(n) = FALSE;
             STATE(n) = ACT_NONE;
-	  }
+	  
 	}
 	mark_successors(g->source->next,ACT_READY);
 }

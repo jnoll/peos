@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: shell.c$
-* Version:      $Id: shell.c,v 1.6 2003/08/23 01:39:53 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.7 2003/08/28 20:32:54 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -139,7 +139,7 @@ run_action(int argc, char *argv[])
 	|| status == VM_INTERNAL_ERROR) {
 	printf("process executed an illegal instruction and has been terminated\n");
     } else {
-	script = get_field(pid, action, ACT_SCRIPT);
+	script = (char *) get_field(pid, action, ACT_SCRIPT);
 	if (script) {
 	    printf(script);
 	    printf("\n");

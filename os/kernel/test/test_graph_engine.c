@@ -22,15 +22,20 @@ int lineno = 1;
 FILE *yyin ;
 Graph program;
 char *filename = "some file";
-int cur_node = 1;
+int cur_node;
 Node node_list[10];
 int lengths[10];
 peos_context_t process_table[PEOS_MAX_PID+1];
-
+struct list {
+	 int size;
+	 int count;
+	 int first;
+	 Item *array;
+};
+		
 
 
 /* stubs */
-
 Item ListIndex(List l , int index)
 {
 	return node_list[cur_node++];
@@ -40,6 +45,10 @@ int ListSize(List l)
 {
 	return lengths[cur_node];
 }
+
+
+
+
 
 peos_context_t *peos_get_context(int pid)
 {
@@ -64,10 +73,32 @@ START_TEST(test_find_node)
 	n = find_node(g,"act_0");
 
 	/* Post */
-	fail_unless(strcmp(n->name,"act_0") == 0, "node not found");
+	fail_unless(n != NULL,"return value");
+	fail_unless(strcmp(n->name,"act_0") == 0, "correct node not found");
 
 }
 END_TEST
+
+
+START_TEST(test_find_node_nonaction)
+{
+  Node n;
+  char *file = "file";
+			                                                                         
+   /* Pre : Graph exists */
+   Graph g = stub_makegraph(file);
+				                                                                         
+   /* Action */
+                                                             
+   n = find_node(g,"p");
+					                                                                         
+    /* Post */
+    fail_unless(n == NULL, "non action node found");
+                                                                     
+}
+END_TEST
+
+
 
 
 START_TEST(test_makegraph)
@@ -96,7 +127,7 @@ END_TEST
 
 START_TEST(test_mark_successors)
 {
-	cur_node = 1;
+	cur_node = 2;
  node_list[0] = make_node("p",ACT_NONE,PROCESS);
  node_list[1] = make_node("s", ACT_NONE,SELECTION);
  node_list[2] = make_node("a",ACT_NONE,ACTION);
@@ -106,9 +137,9 @@ START_TEST(test_mark_successors)
  node_list[6] = NULL;
 
  lengths[0] = 1;
- lengths[1] = 2;
- lengths[2] = 1;
- lengths[3] = 1;
+ lengths[1] = 1;
+ lengths[2] = 2;
+ lengths[3] = 2;
  lengths[4] = 1;
  lengths[5] = 0;
 
@@ -116,16 +147,17 @@ START_TEST(test_mark_successors)
 
  // Post
 
-   fail_unless(STATE(node_list[2]) == ACT_RUN,"action not ready");
-   fail_unless(STATE(node_list[3]) == ACT_RUN, "action not ready");
-
+   fail_unless(STATE(node_list[2]) == ACT_RUN,"action 2  not ready");
+   fail_unless(STATE(node_list[3]) == ACT_RUN, "action 3  not ready");
+  // fail_unless(STATE(node_list[1]) == ACT_RUN, "selection not ready");
+   
 
 }
 END_TEST
 
 START_TEST(test_action_done)
 {
-
+	List l = (List) malloc(sizeof(struct list));
 	Graph g = (Graph) malloc(sizeof(struct graph));
 	char *act_name = "act_0";
         Node source,sink,act_0,act_1;
@@ -138,24 +170,24 @@ START_TEST(test_action_done)
 
 	g->source = source;
 	g-> sink = sink;
-
+       
         source->next = act_0;
 	act_0->next = act_1;
 	act_1->next = sink;
+        act_0 -> predecessors = l;
+	source -> predecessors = NULL;
+	sink -> next = NULL;
+	
+	cur_node = 0;
 
-	cur_node = 2;
-
-	node_list[0] = source;
-	node_list[1] = act_0;
-	node_list[2] = act_1;
-	node_list[3] = sink;
-	node_list[4] = NULL;
+	node_list[0] = act_1;
+	node_list[1] = source;
+	node_list[2] = NULL;
+	
 
 	lengths[0] = 1;
 	lengths[1] = 1;
-	lengths[2] = 1;
-	lengths[3] = 1;
-	lengths[4] = 1;
+
 
 	fail_unless(action_done(g,act_name) == 1,"return value");
 	fail_unless(STATE(act_0) == ACT_DONE,"action not done");
@@ -167,6 +199,7 @@ END_TEST
 
 START_TEST(test_action_run)
 {
+	List l = (List) malloc (sizeof(struct list));
 	Graph g =(Graph) malloc (sizeof(struct graph));
 
         Node source,sink,act_0,act_1;
@@ -184,19 +217,17 @@ START_TEST(test_action_run)
 	act_1 -> next = sink;
 	sink -> next = NULL;
 
-	cur_node = 2;
+	act_0 -> predecessors = l;
+	source -> predecessors = NULL;
+	cur_node = 0;
 
 	node_list[0] = source;
-	node_list[1] = act_0;
-	node_list[2] = act_1;
-	node_list[3] = sink;
-	node_list[4] = NULL;
+	node_list[1] = source;
+
 
 	lengths[0] = 1;
 	lengths[1] = 1;
-	lengths[2] = 1;
-	lengths[3] = 1;
-	lengths[4] = 1;
+
 
         fail_unless(action_run(g,act_0->name) == 1,"return value");
 
@@ -204,6 +235,184 @@ START_TEST(test_action_run)
 
 }
 END_TEST
+
+
+
+
+START_TEST(test_action_done_iteration)
+{
+   List l = (List) malloc (sizeof(struct list));	
+   Graph g =(Graph) malloc (sizeof(struct graph));
+   Node source,sink,act_0,act_1;
+   source = make_node("process",ACT_NONE,PROCESS);
+   sink = make_node("process",ACT_NONE,PROCESS);
+   act_0 = make_node("act_0",ACT_DONE,ACTION);
+   act_1 = make_node("act_1",ACT_RUN,ACTION);
+                                                                               
+   g -> source = source;
+   g -> sink = sink;
+				                                                                                      
+   source -> next = act_0;
+                                                                                
+   act_0 -> next = act_1;
+   act_1 -> next = sink;
+                                                                                
+   sink -> next = NULL;
+   act_0 -> predecessors = l;
+   act_1 -> predecessors = l;
+   source -> predecessors = NULL;
+
+   
+   cur_node = 0;
+   node_list[0] = sink;
+   node_list[1] = act_0;
+   node_list[2] = act_0;
+   node_list[3] = source;
+   node_list[4] = act_1;
+   node_list[5] = NULL;
+   
+
+   lengths[0] = 2;
+   lengths[1] = 2;
+   lengths[2] = 1;
+   lengths[3] = 2;
+   lengths[4] = 2;
+   lengths[5] = 1;
+   
+fail_unless(action_done(g,act_1->name) == 1,"return value");
+fail_unless(STATE(act_0) == ACT_READY, "action 0  not ready");
+fail_unless(STATE(act_1) == ACT_DONE, "action 1 not done");
+
+                                                                                
+}
+END_TEST
+
+
+START_TEST(test_action_run_selection)
+{
+   List l = (List) malloc (sizeof(struct list));	
+   Graph g =(Graph) malloc (sizeof(struct graph));
+   Node source,sink,act_0,act_1,sel,join;
+   source = make_node("process1",ACT_NONE,PROCESS);
+   sink = make_node("process",ACT_NONE,PROCESS);
+   act_0 = make_node("act_01",ACT_READY,ACTION);
+   act_1 = make_node("act_11",ACT_READY,ACTION);
+   sel = make_node("sel123",ACT_NONE,SELECTION);
+   join = make_node("sel123",ACT_NONE,JOIN);
+
+   
+   g -> source = source;
+   g -> sink = sink;
+   
+  source -> next = sel;
+  sel -> next = act_0;
+  sel -> predecessors = l;
+  act_0 -> next = act_1;
+  act_0 -> predecessors = l;
+  source ->predecessors = NULL;
+  act_1 -> next = join;
+  join -> next = sink;
+  sink -> next = NULL;
+
+  cur_node = 0;
+  node_list[0] = sel;
+  node_list[1] = act_0;
+  node_list[2] = act_1;
+  node_list[3] = source;
+  node_list[4] = sel;
+  node_list[5] = source;
+  node_list[6] = NULL;
+                                               
+  lengths[0] = 1;
+  lengths[1] = 2;
+  lengths[2] = 2;
+  lengths[3] = 1;
+  lengths[4] = 1;
+  lengths[5] = 1;
+  lengths[6] = 1;
+  
+  fail_unless(action_run(g,act_0->name) == 1,"return value");
+  fail_unless(STATE(act_0) == ACT_RUN, "action 0  not run");
+  fail_unless(STATE(act_1) == ACT_NONE, "action 1 not set to none");
+ // fail_unless(STATE(sel) == ACT_RUN, "selection not run");
+							                                                                                      
+}
+END_TEST
+
+
+START_TEST(test_action_run_selection_recursive)
+{
+  List l = (List) malloc (sizeof(struct list));	
+  Graph g =(Graph) malloc (sizeof(struct graph));
+  Node source,sink,act_0,act_1,act_2,sel,join,sel1,join1;
+  
+  source = make_node("process",ACT_NONE,PROCESS);
+  sink = make_node("process",ACT_NONE,PROCESS);
+  act_0 = make_node("act_0",ACT_READY,ACTION);
+  act_1 = make_node("act_1",ACT_READY,ACTION);
+  act_2 = make_node("act_2",ACT_READY,ACTION);
+  sel = make_node("sel",ACT_NONE,SELECTION);
+  join = make_node("sel",ACT_NONE,JOIN);
+  sel1 = make_node("sel1",ACT_NONE,SELECTION);
+  join1 = make_node("sel1",ACT_NONE,SELECTION);
+             
+  g -> source = source;
+  g -> sink = sink;
+  source -> next = sel1;
+  sel1 -> next = sel;
+  sel1 -> predecessors = l;
+  sel -> next = act_2;
+  sel -> predecessors = l;
+  act_2 -> next = act_0;
+  act_0 -> next = act_1;
+  act_0 -> predecessors = l;
+  source -> predecessors = NULL;
+  
+  act_1 -> next = join;
+  join -> next = join1;
+  join1 -> next = sink;
+  sink -> next = NULL;
+  
+  cur_node = 0;
+  node_list[0] = sel;
+  node_list[1] = act_0;
+  node_list[2] = act_1;
+  node_list[3] = sel1;
+  node_list[4] = sel;
+  node_list[5] = act_2;
+  node_list[6] = source;
+  node_list[7] = sel;
+  node_list[8] = sel1;
+  node_list[9] = source;
+  node_list[10] = NULL;
+  
+  lengths[0] = 1;
+  lengths[1] = 2;
+  lengths[2] = 2;
+  lengths[3] = 1;
+  lengths[4] = 2;
+  lengths[5] = 2;
+  lengths[6] = 1;
+  lengths[7] = 1;
+  lengths[8] = 1;
+  lengths[9] = 1;
+  lengths[10] = 1;
+
+  
+  fail_unless(action_run(g,act_0->name) == 1,"return value");
+  fail_unless(STATE(act_0) == ACT_RUN, "action 0  not run");
+  fail_unless(STATE(act_1) == ACT_NONE, "action 1 not none");
+  fail_unless(STATE(act_2) == ACT_NONE, "action 2 not none");
+ // fail_unless(STATE(sel) == ACT_RUN,"sel not run");
+ // fail_unless(STATE(sel1) == ACT_RUN, "sel1 not run");
+								                                                                                      
+}
+END_TEST
+
+
+
+
+
 
 START_TEST(test_initialize_graph)
 {
@@ -283,14 +492,15 @@ START_TEST(test_update_context)
 	context -> num_actions = 2;
 	context -> actions = (peos_action_t *) calloc(context->num_actions, sizeof(peos_action_t));
 
-	for(i = 0; i < context -> num_actions ; i++)
+	for(i = 0; i < 2 ; i++)
 	{
 		sprintf(context->actions[i].name,"act_%d",i);
 		context->actions[i].state = ACT_NONE;
 	}
 
+
 	source = make_node("p",ACT_NONE,PROCESS);
-	sink = make_node("p",ACT_NONE,PROCESS);
+	sink = make_node("p1",ACT_NONE,PROCESS);
 	act_0 = make_node("act_0",ACT_RUN,ACTION);
 	act_1 = make_node("act_1",ACT_RUN,ACTION);
 
@@ -309,44 +519,6 @@ START_TEST(test_update_context)
 }
 END_TEST
 
-START_TEST(test_set_act_state_graph_run)
-{
-	Graph g = (Graph) malloc (sizeof(struct graph));
-	Node source,sink,act_0,act_1;
-
-	source = make_node("p",ACT_NONE,PROCESS);
-	sink = make_node("p",ACT_NONE,PROCESS);
-	act_0 = make_node("act_0",ACT_NONE,ACTION);
-	act_1 = make_node("act_1",ACT_NONE,ACTION);
-
-
-	g -> source = source;
-	g -> sink = sink;
-
-	source -> next = act_0;
-	act_0 -> next = act_1;
-	act_1 -> next = sink;
-	sink -> next = NULL;
-
-	cur_node = 2;
-
-	node_list[0] = source;
-	node_list[1] = act_0;
-	node_list[2] = act_1;
-	node_list[3] = sink;
-	node_list[4] = NULL;
-
-	lengths[0] = 1;
-	lengths[1] = 1;
-	lengths[2] = 1;
-	lengths[3] = 1;
-	lengths[4] = 1;
-
-    fail_unless(set_act_state_graph(g,"act_0",ACT_RUN) == 1, "return value");
-    fail_unless(STATE(act_0) == ACT_RUN, "act 0 state not changed");
-
-}
-END_TEST
 
 
 START_TEST(test_set_act_state_graph_ready)
@@ -368,19 +540,6 @@ START_TEST(test_set_act_state_graph_ready)
 	act_1 -> next = sink;
 	sink -> next = NULL;
 
-	cur_node = 2;
-
-	node_list[0] = source;
-	node_list[1] = act_0;
-	node_list[2] = act_1;
-	node_list[3] = sink;
-	node_list[4] = NULL;
-
-	lengths[0] = 1;
-	lengths[1] = 1;
-	lengths[2] = 1;
-	lengths[3] = 1;
-	lengths[4] = 1;
 
     fail_unless(set_act_state_graph(g,"act_0",ACT_READY) == 1, "return value");
     fail_unless(STATE(act_0) == ACT_READY, "act 0 state not changed");
@@ -408,19 +567,7 @@ START_TEST(test_set_act_state_graph_suspend)
 	act_1 -> next = sink;
 	sink -> next = NULL;
 
-	cur_node = 2;
 
-	node_list[0] = source;
-	node_list[1] = act_0;
-	node_list[2] = act_1;
-	node_list[3] = sink;
-	node_list[4] = NULL;
-
-	lengths[0] = 1;
-	lengths[1] = 1;
-	lengths[2] = 1;
-	lengths[3] = 1;
-	lengths[4] = 1;
 
     fail_unless(set_act_state_graph(g,"act_0",ACT_SUSPEND) == 1, "return value");
     fail_unless(STATE(act_0) == ACT_SUSPEND, "act 0 state not changed");
@@ -448,19 +595,6 @@ START_TEST(test_set_act_state_graph_none)
 	act_1 -> next = sink;
 	sink -> next = NULL;
 
-	cur_node = 2;
-
-	node_list[0] = source;
-	node_list[1] = act_0;
-	node_list[2] = act_1;
-	node_list[3] = sink;
-	node_list[4] = NULL;
-
-	lengths[0] = 1;
-	lengths[1] = 1;
-	lengths[2] = 1;
-	lengths[3] = 1;
-	lengths[4] = 1;
 
     fail_unless(set_act_state_graph(g,"act_0",ACT_NONE) == 1, "return value");
     fail_unless(STATE(act_0) == ACT_NONE, "act 0 state not changed");
@@ -489,19 +623,6 @@ START_TEST(test_set_act_state_graph_abort)
 	act_1 -> next = sink;
 	sink -> next = NULL;
 
-	cur_node = 2;
-
-	node_list[0] = source;
-	node_list[1] = act_0;
-	node_list[2] = act_1;
-	node_list[3] = sink;
-	node_list[4] = NULL;
-
-	lengths[0] = 1;
-	lengths[1] = 1;
-	lengths[2] = 1;
-	lengths[3] = 1;
-	lengths[4] = 1;
 
     fail_unless(set_act_state_graph(g,"act_0",ACT_ABORT) == 1, "return value");
     fail_unless(STATE(act_0) == ACT_ABORT, "act 0 state not changed");
@@ -528,19 +649,6 @@ START_TEST(test_set_act_state_graph_new)
 	act_1 -> next = sink;
 	sink -> next = NULL;
 
-	cur_node = 2;
-
-	node_list[0] = source;
-	node_list[1] = act_0;
-	node_list[2] = act_1;
-	node_list[3] = sink;
-	node_list[4] = NULL;
-
-	lengths[0] = 1;
-	lengths[1] = 1;
-	lengths[2] = 1;
-	lengths[3] = 1;
-	lengths[4] = 1;
 
     fail_unless(set_act_state_graph(g,"act_0",ACT_NEW) == 1, "return value");
     fail_unless(STATE(act_0) == ACT_NEW, "act 0 state not changed");
@@ -556,6 +664,8 @@ END_TEST
 int
 main(int argc, char *argv[])
 {
+    
+	
     int nf;
     SRunner *sr;
     Suite *s = suite_create("graph_engine");
@@ -566,6 +676,7 @@ main(int argc, char *argv[])
     tc = tcase_create("find_node");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_find_node);
+    tcase_add_test(tc, test_find_node_nonaction);
 
     tc = tcase_create("makegraph");
     suite_add_tcase(s,tc);
@@ -579,10 +690,13 @@ main(int argc, char *argv[])
     tc = tcase_create("action done");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_action_done);
+    tcase_add_test(tc,test_action_done_iteration);
 
     tc = tcase_create("action run");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_action_run);
+    tcase_add_test(tc,test_action_run_selection);
+    tcase_add_test(tc,test_action_run_selection_recursive);
 
     tc = tcase_create("initialize graph");
     suite_add_tcase(s,tc);
@@ -600,7 +714,6 @@ main(int argc, char *argv[])
 
     tc = tcase_create("set act state graph");
     suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_set_act_state_graph_run);
     tcase_add_test(tc,test_set_act_state_graph_ready);
     tcase_add_test(tc,test_set_act_state_graph_suspend);
     tcase_add_test(tc,test_set_act_state_graph_none);

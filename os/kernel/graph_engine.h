@@ -7,7 +7,7 @@
 
 typedef struct data
 {
-char * marked;
+int  marked;
 vm_act_state state;
 } *Data;
 
