@@ -10,7 +10,7 @@ CFLAGS = -g -I../.. -Wall
 LIBRARY = libpeos.a
 LIBS = $(LIBRARY) ../../pml/libpml.a 
 
-CORE_LIBS = 
+CORE_LIBS = -ltcl -lstdc++ 
 LDFLAGS = -g -L../../lib
 
 # objects
@@ -18,6 +18,7 @@ OBJS = \
 $(CORE_OBJS)
 
 CORE_OBJS = \
+tclinterp.o \
 action.o \
 events.o \
 graph.o \
@@ -26,7 +27,6 @@ process_table.o \
 process.o \
 resources.o \
 predicate_evaluator.o \
-
 
 # sources
 SOURCES = $(OBJS:.o=.c)

@@ -11,6 +11,11 @@
 #include "process.h"
 
 
+// --------- TCL Interpreter Functions
+//#include "comb.h"
+#include "tclinterp.h"
+// ---------
+
 int create_process(char *model)
 {
     int pid;
@@ -139,7 +144,8 @@ main (int argc, char **argv)
     int l = 0; /* l == 1 iff login option is passed */
     char *login = "proc_table"; /* default login name */
     opterr = 0;
-    	
+    peos_tcl_start(&ptcl01);
+    peos_tcl_exec_cmd_from_string(&ptcl01,"puts stdout TCL!");
     while ((c = getopt (argc, argv, "+c:n:ihr:d:ul:")) != -1) {
         switch (c) {
             case 'l': {
