@@ -24,7 +24,6 @@ Dependencies: pml_state.h
 #include <sys/types.h>
 #include "pml_state.h" 
 #include "repository.h"
-/*#include "C:\WINDOWS\DESKTOP\My Briefcase\CU Masters Andy\CSC 5728\pml_state.h"*/
 
 #include <errno.h>
 #include <fcntl.h>
@@ -637,8 +636,100 @@ int pmlstate_read_attribute(void* objptr,
   }
 
   return nread;
-}
+} /* pmlstate_read_attribute */
+
 /*************************************************************/
+/* FUNCTION:  PML LIST ATTRIBUTES ******************************
+Description:  For the input object, finds all attributes and
+their values, fills array of char pointers with alternating
+attribute/value pairs; attribs[i]==NAME, attribs[i+1]==VALUE. 
+
+Inputs:  
+          pml_obj_t objp
+            repository state object
+	    
+	  char * attrib[]
+	    array of all attribute names/values for the object
+Outputs:  
+          int result
+
+          result >= 0       -  ok - result == # of attributes. 
+          result < 0       -  error 
+
+Notes:    Could easily define a struct of name/value pairs,
+fill an array of these structs, instead of alternating name
+and values.
+*************************************************************/
+int pml_list_attributes(void* objptr, char** attrib[], char** values[])
+{
+  /* cast the void* correctly */
+  pml_obj_t objp = (pml_obj_t) objptr;
+
+  /* local variable declarations */
+  int i = 0;
+  int j = 0;
+  int err = 0;
+  int rlen = PML_BLK_SIZE;
+  char *rbuf = NULL;
+  
+  /* test for valid input */
+  if (objp == NULL || objp->deleted) {
+    return -1;
+  }
+  
+  /* Allocate an array of natr char * */ 
+  *attrib = calloc(objp->natr, sizeof(char*)); 
+  *values = calloc(objp->natr, sizeof(char*)); 
+
+  /* lock table for reading */
+  if (PML_RLOCK == 0) {
+    /* traverse attributes of the object */
+    for (i = 0; i < objp->natr; i++) {
+      (*attrib)[i] = malloc(objp->alen[i] + 1);
+      rbuf = (*attrib)[i];
+      lseek(datfd, objp->aofs[i], SEEK_SET); 
+      while (read(datfd, rbuf, objp->alen[i]) != objp->alen[i]) {
+	if (errno == EINTR) {
+	  lseek(datfd, objp->aofs[i], SEEK_SET);
+	  continue;
+	} else {
+	  err = 1;
+	  break;
+	}
+      }
+      
+      if (err) {
+	break;
+      }
+      
+      (*values)[i] = malloc(objp->vlen[i] + 1);
+      rbuf = (*values)[i];
+      lseek(datfd, objp->vofs[i], SEEK_SET); 
+      while (read(datfd, rbuf, objp->vlen[i]) != objp->vlen[i]) {
+	if (errno == EINTR) {
+	  lseek(datfd, objp->vofs[i], SEEK_SET);
+	  continue;
+	} else {
+	  err = 1;
+	  break;
+	}
+      } /* while */
+      
+      if (err) {
+	break;
+      }
+    } 
+    
+    /* unlock table */
+    PML_RULOCK;
+  }
+  
+  if (err) {
+    return -1;
+  }
+  
+  return objp->natr;
+}
 
 /* FUNCTION:  PML WRITE ATTRIBUTE *****************************
 Description:  Writes an Attribute to a PML State Object
@@ -976,12 +1067,69 @@ int pmlstate_query_open(void* **objptr,
 
   /* return number of records in result */
   return nrec;
+} /* pmlstate_query_open */
+
+/*************************************************************/
+
+/* FUNCTION:  PML LIST OPEN **********************************
+Description:  Queries the PML State Repository for ALL objects.
+              
+Inputs:  
+          pml_obj_t *objp
+            pointer to repository state object
+
+Outputs:  
+          int nobjs
+
+          nobjs >= 0    -    number of objects found 
+          nobjs <  0    -    error 
+
+notes:  For queries which return nrecs > 0 pml_query_close
+        must be called to free query result structures.
+*************************************************************/
+int pml_list_open(void* **objptr)
+{
+  /* cast the void* correctly */
+  pml_obj_t* result;
+  
+  /* local variable declarations */
+  int i = 0; /* loop counter */
+  int nrec = 0; /* total # of objects in the repository */
+  int num_obj = 0; /* the # of un-deleted objects in the rep. */
+  pml_rec_t *recp = (pml_rec_t *)idxmap;
+  
+  /* validate argument inputs */
+  if (objptr == NULL) {
+    return -1;
+  }   
+  
+  nrec = shmp->nrec;
+  result = (pml_obj_t *) calloc(nrec, sizeof(pml_obj_t));
+
+  /* lock table for reading */
+  if (PML_RLOCK == 0) {
+    /* traverse all records */
+    for (i = 0; i < nrec; i++, recp++) {
+      /* skip deleted records */
+      if (!recp->deleted) 
+	result[num_obj++] = recp; /* add object pointer from repository */
+
+    }/* traversed all objects in the repository */
+    
+    /* unlock table */
+    PML_RULOCK;
+  }
+  
+  /* return number of *non-deleted* records/objects in repository */
+  *objptr = (void **)result;
+  return num_obj; 
 }
+
 /*************************************************************/
 
 /* FUNCTION:  PML QUERY CLOSE *********************************
-Description:  Closes a Query Object
-
+   Description:  Closes a Query Object
+   
 Inputs:  
           pml_obj_t *objp
             pointer to repository state object
@@ -1009,33 +1157,58 @@ int pmlstate_query_close(void* **objptr)
 
   return -1;
 }
+
+/*************************************************************
+
+FUNCTION: PML FREE ALIST (free attribute list)
+Purpose : free the memory allocated by a successful call to
+          pml_list_attributes()-an attribute list & a values list. 
+*************************************************************/
+int pml_free_alist(char ** objptr, int num_elements)
+{
+  int i = 0;
+
+  if (objptr == NULL || *objptr == NULL)
+    return -1;
+  
+  /* free each element of the array independently */
+  for (i = 0; i < num_elements; i++) {
+    free(objptr[i]);
+  }
+  /* free the array itself */
+  free(objptr);
+  
+  return 0; 
+}
+
 /*************************************************************/
 
 /*-------------------------------------------------------------
-   Function: pmlstate_init
-   Purpose : To export an interface to the pml_state_repository
--------------------------------------------------------------*/
+  Function: pmlstate_init
+  Purpose : To export an interface to the pml_state_repository
+  -------------------------------------------------------------*/
 int       pmlstate_init()
 {
-		repository_initexternal("PML-STATE",
-								pmlstate_open_repository,
-                                                                NULL,    /* *** see comment below */
-								pmlstate_close_repository,
-								NULL,    /* *** see comment below */
-								pmlstate_create_object,
-								pmlstate_delete_object, 
-								pmlstate_pack_objects,
-								pmlstate_read_attribute,
-								pmlstate_write_attribute, 
-								pmlstate_query_open,
-								pmlstate_query_close,
-								NULL, NULL);
-		return (int)0;
+  repository_initexternal("PML-STATE",
+			  pmlstate_open_repository,
+			  NULL,    /* *** see comment below */
+			  pmlstate_close_repository,
+			  NULL,    /* *** see comment below */
+			  pmlstate_create_object,
+			  pmlstate_delete_object, 
+			  pmlstate_pack_objects,
+			  pmlstate_read_attribute,
+			  pmlstate_write_attribute, 
+			  pmlstate_query_open,
+			  pmlstate_query_close,
+			  NULL, NULL);
+  return (int)0;
 }
 
-/* The NULL above is for the other close function for a unixfs close.  It requires a 
-repository as an argument, and the pmlstate version has a void argument list.  When the
-VM is changed, the generic version of close could be made to accept a dummy argument 
-of type repository* to allow for either call to be made from within repository_close, 
-which is now pml_close_repository(void)  */
+/* The NULL above is for the other close function for a unixfs close.  
+   It requires a repository as an argument, and the pmlstate version 
+   has a void argument list.  When the VM is changed, the generic version 
+   of close could be made to accept a dummy argume of type repository* 
+   to allow for either call to be made from within repository_close, 
+   which is now pml_close_repository(void)  */
 
