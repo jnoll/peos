@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.11 2003/09/09 18:49:51 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.12 2003/09/09 19:00:22 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -156,7 +156,10 @@ create_process(int argc, char *argv[])
 	}
 	for(i = 0; i < num_resources; i++)
 	{
-		sprintf(resources[i].value,"value_%d",i);
+		//sprintf(resources[i].value,"value_%d",i);
+		printf("\nEnter binding for resource %s : ",resources[i].name);
+		scanf("%s", &resources[i].value);
+
 	}
 
 	
