@@ -12,8 +12,6 @@
 
 /* Globals. */
 char *instance_dir = NULL;
-int create_instance_result = 1;
-int handle_action_result = VM_DONE;
 
 
 /* Stubs. */
@@ -53,7 +51,12 @@ int delete_entry(int pid)
     return 1;
 }
 
-vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event event)
+vm_exit_code handle_action_change(int pid, char *act_name, vm_act_state state)
+{
+    return VM_CONTINUE;
+}
+
+vm_exit_code handle_resource_change(int pid)
 {
     return VM_CONTINUE;
 }
@@ -90,13 +93,14 @@ peos_resource_t *get_resource_list_action_provides(int pid,char *act_name, int *
 
 int peos_create_instance(char *model,peos_resource_t *resources,int num_resources)
 {
-    return create_instance_result;
+    return 1;
 }
 
-vm_exit_code handle_action_change(int pid, char *act, vm_act_state state) 
+int set_resource_binding(int pid, char *resource_name, char *resource_value)
 {
-    return handle_action_result;
+    return 1;
 }
+
 
 
 START_TEST(test_list_models)

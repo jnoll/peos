@@ -16,6 +16,7 @@
 #include "events.h"
 #include "resources.h"
 #include "graph_engine.h"
+#include "process_table.h"
 
 
 /* Forward declarations. */
@@ -65,11 +66,6 @@ char **peos_list_models()
     return result;
 }
 
-
-vm_exit_code peos_set_action_state(int pid, char *action, vm_act_state state)
-{
-    return handle_action_change(pid, action, state);
-}
 	    
 vm_exit_code peos_notify(int pid, char *action, peos_event event)
 {
@@ -81,28 +77,24 @@ vm_exit_code peos_notify(int pid, char *action, peos_event event)
     }
     
     switch (event) {
-        case(PEOS_EVENT_REQUIRES): 
-		status =  handle_resource_event(pid, action, REQUIRES_TRUE);
-		break;
-	
-	case(PEOS_EVENT_PROVIDES):
-		status =  handle_resource_event(pid, action, PROVIDES_TRUE);
+        case(PEOS_EVENT_RESOURCE_CHANGE):    
+		status = handle_resource_change(pid);
 		break;
 	
 	case(PEOS_EVENT_START):
-		status = peos_set_action_state(pid, action, ACT_RUN);
+		status = handle_action_change(pid, action, ACT_RUN);
 		break;
 		
 	case(PEOS_EVENT_SUSPEND):
-		status = peos_set_action_state(pid, action, ACT_SUSPEND);
+		status = handle_action_change(pid, action, ACT_SUSPEND);
 		break;
 		
 	case(PEOS_EVENT_ABORT):
-		status = peos_set_action_state(pid, action, ACT_ABORT);
+		status = handle_action_change(pid, action, ACT_ABORT);
 		break;
 
 	case(PEOS_EVENT_FINISH):
-		status = peos_set_action_state(pid, action, ACT_DONE);
+		status = handle_action_change(pid, action, ACT_DONE);
 		break;
 
 	default:
@@ -117,10 +109,13 @@ vm_exit_code peos_notify(int pid, char *action, peos_event event)
     }
 
     return status;
-    
        
 }
 
+int peos_set_resource_binding(int pid, char *resource_name, char *value)
+{
+    return set_resource_binding(pid, resource_name, value);
+}    
 
 peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
 {

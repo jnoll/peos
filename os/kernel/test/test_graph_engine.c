@@ -15,8 +15,10 @@
 /* Globals. */
 peos_context_t process_table[PEOS_MAX_PID+1];
 Graph global_graph = NULL;
-int requires_state = 0;
-int provides_state = 0;
+int requires_state[5];
+int provides_state[5];
+int requires_index = 0;
+int provides_index = 0;
 
 /* Stubs. */
 extern Node make_node(char *name, vm_act_state, int type,int order);
@@ -40,12 +42,14 @@ char *act_state_name(vm_act_state state)
 
 int is_requires_true(int pid, char *act_name)
 {
-    return requires_state;
+	int value = requires_state[++requires_index];
+    return value;
 }
 
 int is_provides_true(int pid, char *act_name)
 {
-    return provides_state;
+	int value = provides_state[++provides_index];
+   return value;
 }
 
 void log_event(char *msg)
@@ -70,7 +74,8 @@ START_TEST(test_handle_resource_event_1)
     act_0 = make_node("act_0",ACT_BLOCKED,ACTION,1);
     act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-    requires_state = TRUE;
+    requires_index = 0;
+    requires_state[1] = TRUE;
 
     g->source = source;
     g-> sink = sink;
@@ -110,8 +115,10 @@ START_TEST(test_handle_resource_event_2)
     act_0 = make_node("act_0",ACT_READY,ACTION,1);
     act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-    requires_state = FALSE;
-    provides_state = TRUE;
+    requires_index = 0;
+    provides_index = 0;
+    requires_state[1] = FALSE;
+    provides_state[1] = TRUE;
 
     g->source = source;
     g-> sink = sink;
@@ -175,6 +182,52 @@ START_TEST(test_handle_resource_event_3)
 END_TEST
 
 
+START_TEST(test_handle_resource_change_1)
+{
+    
+    Graph g = (Graph) malloc(sizeof(struct graph));
+    
+    Node source,sink,act_0,act_1;
+    source = make_node("p",ACT_NONE,PROCESS,0);
+    sink = make_node("p",ACT_NONE,PROCESS,3);
+
+    act_0 = make_node("act_0",ACT_PENDING,ACTION,1);
+    act_1 = make_node("act_1",ACT_BLOCKED,ACTION,2);
+
+    g->source = source;
+    g-> sink = sink;
+    source->next = act_0;
+    act_0->next = act_1;
+    act_1->next = sink;
+    
+    act_0 -> predecessors = (List) make_list(source,NULL,NULL,NULL,NULL);
+    act_0 -> successors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    act_1 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+    sink -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    source -> successors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    sink -> next = NULL;
+
+    requires_index = 0;
+    provides_index = 0;
+
+    requires_state[1] = TRUE;
+    provides_state[1] = TRUE;
+
+    requires_state[2] = TRUE;
+    requires_state[3] = TRUE;
+    provides_state[2] = TRUE;
+    provides_state[3] = FALSE;
+
+    global_graph = g;
+
+    
+    fail_unless(handle_resource_change(0) == VM_CONTINUE, "Return Value");
+    fail_unless(STATE(act_0) == ACT_DONE, "act_0 not done ");
+    fail_unless(STATE(act_1) == ACT_READY, "act_1 not ready");
+}
+END_TEST
+
 
 
 START_TEST(test_mark_successors)
@@ -189,7 +242,10 @@ START_TEST(test_mark_successors)
         j = make_node("s",ACT_NONE,JOIN,4);
         sink = make_node("p",ACT_NONE,PROCESS,5);
 	
-	requires_state = TRUE;
+	requires_index = 0;
+	
+	requires_state[1] = TRUE;
+	requires_state[2] = TRUE;
 
         s -> matching = j;
         j -> matching = s;
@@ -222,8 +278,12 @@ START_TEST(test_action_done)
     act_0 = make_node("act_0",ACT_RUN,ACTION,1);
     act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-    requires_state = TRUE;
-    provides_state = TRUE;
+    requires_index = 0;
+    provides_index = 0;
+    requires_state[1] = TRUE;
+    requires_state[2] = TRUE;
+    provides_state[1] = TRUE;
+    
 
     g->source = source;
     g-> sink = sink;
@@ -280,8 +340,9 @@ START_TEST(test_action_done_selection)
    
    SUPER_NODES(act_1) = (List) make_list(sel,NULL,NULL,NULL,NULL);
 
-   requires_state = 1;
-   provides_state = 0;
+   requires_index = 0;
+   requires_state[1] = TRUE;
+   provides_state[1] = FALSE;
    
    g -> source = source;
    g -> sink = sink;
@@ -842,7 +903,8 @@ START_TEST(test_mark_iter_nodes)
 	ITER_END_NODES(act_0) = (List) make_list(act_2,NULL,NULL,NULL,NULL);
 	ITER_START_NODES(act_2) = (List) make_list(act_1,NULL,NULL,NULL,NULL);
 
-	requires_state = TRUE;
+	requires_index = 0;
+	requires_state[1] = TRUE;
 
 	source -> next = act_0;
 	act_0 -> next = act_1;
@@ -899,7 +961,8 @@ START_TEST(test_initialize_graph)
 	act_1 -> next = sink;
 	sink -> next = NULL;
 	
-        requires_state = FALSE;	
+	requires_index = 0;
+        requires_state[1] = FALSE;	
 	
 	initialize_graph(g,1);
 
@@ -934,8 +997,10 @@ START_TEST(test_set_node_state_ready)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   requires_state = TRUE;
-   provides_state = TRUE;
+   requires_index = 0;
+   provides_index = 0;
+   requires_state[1] = TRUE;
+   provides_state[1] = TRUE;
 
    fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
    fail_unless(STATE(n) == ACT_READY, "act not ready");
@@ -948,8 +1013,11 @@ START_TEST(test_set_node_state_ready_1)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   requires_state = TRUE;
-   provides_state = FALSE;
+   requires_index = 0;
+   provides_index = 0;
+
+   requires_state[1] = TRUE;
+   provides_state[1] = FALSE;
  
    fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
    fail_unless(STATE(n) == ACT_READY, "act not ready");
@@ -962,7 +1030,10 @@ START_TEST(test_set_node_state_ready_2)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   requires_state = FALSE;
+   requires_index = 0;
+   provides_index = 0;
+   requires_state[1] = FALSE;
+   provides_state[1] = FALSE;
 
    fail_unless(set_node_state(n, ACT_READY) == ACT_BLOCKED, "return value");
    fail_unless(STATE(n) == ACT_BLOCKED, "act not blocked");
@@ -975,7 +1046,8 @@ START_TEST(test_set_node_state_done)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   provides_state = TRUE;
+   provides_index = 0;
+   provides_state[1] = TRUE;
 
    fail_unless(set_node_state(n, ACT_DONE) == ACT_DONE, "return value");
    fail_unless(STATE(n) == ACT_DONE, "act not done");
@@ -988,7 +1060,8 @@ START_TEST(test_set_node_state_done_1)
  
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   provides_state = FALSE;
+   provides_index = 0;
+   provides_state[1] = FALSE;
    
    fail_unless(set_node_state(n, ACT_DONE) == ACT_PENDING, "return value");
    fail_unless(STATE(n) == ACT_PENDING, "act not pending");
@@ -1017,7 +1090,8 @@ START_TEST(test_set_act_state_graph_ready)
 	act_0 = make_node("act_0",ACT_NONE,ACTION,1);
 	act_1 = make_node("act_1",ACT_NONE,ACTION,2);
 
-	requires_state = TRUE;
+	requires_index = 0;
+	requires_state[1] = TRUE;
 
 
 	g -> source = source;
@@ -1206,6 +1280,9 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_handle_resource_event_3);
 
 
+    tc = tcase_create("test handle resource change");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_handle_resource_change_1);
     
     
     tc = tcase_create("initialize graph");

@@ -45,25 +45,14 @@ List super_nodes;
 } *Data;
 
 
-extern vm_exit_code handle_action_change_graph(int , char *, vm_act_state);		
-extern peos_resource_t *get_resource_list(char *model_file,int *num_resources);
 
-extern peos_resource_t *get_resource_list_action(int pid,char *act_name,int *num_resources);
+extern vm_exit_code handle_action_change(int pid , char *act_name, vm_act_state); 
 
-extern peos_resource_t *get_resource_list_action_requires(int pid,char *act_name,int *num_resources);
-
-extern peos_resource_t *get_resource_list_action_provides(int pid,char *act_name,int *num_resources);
-
-
-
-extern vm_exit_code handle_action_change(int , char *, vm_act_state); 
-
-extern vm_exit_code set_act_state_graph(Graph g,char *act_name, vm_act_state state);
+extern vm_exit_code handle_resource_change(int pid);
 
 extern void initialize_graph(Graph g, int pid);
 
 extern char *get_script_graph(Graph g, char * act_name);
 
-extern vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event resource_event);
 
 #endif

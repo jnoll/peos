@@ -120,10 +120,6 @@ peos_event state_of(char *event)
 	return PEOS_EVENT_SUSPEND;
     } else if (strcasecmp(event, "abort") == 0) {
 	return PEOS_EVENT_ABORT;
-    } else if (strcasecmp(event, "requires") == 0) {
-	return PEOS_EVENT_REQUIRES;
-    } else if (strcasecmp(event, "provides") == 0) {
-	return PEOS_EVENT_PROVIDES;
     } else {
 	return -1;		/* error */
     }

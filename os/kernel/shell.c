@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.26 2004/02/09 19:39:37 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.27 2004/02/16 22:24:19 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -257,41 +257,6 @@ void finish_action(int argc, char *argv[])
     }
 }
 
-void fire_resource_event_requires(int argc, char *argv[])
-{
-    char *action;
-    int pid;
-    vm_exit_code status;
-
-    if (argc < 3) {
-        printf("usage: %s pid action\n", argv[0]);
-	return;
-    }
-    pid = atoi(argv[1]);
-    action = argv[2];
-    if ((status = peos_notify(pid, action,PEOS_EVENT_REQUIRES)) == VM_ERROR 
-	|| status == VM_INTERNAL_ERROR) {
-	printf("process encountered an illegal event and has been terminated\n");
-    }
-}
-
-void fire_resource_event_provides(int argc, char *argv[])
-{
-    char *action;
-    int pid;
-    vm_exit_code status;
-
-    if (argc < 3) {
-        printf("usage: %s pid action\n", argv[0]);
-	return;
-    }
-    pid = atoi(argv[1]);
-    action = argv[2];
-    if ((status = peos_notify(pid, action,PEOS_EVENT_PROVIDES)) == VM_ERROR 
-	|| status == VM_INTERNAL_ERROR) {
-	printf("process encountered an illegal event and has been terminated\n");
-    }
-}
 
 void suspend_action(int argc, char *argv[])
 {
@@ -331,6 +296,25 @@ void abort_action(int argc, char *argv[])
 }
 
 
+void resource_change(int argc, char *argv[])
+{
+    char *action;
+    int pid;
+    vm_exit_code status;
+
+    if (argc < 3) {
+        printf("usage: %s pid action\n", argv[0]);
+	return;
+    }
+    pid = atoi(argv[1]);
+
+    action = argv[2];
+    if ((status = peos_notify(pid, action,PEOS_EVENT_RESOURCE_CHANGE)) == VM_ERROR 
+	|| status == VM_INTERNAL_ERROR) {
+	printf("process encountered an illegal event and has been terminated\n");
+    }
+}
+
     
 void quit()
 {
@@ -346,10 +330,9 @@ COMMAND cmds[] = {
     { "resource_list", list_resources, "list resources associated with model" },
     { "resources", list_resource_binding, "list resources associated with model" },
     { "run", run_action, "perform a ready action" },
+    { "change", resource_change, "resource change notify"},
     { "suspend", suspend_action, "suspend action" },
     { "abort", abort_action, "abort action"},
-    { "requires", fire_resource_event_requires, "requires true"},
-    { "provides", fire_resource_event_provides, "provides true"},
     { "select", run_action, "perform a ready action" },
     { "finish", finish_action, "finish a running action" },
     { "done", finish_action, "finish a running action" },

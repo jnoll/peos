@@ -16,6 +16,8 @@ void mark_successors(Node n, vm_act_state state);
 void add_iteration_lists(Graph g);
 void set_rendezvous_state(Node n);
 vm_act_state set_node_state (Node n, vm_act_state state);
+vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state);
+
 
 void sanitize(Graph g)
 {
@@ -556,7 +558,7 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
 	        return VM_CONTINUE;
 	    }
 	    else {
-	        if((STATE(n) != ACT_READY) || (STATE(n) != ACT_RUN) || (STATE(n) != ACT_PENDING) || (STATE(n) != ACT_SUSPEND)) {
+	        if((STATE(n) != ACT_READY) && (STATE(n) != ACT_RUN) && (STATE(n) != ACT_PENDING) && (STATE(n) != ACT_SUSPEND)) {
 		    set_node_state(n, ACT_AVAILABLE);
 		}
 	        return VM_CONTINUE;
@@ -625,6 +627,43 @@ vm_act_state set_node_state(Node n, vm_act_state state)
     return state_set;
 }
 	    
+vm_exit_code handle_resource_change(int pid)
+{
+    Graph g;
+    Node n;
+
+    peos_context_t *context = peos_get_context(pid);
+
+    if(context == NULL) {
+        fprintf(stderr, "Handle Resource Change: Cannot Get Context\n");
+	return VM_INTERNAL_ERROR;
+    }
+
+    g = context -> process_graph;
+
+    if(g == NULL) {
+        fprintf(stderr, "Handle Resource Change Error: Cannot Get Graph\n");
+	return VM_INTERNAL_ERROR;
+    }
+
+    for(n = g->source->next; n != NULL; n = n->next) {
+        if(n->type == ACTION) {
+	    if(is_requires_true(pid, n->name)) {
+	        if(handle_resource_event(pid, n->name, REQUIRES_TRUE) == VM_INTERNAL_ERROR) {
+	            return VM_INTERNAL_ERROR;
+		}
+	    }
+	    
+	    if(is_provides_true(pid, n->name)) {
+	        if(handle_resource_event(pid, n->name, PROVIDES_TRUE) == VM_INTERNAL_ERROR) {
+		    return VM_INTERNAL_ERROR;
+		}
+	    }
+	}
+    }
+    return VM_CONTINUE;
+}
+	
 
 vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
 {
