@@ -1,0 +1,88 @@
+# required symbols
+#
+SHELL= /bin/sh
+
+# tools used
+#
+CC= gcc 
+GNOME_CONFIG = gnome-config
+PKG_CONFIG= pkg-config
+LDD= ldd
+GREP= grep
+AWK= awk 
+XARGS=	xargs
+LIBTOOL= libtool 
+SORT= sort
+SPLINT= splint
+SED= sed
+CPIO= cpio
+MKDIR= mkdir
+MAKE= make
+EGREP= egrep
+FGREP= fgrep
+
+# C compiler flags
+#
+SPLINT_ARGS=
+#OPT_DEBUG= -g3 -O3
+OPT_DEBUG= -g3
+#CC_WARN=
+#CC_WARN= -Wall
+CC_WARN= -Wall -W -Werror
+#MISC_CC= -M
+MISC_CC=
+CFLAGS=	@@@I_LIST@@@ \
+	${OPT_DEBUG} ${CC_WARN} ${MISC_CC}
+LDFLAGS= @@@L_LIST@@@ \
+	 @@@l_list@@@ \
+	 ${OPT_DEBUG}
+
+# our source
+#
+C_SRC=	main.c interface.c callbacks.c engine.c \
+	glo.c parse.c tree.c html.c viewmenu.c  \
+	deletemenu.c htmllinkage.c notebook.c
+C_OBJ=	main.o interface.o callbacks.o engine.o \
+	glo.o parse.o tree.o html.o viewmenu.o  \
+	deletemenu.o htmllinkage.o notebook.o
+
+# top of distributed headers and lips
+#
+TREETOP= .
+
+# default rule
+#
+all: runpeos
+
+# compile runpeos using system installed libs
+#
+runpeos: ${C_OBJ}
+	${CC} ${LDFLAGS} \
+	  ${C_OBJ} \
+	  -o runpeos
+
+megahack.o: megahack.c
+	${CC} ${CFLAGS} megahack.c -c
+
+.c.o:
+	${CC} ${CFLAGS} -c $<
+
+# build testing rules
+#
+which_libs: runpeos
+	@${LDD} ./runpeos | ${GREP} '=>' | ${AWK} '{print $$3;}' | ${SORT} -u
+
+which_headers: ${C_SRC}
+	@${CC} ${CFLAGS} ${C_SRC} -M | \
+	    ${SED} -e 's/^\([^ :]*\)\.o: \1.c //' -e 's/ \\$$//' | \
+	    ${AWK} '{ for (i=1; i <= NF; ++i) { print $$i; } }' | \
+	    ${SORT} -u
+
+# utility rules
+#
+clean:
+	rm -f ${C_OBJ} megahack.o
+
+clobber: clean
+	rm -f runpeos proc* core*
+	rm -rf peosdir

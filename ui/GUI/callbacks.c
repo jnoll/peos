@@ -67,8 +67,12 @@ void
 on_Start_clicked(GtkButton *menuitem, gpointer user_data)
 {
 
-  char *cmd, buf[3], *name, *res_qual, *res_val;
-  int i, size;
+  char *cmd;
+  char buf[3];
+  int i;
+  char *name;
+  char *res_qual;
+  char *res_val;
 
   static GtkWidget *input_dialog = NULL;
   res_qual = res_val = name = NULL;
@@ -112,18 +116,16 @@ on_Start_clicked(GtkButton *menuitem, gpointer user_data)
             				gdk_window_raise(input_dialog->window);
            			}
     			} else if (strcmp (res_val,"$$") != 0){
-				name = xmlGetProp (table[cur_pid].page.curr, "name");
-				size = strlen(exec_path) + strlen(" -n ") + sizeof(cur_pid) + strlen(buf) 
-					+ strlen(" ") + strlen(name) + strlen(" start ") + 1;
-				size = 0;
 				
-  				cmd = (char *) malloc(size);
+  				cmd = (char *) malloc (sizeof (char ) * (strlen (exec_path) + 40 
+						+ strlen (xmlGetProp(table[cur_pid].page.curr, "name"))));
   				strcpy (cmd, exec_path);
   				strcat (cmd, " -n ");
   				sprintf(buf, "%d", cur_pid);
   				strcat (cmd, buf);
   				strcat (cmd, " ");
-  				strcat (cmd, name);
+				name = xmlGetProp (table[cur_pid].page.curr, "name");
+  				strcat (cmd, xmlGetProp(table[cur_pid].page.curr, "name"));
   				strcat (cmd, " start ");
   				runPeos(cmd);
   				free(cmd);
@@ -154,8 +156,10 @@ void
 on_Rebind_clicked(GtkButton *menuitem, gpointer user_data)
 {
 
-  char *cmd, *name, *res_qual, *res_val;
-  int size;
+  char *cmd;
+  char *name;
+  char *res_qual;
+  char *res_val;
 
   static GtkWidget *rebind_dialog = NULL;
   res_qual = res_val = name = NULL;
@@ -169,9 +173,7 @@ on_Rebind_clicked(GtkButton *menuitem, gpointer user_data)
            	res_val = xmlGetProp(cur, "value");
 		res_name = NULL;
 		res_name = xmlGetProp(cur, "name");
-		size = strlen(res_name) + strlen(" : ") + strlen(res_val) + 1;
-		size = 0;
-		cmd = ( char*) malloc (size);
+		cmd = ( char*) malloc ( strlen ( res_name)+ strlen (res_val)+5);
 		strcpy (cmd, res_name);
 		strcat ( cmd , " : ");
 		strcat (cmd, res_val);
@@ -194,7 +196,6 @@ on_Rebind_clicked(GtkButton *menuitem, gpointer user_data)
 	}
   }
  free(cmd);
-// cmd = NULL;
  check_state();
 }
 
