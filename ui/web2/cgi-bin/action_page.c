@@ -6,6 +6,7 @@
 #include <kernel/action.h>
 #include <kernel/process_table.h>
 #include "getcgi.h"
+#include "html.h"
 
 
 

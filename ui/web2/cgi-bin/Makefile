@@ -3,7 +3,7 @@ KERNEL_DIR = $(OS_DIR)/kernel
 
 CC = gcc
 
-CFLAGS = -g -I$(OS_DIR) -I../../..
+CFLAGS = -g -Wall -I$(OS_DIR) -I../../..
 
 LD = gcc
 LIBS = -lpml
@@ -29,7 +29,7 @@ TESTS = test_login.sh \
 	test_process_listing.sh \
 	
 
-CGI = login.cgi action_list.cgi action_page.cgi create_process.cgi process_listing.cgi action_event.cgi handle_run.cgi bind_resources.cgi multiple_dones.cgi
+CGI = login.cgi action_list.cgi action_page.cgi create_process.cgi process_listing.cgi action_event.cgi handle_run.cgi bind_resources.cgi multiple_dones.cgi multiple_done_bindings.cgi
 SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)
 
 PML = test_action.pml readme.pml

@@ -18,5 +18,6 @@ int main()
     printf("<input type=\"hidden\" name=\"start\" value=\"true\"><br><br>");
     
     printf("<input type=\"submit\" name=\"Submit\" value=\"Submit\"><br><br></form></div>");
+    exit(0);
     
 }	
