@@ -15,14 +15,20 @@ char ** list_actions (peos_action_t * currentActions, int numActions)
 	(char*) listElements [0] = "act1";
 	(char*) listElements [1] = "act2";
 	(char*) listElements [2] = NULL;
-	list = listElements;
+	//list = listElements;
 	
+
 	//HERE:
 	//write the code that would take peos_action_t * and convert it to char **
 	//malloc last element to null
 	// char ** list = peos_list_models ();
-	
-	return listElements;
+	list = (char**) malloc (numActions*256);
+	for (i=0; i<numActions; i++) 
+	{
+		(char*) list[i]=currentActions[i].name;
+	}
+	return list;
+	//return listElements;
 }
 
 
@@ -50,7 +56,14 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		currentPid =  0; //peos_create_instance (selection, NULL, 0);
 		//use returned pid to display list of actions	
 		//currentActions = peos_list_actions (currentPid, &numActions);
-
+		//TEST: create our own peos_action_t
+		currentActions = (peos_action_t *) calloc(2, sizeof(peos_action_t));
+		strcpy (currentActions[0].name, "action1test");
+		currentActions[0].script="blablabla";
+		currentActions[0].pid=currentPid;
+		strcpy (currentActions[1].name, "action2test");
+		currentActions[1].script="blablabla2";
+		currentActions[1].pid=currentPid;		
 		numActions=2;
 		
 		listElements2 = list_actions (currentActions, numActions);
