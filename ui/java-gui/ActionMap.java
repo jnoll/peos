@@ -128,6 +128,100 @@ public class ActionMap{
 
             return output;
         }
+            
+        public DefaultMutableTreeNode buildActionTree()
+        {
+            String stateValue;
+            DefaultMutableTreeNode root = new DefaultMutableTreeNode("Actions");
+            String[] available = new String[50];
+            String[] ready = new String[50];
+            String[] run = new String[50];
+            String[] suspend = new String[50];
+            int availCount=0;
+            int readyCount=0;
+            int runCount=0;
+            int suspendCount=0;
+            
+            for (int i=0; i< 11; i++)
+            {
+                if (this.isProcActive(i))
+                {            
+                    LinkNode curr=this.getCurrentLink(i);
+                    this.reset(i);
+                    LinkNode probe = this.getCurrentLink(i);
+                
+                    while (probe != null)
+                    {
+                        Element payload = probe.getElement();                    
+                        if ( payload.getAttribute("state") != null )
+                        {
+                            stateValue=payload.getAttribute("state");
+                            
+                            if (stateValue.equals("AVAILABLE"))
+                            {
+                                String name=payload.getAttribute("name");
+                                available[availCount]="(" + i + ")" + name;
+                                availCount++;
+                            }
+                                
+                            if (stateValue.equals("READY"))
+                            {
+                                String name=payload.getAttribute("name");
+                                ready[readyCount]="(" + i + ")" + name;
+                                readyCount++;
+                            }
+                                
+                            if (stateValue.equals("RUN"))
+                            {
+                                String name=payload.getAttribute("name");
+                                run[runCount]="(" + i + ")" + name;
+                                runCount++;
+                            }
+                            if (stateValue.equals("SUSPEND"))
+                            {
+                                String name=payload.getAttribute("name");
+                                suspend[suspendCount]="(" + i + ")" + name;
+                                suspendCount++;
+                            }
+                            
+                        }
+                        
+                        probe = probe.getNext();
+                    }
+                    this.setCurrent(i,curr);
+                }
+                
+            }
+            DefaultMutableTreeNode availableNode = new DefaultMutableTreeNode("Available");
+            for (int i=0; i<availCount; i++)
+            {
+                availableNode.add(new DefaultMutableTreeNode(available[i]));
+            }
+            
+            DefaultMutableTreeNode readyNode = new DefaultMutableTreeNode("Ready");
+            for (int i=0; i<readyCount; i++)
+            {
+                readyNode.add(new DefaultMutableTreeNode(ready[i]));
+            }
+            DefaultMutableTreeNode runNode = new DefaultMutableTreeNode("Run");
+            for (int i=0; i<runCount; i++)
+            {
+                runNode.add(new DefaultMutableTreeNode(run[i]));
+            }
+            DefaultMutableTreeNode suspendNode = new DefaultMutableTreeNode("Suspend");
+            for (int i=0; i<suspendCount; i++)
+            {
+                suspendNode.add(new DefaultMutableTreeNode(suspend[i]));
+            }
+            
+            root.add(runNode);
+            root.add(suspendNode);
+            root.add(readyNode);
+            root.add(availableNode);
+            
+            return root; 
+
+        }        
         
         public DefaultMutableTreeNode getReadyActionList()
         {
@@ -181,7 +275,7 @@ public class ActionMap{
         }
         public String[] parsePid(String actionBlock)
         {
-            String[] splitter=actionBlock.split("]");
+            String[] splitter=actionBlock.split("\\)");
             splitter[0]=splitter[0].substring(1);
             return splitter;
         }

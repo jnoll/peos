@@ -81,7 +81,7 @@ public class testACJU extends TestCase{
         }
 	public void testParseActionString()
 	{
-		String tester="[0]hello";
+		String tester="(0)hello";
 		String result[]= map.parsePid(tester);
                 assertEquals("0", result[0]);
                 assertEquals("hello", result[1]);
