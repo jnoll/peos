@@ -1,4 +1,4 @@
-process MileStone4 {
+process Architecture {
 	sequence {
 		action updateWorkArea manual {
 			agent { "student" }

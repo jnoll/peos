@@ -1,4 +1,4 @@
-process MileStone9 {
+process PostMortem {
 	sequence {
 		action updateWorkArea manual {
 			agent { "student" }
