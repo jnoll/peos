@@ -364,15 +364,7 @@ on_Finish_clicked(GtkButton *button, gpointer user_data)
 	char *cmd, *name, buf[3];
 	int i, size;
 
-	if(cmd != NULL) {
-		free(cmd);
-		cmd = NULL;
-	}
 	if (table[cur_pid].process != NULL ) {
-		if(cmd != NULL) {
-			free(cmd);
-			cmd = NULL;
-	 	}
 		name =  xmlGetProp(table[cur_pid].page.curr, "name");
 		size = strlen(exec_path) + strlen(" -n ") + sizeof(cur_pid)
 			+ strlen(buf) + strlen(" ") + strlen(name) + strlen(" finish ") + 1;
