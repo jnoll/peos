@@ -5,7 +5,7 @@ import pml.datamodel.CPMLNode;
 
 /**
  * This class represents the basic SpecNode.  
- *
+ * @author Na Li
  * @author Matt Osminer
  * @author Xing Wei
  */
@@ -15,7 +15,8 @@ public class CSpecNode extends CPMLNode
      * Basic Constructor - sets up the default graph node behavior and
      * the starting properties for this process
      *
-     * @param TCName - the name of the Spec.  Serves as the process Symbol name      * so no spaces allowed
+     * @param TCName - the name of the Spec.  Serves as the process Symbol name
+     * so no spaces allowed
      * @param TCType - string reprenting the type of this TC. See setType for 
      * valid options
      * @param Comments - string representing any process comments the author 
@@ -38,7 +39,7 @@ public class CSpecNode extends CPMLNode
         throws CPMLException
     {
         // TODO Type Validation
-        m_SpecType = new String( Type );
+        m_SpecType = Type;
     }
     
     public void setPathname( String Pathname )

@@ -6,7 +6,9 @@ import pml.datamodel.CPMLNode;
 /**
  * This class represents the basic Process Node.  You should always start with
  * this type of node to represent your process.  From here you can add or 
- * remove nodes as you need 
+ * remove nodes as you need
+ *
+ * @author Na Li
  * @author Matt Osminer
  * @author Xing Wei
  */
@@ -43,7 +45,7 @@ public class CProcessNode extends CPMLNode
     
     public void setAuthor( String Author )
     {
-        m_Author = new String( Author );
+        m_Author = Author;
     }
     
     public String getProcessName()

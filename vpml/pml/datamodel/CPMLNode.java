@@ -6,7 +6,7 @@ import java.util.CGraphNode;
  * This class serves as a base PML class for any PML type construct.
  * Further this class implements basic behavior to convert PML nodes into
  * PML code, as well as some utility methods to assist with that
- *
+ * @author Na Li
  * @author M. Osminer
  * @author Xing Wei
  */
@@ -19,6 +19,18 @@ abstract public class CPMLNode extends CGraphNode
      * @param Comments Comments associated with this node - may be null
      * @param SymbolName The PML symbol name to generate with this node
      */
+
+    static CPMLNode pmlNodeInst = null;
+    public static void setPMLNode(CPMLNode node)
+    {
+      pmlNodeInst = node;
+    }
+
+    public static CPMLNode getPMLNode()
+    {
+      return pmlNodeInst;
+    }
+
     public CPMLNode( CPMLNode ParentNode,
                      boolean canHaveChildren,
                      boolean childrenAreOrdered )
@@ -29,28 +41,29 @@ abstract public class CPMLNode extends CGraphNode
 
     // Basic accessors.  If you really need JavaDoc comments for all of these
     // I mean really!
+
     public String getComments()
     {
         return m_Comments;
     }
-    
+
     public String getSymbolName()
     {
         return m_SymbolName;
     }
-    
+
     public void setComments( String Comments )
     {
         if ( Comments != null )
             m_Comments = new String( Comments );
     }
-    
+
     public void setSymbolName( String SymbolName )
     {
         if ( SymbolName != null )
             m_SymbolName = new String( SymbolName );
     }
-          
+
     /**
      * This method converts this node to a PML string.  Keep in mind
      * this includes any associated children.  Facility is also provided for
@@ -107,9 +120,13 @@ abstract public class CPMLNode extends CGraphNode
         // Basically we're going to read in a word at a time.  If the
         // total line length is greater than 80 (std screen width) then 
         // start a newline until we've completed all the comment conversion
-        for ( int WordStartIndex = 0; WordStartIndex < m_Comments.length(); 
-                                                            WordStartIndex++) {
+        int nLoopIndex = 0;
+        for ( int WordStartIndex = 0; WordStartIndex < m_Comments.length(); ) {
             // First locate the length of the next word looking for spaces here
+            nLoopIndex++;
+            if ( nLoopIndex == 50000 )
+              break;
+
             while (m_Comments.charAt( WordStartIndex + WordLength++ ) != ' ' &&
                            WordLength + WordStartIndex < m_Comments.length() );
 
@@ -165,7 +182,8 @@ abstract public class CPMLNode extends CGraphNode
         if ( ChildrenAllowed() == false )
             return RetVal;
             
-        // Otherwise recurse the children of this node.  Add 3 to the space card        // inality so all children are indented by three space in scope
+        // Otherwise recurse the children of this node.  Add 3 to the space card
+        // inality so all children are indented by three space in scope
         for ( int ChildNum = 0; ChildNum < NumberOfChildren(); ChildNum++ )
             RetVal += ((CPMLNode)GetAChild( ChildNum )).toPMLString( pmlString,                                                          SpaceCardinality + 3 );
             

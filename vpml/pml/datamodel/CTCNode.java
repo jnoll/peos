@@ -15,7 +15,8 @@ public class CTCNode extends CPMLNode
      * Basic Constructor - sets up the default graph node behavior and
      * the starting properties for this process
      *
-     * @param TCName - the name of the TC construct.  Serves as the Symbol name      * so no spaces allowed
+     * @param TCName - the name of the TC construct.  Serves as the Symbol name
+     * so no spaces allowed
      * @param TCType - string reprenting the type of this TC. See setType for 
      * valid options
      * @param Comments - string representing any process comments the author
@@ -44,7 +45,8 @@ public class CTCNode extends CPMLNode
     {
         // TODO Verify the type is one of sequence, task, branch, selection, 
         // iteration
-        m_Type = new String( Type );
+
+        m_Type = Type;
     }
     
     public String getTCName()
@@ -54,7 +56,7 @@ public class CTCNode extends CPMLNode
     
     public String getType()
     {
-        return new String( m_Type );
+        return m_Type;
     }
     
     /**

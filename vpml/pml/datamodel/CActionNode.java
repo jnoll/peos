@@ -7,6 +7,7 @@ import pml.datamodel.CPMLNode;
  * This class represents the basic Action Node.  
  * For PML representation
  *
+ * @author Na Li
  * @author Matt Osminer
  * @author Xing Wei
  */
