@@ -59,5 +59,9 @@ extern peos_resource_t *peos_get_resource_list_action_provides(int pid,char *act
 
 extern peos_resource_t *peos_get_resource_list(char *model,int *num_resources);
 
+/*
+ * Return a pointer to the script field of specified action.
+ */
+extern char *peos_get_script(int pid, char *act_name);
 
 #endif
