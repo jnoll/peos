@@ -1,6 +1,6 @@
 #!/bin/sh
 #######################################################################
-## File Information: $Id: pmlUI.tcl,v 1.7 2000/05/09 01:59:43 nmodi Exp $
+## File Information: $Id: pmlUI.tcl,v 1.8 2000/05/14 21:02:54 nmodi Exp $
 #######################################################################
 
 #
@@ -27,7 +27,7 @@ source uiConfig.tcl
 source uiKernelInterface.tcl
 source uiErrorHandler.tcl
 source uiValues.tcl
-source uiLogin.tcl
+#source uiLogin.tcl
 source uiHelp.tcl
 source uiInputValidator.tcl
 source uiProcessHandler.tcl
