@@ -98,35 +98,78 @@ int peos_tcl_link_var(peos_tcl* ptcl, char* var_name, char* var_addr, int type)
 {
      return (int)Tcl_LinkVar(ptcl->interp,var_name,var_addr,type);    
 }
+char* peos_tcl_get_tclf_dir(peos_tcl* ptcl, char* file_name)
+{
+    int max_depth = 20;
+    int i;
+    char * path = NULL;
+    char * query = NULL;
+    char * TCLF_DIR = getenv("TCLF_DIR");
+    if(!path) path = (char*) malloc(sizeof(char)*256);
+    if(!query) query = (char*) malloc(sizeof(char)*256);
+    if(!path || !query) return NULL;//strcat((char*)malloc(sizeof(char)*256),"./");
+    if (TCLF_DIR == NULL){
+	Tcl_Eval(ptcl->interp, "exec find ./ -name tclf_*.tcl");
+	path[0]='\0';
+	while(!strcmp(ptcl->interp->result,"") && (max_depth-- > 0)){
+		path=strcat(path,"../");
+		sprintf(query,"exec find %s -name %s", path,file_name);
+        	Tcl_Eval(ptcl->interp, query);
+	}
+	if (max_depth<=0)
+		sprintf(path,"./%s", file_name);
+	else{
+		sprintf(path,"%s", ptcl->interp->result);
+	}
+    }else{
+       sprintf(path,"./%s", file_name);
+    }
+    Tcl_EvalFile(ptcl->interp, path);
+    if(query) free(query);
+    return path;
+}
 int peos_tcl_script(peos_tcl* ptcl, char* file_name)
 {
     int status;
-    char dot[] = ".";
+    int max_depth = 20;
+    int i;
     char * path = NULL;
+    char * query = NULL;
     char * TCLF_DIR = getenv("TCLF_DIR");
-    if (TCLF_DIR == NULL) {
-        TCLF_DIR = dot;
-    }
     if(!path) path = (char*) malloc(sizeof(char)*256);
-    sprintf(path,"%s/%s", TCLF_DIR, file_name);
-    fprintf(stderr, "/tpath:%s",path);
+    if(!query) query = (char*) malloc(sizeof(char)*256);
+    if(!path || !query) return TCL_ERROR;
+    if (TCLF_DIR == NULL){
+	Tcl_Eval(ptcl->interp, "exec find ./ -name tclf_*.tcl");
+	path[0]='\0';
+	while(!strcmp(ptcl->interp->result,"") && (max_depth-- > 0)){
+		path=strcat(path,"../");
+		sprintf(query,"exec find %s -name %s", path,file_name);;
+        	Tcl_Eval(ptcl->interp, query);
+	}
+	if (max_depth<=0)
+		sprintf(path,"./%s", file_name);
+	else{
+		sprintf(path,"%s", ptcl->interp->result);
+	}
+    }else{
+       sprintf(path,"./%s", file_name);
+    }
     status = Tcl_EvalFile(ptcl->interp, path);
     if (*ptcl->interp->result != 0){
         fprintf(stderr,"Issue Running Script: %s\n", ptcl->interp->result);
-	fprintf(stderr,"in Directory: ");
-	system("pwd");
-	//fprintf(stderr,"\nFiles: \n");
-	//system("ls");
-	fprintf(stderr,"\n");
-	
+        fprintf(stderr,"in Directory: ");
+        system("pwd");
+        fprintf(stderr,"\n");
+ 
     }
 #ifdef TCLINTERP_DEBUG
     fprintf(stderr,"Script ran, result[%s]: %s\n",*ptcl->interp->result , status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
 #endif
     if(path) free(path);
+    if(query) free(query);
     return status;
 }
-
 int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_str )
 {
     int result=-1;
