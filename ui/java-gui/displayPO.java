@@ -31,24 +31,6 @@ public class displayPO{
 	}
         
         /**
-         *  reparse works similarly to convertDOM, except it's designed for 
-         *  updating the ActionMap rather than creating it. This is usually 
-         *  called after an action has had a resource value or state changed.
-         *  @param pid The pid number of the process to be parsed again.
-         */
-	public void reparse(int pid) throws Exception
-	{ 
-		xmlStream = new DOMParser();
-		xmlStream.parse(new InputSource(xmlInput));
-		Document doc = xmlStream.getDocument();
-		LinkNode temp = this.actions.getCurrentLink(pid);
-		this.actions.reset(pid);
-		this.resources.DeleteProcess(pid);
-		retraverse(doc.getDocumentElement(), pid);
-		actions.setCurrent(pid,temp);
-	}
-        
-        /**
          * Checks the given pid to see if it is valid.
          * @param pid The pid being checked for validity.
          * @return True - if the pid is valid.
@@ -56,7 +38,7 @@ public class displayPO{
          */
         public boolean checkForPid(int pid) throws Exception
         {
-            
+            xmlStream = new DOMParser();
             xmlStream.parse(new InputSource(xmlInput));
             Document doc = xmlStream.getDocument();
             return checkPid(doc.getDocumentElement(), pid);
@@ -66,18 +48,35 @@ public class displayPO{
         /**
         * Traverses the process corresponding to parameter pid. Builds an
         * ActionMap which can be used for creating an outline of the process.
+        * Can also be used to update the action map, like reparse. 
         * @param pid The process to be parsed.
         */
-        public void convertDOM(int pid) throws IOException
+        public void convertDOM(int pid) 
 
 	{
-                Document doc = xmlStream.getDocument();
-		this.actions.DeleteProcess(pid);
-		this.resources.DeleteProcess(pid);
-		traverse(doc.getDocumentElement(),-1, pid);
+            try{
+                
+                try{
+                    xmlStream = new DOMParser();
+                    xmlStream.parse(new InputSource(xmlInput));
+                    Document doc = xmlStream.getDocument();
+                    //this.actions.DeleteProcess(pid);
+                    for (int i=0; i<11; i++)
+                        this.resources.DeleteProcess(i);
+                    traverse(doc.getDocumentElement(),-1, pid, false);
+                }
+                catch(IOException ee)
+                {
+                    System.err.println(ee);
+                }
+            }
+            catch (SAXException e)
+            {
+                System.err.println(e);
+            }
 	}
-        
-	private void retraverse(Node root, int pid) throws IOException 
+
+	private void traverse(Node root, int offset, int pid, boolean update) throws IOException 
 	{
 		String elemName;
 		if (root == null)
@@ -87,91 +86,43 @@ public class displayPO{
 		int type=root.getNodeType();
 		if (type == root.DOCUMENT_NODE)
 		{
-			retraverse(((Document)root).getDocumentElement(),pid); 
+			traverse(((Document)root).getDocumentElement(),0,pid, update); 
 		}
 		else if (type == root.ELEMENT_NODE)
 		{
 			elemName=root.getNodeName();
 			if (elemName.equals("process"))
 			{
+                             	selectionFlag=false;
+                                branchFlag=false;	                                
+                                sequenceFlag=false;
 				String model=((Element)root).getAttribute("model");
 				String pidXML=((Element)root).getAttribute("pid");
-				if (stringToInt(pidXML) != pid)
-					return;
-				model=model.substring(2);
-				actions.UpdateAction(pid, ((Element)root));
+                                int pidNum = Integer.parseInt(pidXML);
+				
+                                
+                                if (actions.isProcActive(pidNum) == true)
+                                    update=true;
+                                else
+                                    update = false;
+                                System.out.println(pidNum + " " + Boolean.toString(update));
+                                model=model.substring(2);                                
+                                if (update == true)
+                                {                                
+                                    actions.reset(pidNum);
+                                    actions.UpdateAction(pidNum, ((Element)root));
+                                }
+                                else
+                                    actions.AddAction(pidNum, ((Element)root), offset);
+                                pid = pidNum;
 			}
 			if (elemName.equals("action"))
 			{	
-				actions.UpdateAction(pid, ((Element)root));
-				if ( ((Element)root).getAttribute("name").equals("create_test_file"))
-					testElement= (Element) root; 
-			}	
-		
-			if (elemName.equals("prov_resource"))
-			{	
-				resources.AddResource(pid, ((Element)root),0);
-			}	
-			if (elemName.equals("req_resource"))
-			{	
-				resources.AddResource(pid, ((Element)root),0);
-			}	
-			if (elemName.equals("selection"))
-       		       	{ 
-				if(selectionFlag==false)
-					actions.UpdateAction(pid, ((Element)root));
-				selectionFlag=true; 
-                        }
-			if (elemName.equals("/selection"))
-				selectionFlag=false;
-			if (elemName.equals("iteration"))
-       		       	{
-				actions.UpdateAction(pid, ((Element)root));
-                        }
-
-			if (elemName.equals("sequence"))
-       		       	{ 
-				if (sequenceFlag==false)
-					actions.UpdateAction(pid, ((Element)root));
-				sequenceFlag=true;
-                        }
-			if (elemName.equals("/sequence"))
-				sequenceFlag=false;
-		}
-		NodeList children = root.getChildNodes();
-		for (int i=0; i < children.getLength(); i++)
-		{
-			retraverse(children.item(i),pid);
-		}
-	}
-        
-	private void traverse(Node root, int offset, int pid) throws IOException 
-	{
-		String elemName;
-		if (root == null)
-		{
-			return; 
-		}
-		int type=root.getNodeType();
-		if (type == root.DOCUMENT_NODE)
-		{
-			traverse(((Document)root).getDocumentElement(),0,pid); 
-		}
-		else if (type == root.ELEMENT_NODE)
-		{
-			elemName=root.getNodeName();
-			if (elemName.equals("process"))
-			{
-				String model=((Element)root).getAttribute("model");
-				String pidXML=((Element)root).getAttribute("pid");
-				if (stringToInt(pidXML) != pid)
-					return;
-				model=model.substring(2);
-				actions.AddAction(pid, ((Element)root), offset);
-			}
-			if (elemName.equals("action"))
-			{	
-				actions.AddAction(pid, ((Element)root), offset);
+                                if (update == true)
+                                    actions.UpdateAction(pid, ((Element)root));
+                                else
+                                    actions.AddAction(pid, ((Element)root), offset);
+				//actions.AddAction(pid, ((Element)root), offset);
 				if ( ((Element)root).getAttribute("name").equals("create_test_file"))
 					testElement= (Element) root; 
 			}	
@@ -187,20 +138,34 @@ public class displayPO{
 			if (elemName.equals("selection"))
        		       	{ 
 				if(selectionFlag==false)
-	        			actions.AddAction(pid, ((Element)root),offset);                        
+                                {	        		
+                                    if (update == true)
+                                        actions.UpdateAction(pid, ((Element)root));
+                                    else
+                                        actions.AddAction(pid, ((Element)root), offset);
+                                }
 				selectionFlag=true; 
                         }
 			if (elemName.equals("/selection"))
 				selectionFlag=false;
 			if (elemName.equals("iteration"))
        		       	{
-				actions.AddAction(pid, ((Element)root), offset); 
+                                if (update == true)
+                                    actions.UpdateAction(pid, ((Element)root));
+                                else
+                                    actions.AddAction(pid, ((Element)root), offset);
+				
                         }
 
                         if (elemName.equals("branch"))
        		       	{ 
 				if (branchFlag==false)
-					actions.AddAction(pid, ((Element) root), offset);
+                                {					
+                                    if (update == true)
+                                        actions.UpdateAction(pid, ((Element)root));                                        
+                                    else                                                                            
+                                        actions.AddAction(pid, ((Element)root), offset);
+                                }
 				branchFlag=true;
                         }
 			if (elemName.equals("/branch"))
@@ -208,7 +173,13 @@ public class displayPO{
 			if (elemName.equals("sequence"))
        		       	{ 
 				if (sequenceFlag==false)
-					actions.AddAction(pid, ((Element) root), offset);
+                                {
+                                    if (update == true)
+                                        actions.UpdateAction(pid, ((Element)root));
+                                    else
+                                        actions.AddAction(pid, ((Element)root), offset);
+					
+                                }
 				sequenceFlag=true;
                         }
 			if (elemName.equals("/sequence"))
@@ -217,7 +188,7 @@ public class displayPO{
 		NodeList children = root.getChildNodes();
 		for (int i=0; i < children.getLength(); i++)
 		{
-			traverse(children.item(i),offset+1,pid);
+			traverse(children.item(i),offset+1,pid, update);
 		}
 	}
         
@@ -231,7 +202,7 @@ public class displayPO{
 		int type=root.getNodeType();
 		if (type == root.DOCUMENT_NODE)
 		{
-			traverse(((Document)root).getDocumentElement(),0,pid); 
+			traverse(((Document)root).getDocumentElement(),0,pid,false); 
 		}
 		else if (type == root.ELEMENT_NODE)
 		{
@@ -459,8 +430,7 @@ public class displayPO{
                         }
                     }
                 }
-//               for (int i=0; i<rrList.length; i++)
-//                    System.out.println(rrList[i]);
+
                 
                 return rrList;
 	}
@@ -562,7 +532,7 @@ public class displayPO{
 			System.err.println(e);
 		}
 		try{
-			reparse(pid);
+			convertDOM(pid);
 		}
 		catch(Exception e)
 		{
@@ -596,7 +566,7 @@ public class displayPO{
 			System.err.println(e);
 		}
 		try{
-			reparse(pid);
+			convertDOM(pid);
 		}
 		catch(Exception e)
 		{
@@ -629,7 +599,7 @@ public class displayPO{
 			System.err.println(e);
 		}
 		try{
-			reparse(pid);
+			convertDOM(pid);
 		}
 		catch(Exception e)
 		{
@@ -680,7 +650,7 @@ public class displayPO{
             try{
                     peos = r.exec(test);
                     peos.waitFor();
-                    reparse(pid);
+                    convertDOM(pid);
             }
             catch(Exception e2)
             {
@@ -713,7 +683,7 @@ public class displayPO{
 			System.err.println(e);
 		}
 		try{
-			reparse(pid);
+			convertDOM(pid);
 		}
 		catch(Exception e)
 		{
@@ -838,70 +808,21 @@ public class displayPO{
 		return this.actions;
 	}
         
-	private static int stringToInt(String s1)
-	{
-		if (s1.length()==1)
-		{
-			switch (s1.charAt(0))
-			{
-				case '0':
-					return 0;
-                               case '1':
-                                        return 1;
-                               case '2':
-                                        return 2;
-                               case '3':
-                                        return 3;
-                               case '4':
-                                        return 4;
-                               case '5':
-                                        return 5;
-                               case '6':
-                                        return 6;
-                               case '7':
-                                        return 7;
-                               case '8':
-                                        return 8;
-                               case '9':
-                                        return 9;
 
-			}
-		}
-		else if (s1.length() ==2)
-		{
-			if (s1.charAt(0) == '1' && s1.charAt(1) == '0')
-				return 10;
-			if (s1.charAt(0) == '1' && s1.charAt(1) =='1')
-				return 11;
-			return 99;
-		}
-		return 99;
-	}
 	public static void main(String args[])
 	{
+            
 		displayPO dispTest=new displayPO("proc_table.dat.xml");
-		try{	
-			dispTest.convertDOM(0);
-			//String blah = dispTest.getScript(dispTest.testElement,0);
-			//blah = blah.concat(dispTest.getState(dispTest.testElement)+"\n");
-			//blah = blah.concat(dispTest.getRR(dispTest.testElement) + "\n");
-			//blah = blah.concat(dispTest.getPR(dispTest.testElement));
-			dispTest.getActions().numActiveProcesses();
-			dispTest.convertDOM(0);
-			dispTest.getActions().Print();
-			dispTest.getActions().numActiveProcesses();
-			try{
-				dispTest.reparse(0);
-			}
-			catch(Exception e)
-			{
-				System.err.println(e);
-			}
 
-		}
-		catch(IOException e)
-		{
-			System.out.println(e);
-		}
+		dispTest.convertDOM(0);
+                dispTest.getActions().Print();
+                System.out.println("Deleting 0");
+                dispTest.getActions().DeleteProcess(0);
+                dispTest.getActions().Print();
+		System.out.println("Yo" +dispTest.getActions().numActiveProcesses());
+                dispTest.convertDOM(0);
+                dispTest.getActions().Print();
+                dispTest.getActions().numActiveProcesses();
+	
 	}
 }

@@ -18,10 +18,10 @@ public class PeosApp extends JFrame implements ActionListener
 	private File file;	
 	private String activePs[] = new String[11];
 	private boolean internalFrameOpen = false;
-        private displayPO outline;
+        private displayPO outline;        
         
 	public JMenu fileMenu;
-	public JMenuBar menuBar;
+	public JMenuBar menuBar;        
 	public JFrame confirmFrame;
 	public int currPagePID;
 	public JTabbedPane tabbedPane;
@@ -33,9 +33,13 @@ public class PeosApp extends JFrame implements ActionListener
    	public PeosApp() 
 	{
 	        super("Peos Application");
-	
+                
 		System.setProperty("java.util.prefs.PreferencesFactory", "DisabledPreferencesFactory");	
         	
+                outline = new displayPO("./proc_table.dat.xml");        
+                outline.getActions().Print();
+                
+                
 		//Make the big window be indented 50 pixels from each edge of the screen.
 	        int inset = 50;
 	       	Dimension screenSize = new Dimension (1050,700);
@@ -52,6 +56,7 @@ public class PeosApp extends JFrame implements ActionListener
 		deleteB.setEnabled(false);
 		initTabIndices();
 		
+                
 		try {
 			lastDir = SetupPath.getCurrDir(); 
 		} 
@@ -281,7 +286,8 @@ public class PeosApp extends JFrame implements ActionListener
 				}
 			
 				try {		
-					SetupPath.delete(pidInt);
+					SetupPath.delete(pidInt);                                       
+                                        outline.getActions().DeleteProcess(pidInt);
 				} 
                                 catch (IOException temp) 
                                 { 
@@ -462,8 +468,8 @@ public class PeosApp extends JFrame implements ActionListener
 
 	protected void activeProcess(String xmlFilename, int pidNum, int placement)
 	{
-		ProcessContent content = new ProcessContent(xmlFilename,pidNum,this);
-		outline = content.getOutline();
+		ProcessContent content = new ProcessContent(outline,pidNum,this);
+		//outline = content.getOutline();
 		tabbedPane.add(content.getSplitPanes(),placement);		
 		tabbedPane.setTitleAt(placement,content.getTabName());
 		tabbedPane.setToolTipTextAt(placement,"pid: " + pidNum);
@@ -476,8 +482,8 @@ public class PeosApp extends JFrame implements ActionListener
 	}
         protected void activeProcess(String xmlFilename, int placement)
 	{
-		ProcessContent content = new ProcessContent(xmlFilename,placement,this);
-		outline = content.getOutline();
+		ProcessContent content = new ProcessContent(outline, placement,this);
+		//outline = content.getOutline();
 		tabbedPane.add(content.getSplitPanes(),placement);		
 		tabbedPane.setTitleAt(placement,content.getTabName());
 		tabbedPane.setToolTipTextAt(placement,"pid: " + placement);
@@ -525,20 +531,30 @@ public class PeosApp extends JFrame implements ActionListener
 	}
 	
 	private static void createAndShowGUI()
-	{
-		PeosApp app = new PeosApp();
-		app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		app.setVisible(true);
+	{                
+            PeosApp app = new PeosApp();                              
+            app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
+            app.setVisible(true);
 	}
 	
     	public static void main(String[] args) 
     	{
  	    javax.swing.SwingUtilities.invokeLater( new Runnable() 
  	    {
-	   		public void run() 
-		   	{
-				createAndShowGUI();
-		        }
+                public void run() 		                
+                {
+                    try{
+                        Process peos;                                        
+                        Runtime r = Runtime.getRuntime();	                    
+                        peos = r.exec(SetupPath.getPeos()+ " -i");             
+                        createAndShowGUI();
+                    }
+                    catch(IOException e)
+                    {
+                        System.err.println(e);
+                    }
+                   
+                }                   	
             });
-    	}
+        }
 }

@@ -39,13 +39,15 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
             private PeosApp topLevel; //for closing actions on finish
 	    public String tabName;
 
-    	public ProcessContent(String xmlFilename, int pNum, PeosApp topLevel) {
+    	public ProcessContent(displayPO outline, int pNum, PeosApp topLevel) {
                 
                 this.topLevel=topLevel;
+                this.outline=outline;
                 
 		pidNum = pNum;
 		//Create nodes
-		DefaultMutableTreeNode info = dispOutline(xmlFilename);                
+                               
+		DefaultMutableTreeNode info = dispOutline();                
 		map = outline.getActions();
 		map.reset(pidNum); 
 		LinkNode n = map.getCurrentLink(pidNum);
@@ -242,17 +244,19 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 			map.getActionByName(pidNum,currActionName);
 			LinkNode n = map.getCurrentLink(pidNum);
 			String currentPage = n.getElement().getAttribute("name");
-                        createTextPane(n,currentPage);
                         try{
                             if (outline.checkForPid(pidNum) == false)
                             {
-                                topLevel.delete(pidNum);                                                        
+                                topLevel.delete(pidNum);
+                                return;
                             }                       
                         }
                         catch(Exception ee)
                         {   
                             System.err.println(ee);
                         }
+                        createTextPane(n,currentPage);
+                        
   		}
   		else if ("abort".equals(e.getActionCommand()))
   		{
@@ -633,7 +637,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 			return pathName.substring(pos+2);
   	}
   
-    private DefaultMutableTreeNode dispOutline(String filename) 
+    private DefaultMutableTreeNode dispOutline() 
     {
 		root = null;
 		
@@ -642,19 +646,16 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 	
 		DefaultMutableTreeNode[] parentNodes = new DefaultMutableTreeNode[100];
 		
-		outline = new displayPO(filename);
+		//outline = new displayPO(filename);
 		
-		try {
-   			outline.convertDOM(pidNum);
-		} catch(IOException x) {
-			System.err.println("Files not found");
-			System.exit(2);
-		}
+		
+   		outline.convertDOM(pidNum);
+		
 		
 		map = outline.getActions();
 		map.reset(pidNum); 
 		LinkNode n = map.getCurrentLink(pidNum);
-
+                
 		DefaultMutableTreeNode prev = null;
 		int prevNum = 0;
 

@@ -94,6 +94,10 @@ public class ActionMap{
 	{
 		return ActionList[pid].getCurr();
 	}
+        public boolean isProcActive(int pid)
+        {
+            return ActionList[pid].isProcActive();
+        }
 	
 	public boolean isNextOk(int pid)
 	{
@@ -153,10 +157,12 @@ public class ActionMap{
 	{
 		LinkNode curr;
 		for(int i=0; i<11; i++)
-		{
-			LinkNode currHolder=ActionList[i].getCurr();
+		{                        
+			LinkNode currHolder=ActionList[i].getCurr();                        
 			ActionList[i].resetCurr();
 			curr = ActionList[i].getCurr();
+                        if (currHolder == null)
+                            currHolder=curr;
 			while(curr !=null)
 			{
 				if (currHolder.getElement().getAttribute("name").equals

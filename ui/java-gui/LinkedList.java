@@ -23,6 +23,12 @@ public class LinkedList
 		curr.setElement(action);
 		curr=curr.getNext();
 	}
+        public boolean isProcActive()
+        {
+            if (head == null)
+                return false;
+            return true;
+        }
 	public void insertElement(Element action, int offset)
 	{
 		if(head == null)
@@ -32,6 +38,7 @@ public class LinkedList
 		}
 		if (curr == null)
 			curr = head;
+                
 		curr=curr.setNext(action, offset);
 	}
 	public Element find(String name)
