@@ -35,7 +35,7 @@ int main( void )
 	repos_ctr = 0;
 	myQueries = NULL;
 	
-	setup_fs( );	
+	setup_vr( );	
 	call = callback ;
 	
 	sampleSeekFile = fopen ( "FSsearchSeek.dat", "r" ) ;
