@@ -1,13 +1,13 @@
 # compiler:
 CC = gcc -g
 
-CFLAGS = -g -I.
+CFLAGS = -g -I../..
 
 # keep track of dependencies automatically
 .KEEP_STATE:
 
 # lib
-LIBS = 
+LIBS = ../../pml/libpml.a
 
 CORE_LIBS = 
 LDFLAGS = -g -L../../lib
@@ -18,10 +18,10 @@ $(CORE_OBJS)
 
 CORE_OBJS = \
 events.o \
-vm.o \
 process_table.o \
 process.o \
-action.o
+action.o \
+graph_engine.o
 
 # sources
 SOURCES = $(OBJS:.o=.c)
@@ -30,7 +30,7 @@ all: test shell
 
 # Compile the program
 shell: shell.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) -lreadline -lhistory -ltermcap
+	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
 
 # Unit tests.
 test: $(CORE_OBJS)

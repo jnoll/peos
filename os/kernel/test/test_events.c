@@ -17,13 +17,8 @@
 char *instance_dir = NULL;
 int create_instance_result = 1;
 int handle_action_result = VM_DONE;
-int resume_result = VM_DONE;
 
 /* Stubs. */
-int peos_resume(int pid)
-{
-    return resume_result;
-}
 
 char *find_model_file(char *model)
 {
@@ -54,9 +49,9 @@ START_TEST(test_list_models)
 	FILE *modelf;
 	char filename[256];
 
-	sprintf(filename, "%s/%d.txt", model_dir, i);
+	sprintf(filename, "%s/%d.pml", model_dir, i);
 	modelf = fopen(filename, "w");
-	fprintf(modelf, "%s", big_txt);
+	fprintf(modelf, "%s", "process s { action a {} }");
 	fclose(modelf);
     }
 
@@ -90,7 +85,7 @@ START_TEST(test_run_process)
     char *model = "p1";
     int i;
 
-    /* Pre: Because load_instructions() and find_model_file are stubs,
+    /* Pre: Because load_actions() and find_model_file are stubs,
      * there are no actual pre conditions.
      */
     

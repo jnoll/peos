@@ -14,4 +14,5 @@ typedef enum {
 
 extern int num_actions;
 extern int set_act_state(char *act, vm_act_state state, peos_action_t *actions, int num_actions);
+extern vm_act_state get_act_state(char *act, peos_action_t *actions, int num_actions);
 #endif

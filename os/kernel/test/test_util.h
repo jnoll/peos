@@ -13,6 +13,8 @@ extern int p1_size;
 extern int p1_PC;
 extern int p1_num_act;
 
+
+
 #define TEST_PROC_NAME "test.cpml"
 extern char *test_proc[];
 extern int test_proc_size;
@@ -25,9 +27,6 @@ extern char *big_txt;
 
 extern void free_actions(peos_action_t *actions, int size);
 extern peos_action_t *make_actions(int size, vm_act_state state);
-extern void setup_context(vm_context_t *c, int, int, int, int, char *inst[]);
 extern void parse_args(int argc, char *argv[]);
-extern int stub_load_instructions(char *file, char ***inst, int *num_inst,
-			   peos_action_t **actions, int *num_actions);
-extern int stub_init_context(vm_context_t *context, int pc) ;
+extern int stub_load_actions(char *file,peos_action_t **actions, int *num_actions);
 #endif

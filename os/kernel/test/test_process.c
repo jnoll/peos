@@ -6,12 +6,20 @@
 #include "process.h"
 #include "test_util.h"
 
+
+
 /* Globals. */
 char *instance_dir = NULL;
-int execute_status = VM_DONE;	/* What execute() should return. */
 peos_context_t process_table[PEOS_MAX_PID+1];
 
 /* Stubs. */
+
+
+vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state state)
+{
+	return VM_DONE;
+}
+	
 
 int peos_get_pid(peos_context_t *context) 
 {
@@ -28,21 +36,12 @@ peos_context_t *find_free_entry()
     return &(process_table[0]);
 }
 
-int execute(vm_context_t *context) 
+
+int load_actions(char *file, peos_action_t **actions, int *num_actions)
 {
-    return execute_status;
+    return stub_load_actions(file, actions, num_actions);
 }
 
-int load_instructions(char *file, char ***inst, int *num_inst,
-			 peos_action_t **actions, int *num_actions)
-{
-    return stub_load_instructions(file, inst, num_inst, actions, num_actions);
-}
-
-int init_context(vm_context_t *context, int pc) 
-{
-    return stub_init_context(context, pc);
-}
 
 
 
@@ -50,7 +49,7 @@ int init_context(vm_context_t *context, int pc)
 /* Look for model file in current dir. */
 START_TEST(test_find_model_file_default)
 {
-    char *model_file, *model= "model.txt", buf[BUFSIZ];
+    char *model_file, *model= "model.pml", buf[BUFSIZ];
     FILE *f;
 
     /* Pre: model file exists. */
@@ -61,7 +60,7 @@ START_TEST(test_find_model_file_default)
 	fprintf(f, "I am the example model file.\n");
 	fclose(f);
     } else {
-	fail("open expected.txt failed");
+	fail("open expected.pml failed");
     }
     
     /* Action: find it. */
@@ -74,14 +73,14 @@ START_TEST(test_find_model_file_default)
     fail_unless(strcmp(model_file, buf) == 0,
 		"actual model_file not correct");
     free(model_file);
-    unlink("model.txt");
+    unlink("model.pml");
 }
 END_TEST
 
 /* Look for model file in COMPILER_DIR */
 START_TEST(test_find_model_file)
 {
-    char *model_file, *model= "model.txt", buf[BUFSIZ];
+    char *model_file, *model= "model.pml", buf[BUFSIZ];
     FILE *f;
 
     /* Pre: model file exists. */
@@ -93,7 +92,7 @@ START_TEST(test_find_model_file)
 	fprintf(f, "I am the example model file.\n");
 	fclose(f);
     } else {
-	fail("open expected.txt failed");
+	fail("open expected.pml failed");
     }
     
     /* Action: find it. */
@@ -105,7 +104,7 @@ START_TEST(test_find_model_file)
     fail_unless(strcmp(model_file, buf) == 0,
 		"actual model_file not correct");
     free(model_file);
-    unlink("model.txt");
+    unlink("model.pml");
 }
 END_TEST
 
@@ -116,7 +115,7 @@ END_TEST
 START_TEST(test_create_instance)
 {
     int pid, i;
-    char *model = TEST_PROC_NAME;
+    char *model = "test_sample_1.pml";
     peos_context_t *context;
 
     memset(process_table, 0, PEOS_MAX_PID + 1);
@@ -125,11 +124,9 @@ START_TEST(test_create_instance)
 		"failed to create instance");
     context = &(process_table[0]);
     fail_unless(context->status == PEOS_READY, "process status");
-    /* The instruction array is set by load_instructions. */
-    fail_unless(context->vm_context.inst_array != NULL, "inst_array null");
-    fail_unless(context->vm_context.num_inst == test_proc_size, "num_inst wrong");
     fail_unless(context->actions != NULL, "actions null");
-    fail_unless(context->num_actions == test_proc_num_act, "num_actions wrong");
+    fail_unless(context->num_actions == 2, "num_actions wrong");
+  //  strcpy(context->actions[1].name,"act_1");
     for (i = 0; i < context->num_actions; i++) {
 	char buf[256];
 	sprintf(buf, "act_%d", i);
@@ -147,455 +144,6 @@ START_TEST(test_create_instance_noexist)
 
     fail_unless(peos_create_instance(model) == -1,
 		"created from non-existent model.");
-}
-END_TEST
-
-/*
- * Happy path: first action (of 10) is running.
- */ 
-START_TEST(test_finish_action)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is RUNNING,
-     * the process is waiting for the action to become DONE.
-     */
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_RUN;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_DONE;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_DONE);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(status == VM_DONE, "return value");
-    fail_unless(context->actions[0].state == ACT_DONE, "action not DONE");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 1, "stack value");
-    free_actions(context->actions, 10);
-}
-END_TEST
-
-/*
- * Boundary: only one action, in RUNNING state.
- */ 
-START_TEST(test_finish_action_one)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is RUNNING,
-     * the process is waiting, but not for the finished action.
-     */
-    context->num_actions = 1;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    /* VM is waiting for act_0 to finish.. */
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_DONE;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_DONE);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(context->actions[0].state == ACT_DONE, "action not DONE");
-    fail_unless(status == VM_DONE, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 1, "stack value");
-    free_actions(context->actions, 1);
-}
-END_TEST
-
-/*
- * Boundary: last action (of two) in RUNNING state.
- */ 
-START_TEST(test_finish_action_last)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is RUNNING,
-     * the process is waiting, but not for the finished action.
-     */
-    context->num_actions = 2;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[1].state = ACT_RUN;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    /* VM is waiting for act_1 to finish.. */
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_DONE;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_1");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_1", ACT_DONE);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(context->actions[1].state == ACT_DONE, "action not DONE");
-    fail_unless(status == VM_DONE, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 1, "stack value");
-    free_actions(context->actions, 2);
-}
-END_TEST
-
-START_TEST(test_finish_action_nowait)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is RUNNING,
-     * but the process is NOT waiting for anything.
-     */
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_RUN;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    /* Somehow, the VM set the action to RUN, but didn't call wait. */
-    context->vm_context.parameters.call = VM_SET;
-    context->vm_context.parameters.act.state = ACT_RUN;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_DONE);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(context->actions[0].state == ACT_DONE, "action not DONE");
-    fail_unless(status == VM_ERROR, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 0, "stack value");
-    free_actions(context->actions, 10);
-}
-END_TEST
-
-START_TEST(test_finish_action_nowait2)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is RUNNING,
-     * the process is waiting, but not for the finished action.
-     */
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_RUN;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    /* VM is waiting for act_1 to finish. */
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_DONE;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_1");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_DONE);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(context->actions[0].state == ACT_DONE, "action not DONE");
-    fail_unless(status == VM_INTERNAL_ERROR, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 0, "stack value");
-    free_actions(context->actions, 10);
-}
-END_TEST
-
-
-START_TEST(test_finish_action_nowait3)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is RUNNING,
-     * the process is waiting, but not for the finished action.
-     */
-    
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_RUN;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-
-    /* VM is waiting for act_0 to go ACTIVE, not DONE. */
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_RUN;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_DONE);
-    
-    /* Post: selected action is DONE; the process is waiting, but 
-     * not for ACT_FINISH -> VM_ERROR.
-     */
-    fail_unless(context->actions[0].state == ACT_DONE, "action not DONE");
-    fail_unless(status == VM_ERROR, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 0, "stack value");
-    free_actions(context->actions, 10);
-}
-END_TEST
-
-/*
- * Happy path: first action (of 10) is ready.
- */ 
-START_TEST(test_run_action)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is READY,
-     * the process is waiting for the action to become RUNNING.
-     */
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_READY;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_RUN;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_RUN);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(status == VM_DONE, "return value");
-    fail_unless(context->actions[0].state == ACT_RUN, "action not RUNning");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 1, "stack value");
-    free_actions(context->actions, 10);
-}
-END_TEST
-
-/*
- * Happy path 2: first action (of 10) is ready, but VM waiting for
- * DONE.  This is the case for sequences, where compiler generates
- * code that skips the RUN state.
- */ 
-START_TEST(test_run_action2)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is READY,
-     * the process is waiting for the action to become RUNNIN.
-     */
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_READY;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_DONE;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_RUN);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(status == VM_CONTINUE, "return value");
-    fail_unless(context->actions[0].state == ACT_RUN, "action not RUNning");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 0, "stack value");
-    free_actions(context->actions, 10);
-}
-END_TEST
-
-/*
- * Boundary: only one action, in READY state.
- */ 
-START_TEST(test_run_action_one)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is READY,
-     * the process is waiting, but not for the finished action.
-     */
-    context->num_actions = 1;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_READY;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    /* VM is waiting for act_0 to finish.. */
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_RUN;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_RUN);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(context->actions[0].state == ACT_RUN, "action not DONE");
-    fail_unless(status == VM_DONE, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 1, "stack value");
-    free_actions(context->actions, 1);
-}
-END_TEST
-
-/*
- * Boundary: last action (of two) in READY state.
- */ 
-START_TEST(test_run_action_last)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is READY,
-     * the process is waiting, but not for the finished action.
-     */
-    context->num_actions = 2;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[1].state = ACT_READY;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    /* VM is waiting for act_1 to finish.. */
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_RUN;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_1");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_1", ACT_RUN);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(context->actions[1].state == ACT_RUN, "action not DONE");
-    fail_unless(status == VM_DONE, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 1, "stack value");
-    free_actions(context->actions, 2);
-}
-END_TEST
-
-START_TEST(test_run_action_nowait)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is READY,
-     * but the process is NOT waiting for anything.
-     */
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_READY;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    /* Somehow, the VM set the action to RUN, but didn't call wait. */
-    context->vm_context.parameters.call = VM_SET;
-    context->vm_context.parameters.act.state = ACT_RUN;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_0");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_RUN);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(context->actions[0].state == ACT_RUN, "action not DONE");
-    fail_unless(status == VM_ERROR, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 0, "stack value");
-    free_actions(context->actions, 10);
-}
-END_TEST
-
-START_TEST(test_run_action_nowait2)
-{
-    vm_exit_code status;
-    peos_context_t *context = &process_table[0];
-    /* Pre: a process is loaded; some action is READY,
-     * the process is waiting, but not for the finished action.
-     */
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[0].state = ACT_READY;
-    context->vm_context.SP = 0;
-    context->vm_context.stack[context->vm_context.SP] = 0;
-
-    /* VM is waiting for act_1 to finish. */
-    context->vm_context.parameters.call = VM_WAIT;
-    context->vm_context.parameters.act.state = ACT_RUN;
-    sprintf(context->vm_context.parameters.act.actions[0], "act_1");
-    context->vm_context.parameters.act.num_act = 1;
-
-    /* Action. */
-    status = handle_action_change(0, "act_0", ACT_RUN);
-    
-    /* Post: selected action is DONE; process resumed -> next action
-     * is READY.  
-     */
-    fail_unless(context->actions[0].state == ACT_RUN, "action not DONE");
-    fail_unless(status == VM_INTERNAL_ERROR, "return value");
-    fail_unless(context->vm_context.stack[context->vm_context.SP] == 0, "stack value");
-    free_actions(context->actions, 10);
-}
-END_TEST
-
-
-START_TEST(test_resume)
-{
-    int num_var = 0, pc = 3, sp = 0, accum = -1;
-    peos_context_t *context;
-    /* Pre: a model context exists. */
-    context = &(process_table[0]);
-    setup_context(&(context->vm_context), pc, sp, accum, num_var, p1);
-
-    /* Post: VM_DONE, for stubbed execute(); */
-    fail_unless(peos_resume(0) == VM_DONE, NULL);
-    fail_unless(context->status & PEOS_DONE, "process status");
-}
-END_TEST
-
-START_TEST(test_resume_bound1)
-{
-    int num_var = 0, pc = 3, sp = 0, accum = -1;
-    peos_context_t *context;
-
-    /* Pre: a model context exists. */
-    context = &(process_table[0]);
-    setup_context(&(context->vm_context), pc, sp, accum, num_var, p1);
-
-    /* Post: VM_DONE, for stubbed execute(); */
-    fail_unless(peos_resume(-1) == VM_INTERNAL_ERROR, NULL);
-}
-END_TEST
-
-START_TEST(test_resume_bound2)
-{
-    int num_var = 0, pc = 3, sp = 0, accum = -1;
-    peos_context_t *context;
-
-    /* Pre: a model context exists. */
-    context = &(process_table[0]);
-    setup_context(&(context->vm_context), pc, sp, accum, num_var, p1);
-
-    /* Post: VM_DONE, for stubbed execute(); */
-    fail_unless(peos_resume(1) == VM_INTERNAL_ERROR, NULL);
 }
 END_TEST
 
@@ -659,30 +207,6 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_create_instance);
     tcase_add_test(tc, test_create_instance_noexist);
-
-    tc = tcase_create("resume");
-    suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_resume);
-    tcase_add_test(tc, test_resume_bound1);
-    tcase_add_test(tc, test_resume_bound2);
-
-    tc = tcase_create("finish_action");
-    suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_finish_action);
-    tcase_add_test(tc, test_finish_action_one);
-    tcase_add_test(tc, test_finish_action_last);
-    tcase_add_test(tc, test_finish_action_nowait);
-    tcase_add_test(tc, test_finish_action_nowait2);
-    tcase_add_test(tc, test_finish_action_nowait3);
-
-    tc = tcase_create("run_action");
-    suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_run_action);
-    tcase_add_test(tc, test_run_action2);
-    tcase_add_test(tc, test_run_action_one);
-    tcase_add_test(tc, test_run_action_last);
-    tcase_add_test(tc, test_run_action_nowait);
-    tcase_add_test(tc, test_run_action_nowait2);
 
     tc = tcase_create("action accessors");
     suite_add_tcase(s, tc);

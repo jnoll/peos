@@ -48,7 +48,7 @@ char **peos_list_models()
     while (ent) {
 	ext = strrchr(ent->d_name, '.');
 	if (ext != NULL) {
-	    if (strcmp(ext, ".txt") == 0) {
+	    if (strcmp(ext, ".pml") == 0) {
 		ext[0] = 0;
 		if (r >= rsize) {
 		    rsize += 256;
@@ -104,7 +104,6 @@ int peos_abort_action(peos_action_t action)
 
 int peos_run(char *process, int line)
 {
-    vm_exit_code status;
     int pid;
     char *model_file = find_model_file(process);
     if (model_file == NULL) {
@@ -115,17 +114,15 @@ int peos_run(char *process, int line)
 
     pid = peos_create_instance(model_file);
     
-    if (pid >= 0 
-	&& (status = peos_resume(pid)) != VM_ERROR 
-	&& status != VM_INTERNAL_ERROR) {
-	return pid;
+    if (pid >= 0) 
+    {  
+	    return pid;
     } else {
 	fprintf(stderr, "peos_run: can't run process %s\n",
 		process);
 	return -1;
 	return -1;
-    }
-
+   }
 }
 
 

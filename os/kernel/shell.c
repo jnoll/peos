@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: shell.c$
-* Version:      $Id: shell.c,v 1.5 2003/07/09 20:31:57 jnoll Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.6 2003/08/23 01:39:53 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -21,6 +21,9 @@
 #include "vm.h"
 #include "events.h"
 #include "process_table.h"
+#include "pmlheaders.h"
+
+
 
 /* The following mechanism lifted from the GNU readline documentation. */
 typedef struct {
