@@ -70,7 +70,7 @@ int main()
 	}
     }
 
-//    printf("\nubres_no=%d",num_unbound_resources);
+ //   printf("\nubres_no=%d",num_unbound_resources);
 
     for(i=0; i < num_unbound_resources; i++) {
 	char *value;    
