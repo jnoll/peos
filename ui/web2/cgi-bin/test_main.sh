@@ -1,6 +1,7 @@
 #!/bin/sh
 echo -n "."
 rm proc_table.dat
+export QUERY_STRING="name=proc_table&pw=test"
 create_testtable
 main.cgi > output
 
@@ -41,6 +42,12 @@ then
   echo
 fi
 if !(grep "this is a script" output > /dev/null)
+then
+  echo
+  echo Failed script. 
+  echo
+fi
+if !(grep "test_resource" output > /dev/null)
 then
   echo
   echo Failed script. 
