@@ -192,6 +192,62 @@ START_TEST(test_action_run_selection)
 END_TEST
 
 
+START_TEST(test_action_run_iter_sel)
+{
+   Graph g =(Graph) malloc (sizeof(struct graph));
+   Node source,sink,act_0,act_1,act_2,sel,join;
+
+   source = make_node("process",ACT_NONE,PROCESS,0);
+   sink = make_node("process",ACT_NONE,PROCESS,6);
+   act_0 = make_node("act_0",ACT_READY,ACTION,2);
+   act_1 = make_node("act_1",ACT_READY,ACTION,3);
+   act_2 = make_node("act_2",ACT_READY,ACTION,5);
+   sel = make_node("sel",ACT_NONE,SELECTION,1);
+   join = make_node("sel",ACT_NONE,JOIN,4);
+
+   source -> successors = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   sel -> successors = (List) make_list(act_0,act_1,NULL,NULL,NULL);
+   sel -> predecessors = (List) make_list(source,join,NULL,NULL,NULL);
+   act_0 -> predecessors = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   act_1 -> predecessors = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   act_0 -> successors = (List) make_list(join,NULL,NULL,NULL,NULL);
+   act_1 -> successors = (List) make_list(join,NULL,NULL,NULL,NULL);
+
+   join -> predecessors = (List) make_list(act_0,act_1,NULL,NULL,NULL);
+   join -> successors = (List) make_list(sel,act_2,NULL,NULL,NULL);
+   act_2 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+   act_2 -> predecessors = (List) make_list(join,NULL,NULL,NULL,NULL);
+   sink -> predecessors = (List) make_list(act_2,NULL,NULL,NULL,NULL);
+
+   ITER_START_NODES(act_2) = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   ITER_END_NODES(sel) = (List) make_list(act_2,NULL,NULL,NULL,NULL);
+   SUPER_NODES(act_0) = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   SUPER_NODES(act_1) = (List) make_list(sel,NULL,NULL,NULL,NULL);
+   
+   g -> source = source;
+   g -> sink = sink;
+   
+   source -> next = sel;
+   sel -> next = act_0;
+   act_0 -> next = act_1;
+   act_1 -> next = join;
+   join -> next = act_2;
+   act_2 -> next = sink;
+   sink -> next = NULL;
+
+   sel -> matching = join;
+   join -> matching = sel;
+
+  fail_unless(action_run(g,act_2->name) == 1,"return value");
+  fail_unless(STATE(act_0) == ACT_NONE, "action 0  not none");
+  fail_unless(STATE(act_1) == ACT_NONE, "action 1 not set to none");
+  fail_unless(STATE(sel) == ACT_NONE, "selection not none");
+  fail_unless(STATE(join) == ACT_NONE, "join not none");
+  fail_unless(STATE(act_2) == ACT_RUN, "act_2 not run");
+}
+END_TEST
+  
+
 START_TEST(test_action_run_selection_recursive)
 {
   Graph g =(Graph) malloc (sizeof(struct graph));
@@ -748,12 +804,13 @@ main(int argc, char *argv[])
     tcase_add_test(tc,test_action_run_selection);
     tcase_add_test(tc,test_action_run_selection_recursive);
     tcase_add_test(tc,test_action_run_iteration);
+    tcase_add_test(tc,test_action_run_iter_sel);
 
     tc = tcase_create("set_process_state");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_set_process_state);
 
-    tc = tcase_create("matk_iter_nodes");
+    tc = tcase_create("make_iter_nodes");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_mark_iter_nodes);
     
