@@ -35,10 +35,11 @@ test:
 	chmod 2664 ~tools/workspace/summer99/Engine/src/model/*.gdbm
 
 install:
-	cp *.gdbm ~tools/workspace/summer99/Engine/src/model/.
-	chmod 2664 ~tools/workspace/summer99/Engine/src/model/*.gdbm
+	cp *.gdbm ../../models/.
+	chmod 2664 ../../models/*.gdbm
 
 clean:
 	rm -f core
 	rm -f *.gdbm
+	rm -f *.cpml
 	rm -f *.pml.pp
