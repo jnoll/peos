@@ -26,7 +26,7 @@ int main()
   printf("-->\n");
   printf("</style>\n");
   printf("</head>\n");
-  printf("<body class=\"myTable\" link=\"#FFCC66\" vlink=\"#FFCC66\">\n");
+  printf("<body class=\"myTable\" text=\"FFFFFF\" link=\"#FFCC66\" vlink=\"#FFCC66\">\n");
 
   temp = strtok(input,"+");
   pid = atoi(temp);

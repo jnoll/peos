@@ -26,7 +26,7 @@ int main()
   printf("-->\n");
   printf("</style>\n");
   printf("</head>\n");
-  printf("<body class=\"myTable\" link=\"#FFCC66\" vlink=\"#FFCC66\" alink=\"#FFCC66\">\n");
+  printf("<body class=\"myTable\" text=\"FFFFFF\" link=\"#FFCC66\" vlink=\"#FFCC66\" alink=\"#FFCC66\">\n");
   printf("<br><br><br><br><br>\n");
   printf("<table width=\"950px\">\n");
   printf("<tr>\n");
@@ -36,13 +36,13 @@ int main()
   printf("<font size=\"5\"<b><u>Status</u></b></font>\n"); 
   printf("</td>\n");
   printf("<td width=\"210\">\n");
-  printf("<font size=\"5\"<b>Task</b>\n"); 
+  printf("<font size=\"5\"<b><u>Task</u></b>\n"); 
   printf("</td>\n");
   printf("<td width=\"210\">\n");
-  printf("<font size=\"5\"><b>Resource(s)</b>\n"); 
+  printf("<font size=\"5\"><b><u>Resource(s)</u></b>\n"); 
   printf("</td>\n");
   printf("<td width=\"220\">\n");
-  printf("<font size=\"5\"><b>Description</b>\n"); 
+  printf("<font size=\"5\"><b><u>Description</u></b>\n"); 
   printf("</td>\n");
   printf("</tr>\n");
   printf("<tr>\n");

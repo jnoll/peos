@@ -14,9 +14,6 @@ all:
 	gcc -g -g -I../..  -c -o do.o do.c
 	gcc -o do.cgi do.o $(path)events.o $(path)graph_engine.o $(path)process_table.o $(path)process.o $(path)action.o $(libs)
 	chmod og+rx do.cgi
-	gcc -g -g -I../..  -c -o do_create.o do_create.c
-	gcc -o do_create.cgi do_create.o $(path)events.o $(path)graph_engine.o $(path)process_table.o $(path)process.o $(path)action.o $(libs)
-	chmod og+rx do_create.cgi
 main:
 	gcc -g -g -I../..  -c -o main.o main.c
 	gcc -o main.cgi main.o $(path)events.o $(path)graph_engine.o $(path)process_table.o $(path)process.o $(path)action.o $(libs)
@@ -41,5 +38,4 @@ test:
 	test_action_page.sh
 	test_create.sh
 	test_do.sh
-	test_docreate.sh
 
