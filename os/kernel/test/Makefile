@@ -12,12 +12,7 @@ TEST_LIBS = -lcheck
 LDFLAGS = -g -L/home/jnoll/lib
 
 # objects
- PMLFILES = $(wildcard *.pml)
-# MODELS = $(PMLFILES:.pml=.txt)
-# MODELS = $(wildcard *.pml)
-
 CORE_OBJS =  events.o process.o process_table.o action.o graph_engine.o
-
 TEST_OBJS = test_util.o action.o
 
 # sources
@@ -25,12 +20,11 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 
 # These are in order of use.
 TESTS =  test_action test_events test_process test_process_table test_graph_engine
-FUNC_TESTS = $(wildcard *.tc)
+
 
 all: test 
-
-# 
-test: unit_tests #func_tests
+test: unit_tests 
+suite: unit_tests function accept
 
 unit_tests:  $(TESTS) test_assertions
 	@echo -n "running unit tests"
@@ -40,13 +34,11 @@ unit_tests:  $(TESTS) test_assertions
 	@-rm core*
 	@echo "done."
 
-func_tests:  $(FUNC_TESTS)
-	-for i in $^ ; do expect -f test.exp $$i; done
+function:
+	$(MAKE) -C function_tests 
 
-#vm_harness:  $(CORE_OBJS)
-#	$(CC) $(LDFLAGS) -o $@ $^  $(CORE_LIBS) 
-
-models: $(MODELS)
+accept:
+	$(MAKE) -C accept_tests 
 
 test_action: test_action.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out action.o, $(TEST_OBJS)) $(TEST_LIBS) 
