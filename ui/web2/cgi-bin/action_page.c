@@ -51,27 +51,38 @@ int main()
   printf("<br><br><br><br>\n");
   printf("<table width=\"800\">\n");
   printf("<tr>\n");
+
   if(strcmp(state,"active") == 0) {
     printf("<td width=\"100\">\n");
-    printf("<a href=\"do.cgi?%d+%s=done\"><img src=\"../images/done_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
+    printf("<a href=\"do.cgi?%d+%s=done\">\n", pid, action);
+    printf("<img src=\"../images/done_button.jpg\" border=\"0\">\n");
+    printf("</a>\n");
     printf("</td>\n");
     printf("<td width=\"100\">\n");
-    printf("<a href=\"do.cgi?%d+%s=suspend\"><img src=\"../images/suspend_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
+    printf("<a href=\"do.cgi?%d+%s=suspend\">\n", pid, action);
+    printf("<img src=\"../images/suspend_button.jpg\" border=\"0\">\n");
+    printf("</a>\n");
   }
   else if(strcmp(state, "suspend") == 0) {
     printf("<td width=\"100\">\n");
-    printf("<a href=\"do.cgi?%d+%s=resume\"><img src=\"../images/perform_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
+    printf("<a href=\"do.cgi?%d+%s=resume\">\n", pid, action);
+    printf("<img src=\"../images/perform_button.jpg\" border=\"0\">\n");
+    printf("</a>\n");
   }
   else if(strcmp(state, "ready") == 0) {
     printf("<td width=\"100\">\n");
-    printf("<a href=\"do.cgi?%d+%s=run\"><img src=\"../images/perform_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n", pid, action);
+    printf("<a href=\"do.cgi?%d+%s=run\">\n", pid, action);
+    printf("<img src=\"../images/perform_button.jpg\" border=\"0\">\n");
+    printf("</a>\n");
   }
   else {
     printf("Error in action state.\n");
   }
   printf("</td>\n");
   printf("<td>\n"); 
-    printf("<a href=\"main.cgi\"><img src=\"../images/back_button.jpg\" width=\"80\" height=\"25\" border=\"0\"></a>\n");
+  printf("<a href=\"main.cgi\">\n");
+  printf("<img src=\"../images/back_button.jpg\" border=\"0\">\n");
+  printf("</a>\n");
   printf("</td>\n");
   printf("</tr>\n");
   printf("</table>\n");

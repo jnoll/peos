@@ -119,7 +119,7 @@ int main()
   printf("<td>\n");
   printf("<br><br><br><br><br>\n");
   printf("<a href=\"create.cgi\">\n"); 
-  printf("<img src=\"../images/create_button.jpg\" width=\"80\" height=\"25\" border=\"0\">\n");
+  printf("<img src=\"../images/newprocess_button.jpg\" width=\"120\" height=\"30\" border=\"0\">\n");
   printf("</a>\n");
   printf("</td>\n");
   printf("</tr>\n");
