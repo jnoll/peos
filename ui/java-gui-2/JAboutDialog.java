@@ -25,11 +25,13 @@ public class JAboutDialog extends javax.swing.JDialog
 		okButton.setActionCommand("OK");
 		okButton.setOpaque(false);
 		okButton.setMnemonic((int)'O');
-		getContentPane().add(okButton, new com.symantec.itools.awt.GridBagConstraintsD(2,1,1,1,0.0,0.0,java.awt.GridBagConstraints.CENTER,java.awt.GridBagConstraints.NONE,new Insets(0,0,10,0),0,0));
+//		getContentPane().add(okButton, new com.symantec.itools.awt.GridBagConstraintsD(2,1,1,1,0.0,0.0,java.awt.GridBagConstraints.CENTER,java.awt.GridBagConstraints.NONE,new Insets(0,0,10,0),0,0));
+		getContentPane().add(okButton);
 		okButton.setBounds(111,80,51,25);
 		aboutLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		aboutLabel.setText("PEOS Performer Tool, version 1.0");
-		getContentPane().add(aboutLabel, new com.symantec.itools.awt.GridBagConstraintsD(0,0,3,1,1.0,1.0,java.awt.GridBagConstraints.CENTER,java.awt.GridBagConstraints.BOTH,new Insets(0,0,0,0),0,0));
+		getContentPane().add(aboutLabel);
+//		getContentPane().add(aboutLabel, new com.symantec.itools.awt.GridBagConstraintsD(0,0,3,1,1.0,1.0,java.awt.GridBagConstraints.CENTER,java.awt.GridBagConstraints.BOTH,new Insets(0,0,0,0),0,0));
 		aboutLabel.setBounds(0,0,273,80);
 		//}}
 
