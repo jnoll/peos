@@ -16,6 +16,12 @@
 #include <signal.h>
 #include "pmlengine.h"
 #include "../vm/vm.h"
+/* for kernelQueryState() */
+#include <unistd.h>
+#include <repository.h>
+#include <pml_state.h>
+#include "../vm/pmlevent.h"
+#define DASHES "------------------------------------------------------------"
 
 /* comment the following line to disable socket monitoring */
 #define _MONITOR_
@@ -67,16 +73,22 @@ void dispatch()
 	continue;
       } 
       if( createInstance(processName) != 0 ) {
-	sprintf(serverMsg, "500 create of %s failed\n", processName);
+	sprintf(serverMsg, "500 create of %s failed\n", 
+		processName);
 	sendUI(serverMsg);
 	continue;
       } else {
-	sprintf(serverMsg, "100 create of %s was successful!\n", processName);
+	sprintf(serverMsg, "100 create of %s was successful!\n", 
+		processName);
 	sendUI(serverMsg);	
 	continue;
       }
     } else if (strcasecmp(cmd, "AVAILABLE") == 0) {
-      sendUI("100 AVAILABLE not yet implemented.\n");
+      if (kernelQueryState('a') != 0)
+	sendUI("500 Error reading repository\n");
+    } else if (strcasecmp(cmd, "ACTIVE") == 0) {
+      if (kernelQueryState('l') != 0)
+	sendUI("500 Error reading repository\n");
     } else if (strcasecmp(cmd, "RUN") == 0) {
       char proc[255], act[255];
       
@@ -97,7 +109,9 @@ void dispatch()
 	  continue;
 	}
 	if( dot != NULL ) { /* there *is* a '.' in proc */
-	  if( (!isdigit(*(dot+1))) || (!isdigit(*(dot+2))) || (!isdigit(*(dot+3))) ) {
+	  if( (!isdigit(*(dot+1))) 
+	      || (!isdigit(*(dot+2))) 
+	      || (!isdigit(*(dot+3))) ) {
 	    /* the three characters after the '.' in proc are not numbers... */
 	    sendUI("500  Please use correct format! <'run' process.XXX action>\n");
 	    continue;
@@ -112,7 +126,8 @@ void dispatch()
 	}
       }
     } else if (strcasecmp(cmd, "RUNNING") == 0) {
-      sendUI("100 RUNNING not yet implemented.\n");
+      if (kernelQueryState('r') != 0)
+	sendUI("500 Error reading repository\n");
     } else if (strcasecmp(cmd, "DONE") == 0) { 
       char proc[255], act[255];
       if (sscanf(in_buf+5, "%s%s", proc, act) != 2) {
@@ -120,10 +135,12 @@ void dispatch()
       } else {
 	if ( runActionOnEvent(proc, act, 3) == 0 ) { 
 	  /* eventCode==3 corresponds to DONE..*/
-	  sprintf(serverMsg, "100 Successfully finished '%s: %s'!\n", proc, act);
+	  sprintf(serverMsg, "100 Successfully finished '%s: %s'!\n", 
+		  proc, act);
 	  sendUI(serverMsg);
 	} else {
-	  sprintf(serverMsg, "500 Action %s: %s not found.\n", proc, act, act, proc);
+	  sprintf(serverMsg, "500 Action %s: %s not found.\n", 
+		  proc, act, act, proc);
 	  sendUI(serverMsg);
 	}
       }
@@ -174,7 +191,7 @@ void toThreeDigits(char * outString, const int procRun)
     perror(exitStatus);
   }
   strcat(outString, tempOut);
-}
+} /* toThreeDigits */
 
 
 /* Comparison function used by qsort to sort
@@ -219,7 +236,8 @@ int createInstance(char * processName) {
   
   /* warn the user that he'll need to set COMPILER_DIR */
   if(getenv("COMPILER_DIR") == NULL) {
-    sprintf(serverMsg, "500 Please set the %s environment variable to the location of compiled .txt process model files!\n\n", "COMPILER_DIR");
+    sprintf(serverMsg, "500 Please set the %s environment variable to the location of compiled .txt process model files!\n\n", 
+	    "COMPILER_DIR");
     sendUI(serverMsg);
     sprintf(serverMsg, "Goodbye, %s.\n", uname);
     sendUI(serverMsg);
@@ -231,8 +249,10 @@ int createInstance(char * processName) {
   model = getModel(path+strlen(VM_PREF));
   
   if(model == NULL) {
-    sprintf(exitStatus, "Model for %s does not exist.\n", path+strlen(VM_PREF));
-    sprintf(exitStatus, "%s Check your environment %s settings.\n", exitStatus, "COMPILER_DIR");
+    sprintf(exitStatus, "Model for %s does not exist.\n", 
+	    path+strlen(VM_PREF));
+    sprintf(exitStatus, "%s Check your environment %s settings.\n", 
+	    exitStatus, "COMPILER_DIR");
     perror(exitStatus);
     sendUI("500 Model does not exist!\n");
   } else {
@@ -278,7 +298,8 @@ int createInstance(char * processName) {
     qsort(instanceNums, ret, sizeof(int), compare_ints); 
     
     if(instIndex < MAX_PROC) {
-      if ( (instIndex+1) != instanceNums[instIndex] ) { /* Gaps in the instance #'s */
+      if ( (instIndex+1) != instanceNums[instIndex] ) { 
+	/* Gaps in the instance #'s */
 	for(i=0; i<instIndex; i++)
 	  {
 	    if (i+1 != instanceNums[i]){
@@ -313,7 +334,7 @@ int createInstance(char * processName) {
  * and easier to read. */
 int kernelRunAction(char * proc, char * act) {
   
-  int ret=0;
+  int ret = 0;
   char path[256];
   pml_obj_t * processPtr = NULL;
   
@@ -347,8 +368,112 @@ int kernelRunAction(char * proc, char * act) {
     return(-1);
   }
   
-  return(0);
+  return 0;
 } /* kernelRunAction */
+
+/*
+ * kernelQueryState - used by 'running', 'available' (& 'list active'?) 
+ * --TAKEN FROM (see '../vm/query_state.c') the below-mentioned file:--
+ * File:         $RCSFile: query_state.c$
+ * Version:      $Id: query_state.c,v 1.1 2002/09/09 04:03:29 jnoll
+ * Description:  Prints contents of process state repository.
+ * Author:       John Noll, Santa Clara University (after Mark M's dumpDB.c)
+ */
+int kernelQueryState(char option) {
+
+  /* XXX Hack!  Because vm.h declares extern references to variables
+     defined in events.c, we can't just include vm.h to get this
+     declaration. */
+  /* process context */
+  struct context_t {
+    int PC;           /* process counter */
+    int SP;           /* stack counter */
+    char parent[256]; /* parent process name, ie. martini.001 */
+  };
+  
+  /* state information for an action */
+  struct act_t {
+    int PC;           /* where to return when the wait event comes */
+    int state;        /* state */
+    int wait;         /* which event is this action waiting for */
+  };
+  
+  typedef enum { AVAILABLE, RUNNING, LIST } query_t;
+
+  /* local variable declarations */
+  int i, j, nobj = 0, nattr = 0;
+  pml_obj_t *objptr, *tmpObj;
+  char **attribs;
+  char **vals;
+  query_t query;
+  char *process_name;
+  
+  switch (option) {
+  case 'a':
+    query = AVAILABLE;
+    sprintf(serverMsg, "100 %-20.20s | %-25.25s\n",
+	    "process name", "action name");
+    sendUI(serverMsg);
+    sprintf(serverMsg, "100 %-20.20s | %-25.25s\n",
+	   DASHES, DASHES);
+    sendUI(serverMsg);
+    break;
+    
+  case 'r':
+    query = RUNNING;
+    sprintf(serverMsg, "100 %-20.20s | %-25.25s\n", 
+	    "process name", "action name");
+    sendUI(serverMsg);
+    sprintf(serverMsg, "100 %-20.20s | %-25.25s\n",
+	    DASHES, DASHES);
+    sendUI(serverMsg);
+    break;
+    
+  case 'l':
+    query = LIST;
+    sprintf(serverMsg, "100 %-20.20s\n", "process name");
+    sendUI(serverMsg);
+    sprintf(serverMsg, "100 %-20.20s\n", DASHES);
+    sendUI(serverMsg);
+    break;
+    
+  default:
+    return(-1);
+  }
+  
+  nobj = pml_list_open(&objptr);
+  
+  for (i=0, tmpObj = objptr; i<nobj; i++, tmpObj++) {
+    nattr = pml_list_attributes(*tmpObj, &attribs, &vals);
+    for(j=0; j<nattr; j++) {
+      if (strcmp(attribs[j], "PROCESS_NAME") == 0) {
+	process_name = (vals[j])+3; /* drop the ENG prefix */
+	if (query == LIST) {
+	  sprintf(serverMsg, "100 %-20.20s\n", process_name);
+	  sendUI(serverMsg);
+	}
+      } else if ((strcmp(attribs[j], "PROCESS_STACK") != 0) &&
+		 (strcmp(attribs[j], "PROCESS_STACK_DEPTH") != 0) &&
+		 (strcmp(attribs[j], "PROCESS_CONTEXT") != 0)) {
+	/* Must be an action. */
+	struct act_t action;
+	memcpy(&action, vals[j], sizeof(struct act_t));
+	if ((query == AVAILABLE && action.state == READY) ||
+	    (query == RUNNING && action.state == RUN)) {
+	  sprintf(serverMsg, "100 %-20.20s | %-25.25s\n", 
+		  process_name, attribs[j]);
+	  sendUI(serverMsg);
+	}
+      }
+    }
+    pml_free_alist(attribs, nattr); 
+    pml_free_alist(vals, nattr);
+  }
+  pml_query_close(&objptr);
+  sendUI("100\n");
+  return 0;
+} /* kernelQueryState */
+
 
 /* send UI msg */
 void sendUI(const char * msg)
@@ -357,8 +482,9 @@ void sendUI(const char * msg)
   printf("sendUI sends %s\n", msg);
 #endif
   if (send(newsockfd, msg, strlen(msg), 0) == -1) 
-    printf("sendUI error occured %s\n", sys_errlist[errno]);
-}
+    printf("sendUI error occured %s\n", 
+	   sys_errlist[errno]);
+} /* sendUI */
 
 /* readUI reads user-input... */
 void readUI(char* pBuf, size_t bufSize)
@@ -367,65 +493,58 @@ void readUI(char* pBuf, size_t bufSize)
   int		nSz = 0;
   char*	pRecv = pBuf;
   int		i;
-
+  
   /*
    * Ming, I put the max loops as 100, we should never reach it
    * (normally 1-2 loops).  But if remove never sends terminator,
    * at least we will get out and hopefully no memory crash.
    */
-  for (i = 0; i < 100; i++)
-    {
-      retVal = recv(newsockfd, pRecv, (bufSize-nSz), 0 );
-      if ( retVal == -1)
-	{
-	  printf("readUI error occured %s\n", sys_errlist[errno]);
-	  close(newsockfd);
-	  exit(-1);
-	}
-      if (retVal == 0)
-	{
-	  perror("peer died, exits\n");
-	  close(newsockfd);
-	  exit(-1);
-	}
-      if ((bufSize - nSz) > retVal)
-	{
-	  nSz += retVal;
-	  if (*(pBuf+nSz-1) == LF)
-	    {
-	      if (*(pBuf+nSz-2) == CR)
-		*(pBuf+nSz-2) = '\0';
-	      else
-		*(pBuf+nSz-1) = '\0';
-#ifdef _MONITOR_	
-	      printf("readUI %d: received msg: %d bytes, %s\n", i, strlen(pBuf), pBuf);
-#endif
-	      break;
-	    }
-	  else
-	    {
-#ifdef _MONITOR_
-	      *(pRecv+retVal) = '\0';
-	      printf("readUI %d: receives %d bytes, %s with no terminator.\n", i, retVal, pRecv);
-#endif
-	      pRecv += retVal;
-	    }
-	}
-      else
-	{
-	  printf("Buffer overflow. bufSize=%d, receiving bytes=%d\n",bufSize,(nSz+retVal));
-	  *pBuf = '\0';
-	  break;
-	}
-    }
-  if ( i == 300)
-    {
+  for (i = 0; i < 100; i++) {
+    retVal = recv(newsockfd, pRecv, (bufSize-nSz), 0 );
+    if ( retVal == -1) {
+      printf("readUI error occured %s\n", 
+	     sys_errlist[errno]);
       close(newsockfd);
-      printf("readUI reached max reading loop, without receiving a terminator from the Remote.p conping the cction.\n");
       exit(-1);
     }
-}
-
+    if (retVal == 0) {
+      perror("peer died, exits\n");
+      close(newsockfd);
+      exit(-1);
+    }
+    if ((bufSize - nSz) > retVal) {
+      nSz += retVal;
+      if (*(pBuf+nSz-1) == LF) {
+	if (*(pBuf+nSz-2) == CR)
+	  *(pBuf+nSz-2) = '\0';
+	else
+	  *(pBuf+nSz-1) = '\0';
+#ifdef _MONITOR_	
+	printf("readUI %d: received msg: %d bytes, %s\n", 
+	       i, strlen(pBuf), pBuf);
+#endif
+	break;
+      } else {
+#ifdef _MONITOR_
+	*(pRecv+retVal) = '\0';
+	printf("readUI %d: receives %d bytes, %s with no terminator.\n",
+	       i, retVal, pRecv);
+#endif
+	pRecv += retVal;
+      }
+    } else {
+      printf("Buffer overflow. bufSize=%d, receiving bytes=%d\n",
+	     bufSize, (nSz+retVal));
+      *pBuf = '\0';
+      break;
+    }
+  }
+  if ( i == 300) {
+    close(newsockfd);
+    printf("readUI reached max reading loop, without receiving a terminator from the Remote.p conping the cction.\n");
+    exit(-1);
+  }
+} /* readUI */
 
 
 
