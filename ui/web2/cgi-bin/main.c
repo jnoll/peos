@@ -147,8 +147,9 @@ void get_script(peos_action_t *action)
   save_proc_table("proc_table.dat");
   if(script) {
     for(i=0; i<22; i++){
-      if(script[i] == '\0')
+      if(script[i] == '\0' || script[i] == '\n')
       break;
+      if (script[i] == '\"') continue; /* Don't display quotes. */
       printf("%c",script[i]);
     }
     printf("<br>\n");
