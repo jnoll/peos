@@ -110,8 +110,8 @@
 			<FORM_LABEL COMMENT="Delete question">
 				<ID> 1603 </ID>
 				<LOCATION>
-					<X> 28 </X>
-					<Y> 23 </Y>
+					<X> 20 </X>
+					<Y> 21 </Y>
 				</LOCATION>
 				<USABLE> TRUE </USABLE>
 				<FONT_ID> BOLD_FONT </FONT_ID>
@@ -240,34 +240,27 @@
 			<FORM_LIST>
 				<ID> 1001 </ID>
 				<BOUNDS>
-					<LEFT> 28 </LEFT>
+					<LEFT> 29 </LEFT>
 					<TOP> 31 </TOP>
 					<WIDTH> 105 </WIDTH>
-					<HEIGHT> 11 </HEIGHT>
+					<HEIGHT> 33 </HEIGHT>
 				</BOUNDS>
 				<USABLE> TRUE </USABLE>
 				<FONT_ID> STD_FONT </FONT_ID>
-				<NUM_VIS_ITEMS> 1 </NUM_VIS_ITEMS>
+				<NUM_VIS_ITEMS> 3 </NUM_VIS_ITEMS>
 				<LIST_ITEMS>
 					<TEXT> "asdas" </TEXT>
 					<TEXT> "adasdasd" </TEXT>
 					<TEXT> "adada" </TEXT>
-					<TEXT> "dadada" </TEXT>
-					<TEXT> "" </TEXT>
-					<TEXT> "" </TEXT>
-					<TEXT> "" </TEXT>
-					<TEXT> "" </TEXT>
-					<TEXT> "" </TEXT>
-					<TEXT> "" </TEXT>
 				</LIST_ITEMS>
 			</FORM_LIST>
 			<FORM_POPUP_TRIGGER>
 				<ID> 1003 </ID>
 				<BOUNDS>
-					<LEFT> 42 </LEFT>
-					<TOP> 63 </TOP>
+					<LEFT> 46 </LEFT>
+					<TOP> 73 </TOP>
 					<WIDTH> 42 </WIDTH>
-					<HEIGHT> 24 </HEIGHT>
+					<HEIGHT> 29 </HEIGHT>
 				</BOUNDS>
 				<USABLE> TRUE </USABLE>
 				<ENABLED> TRUE </ENABLED>
@@ -282,8 +275,8 @@
 			<FORM_FIELD>
 				<ID> 1004 </ID>
 				<BOUNDS>
-					<LEFT> 18 </LEFT>
-					<TOP> 54 </TOP>
+					<LEFT> 36 </LEFT>
+					<TOP> 107 </TOP>
 					<WIDTH> 50 </WIDTH>
 					<HEIGHT> 12 </HEIGHT>
 				</BOUNDS>
@@ -326,14 +319,14 @@
 			<FORM_BUTTON>
 				<ID> 1000 </ID>
 				<BOUNDS>
-					<LEFT> 67 </LEFT>
-					<TOP> 128 </TOP>
-					<WIDTH> 36 </WIDTH>
+					<LEFT> 24 </LEFT>
+					<TOP> 125 </TOP>
+					<WIDTH> 98 </WIDTH>
 					<HEIGHT> 12 </HEIGHT>
 				</BOUNDS>
 				<USABLE> TRUE </USABLE>
 				<ENABLED> TRUE </ENABLED>
-				<TEXT> "OK" </TEXT>
+				<TEXT> "Return to Main Screen" </TEXT>
 				<LEFT_ANCHOR> FALSE </LEFT_ANCHOR>
 				<FONT_ID> STD_FONT </FONT_ID>
 				<BUTTON_FRAME> STANDARD_BUTTON_FRAME </BUTTON_FRAME>
@@ -341,8 +334,8 @@
 			<FORM_CHECKBOX>
 				<ID> 1001 </ID>
 				<BOUNDS>
-					<LEFT> 23 </LEFT>
-					<TOP> 30 </TOP>
+					<LEFT> 46 </LEFT>
+					<TOP> 57 </TOP>
 					<WIDTH> 49 </WIDTH>
 					<HEIGHT> 12 </HEIGHT>
 				</BOUNDS>
@@ -356,8 +349,8 @@
 			<FORM_CHECKBOX>
 				<ID> 1003 </ID>
 				<BOUNDS>
-					<LEFT> 25 </LEFT>
-					<TOP> 55 </TOP>
+					<LEFT> 48 </LEFT>
+					<TOP> 78 </TOP>
 					<WIDTH> 49 </WIDTH>
 					<HEIGHT> 12 </HEIGHT>
 				</BOUNDS>
@@ -371,8 +364,8 @@
 			<FORM_CHECKBOX>
 				<ID> 1004 </ID>
 				<BOUNDS>
-					<LEFT> 28 </LEFT>
-					<TOP> 79 </TOP>
+					<LEFT> 48 </LEFT>
+					<TOP> 101 </TOP>
 					<WIDTH> 49 </WIDTH>
 					<HEIGHT> 12 </HEIGHT>
 				</BOUNDS>

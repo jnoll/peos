@@ -9,6 +9,8 @@
 #include <PalmOS.h>
 
 #include "AppResources.h"
+//#include ">peos/src/os/kernel/peos.c"
+//#include "http://linux60501.dc.engr.scu.edu:/home/jnoll/.peos/peosrep/peos/src/os/kernel/peos.c"
 
 
 /***********************************************************************
@@ -34,7 +36,14 @@
  *	Internal Functions
  *
  ***********************************************************************/
+char listElements [10][10]={{"A"}, {"B"}, {"C"}};
 
+static void AvailProcessListDraw (UInt16 itemNum, RectangleType *bounds, char ** itemsText)
+{
+	WinDrawChars (listElements[itemNum], 
+				StrLen (listElements[itemNum]), 
+				bounds->extent.x, bounds->topLeft.y);
+}
 
 /***********************************************************************
  *
@@ -50,6 +59,7 @@
  *
  *
  ***********************************************************************/
+
 static Boolean MainMenuHandleEvent (UInt16 command)
 {
 	//UInt16 alertReturn = 0;
@@ -63,18 +73,20 @@ static Boolean MainMenuHandleEvent (UInt16 command)
 			FrmDeleteForm(pForm);
 			handled = true;
 			break;
+		//available processes form
 		case 1001:
-			pForm = FrmInitForm(1200);
-//			FrmDoDialog(pForm);					
+			pForm = FrmInitForm(1200);			
 			FrmGotoForm (1200);
 			FrmDeleteForm(pForm);
 			handled = true;
 			break;
+		//started process form
 		case 1002:
 			//alertReturn = FrmCustomAlert (1000, NULL, NULL, NULL);
-			pForm = FrmInitForm(1300);
-//			FrmDoDialog(pForm);					
-			FrmGotoForm (1300);
+			pForm = FrmInitForm(1300);	
+			//FrmGotoForm (1300);
+			FrmPopupForm (1300);
+			
 			FrmDeleteForm(pForm);
 			handled = true;
 			break;
@@ -101,7 +113,7 @@ static Boolean MainMenuHandleEvent (UInt16 command)
  *
  *
  ***********************************************************************/
-static Boolean MainFormHandleEvent(EventType* pEvent)
+static Boolean MainFormHandler(EventType* pEvent)
 {
 	Boolean 	handled = false;
 	FormType* 	pForm;
@@ -127,17 +139,30 @@ static Boolean AvailableProcessesHandler (EventType* pEvent)
 {
 	Boolean 	handled = false;
 	FormType* 	pForm;
+	ListType*   list;
+	int numChoices=0;
+	
 	
 		switch (pEvent->eType) {
+		//case lstEnterEvent:
+		//	break;
+		//caused by lstEnterEvent:
+		case lstSelectEvent:
+			//switch (LstGetSelectionText (
+			break;
 		
 
-		case frmOpenEvent:
+		case frmOpenEvent:	
 			pForm = FrmGetActiveForm();
+			//list = FrmGetObjectPtr (pForm, 1001);
+			//LstSetDrawFunction (list, AvailProcessListDraw);
+			//numChoices = sizeof (listElements); /// sizeof (listElements[0]);
+			//LstSetListChoices (list, NULL, numChoices);
+			
 			FrmDrawForm(pForm);
 			handled = true;
 			break;
 		
-			
 		default:
 			break;
 	}
@@ -152,14 +177,23 @@ static Boolean StartedProcessHandler (EventType * pEvent)
 	FormType* 	pForm;
 	
 		switch (pEvent->eType) {
-		
-
 		case frmOpenEvent:
 			pForm = FrmGetActiveForm();
 			FrmDrawForm(pForm);
 			handled = true;
 			break;
-			
+	
+		//control button
+		case ctlSelectEvent:
+			switch (pEvent->data.ctlSelect.controlID)
+			{
+			case 1000:
+				FrmReturnToForm (1000);
+				handled = true;
+				break;
+			default:
+				break;	
+			}
 		default:
 			break;
 	}
@@ -201,7 +235,7 @@ static Boolean AppHandleEvent(EventType* pEvent)
 		// event.
 		switch (formId) {
 			case MainForm:
-				FrmSetEventHandler(pForm, MainFormHandleEvent);
+				FrmSetEventHandler(pForm, MainFormHandler);
 				break;
 			
 			case AvailableProcesses:
