@@ -189,4 +189,4 @@ clean:
 
 clobber: clean
 	rm -f gtkpeos proc* core* pelog
-	rm -rf ${TREETOP} treetop peos.tar.gz
+	rm -rf ${TREETOP} treetop peos.tar.gz message event.log
