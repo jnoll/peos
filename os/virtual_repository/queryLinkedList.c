@@ -1,8 +1,8 @@
-/* 
-**	Senior Design Project - PEOS Virtual Repository
-**	Author : TASK4ONE
-**	Filename : queryLinkedList.c
-*/
+/************************************************************************
+ * Senior Design Project - PEOS Virtual Repository			*
+ * Author : TASK4ONE							*
+ * Filename : queryLinkedList.c						*
+ ************************************************************************/
 
 #include "form.h"
 #include "variables.h"
@@ -13,6 +13,12 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+
+/************************************************************************
+ * Function:	printQueryList						*
+ *									*
+ * Description:	Prints the contents of queryList.			*
+ ************************************************************************/
 void printQueryList( queryList *listpointer )
 {
 	if ( listpointer == NULL )
@@ -30,9 +36,15 @@ void printQueryList( queryList *listpointer )
 	printf ( "\n" ) ;
 }
 
+
+/************************************************************************
+ * Function:	printQueryList						*
+ *									*
+ * Description:	Adds the data at the end of the queryList.		*
+ ************************************************************************/
 queryList *addQueryItem( queryList *listpointer, const query *data )
 {
-	queryList *lp = listpointer ;
+	queryList *lp = listpointer ;	// pointer to query list
 	
 	if ( listpointer != NULL )
 	{
@@ -54,9 +66,16 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
     	}
 }
 
+
+/************************************************************************
+ * Function:	printQueryList						*
+ *									*
+ * Description:	Removes the item with removetag = 1 from the queryList.	*
+ *		and resets the pointers in the list.			*
+ ************************************************************************/
 queryList *filterQueryList( queryList *listpointer )
 {
-	queryList *previous, *current, *temp ;
+	queryList *previous, *current, *temp ;	// pointers to query list
 	previous = current = listpointer ;
 
 	while( current != NULL )

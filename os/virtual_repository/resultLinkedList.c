@@ -1,8 +1,8 @@
-/* 
-**	Senior Design Project - PEOS Virtual Repository
-**	Author : TASK4ONE
-**	Filename : resultLinkedList.c
-*/
+/************************************************************************
+ * Senior Design Project - PEOS Virtual Repository			*
+ * Author : TASK4ONE							*
+ * Filename : resultLinkedList.c					*
+ ************************************************************************/
 
 #include "form.h"
 #include "variables.h"
@@ -12,6 +12,13 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
+
+
+/************************************************************************
+ * Function:	printResultList						*
+ *									*
+ * Description:	Prints the contents of resultList.			*
+ ************************************************************************/
 
 void printResultList( resultList *listpointer )
 {
@@ -28,24 +35,43 @@ void printResultList( resultList *listpointer )
 	printf( "\n" );
 }
 
+
+/************************************************************************
+ * Function:	printResultList						*
+ *									*
+ * Description:	Clears the resultList.					*
+ ************************************************************************/
 void clearResultList( resultList *listpointer )
 {
 	while ( listpointer != NULL )
 		listpointer = ( resultList* ) removeResultItem( listpointer ) ;
 }
 
+
+/************************************************************************
+ * Function:	printResultList						*
+ *									*
+ * Description:	Removes the first element in the resultList.		*
+ ************************************************************************/
 resultList* removeResultItem( resultList *listpointer )
 {
-	resultList *temp ;
+	resultList *temp ;	// pointer to result list
 		
 	temp = ( resultList* ) listpointer -> link ;
 	free( listpointer ) ;
 	return temp ;
 }
 
+
+
+/************************************************************************
+ * Function:	printResultList						*
+ *									*
+ * Description:	Adds the data at the end of the resultList.		*
+ ************************************************************************/
 resultList* addResultItem( resultList *listpointer, const char *data )
 {
-	resultList *lp = listpointer ;
+	resultList *lp = listpointer ;	// pointer to result list
 
 	if ( listpointer != NULL )
 	{

@@ -1,8 +1,8 @@
-/* 
-**	Senior Design Project - PEOS Virtual Repository
-**	Author : TASK4ONE
-**	Filename : vrepo.c
-*/
+/************************************************************************
+ * Senior Design Project - PEOS Virtual Repository			*
+ * Author : TASK4ONE							*
+ * Filename : vrepo.c							*
+ ************************************************************************/
 
 #include "form.h"
 #include "variables.h"
@@ -15,21 +15,34 @@
 #include <string.h>
 #include <stdbool.h>
 
+
+/************************************************************************
+ * Function:	query_wait						*
+ *									*
+ * Description:	Tokenizes the  queryString into clauses consisting of  *
+ *		Id, attribute and value. Checks for the validity of 	*
+ *		queryString then makes a new query and register it	*
+ * 		in the list "myQuery".					*
+ ************************************************************************/
+
+
 void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ), int *d )
 {
 	bool isValidAttribute( char * ) ; 
 	bool isValidOperator( char * ) ; 
 	bool isValidValue( char * ) ;
 	
-	char *word, *toParse ;
-	int numParses, numClauses ;
-	query *newQuery ;
+	char *word, *toParse ; 		// tokens during string tokenizations 	
+	int numParses, numClauses ;	// keeps track of the token in the tokenizing phase
+					// numClauses stores the number of clauses in the queryString
+					 
+	query *newQuery ; 		// stores the new query
 	
 	newQuery = ( query * ) malloc ( sizeof ( query ) ) ;
 	numParses = numClauses = 0 ;
 	word = toParse = NULL ;
 	
-	toParse = strtok( queryString, "\n" ) ;	// from keyboard input, otherwise remove this line...
+	toParse = strtok( queryString, "\n" ) ;	
 
 	if( toParse != NULL )
 		word = strtok( toParse, " " ) ;
@@ -105,14 +118,21 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 	}
 }
 
+
+/************************************************************************
+ * Function:	poll_vr							*
+ *									*
+ * Description:	Goes through the repo_list and calls the queryTool 	*
+ *		function for each repository.  It also calls the 	*
+ *		callback function for the satisfied queries.		*
+ ************************************************************************/
+
+
 void poll_vr( ) 
 {
-	queryList* queryTool( queryList *listpointer ) ;
-		
-	queryList *tempQueries ;
-	
-	int tag = 0 ;
-	int i=0;
+	queryList *tempQueries ;	// temporary variable to store myQuery
+	int tag = 0 ;			// tag is one if a query is satisfied in myQueries
+	int i=0;			// used in for loop
 
 	if( myQueries != NULL )
 	{
@@ -140,10 +160,19 @@ void poll_vr( )
 	}
 }
 
+/************************************************************************
+ * Function:	isValidAttribute					*
+ *									*
+ * Description:	Returns true if the attribute in the query is an  	*
+ *		attribute of the repository. 				*
+  ************************************************************************/
+
+
+
 bool isValidAttribute( char *attr )
 {
-	int i ;
-	char attributes[1][2] = { "ID" } ;
+	int i ;					// used in for loop
+	char attributes[1][2] = { "ID" } ;	// array that stores repository attributes
 		
 	for( i = 0 ; i < sizeof(attributes) / sizeof(attributes[0] ) ; i++ )
 	{
@@ -153,10 +182,19 @@ bool isValidAttribute( char *attr )
 	return true ;
 }
 
+
+
+/************************************************************************
+ * Function:	isValidOperator						*
+ *									*
+ * Description:	Returns true if the operator in the query is a  	*
+ *		operator of the repository. 				*
+ ************************************************************************/
+
 bool isValidOperator( char *op )
 {
-	int i ;
-	char operators[1][2] = { "EQ" } ;
+	int i ;					// used in for loop
+	char operators[1][2] = { "EQ" } ;	// array that stores repository operators
 	
 	for( i = 0 ; i < sizeof(operators) / sizeof(operators[0] ) ; i++ )
 	{
@@ -165,6 +203,14 @@ bool isValidOperator( char *op )
 	}
 	return true ;
 }
+
+
+
+/************************************************************************
+ * Function:	isValidOperator						*
+ *									*
+ * Description:	Returns false if the value is NULL		  	*
+ ************************************************************************/
 
 bool isValidValue( char *val )
 {
