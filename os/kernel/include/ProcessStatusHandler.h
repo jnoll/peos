@@ -11,6 +11,7 @@ class IPCHandler;
 class UIMessageHandler;
 class EventHandler;
 class TimedEventHandler;
+class ProductEventHandler;
 
 class ProcessStatusHandler
 {
@@ -27,6 +28,7 @@ public:
 	void StopReadingMap();
 
         map<UIMessageHandler*, IPCHandler*>& GetMapRef() { return processMap; }
+	ProductEventHandler* productEventHandler;
 
 private:
     map<UIMessageHandler*, IPCHandler*>	        processMap;

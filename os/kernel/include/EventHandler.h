@@ -7,7 +7,7 @@
 
 #include "OSThread.h"
 
-class EventHandler : OSThread
+class EventHandler : public OSThread
 {
 public:
 	bool IsRunning();

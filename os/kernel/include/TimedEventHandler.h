@@ -1,8 +1,9 @@
 ///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 // TimedEventHandler.h                                   //
 // Definitions for the TimedEventHandler class           //
 // Developer: Brad McGarvey                              //
-// Spring 2000                                           //              
+// Spring 2000                                           //
 ///////////////////////////////////////////////////////////
 
 #ifndef __TIMED_EVENT_HANDLER_H
@@ -15,18 +16,21 @@
 
 using namespace std;
 
-struct TimedEvent
+//structure for events
+//a value of -1 in a field represents the wildcard
+class TimedEvent
 {
+	public:
 	int minute;
 	int hour;
 	int day_of_month;
 	int month_of_year;
 	int day_of_week;
 	string process;
-	bool operator==(const TimedEvent &rhs);
+	bool operator==(const TimedEvent &rhs) const;
 };
 
-typedef list<TimedEvent> EventList;
+typedef list<TimedEvent> TimedEventList;
 
 class TimedEventHandler:public EventHandler
 {
@@ -37,14 +41,14 @@ class TimedEventHandler:public EventHandler
 		void Add(const TimedEvent &event);
 		void Remove(const TimedEvent &event);
 	protected:
+		void Main();
 	private:
-		friend void CheckEvents(int sig);
-		static EventList Events;
-        	bool repositoryUsed;
-        	static DataAccessInterface *dataAccessIF;
+		static void CheckEvents(int sig);
+		static TimedEventList Events;
+        bool repositoryUsed;
+        static DataAccessInterface *dataAccessIF;
 };
 
-#define CONFIG_FILE_NAME "TimedEvents"
 
 #endif
 

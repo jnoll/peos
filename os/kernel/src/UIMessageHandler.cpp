@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 #include <string>
 
-#define strcasecmp strcmp
+//#define strcasecmp strcmp
 
 
 const int invalidSocket = -1;

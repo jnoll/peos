@@ -44,10 +44,10 @@ void main( int argc, char** argv )
 	        VMName = optarg;
                 break;
             case 'G':
-                UseRepositoryIF = true;
+                UseRepositoryIF = false;
                 break;
             case 'R':
-                UseRepositoryIF = false;
+                UseRepositoryIF = true;
                 break;
             default:
                 cerr << usage << endl;

@@ -11,18 +11,24 @@
 #include <signal.h>
 #include <iostream.h>
 #include <fstream.h>
-#include <sys/time.h>
+#include <unistd.h>
 #include <time.h>
 
-EventList TimedEventHandler::Events;
+
+//Change this line to change the location or name of the config file. 
+#define CONFIG_FILE_NAME "../share/TimedEvents" 
+
+
+TimedEventList TimedEventHandler::Events;
 DataAccessInterface* TimedEventHandler::dataAccessIF = NULL;
 
-bool TimedEvent::operator==(const TimedEvent &rhs)
+bool TimedEvent::operator==(const TimedEvent &rhs) const
 {
-	return (minute == rhs.minute && hour == rhs.hour 
-		&& day_of_month == rhs.day_of_month && month_of_year ==
-rhs.month_of_year
-		&& day_of_week == rhs.day_of_week && process == rhs.process);
+	return (minute == rhs.minute && hour == rhs.hour
+        && day_of_month == rhs.day_of_month
+        && month_of_year == rhs.month_of_year
+		&& day_of_week == rhs.day_of_week
+        && process == rhs.process);
 }
 
 
@@ -38,6 +44,8 @@ TimedEventHandler::TimedEventHandler(bool repUsed):EventHandler()
 
 TimedEventHandler::~TimedEventHandler()
 {
+	//Turn off alarm if on
+    alarm(0);
     //restore default signal handler
     signal(SIGALRM, SIG_DFL);
     delete dataAccessIF;
@@ -53,68 +61,86 @@ void TimedEventHandler::Init()
         char buff[512];
         TimedEvent e;
         bool err;
+        //parse the config file for events
         while (!configFile.eof())
         {
             getline(configFile, s);
             if (s.size() > 0)
             {
-                err = false;
-                strcpy(buff, s.c_str());
-                char *p;
-                int n = 0;
-                p = strtok(buff, " \t");
-                if (p)
-                    e.minute = (*p == '*' ? -1 : atoi(p));
-                else
-                    err = true;
-                p = strtok(NULL, " \t");
-                if (p)
-                    e.hour = (*p == '*' ? -1 : atoi(p));
-                else
-                    err = true;
-                p = strtok(NULL, " \t");
-                if (p)
-                    e.day_of_month = (*p == '*' ? -1 : atoi(p));
-                else
-                    err = true;
-                p = strtok(NULL, " \t");
-                if (p)
-                    e.month_of_year = (*p == '*' ? -1 : atoi(p));
-                else
-                    err = true;
-                p = strtok(NULL, " \t");
-                if (p)
-                    e.day_of_week = (*p == '*' ? -1 : atoi(p));
-                else
-                    err = true;
-                p = strtok(NULL, "\"");
-                if (p)
-                    e.process = p;
-                else
-                    err = true;
-                if (err)
+                try
+                {
+                    err = false;
+                    strcpy(buff, s.c_str());
+                    char *p;
+                    int n = 0;
+                    p = strtok(buff, " \t");
+                    if (p)
+                        e.minute = (*p == '*' ? -1 : atoi(p));
+                    else
+                        err = true;
+                    p = strtok(NULL, " \t");
+                    if (p)
+                        e.hour = (*p == '*' ? -1 : atoi(p));
+                    else
+                        err = true;
+                    p = strtok(NULL, " \t");
+                    if (p)
+                        e.day_of_month = (*p == '*' ? -1 : atoi(p));
+                    else
+                        err = true;
+                    p = strtok(NULL, " \t");
+                    if (p)
+                        e.month_of_year = (*p == '*' ? -1 : atoi(p));
+                    else
+                        err = true;
+                    p = strtok(NULL, " \t");
+                    if (p)
+                        e.day_of_week = (*p == '*' ? -1 : atoi(p));
+                    else
+                        err = true;
+                    p = strtok(NULL, " \t");
+                    if (!p || *p != '\"')
+                        err = true;
+                    else
+                    {
+                        ++p;
+                        char *pe = p;
+                        while (*pe && *pe!='\"')
+                            ++pe;
+                        *pe = '\0';
+                        e.process = p;
+                    }
+                    if (err)
+                        cerr << "Invalid TimedEvent entry: " + s;
+                    else
+                        Add(e);
+                }
+                catch (...)
+                {
                     cerr << "Invalid TimedEvent entry: " + s;
-                else
-                    Add(e);
+                }
             }
         }
     }
-    EventHandler::Init();
-	itimerval itval;
-	itval.it_interval.tv_sec = 60;
-	itval.it_interval.tv_usec = 0;
-	setitimer(ITIMER_REAL, &itval, NULL);
+    //Set an alarm for 1 minute.
+	alarm(60);
+	Start();
 }
 
 
-void CheckEvents(int sig)
+//This is the callback function for the SIGALRM signal
+void TimedEventHandler::CheckEvents(int sig)
 {
+	if (sig != SIGALRM)
+		return;
     string error;
     string procName;
+    //get current time
     time_t currentTime = time(NULL);
+    //break out time into minutes, hours etc.
     tm *theTime = localtime(&currentTime);
-	for (EventList::const_iterator i = TimedEventHandler::Events.begin()
-		; i != TimedEventHandler::Events.end(); ++i)
+    //Check for expired events
+	for (TimedEventList::const_iterator i = Events.begin(); i != Events.end(); ++i)
 	{
 		if ((*i).minute != -1 && (*i).minute != theTime->tm_min)
 			continue;
@@ -131,14 +157,17 @@ void CheckEvents(int sig)
 			continue;
 		//got a match
 		//create process
-	cout << "Creating process " + (*i).process << endl;
-        if (!TimedEventHandler::dataAccessIF->GetProcessName((*i).process, "",
-procName, error))             cerr << "TimedEventHandler can't create process
-" + (*i).process + " : " + error << endl;         else if
-(!TimedEventHandler::dataAccessIF->InitProcessState(procName, "", 0, error))   
-         cerr << "TimedEventHandler can't create process " + (*i).process + "
-: " + error << endl; 	} 
+        //Use the DataAccessInterface to create and initialize a process
+        if (!dataAccessIF->GetProcessName((*i).process, "", procName, error))
+            cerr << "TimedEventHandler can't create process: " + (*i).process << endl;
+        else if (!dataAccessIF->InitProcessState(procName, "", 0, error))
+            cerr << "TimedEventHandler can't initialize process: " + (*i).process << endl;
+	}
+    //Register handler again since Linux goes back to
+    //default handler after a signal is received
 	signal(SIGALRM, CheckEvents);
+    //check again in 1 minute
+	alarm(60);
 }
 
 void TimedEventHandler::Add(const TimedEvent &e)
@@ -149,5 +178,16 @@ void TimedEventHandler::Add(const TimedEvent &e)
 void TimedEventHandler::Remove(const TimedEvent &e)
 {
     Events.remove(e);
+}
+
+void TimedEventHandler::Main()
+{
+	bool terminated = false;
+	while (!terminated)
+	{
+		terminated = exit;
+		if (!terminated)
+			SchedYield();
+	}
 }
 

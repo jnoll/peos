@@ -47,7 +47,8 @@ OBJS = 	DataAccessInterface.o \
 	VMInterface.o \
 	main.o \
         OSSemaphore.o\
-	TimedEventHandler.o
+	TimedEventHandler.o\
+	ProductEventHandler.o
 
 # Compile the program
 $(NAME): $(OBJS)

@@ -7,6 +7,7 @@
 #include "UIMessageHandler.h"
 #include "EventHandler.h"
 #include "TimedEventHandler.h"
+#include "ProductEventHandler.h"
 
 const int kBacklog = 5;
 
@@ -31,6 +32,7 @@ ProcessStatusHandler::ProcessStatusHandler( bool repUsed )
 ProcessStatusHandler::~ProcessStatusHandler()
 {
     delete timedEventHandler;
+    delete productEventHandler;
     map<UIMessageHandler*, IPCHandler*>::iterator itr;
 
     for ( itr = processMap.end(); itr != processMap.begin(); --itr )
@@ -133,6 +135,8 @@ void ProcessStatusHandler::Run()
     }
     timedEventHandler = new TimedEventHandler(repositoryUsed);
     timedEventHandler->Init();
+    productEventHandler = new ProductEventHandler(repositoryUsed);
+    productEventHandler->Init();
     while( true )
     {
         int newsockfd;
