@@ -135,8 +135,10 @@ int  pml_open_repository(path, mode)
 
 	i = 0;
 
-        /* This function call is a quick fix to the fact that pml_open_repository seen here should be for UNIXFS, which needs
-to change its calls from a file descriptor to a path anyhow.  */
+        /* This function call is a quick fix to the fact that pml_open_repository seen here should be for UNIXFS,
+           which needs to change its calls from a file descriptor to a path anyhow.  There needs to be a way to
+           either call the function called below (for pml_state) or continue past it to the code further below
+           (for UNIXFS)*/
 
         return (int) pmlstate_open_repository(path, mode);
 
