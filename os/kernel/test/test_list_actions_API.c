@@ -115,13 +115,13 @@ main(int argc, char *argv[])
     if(alist) {
         for(j = 0; j < num_actions; j++) {
             if(strcmp(alist[j].name,"act_1") == 0) {
-	        if(alist[j].state != ACT_READY) {
+	        if(alist[j].state != ACT_SATISFIED) {
 		    fprintf(stderr, "LIST ACTION API TEST FAIL -- act_1 not READY");
 		}
 	    }
     		
             if(strcmp(alist[j].name,"act_2") == 0) {
-	        if(alist[j].state != ACT_AVAILABLE) {
+	        if(alist[j].state != ACT_SATISFIED) {
 		    fprintf(stderr, "LIST ACTION API TEST FAIL -- act_2 not AVAILABLE");
 		}
 	    }

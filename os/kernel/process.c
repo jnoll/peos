@@ -1,21 +1,3 @@
-/* -*-C-*-
-*****************************************************************************
-*
-* File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.24 2004/02/27 03:44:08 jshah1 Exp $ ($Name:  $)
-* Description:  Functions for manipulating process instances.
-* Author:       Jigar Shah & John Noll, Santa Clara University
-* Created:      Sat Feb  8 20:55:52 2003
-* Modified:     Sun Nov 16 22:55:42 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
-* Language:     C
-* Package:      N/A
-* Status:       $State: Exp $
-*
-* (c) Copyright 2003, Santa Clara University, all rights reserved.
-*
-*****************************************************************************
-*/
-
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -41,9 +23,6 @@ extern peos_context_t *find_free_entry();
 char *act_state_name(vm_act_state state) 
 {
     switch (state) {
-      case ACT_NEW:
-            return "NEW";
-	    break;
       case ACT_READY:
   	    return "READY";
 	    break;
@@ -56,23 +35,20 @@ char *act_state_name(vm_act_state state)
       case ACT_SUSPEND:
 	    return "SUSPEND";
 	    break;
-      case ACT_ABORT:
-	    return "ABORT";
-	    break;
       case ACT_NONE:
 	    return "NONE";
 	    break;
       case ACT_BLOCKED:
             return "BLOCKED";
             break;
-      case ACT_DEAD:
-            return "DEAD";	    
-	    break;
       case ACT_PENDING:
 	    return "PENDING";
 	    break;
       case ACT_AVAILABLE:
 	    return "AVAILABLE";
+	    break;
+      case ACT_SATISFIED:
+	    return "SATISFIED";
 	    break;
       default:
 	    return "unknown syscall";

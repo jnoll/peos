@@ -28,12 +28,6 @@ void sanitize(Graph g)
 }
 
 
-/* 
- * Find iteration begin and end nodes.  
- * XXX this function depends on all iteration begins to appear before
- * their respective iteration ends in the node list.
- */
-
 
 /* 
  * Find Iteration begin and End Nodes. If the node is a beginning of an 
@@ -589,10 +583,13 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
             if(event == PROVIDES_TRUE) {
 	        if((STATE(n) == ACT_PENDING)) {
 	            set_node_state(n, ACT_DONE);
-		    return VM_CONTINUE;
 		}
-		else 
-	            return VM_CONTINUE;
+		else {
+		    if((STATE(n) != ACT_DONE) && (n -> provides != NULL)) {	
+		        set_node_state(n, ACT_SATISFIED);
+		    }
+		}	    
+	        return VM_CONTINUE;
 	    }
 	    else
 	        return VM_INTERNAL_ERROR;
@@ -780,17 +777,6 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
 				       return VM_INTERNAL_ERROR;
 	                        }
                
-              case(ACT_NEW) :   {
-				    Node n = find_node(g,action);
-				    if (n != NULL) {
-					set_node_state(n, ACT_NEW);    
-				        return VM_CONTINUE;
-				    }
-				    else
-				        return VM_INTERNAL_ERROR;
-					 
-                                 }
-                
 	       default : {
 	                     fprintf(stderr, "Error Changing Action : Invalid Action State\n");
 		             return -1;
