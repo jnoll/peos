@@ -39,6 +39,7 @@ int main() {
     int sessionid = 1;
 
 	cfg = readconfig(CONFIG_LOCATION);
+
 	if (cfg != NULL) {
 
                 //this is weird, but if you don't have the following message in the current_msg
@@ -79,6 +80,7 @@ int main() {
     /** Finally, print out the complete HTML response page.         **/
     printf("<html>\n") ;
     printf("<head><title>PML Web Interface</title>\n") ;
+    //printf("<SCRIPT LANGUAGE=\"JavaScript\">\n");
 
 
     printf("<SCRIPT LANGUAGE=\"JavaScript\" SRC=\"commonHeadFunction.js\"></SCRIPT>\n");
@@ -87,9 +89,13 @@ int main() {
 
     printf("<SCRIPT LANGUAGE=\"JavaScript\" SRC=\"checkDeleteCookie.js\"></SCRIPT>\n");
 
+    //writeHeadFunctions();
+    //printf("</SCRIPT>\n");
+
+
     printf("</head>\n");
 
-    printf("<BODY MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 BGCOLOR=\"white\" onResize=\"reloadPage();\">\n");
+    printf("<BODY MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 BGCOLOR=\"white\" >\n"); //onResize=\"reloadPage();\">\n");
     printf("<SCRIPT LANGUAGE=\"JavaScript\" SRC=\"myScript.js\"></SCRIPT>\n");
 
     printf("<SCRIPT LANGUAGE=\"JavaScript\" TYPE=\"TEXT/JAVASCRIPT\">\n");
@@ -111,6 +117,8 @@ int main() {
     printf("<TD VALIGN=\"TOP\" WIDTH=\"100%\" HEIGHT=\"100%\">\n");
     printf("%s\n", current_msg);
 
+    free(current_msg);
+
     //printf("COMMAND =_%s_\n", COMMAND);
     //printf("command =_%s_\n", command);
     //printf("PARA1 =_%s_\n", PARA1);
@@ -123,7 +131,7 @@ int main() {
     //----------------------------------------------------
     //here we print the end of the page
     //----------------------------------------------------
-    printf("<img src=\"invisibleBar.gif\" width=800 height=1 alt=\"\">\n");
+    printf("<img src=\"invisibleBar.gif\" width=300 height=1 alt=\"\">\n");
 
     printf("</TD>\n");
     printf("</TR>\n");
@@ -226,19 +234,19 @@ int pml_available()
 {
 	s = contact(s,NAME,PASS);
 	if (strlen(s.errmessage) == 0) {	// Login successfully
-		current_msg = add_message(current_msg,"<big><b>Available Actions</b></big><br><br>\n");
+		//current_msg = add_message(current_msg,"<big><b>Available Actions</b></big><br><br>\n");
 		//current_msg = add_message(current_msg,"Please enter one in the CGI form below.<br>\n<br>\n");
 
-		current_msg = add_message(current_msg,"<b>Task summary</b>\n");
+		//current_msg = add_message(current_msg,"<b>Task summary</b>\n");
 		//current_msg = add_message(current_msg,"<hr>\n");
-		current_msg = summary(s,current_msg, createForm);
+		//current_msg = summary(s,current_msg, createForm);
 		//current_msg = add_message(current_msg,"* To get the list of available model name, use the below action.<br>\n");
 		//current_msg = add_message(current_msg,"action: create<br>\n");
-		current_msg = add_message(current_msg,"<br>\n<br>\n");
+		//current_msg = add_message(current_msg,"<br>\n<br>\n");
 
-		current_msg = add_message(current_msg,"<b>Detailed task summary:</b><br><br>\n");
+		current_msg = add_message(current_msg,"<b>Task summary:</b><br><br>\n");
 		current_msg = add_message(current_msg,"\n");
-		current_msg = available(s,current_msg);
+		current_msg = available(s,current_msg,createForm);
 		current_msg = add_message(current_msg,"\n");
 
 		//current_msg = add_message(current_msg,"You have the following task(s) running:<br>\n<br>\n");
@@ -330,3 +338,4 @@ int pml_create(char *model)
 		logout(s);
 	}
 }
+

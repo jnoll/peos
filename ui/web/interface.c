@@ -341,51 +341,112 @@ int modelcount = 0;
 	return(ret_value);
 }
 
-char *available(simplesock s,char *ret_value)
+char *available(simplesock s,char *ret_value, int createForm)
 {
 engine_response *response;
 engine_reply *reply;
-int tempcont;
 int taskcount = 0;
 
 	fprintf(s.S_out,"available\n");
 	fflush(s.S_out);
+
+        if(createForm){
+            ret_value = add_message(ret_value, "<form method=post name=\"actionSelection\">\n");
+            ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('run')\">\n");
+            ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\"><p>\n");
+        }
+
+
+	ret_value = add_message(ret_value,"<table border=\"1\">\n");
+	ret_value = add_message(ret_value,"<tr>\n");
+
+        if(createForm){
+            ret_value = add_message(ret_value,"<th>&nbsp;</th>\n");
+        }
+	ret_value = add_message(ret_value,"<th>Process</th>\n");
+	ret_value = add_message(ret_value,"<th>Task</th>\n");
+	ret_value = add_message(ret_value,"<th>Type</th>\n");
+	ret_value = add_message(ret_value,"<th>Mode</th>\n");
+	ret_value = add_message(ret_value,"<th>Requires</th>\n");
+	ret_value = add_message(ret_value,"<th>Provides</th>\n");
+	ret_value = add_message(ret_value,"<th>Agent</th>\n");
+	ret_value = add_message(ret_value,"<th>Script</th>\n");
+	ret_value = add_message(ret_value,"</tr>\n");
+
+
 	
 	if (LOGLVL > 1) {
 		fprintf(LOG,"	WebUI: available<br>\n");
 	}
-	
+
 	do {
 		response = engineresponse(s);
 		if (response == NULL) return(NULL);
-		tempcont = response->cont;
+
 		if (response->cont == 1) {	// Has some reply
 			taskcount++;
-			reply = enginereply(response->value);
-			ret_value = add_message(ret_value,"Process : ");
-			ret_value = add_message(ret_value,reply->process);
-			ret_value = add_message(ret_value,"<br>\nTask : ");
-			ret_value = add_message(ret_value,reply->task);
-			ret_value = add_message(ret_value,"<br>\nType : ");
-			ret_value = add_message(ret_value,reply->type);
-			ret_value = add_message(ret_value,"<br>\nMode : ");
-			ret_value = add_message(ret_value,reply->mode);
-			ret_value = add_message(ret_value,"<br>\nRequires : ");
-			ret_value = add_message(ret_value,reply->requires);
-			ret_value = add_message(ret_value,"<br>\nProvides : ");
-			ret_value = add_message(ret_value,reply->provides);
-			ret_value = add_message(ret_value,"<br>\nAgent : ");
-			ret_value = add_message(ret_value,reply->agent);
-			ret_value = add_message(ret_value,"<br>\nScript : ");
-			ret_value = add_message(ret_value,reply->script);
+                        
+			ret_value = add_message(ret_value,"<tr>\n");
 
-			ret_value = add_message(ret_value,"<br>\n<br>\n");
+			reply = enginereply(response->value);
+
+                        if(createForm){
+                            ret_value = add_message(ret_value, "<td bgcolor=\"yellow\"><input type=\"radio\" name=\"model_action\"");
+                            ret_value = add_message(ret_value, " value=\"");
+                            ret_value = add_message(ret_value, reply->process);
+                            ret_value = add_message(ret_value, " ");
+                            ret_value = add_message(ret_value,reply->task);
+                            ret_value = add_message(ret_value, "\"></td>"); 
+                        }
+
+			ret_value = add_message(ret_value,"<td>");
+			ret_value = add_message(ret_value,reply->process);
+			ret_value = add_message(ret_value,"&nbsp;</td>\n");
+
+			ret_value = add_message(ret_value,"<td>");
+			ret_value = add_message(ret_value,reply->task);
+			ret_value = add_message(ret_value,"&nbsp;</td>\n");
+
+			ret_value = add_message(ret_value,"<td>");
+			ret_value = add_message(ret_value,reply->type);
+			ret_value = add_message(ret_value,"&nbsp;</td>\n");
+
+			ret_value = add_message(ret_value,"<td>");
+			ret_value = add_message(ret_value,reply->mode);
+			ret_value = add_message(ret_value,"&nbsp;</td>\n");
+
+			ret_value = add_message(ret_value,"<td>");
+			ret_value = add_message(ret_value,reply->requires);
+			ret_value = add_message(ret_value,"&nbsp;</td>\n");
+
+			ret_value = add_message(ret_value,"<td>");
+			ret_value = add_message(ret_value,reply->provides);
+			ret_value = add_message(ret_value,"&nbsp;</td>\n");
+
+			ret_value = add_message(ret_value,"<td>");
+			ret_value = add_message(ret_value,reply->agent);
+			ret_value = add_message(ret_value,"&nbsp;</td>\n");
+
+			ret_value = add_message(ret_value,"<td>");
+			ret_value = add_message(ret_value,reply->script);
+			ret_value = add_message(ret_value,"&nbsp;</td>\n");
+
+			ret_value = add_message(ret_value,"</tr>\n");
+
 			
 			freereply(reply);
 		}
 		freeresponse(response);
 	} while(response->cont == 1);
-	if (taskcount == 0) ret_value = add_message(ret_value,"None.<br>\n<br>\n");
+
+	ret_value = add_message(ret_value,"</table>\n");
+
+        if(createForm){
+           ret_value = add_message(ret_value, "<p>\n");
+           ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('run')\">\n");
+           ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\">\n");
+           ret_value = add_message(ret_value, "</form>\n");
+        }
 	return(ret_value);
 }
 
@@ -545,9 +606,10 @@ char *add_message(char *msg_address,char *txt2add)
 	}
 	else {
 		msg_address = (char *)realloc(msg_address,(strlen(msg_address) + 
-			strlen(txt2add) + 1) * sizeof(char));
-		strcat(msg_address,txt2add);
+			strlen(txt2add) + 1) * sizeof(char) );
+  	        strcat(msg_address,txt2add);
 	}
+        
 	return(msg_address);
 }
 

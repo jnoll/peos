@@ -22,7 +22,7 @@ int login(simplesock s,char *name,char *password);
 void logout(simplesock s);
 char *summary(simplesock s,char *ret_value, int createForm);
 char *list(simplesock s,char *ret_value, int createForm);
-char *available(simplesock s,char *ret_value);
+char *available(simplesock s,char *ret_value, int createForm);
 char *running(simplesock s,char *ret_value, int createForm);
 int run(simplesock s,char *process,char *task);
 int done(simplesock s,char *process,char *task);
