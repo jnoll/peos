@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.18 2003/11/11 01:46:18 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.19 2003/11/14 03:44:07 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Sun Jul  6 17:07:26 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Thu Nov 13 17:42:46 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -325,6 +325,7 @@ int delete_entry(int pid)
 	context->model[0] = '\0';
 	context->status = ACT_NONE;
 	GraphDestroy(context->process_graph);
+	context->process_graph = NULL;
 	context->num_resources = 0;
 	free(context->resources);
 	return 1;
