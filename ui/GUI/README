@@ -14,10 +14,7 @@ the Makefile using the command "make".
 
 (2) How to Install
 
-This program requires no installation.  Once you have run the
-"make" command as outlined in section (1) of this README file,
-you can run the program as instructed in section (3).
-
+At the command prompt type "make manConf" to attrieve the Peos library dependencies. Then type "vi system_library_req" to attrieve the file with the list of library dependencies for Peos. These are the libraries that the Peos program depends upon. Without these libraries Peos cannot successfully executed.
 
 (3) How to Run the Program
 
