@@ -7,7 +7,8 @@ CFLAGS = -g -I../.. -Wall
 .KEEP_STATE:
 
 # lib
-LIBS = ../../pml/libpml.a
+LIBRARY = libpeos.a
+LIBS = ../../pml/libpml.a $(LIBRARY)
 
 CORE_LIBS = 
 LDFLAGS = -g -L../../lib
@@ -30,17 +31,24 @@ resources.o \
 SOURCES = $(OBJS:.o=.c)
 HEADERS = $(wildcard *.h)
 
-all: test shell
+all: test shell lib
 
 daemon: daemon
 
 daemon: enactment_daemon.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
 
+# Make the kernel library.
+lib: $(LIBRARY)
+
+$(LIBRARY): $(OBJS)
+	rm -f $@
+	ar cru $@ $(OBJS)
+	ranlib $@ || true
 
 # Compile the program
-shell: shell.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
+shell: shell.o $(LIBRARY)
+	$(CC) $(LDFLAGS) -o $@ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
 
 # Unit tests.
 test: $(CORE_OBJS)
