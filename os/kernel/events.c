@@ -305,7 +305,28 @@ char *peos_get_script(int pid, char *act_name)
     return script;
 
 }
+ 
+int peos_delete_process_instance(int pid)
+{
+
+    int status;	
+
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
     
+    status = delete_entry(pid);
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return status;
+}
+
+
 char *peos_get_act_state(int pid, char *act_name)
 {
     char *act_state;

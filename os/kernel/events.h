@@ -76,7 +76,7 @@ extern char *peos_get_script(int pid, char *act_name);
 
 extern char *peos_get_act_state(int pid, char *act_name);
 	
-
+int peos_delete_process_instance(int pid);
 
 int peos_set_resource_binding(int pid, char *resource_name, char *value);
 

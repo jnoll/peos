@@ -100,10 +100,12 @@ main (int argc, char **argv)
     char *act_name;
     char *event;
     char c;
+    char *res_name;
+    char *res_val;
     char *model;
     opterr = 0;
     	
-    while ((c = getopt (argc, argv, "+c:n:ih")) != -1) {
+    while ((c = getopt (argc, argv, "+c:n:ihr:d:")) != -1) {
         switch (c) {
             case 'c': {
 		           if(argc != 3) {
@@ -157,11 +159,45 @@ main (int argc, char **argv)
                        break;
                    }
 		   
+	 case 'r': {
+                       if(argc != 5) {
+		           fprintf(stderr, "Usage: peos -r pid resource_name resource_value\n");
+			   exit(EXIT_FAILURE);
+		       }
+		       else {
+                           pid = atoi(argv[2]);
+                           res_name = argv[3];
+                           res_val = argv[4];
+			   if(peos_set_resource_binding(pid, res_name, res_val) < 0) {
+			       fprintf(stderr, "Could not bind resources");
+		               exit(EXIT_FAILURE);
+			   }
+	                   else return 1;
+		       }		   
+                       break;
+                   }
+		   
+	 case 'd': {
+                       if(argc != 3) {
+		           fprintf(stderr, "Usage: peos -r pid resource_name resource_value\n");
+			   exit(EXIT_FAILURE);
+		       }
+		       else {
+                           pid = atoi(argv[2]);
+			   if(peos_delete_process_instance(pid) < 0) {
+			       fprintf(stderr, "Could not delete process instance");
+		               exit(EXIT_FAILURE);
+			   }
+	                   else return 1;
+		       }		   
+                       break;
+		   }
 	 case 'h': {
 		       printf("To create a process: peos -c name_of_model_file\n");
 	               printf("To start an action: peos -n process_id action_name event\n");
 	               printf("Event can be: start or finish or abort or suspend\n");
 	               printf("To get a list of instances: peos -i\n");
+		       printf("To bind resources: peos -r pid resource_name resource_value");
 	               printf("To get help: peos -h\n");
 		       break;
 		   }	       

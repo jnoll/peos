@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.39 2004/04/03 05:22:33 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.40 2004/04/09 03:33:16 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -523,15 +523,15 @@ void print_action_node(Node n, FILE *fp)
     req_resources = get_resource_list_action_requires(PID(n), n->name, &num_req_resources);
     prov_resources = get_resource_list_action_provides(PID(n), n->name, &num_prov_resources);
     
-    fprintf(fp, "<action name=%s state=%s>\n",n->name,(char *)act_state_name(STATE(n)));
+    fprintf(fp, "<action name=\"%s\" state=\"%s\">\n",n->name,(char *)act_state_name(STATE(n)));
     fprintf(fp, "<script>\n%s\n</script>\n",n->script);
 
     for(i=0; i < num_req_resources; i++) {
-        fprintf(fp, "<req_resource name=%s value=%s></req_resource>\n", req_resources[i].name, req_resources[i].value);
+        fprintf(fp, "<req_resource name=\"%s\" value=\"%s\" qualifier=\"%s\"></req_resource>\n", req_resources[i].name, req_resources[i].value, req_resources[i].qualifier);
     }
 
     for(i=0; i < num_prov_resources; i++) {
-        fprintf(fp, "<prov_resource name=%s value=%s></prov_resource>\n", prov_resources[i].name, prov_resources[i].value);
+        fprintf(fp, "<prov_resource name=\"%s\" value=\"%s\" qualifier=\"%s\"></prov_resource>\n", prov_resources[i].name, prov_resources[i].value, prov_resources[i].qualifier);
     }
 
     fprintf(fp, "</action>\n");
@@ -613,7 +613,7 @@ int save_proc_table_xml()
     for(i=0; i <= PEOS_MAX_PID; i++) {
         g = process_table[i].process_graph;
 	if(g != NULL) {
-	    fprintf(fp, "<process pid=%d model=%s status=%d>\n", i, process_table[i].model, process_table[i].status);
+	    fprintf(fp, "<process pid=\"%d\" model=\"%s\" status=\"%d\">\n", i, process_table[i].model, process_table[i].status);
 	    print_graph(g, fp);
 	    fprintf(fp, "</process>\n");
         }
@@ -652,18 +652,21 @@ int delete_entry(int pid)
 {
     peos_context_t *context;
 
-    if (pid >= 0 && pid <= PEOS_MAX_PID) {
+    if (pid >= 0 && pid <= PEOS_MAX_PID) {  
         context = &(process_table[pid]);
-	context->model[0] = '\0';
-	context->status = PEOS_NONE;
-	GraphDestroy(context->process_graph);
-	context->process_graph = NULL;
-	context->num_resources = 0;
-	free(context->resources);
-	return 1;
+	if(context -> process_graph != NULL) {
+	    context->model[0] = '\0';
+	    context->status = PEOS_NONE;
+	    GraphDestroy(context->process_graph);
+	    context->process_graph = NULL;
+	    context->num_resources = 0;
+	    free(context->resources);
+	    return 1;
+	}
+	else return -1;
     } 
     else {
-        return 0;
+        return -1;
     }
 }
 

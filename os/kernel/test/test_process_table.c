@@ -670,6 +670,7 @@ START_TEST(test_list_actions_0)
    
     free(actions);
     unlink("proc_table.dat");
+    unlink("proc_table.dat.xml");
 }
 END_TEST
 
@@ -683,12 +684,12 @@ START_TEST(test_print_action_node)
     PID(n) = 0;
 
     expected = fopen("expected.xml", "w");
-    fprintf(expected, "<action name=act_0 state=READY>\n");
+    fprintf(expected, "<action name=\"act_0\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
-    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
-    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fclose(expected);
     mark_point();
@@ -713,7 +714,7 @@ START_TEST(test_print_action_node)
     fclose(actual);
     mark_point();
 
-    fail_unless (strcmp(actualmem, expectedmem) == 0, "proc table contents differ");
+    fail_unless (strcmp(actualmem, expectedmem) == 0, "print_action:proc table contents differ");
 
     unlink("expected.xml");
     unlink("actual.xml");
@@ -815,33 +816,33 @@ void print_expected_xml(FILE *expected)
     fprintf(expected, "<selection>\n");
     
     fprintf(expected, "<sequence>\n");
-    fprintf(expected, "<action name=act_0 state=READY>\n");
+    fprintf(expected, "<action name=\"act_0\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
-    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
-    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</sequence>\n");
     
     fprintf(expected, "<sequence>\n");
     fprintf(expected, "<branch>\n");
     fprintf(expected, "<sequence>\n");
-    fprintf(expected, "<action name=act_1 state=READY>\n");
+    fprintf(expected, "<action name=\"act_1\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
-    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
-    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</sequence>\n");
     fprintf(expected, "<sequence>\n");
-    fprintf(expected, "<action name=act_2 state=READY>\n");
+    fprintf(expected, "<action name=\"act_2\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
-    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
-    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</sequence>\n");
     fprintf(expected, "</branch>\n");
@@ -849,19 +850,19 @@ void print_expected_xml(FILE *expected)
     
     fprintf(expected, "<sequence>\n");
     fprintf(expected, "<iteration>\n");
-    fprintf(expected, "<action name=act_3 state=READY>\n");
+    fprintf(expected, "<action name=\"act_3\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
-    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
-    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
-    fprintf(expected, "<action name=act_4 state=READY>\n");
+    fprintf(expected, "<action name=\"act_4\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=r1 value=r1val></req_resource>\n");
-    fprintf(expected, "<req_resource name=r2 value=r2val></req_resource>\n");
-    fprintf(expected, "<prov_resource name=r1 value=r1val></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=r2 value=r2val></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</iteration>\n");
     fprintf(expected, "</sequence>\n");
@@ -907,7 +908,7 @@ START_TEST(test_print_graph)
     fclose(actual);
     mark_point();
 
-    fail_unless (strcmp(actualmem, expectedmem) == 0, "proc table xml contents differ");
+    fail_unless (strcmp(actualmem, expectedmem) == 0, "print_graph:proc table xml contents differ");
 
     unlink("expected.xml");
     unlink("actual.xml");
@@ -918,6 +919,7 @@ START_TEST(test_save_proc_table_xml)
 {
 	
     int abytes, nbytes;	
+    int i;
     FILE *expected, *actual;	
     char expectedmem[BUFSIZ], actualmem[BUFSIZ];
     peos_context_t *context;
@@ -928,14 +930,16 @@ START_TEST(test_save_proc_table_xml)
     context->process_graph = g;
     sprintf(context->model, "test.pml");
     context->status = PEOS_RUNNING;
-    context = &(process_table[1]);
-    context -> process_graph = NULL;
-		    
+    for(i=1; i < PEOS_MAX_PID; i++) {
+      //  context = &(process_table[i]);
+      //  context -> process_graph = NULL;
+	  process_table[i].process_graph = NULL;    
+    }
     
     unlink("proc_table.dat.xml");
     expected = fopen("expected.xml", "w");
     fprintf(expected, "<process_table>\n");
-    fprintf(expected, "<process pid=0 model=test.pml status=4>\n");
+    fprintf(expected, "<process pid=\"0\" model=\"test.pml\" status=\"4\">\n");
 
     print_expected_xml(expected);
     
@@ -962,7 +966,7 @@ START_TEST(test_save_proc_table_xml)
     fclose(actual);
     mark_point();
 
-    fail_unless (strcmp(actualmem, expectedmem) == 0, "proc table xml contents differ");
+    fail_unless (strcmp(actualmem, expectedmem) == 0, "save table proc table xml contents differ");
 
     unlink("expected.xml");
     unlink("proc_table.dat.xml");
