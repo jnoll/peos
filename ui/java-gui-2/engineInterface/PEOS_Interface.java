@@ -14,9 +14,22 @@ import java.util.*;
 
 public class PEOS_Interface
 {
-	protected static final int STATE_ERROR = -1;
-	protected static final int STATE_OK = 0;			// ok, no auto exec
-	protected static final int STATE_OK_EXEC = 1;		// ok, extra executions.
+	// 
+	// PEOS task commands
+	//
+	public final static String COMMAND_RUN     = new String("run");
+	public final static String COMMAND_DONE    = new String("done");
+	public final static String COMMAND_SUSPEND = new String("suspend");
+	public final static String COMMAND_RESUME  = new String("resume");
+
+	public final static String TL_AVAILABLE = new String("available");
+	public final static String TL_RUNNING   = new String("running");
+	public final static String TL_FINISHED  = new String("finished");
+	public final static String TL_ERROR     = new String("error");
+
+	protected final static int STATE_ERROR   = -1;
+	protected final static int STATE_OK      = 0;		// ok, no auto exec
+	protected final static int STATE_OK_EXEC = 1;		// ok, extra executions.
 	
     private	PEOS_connection _connection;
 	private	PEOS_ProcessList _allProc;
@@ -244,14 +257,15 @@ public class PEOS_Interface
 			result = _connection.exec(availCmd);
 			if (result.size() > 0)
 			{
+				int ret = STATE_OK;
 				for (int i = 0; i < result.size(); i++)
 				{
 					proc = new PEOS_Process(PEOS_Process.STS_AVAILABLE);
 					if (proc.parse((String) result.elementAt(i)))
 					{
-						int ret = validationProc(proc);
+						ret = validationProc(proc);
 						if (ret == STATE_OK_EXEC)		// retrieve new available list
-							continue;
+							break;
 						else if (ret == STATE_ERROR)	// the proc also shows on the list
 							_errorProcs.addElement(proc);	
 
@@ -259,6 +273,8 @@ public class PEOS_Interface
 						_availableProcs.addElement(proc);
 					}
 				}
+				if (ret == STATE_OK_EXEC)
+					continue;
 		    }
 
 			bContinue = false;
@@ -294,13 +310,13 @@ public class PEOS_Interface
 		
 		Hashtable RetVal = new Hashtable();
 		if (_runningProcs.size() > 0)
-			RetVal.put(runCmd, _runningProcs);
+			RetVal.put(TL_RUNNING, _runningProcs);
 		if (_availableProcs.size() > 0)
-			RetVal.put(availCmd, _availableProcs);
+			RetVal.put(TL_AVAILABLE, _availableProcs);
 		if (_doneProc != null)
-			RetVal.put(new String("done") , _doneProc);
+			RetVal.put(TL_FINISHED, _doneProc);
 		if (_errorProcs.size() > 0)
-			RetVal.put(new String("error") , _errorProcs);
+			RetVal.put(TL_ERROR, _errorProcs);
 
 	    return RetVal;
 	}

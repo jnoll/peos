@@ -19,8 +19,4 @@ class PEOSInterfaceException extends Exception
 	    super(s);
     }
 
-	public String toString()
-	{
-		return new String("PEOSInterfaceException - " + super.toString());
-	}
 }

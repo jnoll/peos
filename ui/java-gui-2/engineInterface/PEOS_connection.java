@@ -19,7 +19,9 @@ import java.util.*;
 
 class PEOS_connection extends Object
 {
-    private static final int DELAY_TIME = 100;         // delay 20 millis
+	private static final int MAX_RETRIES = 3;
+    private static final int DELAY_TIME = 20;         // delay 20 millis
+    private static final int DELAY_TRIES = 5;         // max tries 5, total 100 ms
 	private Socket			_socket;
     private BufferedReader	_sin;
     private PrintStream		_sout;
@@ -92,9 +94,9 @@ class PEOS_connection extends Object
 	    {
 			throw new PEOSInterfaceException(new String("No connection to PEOS engine"));
 	    }
-		int retries = 0;
-		boolean bExit = false;
-		String err = null;
+		int						retries = 0;
+		boolean					bExit = false;
+		PEOSInterfaceException	theExcep = null;
 		while (!bExit)
 		{
 			try
@@ -103,14 +105,16 @@ class PEOS_connection extends Object
 				String line, status;
 				boolean bNext = true;
 				result = new Vector();			 //there are something
-			    Thread.sleep(DELAY_TIME);   
 				
-				for (int i = 0; bNext;)
+				for (int i = 0; bNext && i < DELAY_TRIES;)
 				{
 					line = _sin.readLine();
-					retries = 0;
 					if (line == null)
-					    break;
+					{
+						i++;
+						Thread.sleep(DELAY_TIME);   
+						continue;
+					}
 					int len = line.length();
 					if (len > 2)
 					{
@@ -138,18 +142,18 @@ class PEOS_connection extends Object
 							{
 								Err += new String("no error messages available.");
 							}
-							throw new PEOSInterfaceException(Err);
+							System.err.println(Err);
+							theExcep = new PEOSInterfaceException(Err);
 						}
 					}
 				}
 				bExit = true;
 			}
-			catch (Exception e)
+			catch (IOException ioe)
 			{
-			    err = null;
 				bExit = true;
 				close();
-				if (retries < 1)
+				if (retries < MAX_RETRIES)
 				{
 					retries++;
 					try
@@ -157,18 +161,28 @@ class PEOS_connection extends Object
 						reconnection();
 					    bExit = false;
 					}
-					catch (Exception ex)
+					catch (IOException ex)
 					{
-						err = new String("Exception in reconnection: ")+ex;
+						System.err.println(new String("Reconnection:")+ex);
+						throw ex;
 					}
 				}
 				else
-				    err = new String("Caught socket exception: ")+e;
+				{
+					System.err.println(new String("Max Retries:")+ioe);
+					throw ioe;
+				}
+			}
+			catch (Exception e)
+			{
+				String Err = new String("Exception while connecting: ")+ e;
+				System.err.println(Err);
+				theExcep = new PEOSInterfaceException(Err);
 			}
 			finally
 			{
-			    if (err != null)
-					throw new PEOSInterfaceException(err);
+			    if (theExcep != null)
+					throw theExcep;
 			}
 		}
 		return result;
@@ -180,7 +194,6 @@ class PEOS_connection extends Object
 		connection();
 		_sout.println(_connString);
 		String line, status;
-		boolean bNext = true;
 		line = _sin.readLine();		// one return line
 		status = line.substring(0,3);
 		if (status.compareTo("500") == 0)
