@@ -571,7 +571,9 @@ on_ok_fileselection_clicked(GtkWidget *file, GtkFileSelection *fs)
 {
   int fd, i, size;
   char *cmd, buf[MAX_BUF];
+#ifdef DEBUG  
   GtkWidget *error_dialog = NULL;
+#endif
 
   size = strlen(exec_path) + strlen(" -c ") + strlen(gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs))) + 1;
   cmd = (char *) malloc (size*sizeof(char));
@@ -598,10 +600,12 @@ on_ok_fileselection_clicked(GtkWidget *file, GtkFileSelection *fs)
   read (fd, buf, MAX_BUF);
   close (fd);
 
+#ifdef DEBUG
   if (strncmp ("Executing", buf, 9) != 0) {
 	error_dialog = create_errordialog();
   	gtk_widget_show (error_dialog);
   } else {
+#endif
 
   gtk_widget_destroy (notebook);
   freeAll_extra();
@@ -617,7 +621,7 @@ on_ok_fileselection_clicked(GtkWidget *file, GtkFileSelection *fs)
 
   redisplay_menu();
   check_state();
-  }
+  
 }
 
 void check_state(void)

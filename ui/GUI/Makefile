@@ -188,5 +188,5 @@ clean:
 	rm -f ${C_OBJ} tmp_dir_list tmp_sed Makefile-release
 
 clobber: clean
-	rm -f runpeos proc* core*
+	rm -f runpeos proc* core* pelog
 	rm -rf ${TREETOP} treetop peos.tar.gz
