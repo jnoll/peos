@@ -35,20 +35,22 @@ int main()
     load_proc_table("proc_table.dat");
     alist = peos_list_actions(alist_pid, &num_actions);
     printf("num_act=%d", num_actions);
-    for(i = 0; i < num_actions; i++){
-      printf("pid=%d", pid);
-      printf("alistpid=%d", alist_pid);
-      if((pid == alist_pid) && (alist[i].state == 1)){
-        printf("<html>\n");
-        printf("<head>\n");
-        printf("<body onload=\"window.location.href='action_page.cgi?%d+%s=%s'\"\n", pid, alist[i].name, "ready"); 
-        printf("</body>\n");
-        printf("</head>\n");
-        printf("</html>\n");
-	return 0;
-      } 
-      printf("i=%d\n",i);
-      printf("NA=%d\n",num_actions);
+    if(alist) {
+      for(i = 0; i < num_actions; i++){
+	printf("pid=%d", pid);
+	printf("alistpid=%d", alist_pid);
+	if((pid == alist_pid) && (alist[i].state == 1)){
+	  printf("<html>\n");
+	  printf("<head>\n");
+	  printf("<body onload=\"window.location.href='action_page.cgi?%d+%s=%s'\"\n", pid, alist[i].name, "ready"); 
+	  printf("</body>\n");
+	  printf("</head>\n");
+	  printf("</html>\n");
+	  return 0;
+	} 
+	printf("i=%d\n",i);
+	printf("NA=%d\n",num_actions);
+      }
     }
     printf("<html>\n");
     printf("<head>\n");
