@@ -19,7 +19,6 @@ queryLinkedList.o: queryLinkedList.c queryLinkedList.h resultLinkedList.o
 	$(CC) $(CFLAGS) queryLinkedList.c
 debug.o: debug.c debug.h 
 	$(CC) $(CFLAGS) debug.c
-
 clean:
 	touch dummy.o
 	rm *.o
