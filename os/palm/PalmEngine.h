@@ -23,13 +23,14 @@ typedef struct {
   MemHandle Next; /* Next node in the list */
 } processNode;
 
-/* What's required to pause/resume a process instance */
+typedef enum {
+  ActAndState [MAX_ACTS] processActions;
+} ActArray;
+
 typedef struct {
-  int PC;
-  int SP; /* index of top of stack: -1 means empty */
-  char ACC[128];
-  char* stack[STACK_LENGTH];
-} processContext;
+  char* ActName;
+  state ActState;
+} ActAndState;
 
 /* global variables */
 /*extern*/ char palm_msg[512];   /* holder for msgs to sendUI */

@@ -11,6 +11,7 @@
 #include "PalmVM.h"
 #include "PalmEngine.h"
 #include "PalmUI.h"
+//#include "globals.h" - included thru PalmEngine.h...
 
 char palm_msg[512];   /* holder for msgs to sendUI */
 int act_number = 0; /* 7 actions in timesheet */
@@ -199,8 +200,9 @@ int loadInstructions()
   instr_array[78] = "end";
   instr_array[79] = "call error";
 
-  context.SP = -1;
+  context.SP = 0;
   context.PC = 7;
+  context.A = -1; /* the initial value of the accumulator... */
   return 0;
 }
 
@@ -316,3 +318,67 @@ int listActions()
   sendUI(palm_msg);
   return 0;
 } /* listActions */
+
+
+
+   /*MM: searches for a file in the directory structure identified
+    * by COMP_DIR and with the same name as the argument "processName"
+    * and ending in ".txt".  If the file can be opened for reading,
+    * getModel returns the path of the file as a char *.
+    * In PalmPEOS, the Engine will incorporate function(s) to find
+    * all model files on the device, and open/read them when necessary.
+    */
+/*jn: Correct.  Move this to engine.*/
+
+/*
+  char * getModel(char * processName)
+  {
+  char * model = NULL;
+  char * file = NULL;
+  char * filend = NULL;
+  char * path = getenv(COMP_DIR);
+  char begin = '/';
+  char end = '.';
+  FILE* fd; // file descriptor
+  
+  model = (char *) malloc(256);
+  
+  if(model == NULL) {
+  perror("NO MORE SPACE");
+  return model;
+  }
+  if(processName == NULL) {
+  perror("NO Process Name passed in.");
+  free(model);
+  return model;
+  } else {
+  file = strrchr(processName, begin);
+  file = (file == NULL) ? processName : ++file;
+  filend = strchr(file, end);
+  filend = (filend == NULL) ? processName+strlen(processName) : filend;
+  if(file >= filend) {
+  perror("Could not find the model name from processName");
+  free(model);
+  return model;
+  } 
+  }
+  if(path && strlen(path)) {
+  strcpy(model, path);
+  if(path[strlen(path) -1] != '/')
+  strcat(model, "/");
+  strncat(model, file,  filend - file);
+  strcat(model, ".txt");
+  } else {
+  strcpy(model, "./");
+  strncat(model, file,  filend - file);
+  strcat(model, ".txt");
+  }
+  
+  if ((fd=(FILE*)fopen(model, "r")) == NULL) {
+  return NULL;
+  } else {
+  fclose(fd);
+  }
+  return model;
+  } //getModel
+*/
