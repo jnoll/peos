@@ -6,7 +6,6 @@ SHELL= /bin/sh
 #
 CC= gcc 
 GNOME_CONFIG = gnome-config
-PKG_CONFIG= pkg-config
 LDD= ldd
 GREP= grep
 AWK= awk 
@@ -32,14 +31,31 @@ OPT_DEBUG= -g3
 #CC_WARN= -Wall -W
 CC_WARN= -Wall -Werror
 #MISC_CC= -M
-MISC_CC=
-GNOME_CONFIG_CFLAGS= ${GNOME_CONFIG} --cflags gtk xml2 gal
+MISC_CC= 
+
+XML2_CONFIG_CFLAGS= ${XML2_CONFIG} --cflags
+XML2_CONFIG_LDFLAGS= ${XML2_CONFIG} --libs
+
+#System Make
+XML2_CONFIG= xml2-config
+GTK_CONFIG= gtk-config
+PKG_CONFIG= pkg-config
+GNOME_CONFIG_CFLAGS= ${GTK_CONFIG} --cflags gtk
+GNOME_CONFIG_LDFLAGS= ${GTK_CONFIG} --libs gtk
+
+#Manual Make
+#XML2_CONFIG= xml2new-config
+#GTK_CONFIG= gtknew-config
+#PKG_CONFIG= pkgnew-config
+#GNOME_CONFIG_CFLAGS= ${GTK_CONFIG} --cflags
+#GNOME_CONFIG_LDFLAGS= ${GTK_CONFIG} --libs
+
 PKG_CONFIG_CFLAGS= ${PKG_CONFIG} --cflags gtkhtml-1.1
-GNOME_CONFIG_LDFLAGS= ${GNOME_CONFIG}  --libs gtk xml2 gal
 PKG_CONFIG_LDFLAGS= ${PKG_CONFIG} --libs gtkhtml-1.1
-CFLAGS=	`${GNOME_CONFIG_CFLAGS}` `${PKG_CONFIG_CFLAGS}` \
+
+CFLAGS=	`${XML2_CONFIG_CFLAGS}` `${GNOME_CONFIG_CFLAGS}` `${PKG_CONFIG_CFLAGS}` \
 	${OPT_DEBUG} ${CC_WARN} ${MISC_CC}
-LDFLAGS= `${GNOME_CONFIG_LDFLAGS}` `${PKG_CONFIG_LDFLAGS}` \
+LDFLAGS= `${XML2_CONFIG_LDFLAGS}` `${GNOME_CONFIG_LDFLAGS}` `${PKG_CONFIG_LDFLAGS}` \
  	 ${OPT_DEBUG}
 
 # our source
