@@ -526,7 +526,7 @@ int EMAILdateCompare ( char *queryValue, char *dateLine )
 	queryTimeStamp = parsedate( queryDate, NULL) ;
 	
 	_debug( __FILE__, __LINE__, 5, "mailDate is %s, queryDate is %s", mailDate, queryValue ) ;
-	_debug( __FILE__, __LINE__, 5, "subjectLine for operator LT is %s",  dateLine ) ;
+	_debug( __FILE__, __LINE__, 5, "dateLine is %s",  dateLine ) ;
 	_debug( __FILE__, __LINE__, 5, "mailDate %s",  ctime( &mailTimeStamp ) ) ;
 	_debug( __FILE__, __LINE__, 5, "queryDate %s",  ctime( &queryTimeStamp )  ) ;
 	
@@ -540,6 +540,7 @@ int EMAILdateCompare ( char *queryValue, char *dateLine )
 	
 	else if ( strcmp ( operatorType, "LT" ) == 0 )
 	{
+	
 		if( difftime( mailTimeStamp, queryTimeStamp ) < 0 )
 			return 1 ;
 		else
@@ -664,7 +665,7 @@ void getMailDate( char *value, char *dateLine )
 	}
 	
 	if( strlen( day ) == 1 )
-		sprintf( value, "%s/%s/0%s %s", year, month, day ) ;
+		sprintf( value, "%s/%s/0%s %s", year, month, day, time ) ;
 	else
 		sprintf( value, "%s/%s/%s %s", year, month, day, time ) ;
 	
