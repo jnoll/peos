@@ -198,8 +198,12 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
  	}
 
   	public void actionPerformed(ActionEvent e)
-  	{
-  		if("start".equals(e.getActionCommand()))
+  	{             
+                if (topLevel.killSupportFiles()==true)
+                {
+                    System.out.println("A support file was deleted.");
+                }
+                else if("start".equals(e.getActionCommand()))
   		{	
                         map.getActionByName(pidNum,currActionName);
 			startAction();

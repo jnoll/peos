@@ -109,8 +109,47 @@ public class PeosApp extends JFrame implements ActionListener
 		return menuBar;	
 	}
 	
+        public boolean killSupportFiles()
+        {
+            try{
+                    File proc_table = new File("./proc_table.dat");
+                    if (proc_table.canRead() == false)
+                    {
+                        new File("./proc_table.dat.xml").delete();
+                        this.deleteAllTabs();                       
+                        
+                        //functions for clearing active lists
+                        menuBar.removeAll();
+       			setJMenuBar(createMenuBar());
+                        deleteB.setEnabled(false);
+                        return true;
+                    }
+                
+                    proc_table = new File("./proc_table.dat.xml");
+                    if (proc_table.canRead() == false)
+                    {
+                        new File("./proc_table.dat").delete();
+                        this.deleteAllTabs();                        
+                        
+                        //functions for clearing active lists
+                        menuBar.removeAll();
+       			setJMenuBar(createMenuBar());
+                        deleteB.setEnabled(false);
+                        return true;
+                    }
+                
+                }
+                catch(Exception IOe)
+                {
+                    System.err.println(IOe);                   
+                    return true; 
+                }                
+                return false;
+        }
 	public void actionPerformed(ActionEvent e) 
 	{
+                boolean goOn=true;
+                
                 if (outline != null)
                 {
                     try{ 
@@ -121,8 +160,11 @@ public class PeosApp extends JFrame implements ActionListener
                         System.err.println(ee);                  
                     }
                 }
-                
-		if ("load".equals(e.getActionCommand()))
+                if (killSupportFiles()==true)
+                {
+                    System.out.println("A support file was deleted.");
+                }
+                if ("load".equals(e.getActionCommand()))
 		{
 			if (getNumCurrActive() >= 11)
 			{
@@ -165,12 +207,12 @@ public class PeosApp extends JFrame implements ActionListener
 				pidInt = getPidNum(((JMenuItem)e.getSource()).getText());				
 	
 			}
-			else
+			else // deleteShortcut
 			{
 				String tooltip = tabbedPane.getToolTipTextAt(tabbedPane.getSelectedIndex());
 				String pid = tooltip.substring(5,tooltip.length());
 
-				pidInt = Integer.parseInt(pid);
+				pidInt = Integer.parseInt(pid);                               
 			}
 
 			int n = JOptionPane.showConfirmDialog(
@@ -178,6 +220,7 @@ public class PeosApp extends JFrame implements ActionListener
                            "Delete Confirmation",
                            JOptionPane.YES_NO_OPTION);
 
+                        System.out.println("deleting: " + pidInt);
                     	if (n == JOptionPane.YES_OPTION) {
                             delete(pidInt);
                     	}
@@ -225,8 +268,12 @@ public class PeosApp extends JFrame implements ActionListener
         public void delete(int pidInt)
         {
             if (findTabIndex(pidInt) != -1)
+                System.out.println("tab:" + findTabIndex(pidInt));
+              
 				{
-					tabbedPane.remove(tabbedPane.getSelectedIndex());
+					//tabbedPane.remove(tabbedPane.getSelectedIndex());
+                                        tabbedPane.remove(findTabIndex(pidInt));
+                                        
 				}
 			
 				try {		
@@ -239,6 +286,10 @@ public class PeosApp extends JFrame implements ActionListener
 	
 				menuBar.removeAll();
 				setJMenuBar(createMenuBar());         
+        }
+        public void deleteAllTabs()
+        {
+            tabbedPane.removeAll();
         }
 	/*=========== TAB RELATED FUNCTIONS =============*/	
 	public void initTabIndices()
