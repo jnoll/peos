@@ -40,9 +40,7 @@ HEADERS = $(wildcard *.h)
 # build location
 TREETOP= peos
 
-all: makefiles build
-
-makefiles:
+all: build
 
 build: shell lib peos 
 

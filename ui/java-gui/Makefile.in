@@ -10,9 +10,7 @@ JFLAGS=-classpath ${CLASSPATH}:${XERCES}:${JUNIT}:include/java-gui.jar:.
 
 V= @
 
-all: makefiles build
-
-makefiles:
+all: build
 
 build: jar script
 
@@ -64,7 +62,6 @@ install: script
 	${V}echo ""
 
 script: 
-	${V}echo "...creating runpeos executable in java-gui........"
 	${V}echo "" >runpeos
 	${V}echo "runApp=0" >>runpeos
 	${V}echo "test -w ." >>runpeos
@@ -92,10 +89,8 @@ script:
 	${V}echo "rm -f proc_table.dat.xml" >>runpeos
 	${V}echo "	xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >>runpeos
 	${V}echo "java -classpath $${CLASSPATH}:${JUNIT}:${XERCES}:${JAVAGUI_JAR} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml}  PeosApp" >>runpeos
-	${V}echo "chmod -f 0644 proc* pelog message event.log" >>runpeos
 	${V}echo "fi" >>runpeos
 	${V}chmod +x runpeos
-	${V}echo "...done creating runpeos executable in java-gui..."
 	${V}echo "" 
 
 %.class : %.java

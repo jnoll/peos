@@ -53,19 +53,17 @@ C_OBJ=	main.o interface.o callbacks.o engine.o \
 
 # default rule
 #
-all: makefiles build
-
-makefiles:
+all: build
 
 build: script peos-gui
 
 # compile gtkpeos using system installed libs
 #
 peos-gui: ${C_OBJ}
-	${V}${CC} ${LDFLAGS} ${C_OBJ} -o peos-gui
+	${CC} ${LDFLAGS} ${C_OBJ} -o peos-gui
 
 .c.o:
-	${V}${CC} ${CFLAGS} -c $<
+	${CC} ${CFLAGS} -c $<
 
 clean:
 	rm -f ${C_OBJ}
@@ -103,7 +101,6 @@ install: script
 	${V}echo "...done installing gtk-gui..."
 
 script:
-	${V}echo "...creating gtkpeos executable in gtk-gui........"
 	${V}echo "" >gtkpeos
 	${V}echo "runApp=0" >>gtkpeos
 	${V}echo "test -w ." >>gtkpeos
@@ -142,8 +139,6 @@ script:
 	${V}echo "rm -f proc_table.dat.xml" >>gtkpeos
 	${V}echo "${bin}/peos-gui" >>gtkpeos
 	${V}echo "rm gtk image" >>gtkpeos
-	${V}echo "chmod -f 0644 proc* pelog message event.log" >>gtkpeos
 	${V}echo "fi" >>gtkpeos
 	${V}chmod +x gtkpeos
-	${V}echo "...done creating gtkpeos executable in gtk-gui..."
 	${V}echo ""
