@@ -92,7 +92,8 @@ int peos_tcl_exec_cmd TCL_VARARGS_DEF(Tcl_Interp*, arg1)
     va_end(arg_list);
     // system("echo F");
   }
-
+  for( i = 0;i < objc;++i)
+       printf( "-->%s<--\n", Tcl_GetStringFromObj(objv[i],NULL) );
   if((*(info).objProc)((info).objClientData, interp, objc, objv) != TCL_OK){
     fprintf(stderr,"result is error");
     fflush(0);
@@ -103,7 +104,7 @@ int peos_tcl_exec_cmd TCL_VARARGS_DEF(Tcl_Interp*, arg1)
   #else
   Tcl_GetStringResult(interp);
   #endif
-  return 0;
+  return TCL_OK;
 }
 
 char* peos_tcl_get_var(peos_tcl* ptcl, char* var_name)
@@ -117,12 +118,22 @@ int peos_tcl_set_var(peos_tcl* ptcl, char* var_name, char* var_value)
 }
 int peos_tcl_link_var(peos_tcl* ptcl, char* var_name, char* var_addr, int type)
 {
-      Tcl_LinkVar(ptcl->interp,var_name,var_addr,type) ;
-      return 1;// Tcl_UpdateLinkedVar(ptcl->interp,var_name);
-      
+     return Tcl_LinkVar(ptcl->interp,var_name,var_addr,type);    
 }
-
-
+int peos_tcl_script(peos_tcl* ptcl, char* file_name)
+{
+    int status;
+    peos_tcl_start(ptcl);
+    status = Tcl_EvalFile(ptcl->interp, file_name);
+    if (*ptcl->interp->result != 0){
+        printf("Issue Running Script: %s\n", ptcl->interp->result); 
+    }
+    printf("Script ran, result: %s\n", status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
+    return status;
+}
+#ifdef UNIT_TEST
+#include "test_tclinterp.c"
+#endif
 
 /*
 int main()
@@ -166,12 +177,14 @@ int main()
    printf ("C knows path1 is %s\n", var2);
    printf ("C knows path2 is %s\n", var3);
 
-  
+  peos_tcl_script(&p,"hi.tcl");
+  peos_tcl_script(&p,"/home/pasha/_tcl_book3ed/tclfromc/13_12.tcl");
+  peos_tcl_script(&p,"nosuchfile");
   //Tcl_Eval((&p)->interp, "puts stdout $foo");
   return 0;
 }
-*/
 
+*/
 /*
 int peos_tcl_TEST(peos_tcl* ptcl)
 {

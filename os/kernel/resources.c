@@ -101,6 +101,7 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
         for(i = 0; i < num_resources; i++) {
             for(j = 0; j < num_proc_resources; j++) {
 	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
+		    printf("pr=%s\n",proc_resources[j].value);
 	            strcpy(act_resources[i].value,proc_resources[j].value);
 		    break;
 		}
