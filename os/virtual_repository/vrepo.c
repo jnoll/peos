@@ -111,6 +111,7 @@ void poll_vr( )
 		}
 		tempQueries = ( queryList* ) tempQueries -> link ;
 	}
+	
 	if ( tag )
 		myQueries = filterQueryList( myQueries ) ;
 }
