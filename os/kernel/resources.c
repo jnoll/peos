@@ -1,19 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <fcntl.h>
 #include "pmlheaders.h"
 #include "action.h"
 #include "process_table.h"
 #include "graph.h"
-#ifndef palm
+#ifndef PALM 
+#include <errno.h>
+#include <time.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "tclinterp.h"
-#endif
 #include "predicate_evaluator.h"
+#endif
 
 
 void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier) 
@@ -93,6 +93,7 @@ void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int
     return;
 }
 
+#ifndef PALM
 peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *total_resources)
 {
 
@@ -276,6 +277,7 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
         return NULL;
 }
 
+#endif
 
 
 #ifdef UNIT_TEST

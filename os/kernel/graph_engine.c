@@ -3,6 +3,7 @@
 #include <string.h>
 #ifndef PALM
 #include <time.h>
+#include "predicate_evaluator.h"
 #endif
 #include "process.h"
 #include "action.h"
@@ -10,7 +11,6 @@
 #include "pmlheaders.h"
 #include "process_table.h"
 #include "graph_engine.h"
-#include "predicate_evaluator.h"
 
 
 void handle_selection(Node n);

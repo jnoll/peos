@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.52 2005/02/15 08:52:55 sbeeby Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.53 2005/02/21 19:49:27 sbeeby Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -19,14 +19,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
 #ifndef PALM
+#include <sys/types.h>
 #include <assert.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#endif
 #include <fcntl.h>
 #include <errno.h>
+#endif
 #include "graph.h"
 
 #ifndef PALM
@@ -58,6 +58,7 @@ int filedes;
 
 /* This function tries to get a lock for the file descriptor */ 
 
+#ifndef PALM
 int get_lock(int fd)
 {
 
@@ -105,7 +106,7 @@ int release_lock(int fd)
     else
         return 1;
 }
-    
+#endif    
 
 void peos_set_process_table_file(char *file_name)
 {
@@ -139,7 +140,9 @@ char *get_script(int pid, char *act_name)
         return get_script_graph(context -> process_graph, act_name);
     }
     else {
+#ifndef PALM
         fprintf(stderr,"\n get_script error : context not found\n");
+#endif
 	return NULL;
     }
 }
@@ -311,6 +314,7 @@ int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other
     return 1;   
 }
 
+#ifndef PALM
 int
 load_context(FILE *in, peos_context_t *context)
 {
@@ -443,6 +447,8 @@ int load_proc_table(char *file)
     }
     return status;
 }
+#endif
+
 
 
 int save_context(int pid, peos_context_t *context, FILE *out)
@@ -482,6 +488,7 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     return 1;
 }
 
+#ifndef PALM
 int 
 save_proc_table(char *file)
 {
@@ -517,6 +524,7 @@ int save_process_table()
     save_proc_table_xml();	
     return save_proc_table(process_table_filename);
 }
+#endif
 
 void print_after_escaping(char *str, FILE *fp)
 {

@@ -87,6 +87,8 @@ reallyclean: clean
 dist: reallyclean
 	tar cvf kernel.tar --exclude-from exclude -C .. kernel
 
+unittestable:
+
 # Dependencies.
 include .depend
 

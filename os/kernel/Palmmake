@@ -9,11 +9,11 @@ CFLAGS = -DPALM -g -I../palm -I../.. -I/usr/m68k-palmos -Wall
 .KEEP_STATE:
 
 # lib
-LIBRARY = libpeos.a
-LIBS = $(LIBRARY) ../../pml/libpalmpml.a 
+LIBRARY = libpalmpeos.a
+LIBS = $(LIBRARY) ../../pml/libpalmpml.a ../palm/stdio.o
 PARSER = ../../pml/
 
-CORE_LIBS = -ltcl
+CORE_LIBS = -lPalmOSGlue
 LDFLAGS = -g -L../../lib
 
 # objects
@@ -28,7 +28,7 @@ graph.o \
 graph_engine.o \
 process_table.o \
 process.o \
-resources.o 
+resources.o \
 
 # sources
 SOURCES = $(OBJS:.o=.c)
@@ -45,8 +45,8 @@ lib: $(LIBRARY)
 
 $(LIBRARY): $(OBJS)
 	rm -f $@
-	ar cru $@ $(OBJS)
-	ranlib $@ || true
+	m68k-palmos-ar cru $@ $(OBJS)
+	m68k-palmos-ranlib $@ || true
 
 # Compile the program
 shell: shell.o $(LIBRARY)

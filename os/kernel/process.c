@@ -1,12 +1,14 @@
 #include <string.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 #include <unistd.h>
+#ifndef PALM
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <assert.h>
+#include <time.h>
+#endif
 #include "process.h"
 #include "events.h"
 #include "graph.h"
@@ -56,7 +58,7 @@ char *act_state_name(vm_act_state state)
       }
 }
 
-
+#ifndef PALM
 char *find_model_file(char *model)
 {
     char *ext, model_file[BUFSIZ];
@@ -89,6 +91,7 @@ char *find_model_file(char *model)
         return NULL;
     }
 }
+#endif
 
 int peos_create_instance(char *model_file,peos_resource_t *resources,int num_resources)
 {
@@ -111,7 +114,7 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
     return -1;
 }
 
-
+#ifndef PALM
 void log_event(char *message)
 {
     FILE *file;
@@ -143,7 +146,7 @@ void log_event(char *message)
     fclose(file);
     close(filedes);
 }
-		    
+#endif	    
 
 
 

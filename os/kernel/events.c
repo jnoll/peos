@@ -7,12 +7,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <string.h>
 #ifndef PALM
 #include <dirent.h>
+#include <sys/types.h>
 #include <assert.h>
 #include <time.h>
+#else
+#include <PalmOS.h>
 #endif
 #include "process.h"
 #include "events.h"
@@ -22,13 +24,41 @@
 
 
 /* Forward declarations. */
+#ifndef PALM
 extern char *find_model_file(char *model);
+#endif
 
 void error_msg(char *s) 
 {
     fprintf(stderr, "error: %s\n", s);
 }
 
+
+#ifdef PALM
+char **peos_list_models()
+{
+	LocalID db_id;
+	char **list;
+	char *nameP;
+	Int16 i,dbc;
+
+	dbc = DmNumDatabases(0);
+	/* need to use palm memhandles*/
+	list = malloc( dbc * sizeof(char *));
+
+	for (i=0; i< dbc; i++) /* scan through all DB */
+	{
+		db_id = DmGetDatabase(0,i); 
+		
+		/* get database name info*/
+		DmDatabaseInfo(0, i, nameP, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL/*type*/,NULL);
+		list[i]=malloc(sizeof(nameP));
+		list[i]=strdup(nameP);		
+	}
+
+	return list; 
+}
+#else
 char **peos_list_models()
 {
     static char **result;
@@ -67,7 +97,7 @@ char **peos_list_models()
     result[r] = NULL;
     return result;
 }
-
+#endif
 	    
 vm_exit_code peos_notify(int pid, char *action, peos_event event)
 {
@@ -156,7 +186,7 @@ int peos_set_resource_binding(int pid, char *resource_name, char *value)
     
 }    
 
-
+#ifndef PALM
 peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
 {
     peos_resource_t *resources;
@@ -240,7 +270,7 @@ peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
     return resources;
 
 }
-
+#endif
 
 peos_resource_t *peos_get_resource_list_context(int pid, int *num_resources)
 {

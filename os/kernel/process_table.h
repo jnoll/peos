@@ -58,10 +58,11 @@ int set_resource_binding(int pid, char *resource_name, char *resource_value);
 char *get_resource_binding(int pid, char *resource_name);
 
 char *get_resource_qualifier(int pid, char *resource_name);
-	
 
+#ifndef PALM
 int load_process_table();
 int save_process_table();
+#endif
 
 int delete_entry(int pid);
 #endif 
