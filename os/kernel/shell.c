@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.8 2003/08/31 18:38:48 jnoll Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.9 2003/09/06 22:57:13 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -105,7 +105,11 @@ list(int argc, char *argv[])
 create_process(int argc, char *argv[])
 {
     int pid;
+    int i;
     char *model;
+    char *model_file;
+    int num_resources;
+    peos_resource_t *resources;
 
     if (argc < 2) {
 	printf("usage: %s model\n", argv[0]);
@@ -113,8 +117,39 @@ create_process(int argc, char *argv[])
     }
 
     model = argv[1];
+
+    // This is new code I have inserted
+
+     model_file = (char *)find_model_file(model);
+	if (model_file == NULL)
+	{
+		printf("error: model file not found\n");
+		return;
+	}
+	
+	resources = (peos_resource_t *) get_resource_list(model_file,&num_resources);
+
+	/* 
+	 * replace the code below to get resource values from user
+	 * 
+	 */
+
+	if (resources == NULL)
+	{
+		printf("error getting resources\n");
+		return;
+	}
+	for(i = 0; i < num_resources; i++)
+	{
+		sprintf(resources[i].value,"value_%d",i);
+	}
+
+	
+    
     printf("Executing %s:\n", model);
-    if ((pid = peos_run(model, 0)) < 0) {
+    
+    // note the change in interface of peos_run
+    if ((pid = peos_run(model,resources,num_resources)) < 0) {
 	error_msg("couldn't create process");
     } else {
 	printf("Created pid = %d\n", pid);

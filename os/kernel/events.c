@@ -103,7 +103,7 @@ int peos_abort_action(peos_action_t action)
 
 
 
-int peos_run(char *process, int line)
+int peos_run(char *process, peos_resource_t *resources,int num_resources)
 {
     int pid;
     char *model_file = find_model_file(process), times[20];
@@ -111,13 +111,15 @@ int peos_run(char *process, int line)
     struct tm *current_info;
     time_t current;
 
+
     if (model_file == NULL) {
 	fprintf(stderr, "peos_run: can't find model file for process %s\n",
 		process);
 	return -1;
     }
 
-    pid = peos_create_instance(model_file);
+    // this is the only change in peos_run
+    pid = peos_create_instance(model_file,resources,num_resources);
 
     time(&current);
     current_info = localtime(&current);

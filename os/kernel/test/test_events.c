@@ -25,7 +25,7 @@ char *find_model_file(char *model)
     return TEST_PROC_NAME;
 }
 
-int peos_create_instance(char *model)
+int peos_create_instance(char *model,peos_resource_t *resources,int num_resources)
 {
     return create_instance_result;
 }
@@ -84,13 +84,15 @@ START_TEST(test_run_process)
 {
     char *model = "p1";
     int i;
+    peos_resource_t *resources;
+    int num_resources;
 
     /* Pre: Because load_actions() and find_model_file are stubs,
      * there are no actual pre conditions.
      */
     
     for (i = 0; i < 10; i++) {
-	fail_unless(peos_run(model, 0) != 0, 
+	fail_unless(peos_run(model,resources, num_resources) != 0, 
 		    "failed to create instance");
     }
 }

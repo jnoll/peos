@@ -6,7 +6,7 @@ extern void error_msg(char *s);
 extern int peos_abort_action(peos_action_t action);
 extern char **peos_list_models(void);
 
-extern int peos_run(char *process, int line);
+extern int peos_run(char *process,peos_resource_t *resources,int num_resources);
 
 extern int peos_set_ready(int pid, char *act);
 extern int peos_run_action(int pid, char * action);

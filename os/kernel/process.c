@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.8 2003/09/04 20:40:29 wchu Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.9 2003/09/06 22:57:13 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -139,7 +139,7 @@ char *find_model_file(char *model)
     }
 }
 
-int peos_create_instance(char *model_file)
+int peos_create_instance(char *model_file,peos_resource_t *resources,int num_resources)
 {
     int start = -1;
     peos_context_t *context;
@@ -161,6 +161,9 @@ int peos_create_instance(char *model_file)
 	    for (i = 0; i < context->num_other_nodes; i++) {
                   context->other_nodes[i].pid = pid;
 				                }
+	    // stick the resources into the context
+	    context->num_resources = num_resources;
+	    context -> resources = resources;
 	    
 	    
 	    return (pid); 

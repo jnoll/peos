@@ -117,15 +117,20 @@ START_TEST(test_create_instance)
     int pid, i;
     char *model = "test_sample_1.pml";
     peos_context_t *context;
+    
+    int num_resources = 2;
+    peos_resource_t *resources = (peos_resource_t *) calloc(num_resources,sizeof(peos_resource_t));
 
     memset(process_table, 0, PEOS_MAX_PID + 1);
 
-    fail_unless((pid = peos_create_instance(model)) == 0, 
+    fail_unless((pid = peos_create_instance(model,resources,num_resources)) == 0, 
 		"failed to create instance");
     context = &(process_table[0]);
     fail_unless(context->status == PEOS_READY, "process status");
     fail_unless(context->actions != NULL, "actions null");
     fail_unless(context->num_actions == 2, "num_actions wrong");
+    fail_unless(context->num_resources == 2,"num_resources wrong");
+    fail_unless(context->resources != NULL,"resources null");
   //  strcpy(context->actions[1].name,"act_1");
     for (i = 0; i < context->num_actions; i++) {
 	char buf[256];
@@ -141,8 +146,10 @@ END_TEST
 START_TEST(test_create_instance_noexist)
 {
     char *model = "no";
+    peos_resource_t *resources;
+    int num_resources;
 
-    fail_unless(peos_create_instance(model) == -1,
+    fail_unless(peos_create_instance(model,resources,num_resources) == -1,
 		"created from non-existent model.");
 }
 END_TEST
