@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "vm.h"
 #include "action.h"
 #include "pmlheaders.h"
-#include "vm.h"
 #include "process_table.h"
 #include "graph_engine.h"
 
@@ -71,13 +71,20 @@ Graph makegraph(char *file)
 {
 	filename = file;
 	lineno = 1;
+	yyin = NULL;
 	yyin = fopen(filename, "r");
+	
+	if(yyin == NULL)
+	{
+	  return NULL;
+	}
 	
 	if(yyparse())
 	{
 	return NULL;
 	}
-        else
+        
+	else
 	{	
 	  if(yyin)
 	  {

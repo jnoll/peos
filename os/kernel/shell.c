@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.15 2003/10/07 01:17:31 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.16 2003/10/20 23:35:21 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -19,8 +19,8 @@
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "vm.h"
 #include "events.h"
+#include "vm.h"
 #include "process_table.h"
 #include "pmlheaders.h"
 #include "graph_engine.h"

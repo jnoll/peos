@@ -3,10 +3,10 @@
 #include <malloc.h>
 #include <getopt.h>
 #include <stdlib.h>
-#include "vm.h"
 #include "process.h"
 #include "test_util.h"
 #include "action.h"
+#include "vm.h"
 #include "graph_engine.h"
 
 /* Test control flags. */
@@ -26,7 +26,25 @@ Tree make_tree(char *sval,int ival, Tree left, Tree right)
 	return t;
 }
 
-Node make_node(char *name, vm_act_state state, int type)
+List make_list(Item i1, Item i2, Item i3, Item i4, Item i5)
+{
+	List l = ListCreate();
+	if(i1)
+	ListPut(l,i1);
+        if(i2)
+	ListPut(l,i2);
+        if(i3)
+	ListPut(l,i3);
+        if(i4)
+        ListPut(l,i4);
+	if(i5)
+	ListPut(l,i5);
+	return l;
+
+}
+
+
+Node make_node(char *name, vm_act_state state, int type,int order)
 {
 
      Node n = (Node) malloc (sizeof(struct node));	
@@ -34,6 +52,18 @@ Node make_node(char *name, vm_act_state state, int type)
      n->name = name;
      STATE(n) = state;
      n->type = type;
+     n -> predecessors = NULL;
+     n -> successors = NULL;
+     ITER_START(n) = 0;
+     ITER_END(n) = 0;
+     MARKED_0(n) = 0;
+     MARKED_1(n) = 0;
+     MARKED_2(n) = 0;
+     MARKED_3(n) = 0;
+     MARKED_4(n) = 0;
+     ITER_START_NODES(n) = ListCreate();
+     ITER_END_NODES(n) = ListCreate();
+     ORDER(n) = order;
      return n;
 }
 

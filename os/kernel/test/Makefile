@@ -8,7 +8,7 @@ CFLAGS = -g -Wall -I. -I.. -I../../.. -I/home/jnoll/include
 
 # lib
 LIBS = ../../../pml/libpml.a
-TEST_LIBS = -lcheck 
+TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib
 
 # objects

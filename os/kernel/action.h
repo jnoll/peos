@@ -1,6 +1,8 @@
 #ifndef _ACTION_H
 #define _ACTION_H
+
 #include "vm.h"
+
 typedef struct {
     int pid;			/* Owning process. */
     char name[256];
