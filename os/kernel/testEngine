@@ -1,38 +1,20 @@
 #!/bin/sh
 #
-#Test script for Engine - runs 'timesheet' process.
-#
-#Mark Mastroieni - SCU - Summer 2002
+#Test script for testEngine
 
-HOST=linux103
+HOST=linux.scudc.scu.edu
 PORT=14176
 
 #removes state information from previous
 # runnings of this script...
 rm -r Engine/
-set timeout 10
-
-#without this, start 'PMLServer &' manually
-#  before running 'testEngine'!
-#(
-#sleep 1
-#echo "mmastroi" ; sleep 1 ; 
-#echo "PWD" ; sleep 1 ; 
-#echo "cd summer/peos/src/os/kernel/" ; sleep 1 ; 
-#echo "PMLServer" ; sleep 1
-#) | /usr/bin/telnet $HOST
 
 (
 echo "login Engine mark"; sleep 1 
-#echo "list" ; sleep 1
+echo "list" ; sleep 1
 echo "create timesheet"; sleep 2
 
-#echo "help" ; sleep 1
-#echo "sample" ; sleep 1
-#echo "available" ; sleep 1
-
 echo "run timesheet.001 get_card" ; sleep 1
-#echo "running" ; sleep 1
 echo "done timesheet.001 get_card" ; sleep 1
 
 echo "run timesheet.001 enter_pay_period" ; sleep 1
@@ -57,4 +39,3 @@ echo "logout"; sleep 2
 
 ) | /usr/bin/telnet $HOST $PORT | awk '$1==500{print "**ERROR:",$0}'
 
-echo "If no '**ERROR...' message, Engine Passed!"
