@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.24 2003/11/17 07:29:59 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.25 2003/11/17 20:00:20 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Sun Nov 16 22:45:35 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Mon Nov 17 10:58:18 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -140,6 +140,10 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 }
 	    
 
+/*
+ * Set state of nodes in g from state info in actions and other nodes.
+ * XXX collapse these two lists into one; there's no need to distinguish.
+ */
 int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other_node_t *other_nodes, int num_other_nodes)
 {
     int i;
@@ -367,6 +371,7 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
 
+    *num_actions = 0;
     if (process_table[pid].status & (PEOS_DONE | PEOS_NONE | PEOS_ERROR)) return NULL;
 
     if(make_node_lists(process_table[pid].process_graph,&actions,&num_act,&other_nodes,&num_other_nodes) == -1) return NULL;

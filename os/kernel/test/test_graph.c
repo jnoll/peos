@@ -1,5 +1,5 @@
 /*
- * $ID$
+ * $Id: test_graph.c,v 1.2 2003/11/17 20:00:20 jnoll Exp $
  * Graph operation unit tests.
  * John Noll, SCU.
  */
@@ -108,7 +108,6 @@ START_TEST(test_find_node_non_existent)
 
     /* Pre : Graph exists */
     make_pml_file(file, "process p {\n  action act_0 {}\n  action act_1 {}\n}\n");
-
     g = makegraph(file);
     unlink(file);
 
@@ -119,6 +118,32 @@ START_TEST(test_find_node_non_existent)
     fail_unless(n == NULL,"non existent node found");
 }
 END_TEST
+
+
+START_TEST(test_sanitize_node)
+{
+    Node n;
+
+    /* Pre: a node exists */
+    n = (Node) malloc(sizeof(struct node));
+    n->data = (Data) malloc(sizeof(struct data));
+
+    /* Action */
+    sanitize_node(n);
+
+    /* Post: node unmarked. */
+    fail_unless(MARKED_0(n) == FALSE, "MARKED_0 wrong");
+    fail_unless(MARKED_1(n) == FALSE, "MARKED_1 wrong");
+    fail_unless(MARKED_2(n) == FALSE, "MARKED_2 wrong");
+    fail_unless(MARKED_3(n) == FALSE, "MARKED_3 wrong");
+    fail_unless(MARKED_4(n) == FALSE, "MARKED_4 wrong");
+
+    /* clean up. */
+    free(n->data);
+    free(n);
+}
+END_TEST
+
 
 
 
@@ -142,6 +167,10 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_find_node);
     tcase_add_test(tc, test_find_node_non_existent);
+
+    tc = tcase_create("sanitize_node");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_sanitize_node);
 
 
 

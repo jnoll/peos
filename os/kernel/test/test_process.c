@@ -19,14 +19,6 @@ peos_context_t *peos_get_context(int pid)
 	return pid == 0 ? &(process_table[pid]) : NULL;
 }
 
-
-#ifdef NOTUSED
-vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state state)
-{
-	return VM_CONTINUE;
-}
-#endif
-
 int delete_entry(int pid)
 {
     return 1;
@@ -122,7 +114,7 @@ START_TEST(test_find_model_file)
 }
 END_TEST
 
-#ifdef NOTUSED
+#ifdef FIXME
 START_TEST(test_handle_action_change_run)
 {
   int nbytes,abytes;
@@ -283,12 +275,6 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_create_instance);
     tcase_add_test(tc, test_create_instance_multi);
-
-#ifdef NOTUSED
-    tc = tcase_create("handle action change");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_handle_action_change_run);
-#endif
 
     tc = tcase_create("log_event");
     suite_add_tcase(s, tc);

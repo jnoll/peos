@@ -2,8 +2,11 @@
 #define _GRAPH_ENGINE_H
 
 #include "pmlheaders.h"
+#include "action.h"
 
-
+/* Node mark values. */
+# define TRUE (1)
+# define FALSE (0)
 
 # define MARKED_0(n) (((Data) (n) -> data) -> marked[0])
 # define MARKED_1(n) (((Data) (n) -> data) -> marked[1])

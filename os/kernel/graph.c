@@ -5,10 +5,18 @@
  */
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 #include <pml/scanner.h>	/* defines global 'filename' */
 #include <pml/parser.h>		/* defines global 'program' */
-#include <pml/y.tab.h>		/* defines ACTION macro */
+#include <pml/tokens.h>		/* defines ACTION macro */
+#include "graph_engine.h"
 #include "graph.h"
+
+/* 
+ * This is defined by (f)lex, to flush input buffers and restart
+ * scanning on file. 
+ */
+extern void yyrestart(FILE *input_file);
 
 Graph makegraph(char *file)
 {
@@ -19,7 +27,7 @@ Graph makegraph(char *file)
 	
     program = NULL;
     if (yyin) {
-	/* In case the previous invocation of makegraph ended mid-stream
+	/* In case the previous invocation of makegraph() ended mid-stream
 	 * due to error, restart the lexer to flush old input. 
 	 */
 	yyrestart(yyin);	
@@ -43,7 +51,17 @@ Node find_node(Graph g, char *node_name)
     return NULL;
 }	
 
+void sanitize_node(Node n)
+{
+    assert(n->data != NULL);
+    MARKED_0(n) = FALSE;
+    MARKED_1(n) = FALSE;
+    MARKED_2(n) = FALSE;
+    MARKED_3(n) = FALSE;
+    MARKED_4(n) = FALSE;
+}
 
+
 # ifdef UNIT_TEST
 #include "test_graph.c"
 #endif

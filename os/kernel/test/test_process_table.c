@@ -2,8 +2,8 @@
 #include <sys/stat.h>		/* mkdir() */
 #include <sys/types.h>		/* mkdir() */
 #include <check.h>
+#include "graph.h"		/* sanitize_node() */
 #include "process_table.h"
-
 #define PROCESS_TABLE
 #include "test_util.h"
 
@@ -22,6 +22,12 @@ char *get_script_graph(Graph g, char *act_name)
 
 void initialize_graph(Graph g)
 {
+    Node n;
+
+    for(n = g -> source; n != NULL; n = n -> next) {
+	n -> data = (void *) malloc (sizeof (struct data));
+	sanitize_node(n);
+    }
 }
 
 
@@ -262,7 +268,6 @@ END_TEST
 START_TEST(test_load_proc_table) 
 {
     int i, j;
-//    char  *model = "test_sample_5.pml";
     char  *model = TEST_PROC_NAME;
 
     peos_context_t ctx;

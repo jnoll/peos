@@ -9,8 +9,6 @@
 #include "process_table.h"
 #include "graph_engine.h"
 
-# define TRUE 1
-# define FALSE 0
 
 
 
@@ -22,11 +20,7 @@ void sanitize(Graph g)
 {
     Node n;
     for(n = g -> source; n != NULL; n = n -> next) {
-        MARKED_0(n) = FALSE;
-	MARKED_1(n) = FALSE;
-	MARKED_2(n) = FALSE;
-	MARKED_3(n) = FALSE;
-	MARKED_4(n) = FALSE;
+	sanitize_node(n);
     }
 }
 
@@ -353,12 +347,7 @@ void initialize_graph(Graph g)
         
     for(n = g -> source; n != NULL; n = n -> next) {
         n -> data = (void *) malloc (sizeof (struct data));
-	/* XXX why isn't this factored out (same as sanitize) */
-        MARKED_0(n) = FALSE;
-        MARKED_1(n) = FALSE;
-        MARKED_2(n) = FALSE;
-        MARKED_3(n) = FALSE;
-        MARKED_4(n) = FALSE;
+	sanitize_node(n);
         STATE(n) = ACT_NONE;
         ORDER(n) = i;
         i++;
