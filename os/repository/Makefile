@@ -1,3 +1,4 @@
+CC = gcc
 # Build Path
 BUILD = .
  
@@ -12,7 +13,7 @@ TARGET = $(BUILD)/pmlstate
 STATIC = $(PEOSLIBDIR)/libpmlstate.a
 
 # Object Files
-OBJECTS = pml_state.o
+OBJECTS = pml_state.o repository.o unixfs_repository.o debug.o
 
 # Compiler Flags
 CFLAGS = -g
@@ -34,14 +35,14 @@ $(TARGET): $(OBJECTS)
 .SUFFIXES	:	.o .c 
 
 .c.o :
-	cc $(CFLAGS) $(IFLAGS) -c $< 
+	$(CC) $(CFLAGS) $(IFLAGS) -c $< 
 
 # Clean Build 
 clean:
 	rm $(LIB) $(PEOSLIBDIR)/*.a *.o
 
 # Make Static Library
-static:
+static: $(OBJECTS)
 	ar -r $(STATIC) $(OBJECTS)
 
 # Install Library

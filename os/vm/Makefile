@@ -6,14 +6,14 @@
 #######################################################################
 
 # compiler:
-CC = gcc -g
+CC = gcc
 
 ## FLAGS for test
 TFLAGS = -DTESTVM
 ##UNCOMMENT THE FOLLOWING WHEN DELIVER
 #TFLAGS = 
 
-CFLAGS = -I../repository $(TFLAGS)
+CFLAGS = -g -I../repository $(TFLAGS)
 # keep track of dependencies automatically
 .KEEP_STATE:
 
