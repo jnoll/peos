@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.45 2004/08/12 18:03:50 ppozdnya Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.46 2004/09/14 18:23:24 ppozdnya Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003

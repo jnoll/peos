@@ -256,8 +256,7 @@ main(int argc, char *argv[])
     SRunner *sr;
     Suite *s = suite_create("predicate_evaluator");
     TCase *tc;
-    //system("echo `pwd`");
-    system("cp -f ../tclf_*tcl ./");
+    system("cp -f ../tclf_*tcl `pwd`");
     parse_args(argc, argv);
     tc = tcase_create("is_provides_true");
     suite_add_tcase(s,tc);
@@ -305,6 +304,5 @@ main(int argc, char *argv[])
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
     suite_free(s);
-    system("rm -f ./tclf_*tcl");
     return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
