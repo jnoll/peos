@@ -2,7 +2,7 @@ OS_DIR = ../../../os
 KERNEL_DIR = $(OS_DIR)/kernel
 
 CC = gcc
-CFLAGS = -g -I$(OS_DIR)
+CFLAGS = -g -I$(OS_DIR) -I../../..
 
 LD = gcc
 LIBS = -lpml
