@@ -30,6 +30,8 @@ typedef struct {
     char name[256];
     char *script;
     vm_act_state state;
+    int requires_state;
+    int provides_state;
 } peos_action_t;
 
 /* list of nodes other than action nodes. These nodes have states and hence their state has to be saved in the context */
@@ -56,4 +58,12 @@ typedef enum {
 extern int num_actions;
 extern int set_act_state(char *act, vm_act_state state, peos_action_t *actions, int num_actions);
 extern vm_act_state get_act_state(char *act, peos_action_t *actions, int num_actions);
+
+
+extern int get_act_requires_state(char *act, peos_action_t *actions, int num_actions);
+
+
+extern int get_act_provides_state(char *act, peos_action_t *actions, int num_actions);
+
+
 #endif

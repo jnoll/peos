@@ -229,8 +229,12 @@ START_TEST(test_make_node_lists)
     fail_unless(strcmp(actions[1].name,"act_1") == 0, "act_1 name wrong");
     fail_unless(strcmp(other_nodes[0].name,"sel") == 0, "sel name wrong");
     fail_unless(actions[0].state == ACT_NONE, "act_0 state wrong");
+    fail_unless(actions[0].requires_state == FALSE, "act_0 requires_state wrong");
+    fail_unless(actions[0].provides_state == FALSE, "act_0 provides_state wrong");
     fail_unless(actions[1].state == ACT_NONE, "act_1 state wrong");
     fail_unless(other_nodes[0].state == ACT_NONE, "sel state wrong");
+    fail_unless(actions[1].requires_state == FALSE, "act_1 requires_state wrong");
+    fail_unless(actions[1].provides_state == FALSE, "act_1 provides_state wrong");
     fail_unless(strcmp(actions[0].script,"test script") == 0, "act_0 script wrong");
     fail_unless(strcmp(actions[1].script,"test script") == 0, "act_1 script wrong");
 }
@@ -324,7 +328,9 @@ START_TEST(test_save_proc_table)
 	for (i = 0; i < t_num_actions; i++) {
 	    sprintf(t_actions[i].name, "act_%d",i);
 	    t_actions[i].state = ACT_NONE;
-	    fprintf(f, " %s %d", t_actions[i].name, t_actions[i].state); 
+	    t_actions[i].requires_state = FALSE;
+	    t_actions[i].provides_state = FALSE;
+	    fprintf(f, " %s %d %d %d", t_actions[i].name, t_actions[i].state, t_actions[i].requires_state, t_actions[i].provides_state); 
 	}
         fprintf(f, "\n");
         t_num_other_nodes = 1;
@@ -407,7 +413,9 @@ START_TEST(test_load_proc_table)
 	    sprintf(actions[i].name, "act_%d", i);
 	    actions[i].state = ACT_NONE;
 	    actions[i].script = "test script";
-	    fprintf(f, " %s %d", actions[i].name, actions[i].state); 
+	    actions[i].requires_state = FALSE;
+	    actions[i].provides_state = TRUE;
+	    fprintf(f, " %s %d %d %d", actions[i].name, actions[i].state, actions[i].requires_state, actions[i].provides_state); 
 	}
 
         

@@ -485,6 +485,8 @@ void initialize_graph(Graph g)
 {
     Node n;
     int i = 0;
+
+
         
     for(n = g -> source; n != NULL; n = n -> next) {
         n -> data = (void *) malloc (sizeof (struct data));
@@ -530,13 +532,11 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
 	        return VM_CONTINUE;
 	    }
 	    else {
+	        REQUIRES_STATE(n) = TRUE;
 		if(STATE(n) != ACT_READY) {
-		    REQUIRES_STATE(n) = TRUE;
 		    set_node_state(n, ACT_AVAILABLE);
-	            return VM_CONTINUE;
 		}
-		else
-		    return VM_CONTINUE;
+	        return VM_CONTINUE;
 	    }
         }
         else {
