@@ -63,9 +63,9 @@ process RequirementsAndRelease {
 	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
 	    script { "" }
 	  }
-	  action SendMessageToCommunityForFeedback /* {nbdev, nbusers, qa, nbdiscuss*}/ {
+	  action SendMessageToCommunityForFeedback /* {nbdev, nbusers, qa, nbdiscuss }*/ {
 	    requires { WeightedListOfFeaturesToImplement }
-	    provides { }
+	    /*provides { }*/
 	    tool { "Email client " }
 	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
 	    script { "" }
