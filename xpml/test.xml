@@ -1,0 +1,38 @@
+<process name="test">
+  <iteration name="i1">
+    <action name="act_1">
+      <requires> req_res.value == "expression1" </requires>
+      <provides> prov_res.value == "expression2" </provides>
+      <script>
+      This is the script, on a <i>separate</i> line.
+      </script>
+    </action>
+  </iteration>
+  <branch name="br1">
+    <action name="act_2">
+      <requires> req_res.value == "expression1" </requires>
+      <provides> prov_res.value == "expression2" </provides>
+      <script>
+      <i>This is the script, on the same line.</i>
+      </script>
+    </action>
+  </branch>
+  <selection name="sel1">
+    <action name="act_3">
+      <requires> req_res.value == "expression1" </requires>
+      <provides> prov_res.value == "expression2" </provides>
+      <script>
+      This is the script, on a separate line.
+      </script>
+    </action>
+  </selection>
+  <sequence name="seq1">
+    <action name="act_4">
+      <requires> req_res.value == "expression1" </requires>
+      <provides> prov_res.value == "expression2" </provides>
+      <script>
+      This is the script, on a separate line.
+      </script>
+    </action>
+  </sequence>
+</process>

@@ -75,6 +75,6 @@ then
 fi
 
 #rm output
-rm dfZRuitU82fEY.dat*
+#rm dfZRuitU82fEY.dat*
 echo "done"
 

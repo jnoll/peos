@@ -208,7 +208,7 @@ proc assert_done {pid model} {
 
 # defaults
 set timeout 10
-log_user 1
+log_user 0
 set verbosity 0
 set gdb 0
 set shell "kernel_wrapper"
@@ -220,6 +220,7 @@ parse_args $argv $argc
 puts -nonewline "$tc_name: "
 flush stdout
 read_tc $tc_name
+set shell "/home/jnoll/projects/peos/src/os/kernel/test/kernel_wrapper"
 
 if {$verbosity > 0} {
     puts stdout "shell: $shell"

@@ -59,10 +59,14 @@ check_for_table() {
   rm output
 }
 
+# Clean environment; otherwise, pid may be offset by previous test.
+rm dfZRuitU82fEY.dat*
+
 # First time the user logs in with no data
 export QUERY_STRING="action=start"
 export REQUEST_METHOD=GET
 export REMOTE_USER=test
+
 check_for_notable
 
 # Create process is invoked

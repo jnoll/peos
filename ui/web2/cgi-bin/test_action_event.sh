@@ -1,6 +1,9 @@
 #!/bin/sh
 echo -n "Running testscript $0... "
 
+# Clean environment; otherwise, pid may be offset by previous test.
+rm dfZRuitU82fEY.dat*
+
 # First time the user logs in with no data
 export QUERY_STRING="action=start"
 export REQUEST_METHOD=GET
@@ -175,6 +178,6 @@ then
 fi
 
 rm output
-rm dfZRuitU82fEY.dat*
+#rm dfZRuitU82fEY.dat*
 echo "done"
 
