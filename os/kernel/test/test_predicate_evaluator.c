@@ -355,6 +355,6 @@ main(int argc, char *argv[])
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
     suite_free(s);
-    system("rm  tclf_*.tcl");	/* Clean up. */
+    //system("rm  tclf_*.tcl");	/* Clean up. */
     return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
