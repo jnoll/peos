@@ -56,7 +56,8 @@ function deleteCookie () {
 
 </head>
 
-<BODY MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 onResize="reloadPage();">
+<BODY MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0 BGCOLOR="white" onResize="reloadPage();">
+<SCRIPT LANGUAGE="JavaScript" SRC="myScript.js"></SCRIPT>
 
 <TABLE CELLSPACING="0"  CELLPADDING="10" BORDER="0" WIDTH="100%" HEIGHT="100%" ALIGH="CENTER">
 
@@ -65,28 +66,11 @@ function deleteCookie () {
 </TR>
 
 <TR><TD WIDTH="80" VALIGN="TOP" ALIGH="CENTER" BGCOLOR="94D6E7" HEIGHT="100%">
-<p><A href="main.html">home</a>
 <SCRIPT LANGUAGE="JavaScript" TYPE="TEXT/JAVASCRIPT">
 var userName = getCookie("userName");
 var userType = getCookie("userType");
-
-if (userType==2) {
-    document.write("<p><A href=\"stub.html\">create a new user </a>");
-    document.write("<p><A href=\"stub.html\">delete a user </a> ");
-    document.write("<p><A href=\"stub.html\">reset a password </a>");
-}
-if (userType==2 || userType==1) {
-    document.write("<p><A href=\"stub.html\">create a new process </a>");
-    document.write("<p><A href=\"stub.html\">terminate a process </a>");
-    document.write("<p><A href=\"stub.html\">actions </a>");
-}
-if (userType==3 || userType==1) {
-    document.write("<p><A href=\"stub.html\">monitor a process </a>");
-    document.write("<p><A href=\"stub.html\">actions </a>");
-}
-
+writeMenu(userType);
 </SCRIPT>
-<p><A href="logout.html">Log out</a>
 </TD>
 
 <TD VALIGN="TOP" WIDTH="100%" HEIGHT="100%">
