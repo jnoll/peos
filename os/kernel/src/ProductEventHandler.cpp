@@ -19,7 +19,7 @@
 bool ProductEvent::operator==(const ProductEvent &rhs) const 
 {
 	return (action == rhs.action && product == rhs.product
-		&& process == rhs.process);
+		&& model == rhs.model);
 }
 
 
@@ -56,28 +56,28 @@ void ProductEventHandler::Init()
                     while (b < s.size() && isspace(s[b]))
                         ++b;
                     if (s.find("created", b) == b)
-			event.action = peCreated;
-			else if (s.find("modified", b) == b)
-				event.action = peModified;
-			else if (s.find("deleted", b) == b)
-				event.action = peDeleted;
-			else
-				throw (0);
-			b = s.find('\"');
-			e = s.find('\"', b + 1);
-			if (b < 0 || e < 0)
-				throw (0);
-			event.product = s.substr(b + 1, e - b - 1);
-			b = s.find('\"', e + 1);
-			e = s.find('\"', b + 1);
-			if (b < 0 || e < 0)
-				throw (0);
-			event.process = s.substr(b + 1, e - b - 1);
-			Add(event);
+                        event.action = peCreated;
+                    else if (s.find("modified", b) == b)
+                        event.action = peModified;
+                    else if (s.find("deleted", b) == b)
+                        event.action = peDeleted;
+                    else
+                        throw (0);
+                    b = s.find('\"');
+                    e = s.find('\"', b + 1);
+                    if (b < 0 || e < 0)
+                        throw (0);
+                    event.product = s.substr(b + 1, e - b - 1);
+                    b = s.find('\"', e + 1);
+                    e = s.find('\"', b + 1);
+                    if (b < 0 || e < 0)
+                        throw (0);
+                    event.model = s.substr(b + 1, e - b - 1);
+                    Add(event);
                 }
                 catch(...)
                 {
-                    cerr << "Invalid ProductEvent entry: " + s;
+                    cerr << "Invalid ProductEvent entry: " + s << endl;
                 }
             }
         }
@@ -85,25 +85,25 @@ void ProductEventHandler::Init()
 }
 
 
-void ProductEventHandler::Add(const ProductEvent &e) 
-{ 
-	Events.push_back(e); 
-} 
- 
-void ProductEventHandler::Remove(const ProductEvent &e) 
-{ 
-    Events.remove(e); 
-} 
- 
-void ProductEventHandler::Main() 
-{ 
-	bool terminated = false; 
-	while (!terminated) 
-	{ 
-		terminated = exit; 
-		if (!terminated) 
-			SchedYield(); 
-	} 
+void ProductEventHandler::Add(const ProductEvent &e)
+{
+	Events.push_back(e);
+}
+
+void ProductEventHandler::Remove(const ProductEvent &e)
+{
+    Events.remove(e);
+}
+
+void ProductEventHandler::Main()
+{
+	bool terminated = false;
+	while (!terminated)
+	{
+		terminated = exit;
+		if (!terminated)
+			SchedYield();
+	}
 }
 
 
@@ -116,11 +116,11 @@ void ProductEventHandler::ReportProductEvent(ProductEvents event, const string &
 	{
 		if ((*i).action == event && (*i).product == product)
 		{
-			//Use the DataAccessInterface to create and initialize a process 
-        		if (!dataAccessIF->GetProcessName((*i).process, "", procName, error))
-              			cerr << "ProductEventHandler can't create process: " + (*i).process << endl; 
-        		else if (!dataAccessIF->InitProcessState(procName, "", 0, error)) 
-            			cerr << "ProductEventHandler can't initialize process: " + (*i).process << endl; 		
+			//Use the DataAccessInterface to create and initialize a process
+        		if (!dataAccessIF->GetProcessName((*i).model, "", procName, error))
+              			cerr << "ProductEventHandler can't load model: " + (*i).model << endl;
+        		else if (!dataAccessIF->InitProcessState(procName, "", 0, error))
+            			cerr << "ProductEventHandler can't initialize model: " + (*i).model << endl;
 		}
 	}
 }

@@ -28,7 +28,7 @@ bool TimedEvent::operator==(const TimedEvent &rhs) const
         && day_of_month == rhs.day_of_month
         && month_of_year == rhs.month_of_year
 		&& day_of_week == rhs.day_of_week
-        && process == rhs.process);
+        && model == rhs.model);
 }
 
 
@@ -108,16 +108,16 @@ void TimedEventHandler::Init()
                         while (*pe && *pe!='\"')
                             ++pe;
                         *pe = '\0';
-                        e.process = p;
+                        e.model = p;
                     }
                     if (err)
-                        cerr << "Invalid TimedEvent entry: " + s;
+                        cerr << "Invalid TimedEvent entry: " + s << endl;
                     else
                         Add(e);
                 }
                 catch (...)
                 {
-                    cerr << "Invalid TimedEvent entry: " + s;
+                    cerr << "Invalid TimedEvent entry: " + s << endl;
                 }
             }
         }
@@ -134,7 +134,7 @@ void TimedEventHandler::CheckEvents(int sig)
 	if (sig != SIGALRM)
 		return;
     string error;
-    string procName;
+    string modelName;
     //get current time
     time_t currentTime = time(NULL);
     //break out time into minutes, hours etc.
@@ -158,10 +158,10 @@ void TimedEventHandler::CheckEvents(int sig)
 		//got a match
 		//create process
         //Use the DataAccessInterface to create and initialize a process
-        if (!dataAccessIF->GetProcessName((*i).process, "", procName, error))
-            cerr << "TimedEventHandler can't create process: " + (*i).process << endl;
-        else if (!dataAccessIF->InitProcessState(procName, "", 0, error))
-            cerr << "TimedEventHandler can't initialize process: " + (*i).process << endl;
+        if (!dataAccessIF->GetProcessName((*i).model, "", modelName, error))
+            cerr << "TimedEventHandler can't load model: "            + (*i).model << endl;
+        else if (!dataAccessIF->InitProcessState(modelName, "", 0, error))
+            cerr << "TimedEventHandler can't initialize model: " + (*i).model << endl;
 	}
     //Register handler again since Linux goes back to
     //default handler after a signal is received

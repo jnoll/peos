@@ -25,8 +25,6 @@
 #include "GDBMIF.h"
 #include "IPCHandler.h"
 
-//#define strcasecmp strcmp
-
 
 const int invalidSocket = -1;
 int UIMessageHandler::sessionCount = 0;

@@ -23,7 +23,7 @@ class ProductEvent
 	public:
     ProductEvents action;
     string product;
-	string process;
+	string model;
 	bool operator==(const ProductEvent &rhs) const;
 };
 

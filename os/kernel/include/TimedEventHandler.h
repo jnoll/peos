@@ -26,7 +26,7 @@ class TimedEvent
 	int day_of_month;
 	int month_of_year;
 	int day_of_week;
-	string process;
+	string model;
 	bool operator==(const TimedEvent &rhs) const;
 };
 

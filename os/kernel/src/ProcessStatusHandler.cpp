@@ -144,7 +144,7 @@ void ProcessStatusHandler::Run()
         // accept a connection 
         if ( ( newsockfd = accept( sockfd, NULL, NULL ) ) == -1 )
         {
-            perror("accept call failed");
+            //perror("accept call failed");
             continue;
         }
 
