@@ -8,7 +8,7 @@
 
 #include <PalmOS.h>
 
-#include "AppResources.h"
+#include "../rsc/AppResources.h"
 //#include ">peos/src/os/kernel/peos.c"
 //#include "http://linux60501.dc.engr.scu.edu:/home/jnoll/.peos/peosrep/peos/src/os/kernel/peos.c"
 
@@ -154,7 +154,7 @@ static Boolean AvailableProcessesHandler (EventType* pEvent)
 
 		case frmOpenEvent:	
 			pForm = FrmGetActiveForm();
-			//list = FrmGetObjectPtr (pForm, 1001);
+			list = FrmGetObjectPtr (pForm, 1001);
 			//LstSetDrawFunction (list, AvailProcessListDraw);
 			//numChoices = sizeof (listElements); /// sizeof (listElements[0]);
 			//LstSetListChoices (list, NULL, numChoices);
@@ -238,11 +238,11 @@ static Boolean AppHandleEvent(EventType* pEvent)
 				FrmSetEventHandler(pForm, MainFormHandler);
 				break;
 			
-			case AvailableProcesses:
+			case AvailableProcessesForm:
 				FrmSetEventHandler (pForm, AvailableProcessesHandler);
 				break;
 			
-			case StartedProcess:
+			case StartedProcessesForm:
 				FrmSetEventHandler (pForm, StartedProcessHandler);
 				
 			default:
