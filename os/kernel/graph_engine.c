@@ -511,6 +511,26 @@ char *get_script_graph(Graph g, char *action_name)
         return(n -> script ? n -> script : "(no script)");
 }
 
+vm_act_state get_act_state_graph(int pid, char *act_name) 
+{
+    Node n;
+    Graph g;
+    peos_context_t *context = peos_get_context(pid);
+    if (context != NULL) {
+        g = context->process_graph;
+        n = find_node(g, act_name);
+	if(n != NULL) {
+            return STATE(n);
+	}
+	else 
+	    return -1;
+    }
+    else
+        return -1;	    
+}
+	
+
+
 void initialize_graph(Graph g, int pid)
 {
     Node n;

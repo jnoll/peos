@@ -54,5 +54,5 @@ extern void initialize_graph(Graph g, int pid);
 
 extern char *get_script_graph(Graph g, char * act_name);
 
-
+extern vm_act_state get_act_state_graph(int pid, char *act_name);
 #endif

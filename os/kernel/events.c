@@ -253,7 +253,24 @@ char *peos_get_script(int pid, char *act_name)
 
 }
     
+char *peos_get_act_state(int pid, char *act_name)
+{
+    char *act_state;
+    
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    act_state = act_state_name(get_act_state_graph(pid,act_name));
 
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return act_state;
+}
 
 int peos_run(char *process, peos_resource_t *resources,int num_resources)
 {

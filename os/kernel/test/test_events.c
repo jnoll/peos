@@ -31,6 +31,11 @@ int save_process_table()
     return 1;
 }
 
+vm_act_state get_act_state_graph(int pid, char *act_name)
+{
+    return ACT_READY;
+}
+
 char *act_state_name(vm_act_state s)
 {
     return "action state name here";
