@@ -7,9 +7,9 @@ public class SetupPath{
 	public static String getPeos()
 	{
 		try {
-			Properties peosSrc = new Properties();
-			peosSrc.load(new FileInputStream("peos.properties"));
-			return peosSrc.getProperty("path");
+//			Properties peosSrc = new Properties();
+//			peosSrc.load(new FileInputStream("peos.properties"));
+			return System.getProperty("peos.path");
 		}
 		catch(Exception e)
 		{

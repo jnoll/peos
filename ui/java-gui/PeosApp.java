@@ -197,7 +197,7 @@ public class PeosApp extends JFrame implements ActionListener
 		}
 		else if("about".equals(e.getActionCommand()))
 		{
-			ImageIcon peosIcon = createImageIcon("help/peos1sg.jpg");
+			ImageIcon peosIcon = createImageIcon(System.getProperty("peos.help") +"/peos1sg.jpg");
 			JOptionPane.showMessageDialog(this,"          PEOS v.2\n\nCopyright c2004 by   \n       Steve Beeby\n      Gloria Chang\n\nAll Rights Reserved.  ", "About PEOS",JOptionPane.PLAIN_MESSAGE,peosIcon);
 				
 		}
@@ -405,8 +405,8 @@ public class PeosApp extends JFrame implements ActionListener
 	}
 	public JToolBar createToolBar() 
 	{
-	        ImageIcon openIcon = createImageIcon("images/open.jpg");
-        	ImageIcon deleteIcon = createImageIcon("images/delete.jpg");
+	        ImageIcon openIcon = createImageIcon(System.getProperty("peos.images")+ "/open.jpg");
+        	ImageIcon deleteIcon = createImageIcon(System.getProperty("peos.images")+ "/delete.jpg");
 
 		JToolBar toolBar = new JToolBar("peos toolbar");
 		JButton button = new JButton(openIcon);

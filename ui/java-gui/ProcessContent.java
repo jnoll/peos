@@ -65,14 +65,14 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		map.setToFirstAction(pidNum);
 		
 		//Set corresponding status icons to leaf nodes
-		ImageIcon readyIcon = createImageIcon("images/ready.gif");
-		ImageIcon blockedIcon = createImageIcon("images/blocked.gif");
-		ImageIcon noneIcon = createImageIcon("images/none.gif");
-	    	ImageIcon availIcon = createImageIcon("images/available.gif");
-	    	ImageIcon suspendIcon = createImageIcon("images/suspend.gif");
-	 	ImageIcon runIcon = createImageIcon("images/run.gif"); 	
-		ImageIcon pendIcon = createImageIcon("images/pending.gif");
-		ImageIcon doneIcon = createImageIcon("images/done.gif");
+		ImageIcon readyIcon = createImageIcon(System.getProperty("peos.images")+ "/ready.gif");
+		ImageIcon blockedIcon = createImageIcon(System.getProperty("peos.images")+ "/blocked.gif");
+		ImageIcon noneIcon = createImageIcon(System.getProperty("peos.images")+ "/none.gif");
+	    	ImageIcon availIcon = createImageIcon(System.getProperty("peos.images")+ "/available.gif");
+	    	ImageIcon suspendIcon = createImageIcon(System.getProperty("peos.images")+ "/suspend.gif");
+	 	ImageIcon runIcon = createImageIcon(System.getProperty("peos.images")+ "/run.gif"); 	
+		ImageIcon pendIcon = createImageIcon(System.getProperty("peos.images")+ "/pending.gif");
+		ImageIcon doneIcon = createImageIcon(System.getProperty("peos.images")+ "/done.gif");
 		tree.setCellRenderer(new Renderer(readyIcon,blockedIcon,noneIcon,availIcon,suspendIcon,
 						  runIcon,pendIcon,doneIcon,outline,map,pidNum));
 		
@@ -301,14 +301,14 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		}
 		else {}
                 		//Set corresponding status icons to leaf nodes
-		ImageIcon readyIcon = createImageIcon("images/ready.gif");
-		ImageIcon blockedIcon = createImageIcon("images/blocked.gif");
-		ImageIcon noneIcon = createImageIcon("images/none.gif");
-	    	ImageIcon availIcon = createImageIcon("images/available.gif");
-	    	ImageIcon suspendIcon = createImageIcon("images/suspend.gif");
-	 	ImageIcon runIcon = createImageIcon("images/run.gif"); 	
-		ImageIcon pendIcon = createImageIcon("images/pending.gif");
-		ImageIcon doneIcon = createImageIcon("images/done.gif");
+		ImageIcon readyIcon = createImageIcon(System.getProperty("peos.images")+ "/ready.gif");
+		ImageIcon blockedIcon = createImageIcon(System.getProperty("peos.images")+ "/blocked.gif");
+		ImageIcon noneIcon = createImageIcon(System.getProperty("peos.images")+ "/none.gif");
+	    	ImageIcon availIcon = createImageIcon(System.getProperty("peos.images")+ "/available.gif");
+	    	ImageIcon suspendIcon = createImageIcon(System.getProperty("peos.images")+ "/suspend.gif");
+	 	ImageIcon runIcon = createImageIcon(System.getProperty("peos.images")+ "/run.gif"); 	
+		ImageIcon pendIcon = createImageIcon(System.getProperty("peos.images")+ "/pending.gif");
+		ImageIcon doneIcon = createImageIcon(System.getProperty("peos.images")+ "/done.gif");
 
                 tree.setCellRenderer(new Renderer(readyIcon,blockedIcon,noneIcon,availIcon,suspendIcon,
 						  runIcon,pendIcon,doneIcon,outline,map,pidNum));
