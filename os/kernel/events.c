@@ -123,10 +123,11 @@ void sendHelp()
   sendUI("100-'sample' \t\t- see a sample process instantiated, run.\n");
   sendUI("100-'list' \t\t- see all process models.\n");
   sendUI("100-'create' <modelname>- start a process.\n");
-  sendUI("100-'available' \t- see next action(s) for current process(es).\n");
   sendUI("100-'run' <proc> <act> \t- run an action in 'available'.\n");
-  sendUI("100-'running' \t\t- see what actions you have running.\n");
   sendUI("100-'done' <proc> <act> - finish a currently-running action.\n");
+  sendUI("100-'available' \t- see next action(s) for current process(es).\n");
+  sendUI("100-'running' \t\t- see what actions you have running.\n");
+  sendUI("100-'active'  \t\t- see all instantiated processes.\n");
   sendUI("100-'exit' \t\t- close the connection.\n");
   sendUI("100-'help' \t\t- see this menu again.\n");
   sendUI("100- ****************************************************************\n");
