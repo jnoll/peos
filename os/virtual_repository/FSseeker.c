@@ -85,7 +85,7 @@ queryList* FSqueryTool( queryList *listpointer )
 		    				}
 		    				break ;
 		    				
-		    		default: 	puts("invalid query...") ;
+		    		//default: 	puts("invalid query...") ;
 		    	}
 		}
 		tempQueries = ( queryList* ) tempQueries -> link ;

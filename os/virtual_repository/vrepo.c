@@ -108,7 +108,6 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 						 break ;
 				}
 			}
-		
 			free( newQuery ) ;
 			printf( "invalid query...\n" ) ;
 		}
