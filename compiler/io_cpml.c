@@ -593,7 +593,6 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(var_name,strtok(action_str,". "));
 		rc = check_for_var(var_name);
 		query_str = strtok(NULL,"& ");
-printf("Hello:%s:%d\n",query_str,rc);
 		if (query_str != NULL) {
 			strtok(NULL,". ");
 			temp_ptr = strtok(NULL,"& ");
