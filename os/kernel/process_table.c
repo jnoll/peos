@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.1 2003/06/30 17:41:41 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.2 2003/06/30 20:26:06 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Sun Jun 29 23:49:47 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Mon Jun 30 13:17:39 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -24,7 +24,7 @@
 peos_context_t process_table[PEOS_MAX_PID+1];
 int num_proc = 0;
 int cur_pid = -1;		/* Initially, start below proc table. */
-peos_context_t *current_process; 
+peos_context_t *current_process = NULL; 
 
 /* Forward declarations. */
 char *find_model_file(char *model);
@@ -194,21 +194,19 @@ load_context(FILE *in, peos_context_t *context)
 return 1;
 }
 
-int 
-load_proc_table(char *file)
+int load_proc_table(char *file)
 {
-    int cur, status = 0;
+    int cur, status = -1;
     FILE *in = fopen(file, "r");
     num_proc = 0;
+    current_process = &(process_table[0]);
     if (in) {
 	while (load_context(in, &process_table[num_proc]))
 	    num_proc++;
-	if (fscanf(in, "current_process: %d", &cur) != 1) {
-	    status = -1;
-	    /* XXX should free allocated resources? */
-	}
-	if (cur >= 0 && cur <= PEOS_MAX_PID) {
+	if ((fscanf(in, "current_process: %d", &cur) == 1)
+	    && cur >= 0 && cur <= PEOS_MAX_PID) {
 	    current_process = &(process_table[cur]);
+	    status = 0;
 	}
 	fclose(in);
     }
