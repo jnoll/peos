@@ -19,7 +19,9 @@ void print_row(int pid, char *name, char *state)
     printf("<td style=\"vertical-align: top;\">%d<br></td>", pid);
     printf("<td style=\"vertical-align: top;\"><a href = action_page.cgi?pid=%d&act_name=%s&process_filename=%s>%s</a><br></td>",pid, name, process_filename, name);
     printf("<td style=\"vertical-align: top;\">%s<br></td>", state);
-    printf("<td style=\"vertical-align: top;\"><input type =\"checkbox\" name=\"actions\" value=\"%d$%s\" onclick=\"checkChoice(this)\"><br></td>",pid,name);
+    if(strcmp(state, "PENDING") != 0) {
+        printf("<td style=\"vertical-align: top;\"><input type =\"checkbox\" name=\"actions\" value=\"%d$%s\" onclick=\"checkChoice(this)\"><br></td>",pid,name);
+    }
     printf("</tr>");
  
 }

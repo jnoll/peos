@@ -84,8 +84,8 @@ then
 fi
 
 
-#rm output
-#rm test.dat
+rm output
+rm test.dat
 
 
 echo "done"

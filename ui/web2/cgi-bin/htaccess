@@ -1,19 +1,7 @@
 order deny,allow
-
-AuthName "PEOS Enactment Demonstration"
-AuthType Basic
-AuthUserFile /webpages/jshah1/PEOS/PEOS/cgi-bin/hidden/.htpasswd
  
-require valid-user
-AuthUserFile /webpages/jshah1/PEOS/cgi-bin/hidden/.htpasswd
- 
-require valid-user
-AuthUserFile /webpages/jshah1/PEOS/cgi-bin/hidden/.htpasswd
- 
-require valid-user
-AuthUserFile /webpages/jshah1/PEOS/cgi-bin/hidden/.htpasswd
- 
-require valid-user
+AuthName "PEOS Enactment Demonstration" 
+Authtype Basic
 AuthUserFile /webpages/jshah1/PEOS/cgi-bin/hidden/.htpasswd
  
 require valid-user
