@@ -163,6 +163,10 @@ public class PeosApp extends JFrame implements ActionListener
                 if (killSupportFiles()==true)
                 {
                     System.out.println("A support file was deleted.");
+                    JOptionPane.showMessageDialog(getContentPane(),                    
+                    "One or more support files was deleted!",                    
+                    "Error",	            
+                    JOptionPane.ERROR_MESSAGE);
                 }
                 if ("load".equals(e.getActionCommand()))
 		{

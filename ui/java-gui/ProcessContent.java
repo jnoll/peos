@@ -202,6 +202,10 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                 if (topLevel.killSupportFiles()==true)
                 {
                     System.out.println("A support file was deleted.");
+                    JOptionPane.showMessageDialog(topLevel,                    
+                    "One or more support files was deleted!",                    
+                    "Error",	            
+                    JOptionPane.ERROR_MESSAGE);
                 }
                 else if("start".equals(e.getActionCommand()))
   		{	
