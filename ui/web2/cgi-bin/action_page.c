@@ -42,6 +42,12 @@ int main()
     
     prov_resources = peos_get_resource_list_action_provides(pid, action_name, &num_prov_resources);
     
+    if((req_resources == NULL) || (prov_resources == NULL)) {
+        for (i=0; cgivars[i]; i++) free(cgivars[i]) ;
+        free(cgivars) ;
+        goto_error_page(process_filename);
+	exit(0);
+    }
      
     print_header("Action Details");
 	    
@@ -68,11 +74,16 @@ int main()
     printf("<td style=\"vertical-align: top;\">Required Resources<br></td>");
     printf("<td style=\"vertical-align: top;\">");
 
-    for(i=0; i < num_req_resources; i++) {
-        printf("%s=%s",req_resources[i].name,req_resources[i].value);
-	if(i < num_req_resources - 1) {
-	    printf(",");
-	}
+    if(num_req_resources == 0) {
+        printf("No Required Resources");
+    }
+    else {
+        for(i=0; i < num_req_resources; i++) {
+            printf("%s=%s",req_resources[i].name,req_resources[i].value);
+	    if(i < num_req_resources - 1) {
+	        printf(",");
+	    }
+        }
     }
 
     printf("<br></td>");
@@ -81,17 +92,25 @@ int main()
     printf("<tr>");
     printf("<td style=\"vertical-align: top;\">Provided Resources<br></td>");
     printf("<td style=\"vertical-align: top;\">");
-
-    for(i=0; i < num_prov_resources; i++) {
-        printf("%s=%s",prov_resources[i].name,prov_resources[i].value);
-	if(i < num_prov_resources - 1) {
-	    printf(",");
-	}
+ 
+    if(num_prov_resources == 0) {
+        printf("No Provided Resources");
+    }
+    else {
+        for(i=0; i < num_prov_resources; i++) {
+            printf("%s=%s",prov_resources[i].name,prov_resources[i].value);
+	    if(i < num_prov_resources - 1) {
+	        printf(",");
+	    }
+        }
     }
     
+    printf("<br></td>");
+    printf("</tr>");
     printf("</tbody>");
     printf("</table>");
 
+    
     printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%%;\">");
     printf("<tbody>");
     printf("<tr>");

@@ -40,7 +40,14 @@ int main()
     else {
         resources = peos_get_resource_list_action_provides(pid, action_name, &num_resources);
     }
-	    
+
+    if(resources == NULL) {
+        goto_error_page(process_filename);
+        for (i=0; cgivars[i]; i++)
+           free(cgivars[i]) ;
+        free(cgivars);
+	exit(0);
+    }
     
     unbound_resource_list = (peos_resource_t *) calloc(num_resources+1, sizeof(peos_resource_t));
     num_unbound_resources = 0;

@@ -80,6 +80,15 @@ int main()
 
  	
         resources = peos_get_resource_list_action_provides(pid, act_names[i], &num_resources);
+
+	if(resources == NULL) {
+	    goto_error_page(process_filename);
+	    for (i=0; cgivars[i]; i++)
+	        free(cgivars[i]) ;
+	    free(cgivars);
+	    exit(0);
+	}
+		 
     
         for(j=0; j < num_resources; j++) {
             if((strcmp(resources[j].qualifier,"any") == 0) || (strcmp(resources[j].qualifier,"new") == 0)) {

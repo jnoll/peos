@@ -31,14 +31,19 @@ int main()
     peos_set_process_table_file(process_filename);
 
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
+    if(resources == NULL) {
+        goto_error_page(process_filename);
+	exit(0);
+    }
+    
     for(i=0; i < num_resources; i++) {
         strcpy(resources[i].value,"$$");
     }	
     pid = peos_run(model, resources, num_resources);
 
-    if((resources == NULL) || (pid < 0)) {
-        printf("Location: error_page.html\n\n");
-        exit(0);  
+    if(pid < 0) {
+        goto_error_page(process_filename);
+	exit(0);
     }
     
     printf("Location: action_list.cgi?process_filename=%s&start=false\r\n\r\n", process_filename);

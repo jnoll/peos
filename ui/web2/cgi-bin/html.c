@@ -59,3 +59,9 @@ void print_createprocess_link(char *process_filename)
     printf("</tbody></table>");
 }
 
+void goto_error_page(char *process_filename)
+{
+    printf("Location: error_page.cgi?process_filename=%s\r\n\r\n",process_filename);
+}
+    
+
