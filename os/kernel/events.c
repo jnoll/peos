@@ -201,6 +201,38 @@ peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
 
 }
 
+
+peos_resource_t *peos_get_resource_list_context(int pid, int *num_resources)
+{
+    peos_resource_t *resources;	
+
+    peos_context_t *context;
+    
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    context = peos_get_context(pid);
+
+    if (context == NULL) {
+        fprintf(stderr, "peos_get_resource_list_context: context null\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    resources = context -> resources;
+    *num_resources = context -> num_resources; 
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return resources;
+
+}
+
+
 char *peos_get_script(int pid, char *act_name)
 {
     char *script;	

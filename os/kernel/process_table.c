@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.35 2004/02/16 22:24:19 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.36 2004/02/20 02:38:35 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -32,7 +32,8 @@
 
 /* Globals. */
 peos_context_t process_table[PEOS_MAX_PID+1];
-int cur_pid = -1;		/* Initially, start below proc table. */
+
+char *process_table_filename = "proc_table.dat";
 
 int filedes;
 
@@ -54,8 +55,8 @@ int get_lock(int fd)
     /* initialize the lock struct for a write lock */
     lck.l_type = F_WRLCK; /* get a write exclusive lock */
     lck.l_whence = 0;
-    lck.l_start = 0;
-    lck.l_len = 0; /* lock the whole file address space */
+    lck.l_start = 0L;
+    lck.l_len = 0L; /* lock the whole file address space */
 
     while (fcntl(fd, F_SETLK, &lck) < 0) {
         if ((errno == EAGAIN) || (errno == EACCES)) {
@@ -82,11 +83,10 @@ int release_lock(int fd)
     
     struct flock lck;
 
-    /* initialize the lock struct for a write lock */
-    lck.l_type = F_UNLCK; /* get a write exclusive lock */
+    lck.l_type = F_UNLCK; 
     lck.l_whence = 0;
     lck.l_start = 0L;
-    lck.l_len = 0L; /* lock the whole file address space */
+    lck.l_len = 0L; 
 
     if(fcntl(fd, F_SETLK, &lck) < 0) 
         return -1;
@@ -94,6 +94,14 @@ int release_lock(int fd)
         return 1;
 }
     
+
+void peos_set_process_table_file(char *file_name)
+{
+    if(file_name) {
+        process_table_filename = file_name;
+    }
+}
+
 
 
 int peos_get_pid(peos_context_t *context)
@@ -428,12 +436,12 @@ save_proc_table(char *file)
 
 int load_process_table()
 {
-    return load_proc_table("proc_table.dat");
+    return load_proc_table(process_table_filename);
 }
 
 int save_process_table()
 {
-    return save_proc_table("proc_table.dat");
+    return save_proc_table(process_table_filename);
 }
 
 char **peos_list_instances()

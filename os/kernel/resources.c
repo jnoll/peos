@@ -6,8 +6,6 @@
 #include "action.h"
 #include "process_table.h"
 #include "graph.h"
-//#include "process.h"
-//#include "graph_engine.h"
 
 void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int *rsize) 
 {
@@ -72,11 +70,9 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *proc_resources = context -> resources;
     int num_proc_resources = context -> num_resources;
-    char *model_file;
 
-    peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+    peos_resource_t *act_resources;
 
-    model_file = context->model;
     g = context -> process_graph;
     if(g != NULL) {
         n = find_node(g,act_name);
@@ -84,6 +80,8 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
             fprintf(stderr,"get_resource_list_action :cannot find action");
 	    return NULL;
 	}
+
+	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 	make_resource_list(n -> requires, &act_resources, &num_resources, &rsize);
 	*total_resources = num_resources;
         for(i = 0; i < num_resources; i++) {
@@ -114,18 +112,19 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *proc_resources = context -> resources;
     int num_proc_resources = context -> num_resources;
-    char *model_file;
-				                                                                                   
-    peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-                                                                                    
-    model_file = context->model;
+ 
+    peos_resource_t *act_resources;
+    
     g = context -> process_graph;   
+
     if(g != NULL) {
         n = find_node(g,act_name);
         if(n == NULL) {
             fprintf(stderr,"get_resource_list_action :cannot find action");
             return NULL;
         }
+
+	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 	make_resource_list(n -> provides, &act_resources, &num_resources, &rsize);
         *total_resources = num_resources;
         for(i = 0; i < num_resources; i++) {
@@ -153,10 +152,7 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *proc_resources = context -> resources;
     int num_proc_resources = context -> num_resources;
-    char *model_file;
-    peos_resource_t *act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-
-    model_file = context->model;
+    peos_resource_t *act_resources;
 
     g = context -> process_graph;
     if(g != NULL) {
@@ -165,6 +161,9 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 	    fprintf(stderr,"get_resource_list_action :cannot find action");
 	    return NULL;
 	}
+
+	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+	
 	make_resource_list(n -> requires, &act_resources,&num_resources, &rsize);
 	make_resource_list(n -> provides, &act_resources,&num_resources, &rsize);
 	*total_resources = num_resources;
@@ -194,6 +193,7 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
     int num_resources = 0;
     peos_resource_t *resource_list;
 
+    
     g = makegraph(model);
 
     if(g != NULL) {	
@@ -205,6 +205,7 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
 	    }
 	}
 	*total_resources = num_resources;
+	GraphDestroy(g);
 	return resource_list;
     }
     else
