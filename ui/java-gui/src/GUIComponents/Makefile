@@ -7,10 +7,14 @@ JAVA=$(JAVA_HOME)/bin/java
 JAVAH=$(JAVA_HOME)/bin/javah
 
 # The java class files
-JAVA_CLASS_PATH=${PML_HOME}/out
+PML_CLASS_PATH=${PML_HOME}/out
+JAVA_CLASSPATH=.:${JAVA_HOME}/lib/classes.zip:${PML_CLASS_PATH}
+
 
 all: 
-	${JAVA_HOME}/bin/javac -d ${JAVA_CLASS_PATH} *.java
+	echo ${JAVA_CLASS_PATH}
+	${JAVA_HOME}/bin/javac -d ${PML_CLASS_PATH} -classpath ${JAVA_CLASSPATH} \
+		*.java
 
 clean:
-	$(RM) ${JAVA_CLASS_PATH}/GUIComponents/*.class
+	$(RM) ${PML_CLASS_PATH}/GUIComponents/*.class

@@ -5,6 +5,7 @@ JAVAR=$(JAVA_HOME)/bin/jar
 
 # The java class files
 JAVA_CLASS_PATH=../out
+CLASSPATH=${JAVA_CLASS_PATH}
 
 all:
 	cd PML; make all
