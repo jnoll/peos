@@ -15,7 +15,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-
 /************************************************************************
  * Function:	query_wait						*
  *									*
@@ -24,7 +23,6 @@
  *		queryString then makes a new query and register it	*
  * 		in the list "myQuery".					*
  ************************************************************************/
-
 
 void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ), int *d )
 {
@@ -72,7 +70,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 						numParses++ ;
 					}
 					break ;
-			case 3 :	numParses++;
+			//case 3 :	numParses++;
 		}
 
 		word = strtok( NULL, " " ) ;
@@ -127,7 +125,6 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
  *		callback function for the satisfied queries.		*
  ************************************************************************/
 
-
 void poll_vr( ) 
 {
 	queryList *tempQueries ;	// temporary variable to store myQuery
@@ -167,8 +164,6 @@ void poll_vr( )
  *		attribute of the repository. 				*
   ************************************************************************/
 
-
-
 bool isValidAttribute( char *attr )
 {
 	int i ;					// used in for loop
@@ -181,8 +176,6 @@ bool isValidAttribute( char *attr )
 	}
 	return true ;
 }
-
-
 
 /************************************************************************
  * Function:	isValidOperator						*
@@ -203,7 +196,6 @@ bool isValidOperator( char *op )
 	}
 	return true ;
 }
-
 
 
 /************************************************************************

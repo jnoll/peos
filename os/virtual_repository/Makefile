@@ -2,6 +2,7 @@ CC = gcc
 CFLAGS = -g -c
 OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o debug.o search.o
 TEST_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_search.o
+TEST_SEEK_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_searchSeek.o
 TEST_INVALID_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_searchInvalid.o
 TEST_EMPTY_OBJECTS = queryLinkedList.o resultLinkedList.o FSseeker.o setup_repositories.o vrepo.o test_searchEmpty.o
 search: $(OBJECTS)
@@ -28,6 +29,10 @@ test_search: $(TEST_OBJECTS)
 	$(CC) -o test_search $(TEST_OBJECTS)
 test_search.o: test_search.c vrepo.o FSseeker.o
 	$(CC) $(CFLAGS) test_search.c
+test_searchSeek: $(TEST_SEEK_OBJECTS)
+	$(CC) -o test_searchSeek $(TEST_SEEK_OBJECTS)
+test_searchSeek.o: test_searchSeek.c vrepo.o FSseeker.o
+	$(CC) $(CFLAGS) test_searchSeek.c
 test_searchInvalid: $(TEST_INVALID_OBJECTS)
 	$(CC) -o test_searchInvalid $(TEST_INVALID_OBJECTS)
 test_searchInvalid.o: test_searchInvalid.c vrepo.o FSseeker.o
@@ -40,7 +45,9 @@ debug.o: debug.c debug.h
 	$(CC) $(CFLAGS) debug.c
 
 test:	
+	make clean
 	make test_search 
+	make test_searchSeek
 	make test_searchInvalid
 	make test_searchEmpty
 	make test_setup
@@ -48,15 +55,32 @@ test:
 	diff expectedSetup.txt actualSetup.txt
 	test_search testQuery.dat > actualResult.txt
 	diff expectedResult.txt actualResult.txt
+	test_searchSeek testSeekQuery.dat > actualResultSeek.txt
+	diff expectedResultSeek.txt actualResultSeek.txt
 	test_searchInvalid testInvalid.dat > actualResultInvalid.txt
 	diff expectedResultInvalid.txt actualResultInvalid.txt
 	test_searchEmpty testEmpty.dat > actualResultEmpty.txt
 	diff expectedResultEmpty.txt actualResultEmpty.txt
 clean:
+	touch dummy.o
+	touch actualResult.txt
+	touch expectedResult.txt
+	touch actualResultSeek.txt
+	touch expectedResultSeek.txt
+	touch actualResultInvalid.txt
+	touch expectedResultInvalid.txt
+	touch actualResultEmpty.txt
+	touch expectedResultEmpty.txt
+	touch testQuery.dat
+	touch testSeekQuery.dat
 	rm *.o
 	rm actualResult.txt
 	rm expectedResult.txt
+	rm actualResultSeek.txt
+	rm expectedResultSeek.txt
 	rm actualResultInvalid.txt
 	rm expectedResultInvalid.txt
 	rm actualResultEmpty.txt
 	rm expectedResultEmpty.txt
+	rm testQuery.dat
+	rm testSeekQuery.dat

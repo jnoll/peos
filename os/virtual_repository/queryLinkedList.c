@@ -19,6 +19,7 @@
  *									*
  * Description:	Prints the contents of queryList.			*
  ************************************************************************/
+ 
 void printQueryList( queryList *listpointer )
 {
 	if ( listpointer == NULL )
@@ -42,6 +43,7 @@ void printQueryList( queryList *listpointer )
  *									*
  * Description:	Adds the data at the end of the queryList.		*
  ************************************************************************/
+ 
 queryList *addQueryItem( queryList *listpointer, const query *data )
 {
 	queryList *lp = listpointer ;	// pointer to query list
@@ -73,6 +75,7 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
  * Description:	Removes the item with removetag = 1 from the queryList.	*
  *		and resets the pointers in the list.			*
  ************************************************************************/
+ 
 queryList *filterQueryList( queryList *listpointer )
 {
 	queryList *previous, *current, *temp ;	// pointers to query list

@@ -3,6 +3,7 @@
  * Author : TASK4ONE							*
  * Filename : setup_repositories.c					*
  ************************************************************************/
+ 
 #include "form.h"
 #include "variables.h"
 #include "FSseeker.h"
@@ -13,6 +14,7 @@
  *									*
  * Description:	adds File system repository to repos_list.		*
  ************************************************************************/
+ 
 void setup_fs( )
 {
 	

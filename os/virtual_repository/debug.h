@@ -1,6 +1,11 @@
 /************************************************************************
- * File:	debug.h							*
- *									*
+ * Senior Design Project - PEOS Virtual Repository			*
+ * Author : TASK4ONE							*
+ * Filename : debug.h							*
+ ************************************************************************/
+
+/************************************************************************
+ * Description:	Contains function and variable declaration for debug.c	*
  ************************************************************************/
 
 # ifndef DEBUG_H

@@ -41,6 +41,7 @@ void printResultList( resultList *listpointer )
  *									*
  * Description:	Clears the resultList.					*
  ************************************************************************/
+ 
 void clearResultList( resultList *listpointer )
 {
 	while ( listpointer != NULL )
@@ -53,6 +54,7 @@ void clearResultList( resultList *listpointer )
  *									*
  * Description:	Removes the first element in the resultList.		*
  ************************************************************************/
+ 
 resultList* removeResultItem( resultList *listpointer )
 {
 	resultList *temp ;	// pointer to result list
@@ -69,6 +71,7 @@ resultList* removeResultItem( resultList *listpointer )
  *									*
  * Description:	Adds the data at the end of the resultList.		*
  ************************************************************************/
+ 
 resultList* addResultItem( resultList *listpointer, const char *data )
 {
 	resultList *lp = listpointer ;	// pointer to result list
