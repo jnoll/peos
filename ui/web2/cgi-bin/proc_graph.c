@@ -69,36 +69,29 @@ void makedot(Node n, char *filename, char *action, char *state)
 
   while(n != NULL)
   {
+    if(strcmp(n->name, action) == 0) {
+      fprintf(file,"%s [style=filled color=%s];\n", n->name, color);
+    } else {
+      fprintf(file, "%s [style=unfilled color=black];\n", n->name);
+    }
     for(i = 0; (child = (Node) ListIndex(n->successors, i)); i++)
       {
-        if(strcmp(child->name, action) == 0)
-	  fprintf(file,"node[style=filled color=%s];\n", color);
 	if(child->dominator)
 	{
 	  if(strcmp(child->dominator->name, child->name) == 0)
 	  {
-       	    tempchild = (char *) calloc(strlen(child->name)+5, sizeof(char));
-	    strcpy(tempchild, child->name);
-	    strcat(tempchild, "_end");
 	    if(n->type == 287 || n->type == 288)
 	    {
-	      tempn = (char *) calloc(strlen(n->name)+5, sizeof(char));
-	      strcpy(tempn, n->name);
-	      strcat(tempn, "_end");
-	      fprintf(file,"%s->%s;\n", tempn, tempchild);
+	      fprintf(file,"%s_end->%s_end;\n", n->name, child->name);
 	    }
 	    else
 	    {
-	      fprintf(file,"%s->%s;\n", n->name, tempchild);
+	      fprintf(file,"%s->%s_end;\n", n->name, child->name);
 	    }
 	  }
 	  else if((n->type == 287 && child->type == 270) || (n->type == 288 && child->type == 259)) 
 	  {
-	    tempn = (char *) calloc(strlen(n->name)+5, sizeof(char));
-	    strcpy(tempn, n->name);
-	    strcat(tempn, "_end");
-	    fprintf(file, "%s->", tempn);
-	    fprintf(file, "%s;\n", child->name);
+	    fprintf(file, "%s_end->%s\n", n->name, child->name);
 	  }
 	  else
 	    fprintf(file, "%s->%s;\n", n->name, child->name);
@@ -106,28 +99,28 @@ void makedot(Node n, char *filename, char *action, char *state)
 	else
 	  fprintf(file, "%s->%s;\n", n->name, child->name);
       }
-      fprintf(file, "node[style=unfilled color=black];\n");
+
       n = n->next;
   }
-	fprintf(file, "}");
-	fclose(file);
+  fprintf(file, "}");
+  fclose(file);
 
 
-	snprintf(cmd, BUFSIZ, "%s -Timap %s.dot > %s.map 2> /dev/null",
-		DOTBIN, filename, filename);
-	system(cmd);
+  snprintf(cmd, BUFSIZ, "%s -Timap %s.dot > %s.map 2> /dev/null",
+	   DOTBIN, filename, filename);
+  system(cmd);
 
-	snprintf(cmd, BUFSIZ, "%s -Tjpg %s.dot > %s.jpg 2> /dev/null", 
-		DOTBIN, filename, filename);
-	system(cmd);
+  snprintf(cmd, BUFSIZ, "%s -Tjpg %s.dot > %s.jpg 2> /dev/null", 
+	   DOTBIN, filename, filename);
+  system(cmd);
 
-	snprintf(cmd, BUFSIZ, "chmod a+rw %s.dot", filename);
-	system(cmd);
+  snprintf(cmd, BUFSIZ, "chmod a+rw %s.dot", filename);
+  system(cmd);
 
-	snprintf(cmd, BUFSIZ, "chmod a+rw %s.jpg", filename);
-	system(cmd);
+  snprintf(cmd, BUFSIZ, "chmod a+rw %s.jpg", filename);
+  system(cmd);
 
-	snprintf(cmd, BUFSIZ, "chmod a+rw %s.map", filename);
-	system(cmd);
+  snprintf(cmd, BUFSIZ, "chmod a+rw %s.map", filename);
+  system(cmd);
 }
 
