@@ -5,11 +5,11 @@ help= ./help/
 pml= ./testfiles/ 
 XERCES_PATH=./include/
 JUNIT_PATH=./include/
-JUNIT_INCLUDE=${JUNIT_PATH}/junit.jar
 
 #these lines are used by the makefile. Do not modify.
 XERCES_INCLUDE=${XERCES_PATH}/xercesImpl.jar:${XERCES_PATH}/xmlParserAPIs.jar
 JAVAGUI_JAR=./include/java-gui.jar
+JUNIT_INCLUDE=${JUNIT_PATH}/junit.jar
 java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JUNIT_INCLUDE}:${JAVAGUI_JAR}:.
 
 

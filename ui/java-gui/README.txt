@@ -1,9 +1,13 @@
-Peos Iteration 4b
-23-May-2004
+Java GUI For PEOS README.txt
 
-INSTALLING PEOS ITERATION 4b
+This file is intended to help a new user through the setup of the Java-GUI
+Peos application. All intended requirements for the program are listed below,
+followed by a general overview of the process model.
 
-To install the software, carefully follow the instructions below.
+It is our hope that the application is straightforward to use and provides you
+with bug-free service. Please feel free to report any bugs or errors to the
+email address listed below.
+
 
 -[ Requirements ] ----------------------------------------------------
 
@@ -13,13 +17,26 @@ To install the software, carefully follow the instructions below.
 -[ Installation ] -----------------------------------------------------------
 
 First and foremost, you need to set the following lines in the Makefile.
-images
-path
-help
-pml
+
+--Lines required at compile time--
 XERCES_PATH
+ This is the path to where the Xerces class files are located.
 JUNIT_PATH
+ This is the path to where the Junit class files are located. 
+
+--Lines required to create runpeos script (make script)--
+path
+ This is the path to the peos binary. Please include the binary in this path
+ ex: /home/username/peos/bin/peos
+images 
+ This is the path for all state and menu icons in the program.
+help
+ This is the path for all help HTML files.
+pml
+ This is the default path for loading PML files.
 JAVAGUI_JAR
+ This is the path to the compiled java gui jar file created by running "make". 
+ After running "make", edit this line for make script to run properly.
 
 The defaults assume you are going to load, compile, and run the program from
 the CVS module directory. If this is the case, the lines do not need to be
@@ -29,21 +46,22 @@ and the following line will need to be run:
 % make script
 
 After you have run the script, assuming the appropriate pathnames have been
-entered, you can run the Java gui for PEOS.
+entered, you can run the Java GUI for PEOS.
 
 % ./runpeos
 
 -[ Verify ] ----------------------------------------------------------
 Make sure that all path names are set properly and that copies of the .pml
-files included in the CVS module are stored in your pml directory. 
+files included in the CVS module are stored in your pml directory.
 
-Unit tests must be compiled and run in a directory with all the source .java
-files. 
+Path names that are relevent to unit tests:
+ XERCES_PATH, path, JUNIT_PATH
+ These _must_ be set for the unit tests to compile and run. 
 
-Unit Test:
+Unit tests must be compiled and run from the base directory for the module.
+
+Running Unit Test:
 % make -s jtest 
-
-All tests should pass OK. No failures should be reported.
 
 
 -[ Running ] ---------------------------------------------------------
