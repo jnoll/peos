@@ -1,6 +1,5 @@
 CC	= m68k-palmos-gcc 
-CFLAGS	= -DPALM -I.. -I../os/palm -IPalmCUnit -I. -g -Wall
-PalmCUnit= /home/shinobi/PalmCUnit/PalmCUnit
+CFLAGS	= -DPALM -I.. -I../os/palm -I/usr/m68k-palmos -g -Wall
 
 LIB = libpalmpml.a
 
@@ -18,19 +17,6 @@ $(LIB):		$(SRCS) $(OBJS)
 		rm -f $(LIB)
 		m68k-palmos-ar cru $(LIB) $(OBJS)
 		m68k-palmos-ranlib $(LIB) || true
-
-CUnit:		
-		pilrc -ro -allowEditID -q ${PalmCUnit}/PalmCUnit.rcp ${PalmCUnit}/PalmCUnit.ro
-		mv PalmCUnitRsc.h ${PalmCUnit}
-
-testbuild:	${SRCS} ${TEST_OBJS} CUnit
-		m68k-palmos-multigen ${PalmCUnit}/PalmCUnit.def
-		m68k-palmos-gcc -c PalmCUnit-sections.s
-		m68k-palmos-gcc -Xlinker -M -Xlinker --cref -g ${TEST_OBJS} \
-		-lPalmOSGlue -o ${PalmCUnit}/PalmCUnit PalmCUnit-sections.ld \
-		> PalmCUnit.map 2>&1
-		
-#		build-prc ${PalmCUnit}/PalmCUnit.def -o PalmCUnit.prc -n PalmCUnit -c UntT ${PalmCUnit}/PalmCUnit.ro ${PalmCUnit}/PalmCUnit
 
 traverse:	traverse.o $(LIB)
 	$(CC) -o $@ $< $(LIB)
