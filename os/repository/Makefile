@@ -12,13 +12,16 @@ OBJECTS = pml_state.o repository.o unixfs_repository.o debug.o
 CFLAGS = -g
 
 
-all:	install
-test: $(TARGET)
+all: install
+test: driver 
 
 # Build Dependencies
 $(LIB): $(OBJECTS)
 	ar -r $(LIB) $(OBJECTS)
 
+# Test harness.
+driver: state_driver.o
+	$(CC) $(LDFLAGS) -o $@ $< $(LIB)
 
 # Dependencies
 $(OBJECTS): pml_state.h
@@ -32,3 +35,4 @@ clean:
 install: $(LIB)
 	cp $(LIB) $(PEOSLIBDIR)
 
+.PHONY: test
