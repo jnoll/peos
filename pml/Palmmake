@@ -3,7 +3,7 @@ CFLAGS	= -DPALM -I.. -I../os/palm -I/usr/m68k-palmos -g -Wall
 
 LIB = libpalmpml.a
 
-OBJS	= graph.o list.o parser.o tree.o scanner.o palmfunctions.o
+OBJS	= graph.o list.o parser.o tree.o scanner.o
 SRCS	= parser.c scanner.c y.tab.h
 TEST_OBJS = ${OBJS} ${PalmCUnit}/PalmCUnit.o ${PalmCUnit}/TestParser.o \
 		${PalmCUnit}/TestRun.o ${PalmCUnit}/TestDB.o ${PalmCUnit}/AssertImpl.o \
