@@ -4,8 +4,8 @@ PalmPEOS.prc: code0000.PalmPEOS.grc tFRM03e8.bin
 tFRM03e8.bin: PalmPEOS.rcp PalmPEOS.h
 	pilrc PalmPEOS.rcp 
 
-code0000.PalmPEOS.grc: PalmEngine.c PalmUI.c PalmEngine.h PalmUI.h
-	m68k-palmos-gcc PalmEngine.c PalmUI.c -o PalmPEOS
+code0000.PalmPEOS.grc: PalmEngine.c PalmUI.c PalmVM.c PalmEngine.h PalmUI.h PalmVM.h globals.h
+	m68k-palmos-gcc PalmEngine.c PalmUI.c PalmVM.c -o PalmPEOS
 	m68k-palmos-obj-res PalmPEOS
 
 clean:
