@@ -14,15 +14,14 @@ OBJS = datadict.o io_cpml.o cmplr_mn.o par_fun.o
  
 # List of compiler source.  
 SOURCES = datadict.c io-cpml.c cmplr_mn.c par_fun.c 
- 
- 
+
 # 
 # Compile source 
 # 
  
 #simple.all:compiler 
-all: compiler 
-	@ echo $1 done 
+#	@ echo $1 done 
+
  
 .c: 
 	$(CC) $(CFLAGS) $(UNIXFLAG) -o $@ $< $(GDBMLIB) 
@@ -32,10 +31,18 @@ all: compiler
 #	lint -c -o compiler -Aa $< 1 > bugs 
  
 # Compile code  
+all: pmlc compiler
+
 compiler: $(OBJS) 
 	rm -f $@ 
 	$(CC) -Aa -g -v -o $@ $(OBJS) $(LIBS) $(GDBMLIB) 
 	mv compiler ../bin
+#	lint  *.ln   > lint_list  
+ 
+pmlc: $(OBJS) 
+	rm -f $@ 
+	$(CC) -Aa -g -v -o $@ $(OBJS) $(LIBS) $(GDBMLIB) 
+	mv pmlc ../bin
 #	lint  *.ln   > lint_list  
  
 clean: 

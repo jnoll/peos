@@ -54,7 +54,7 @@ static struct resword rw[] = {
 
 static char *error_message[] = {
     NULL,
-    " - string too long (max length = 4096)!",
+    " - string too long (max length = 255)!",
     " - syntax error!",
     " - error parsing comments!",
 };

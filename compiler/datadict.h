@@ -9,19 +9,10 @@
 
 #include "defs.h"
 
-#define DD_MAX_NUM_CHILDREN   20 /* max num of children a parent may have */
-#define DD_MAX_LEVEL_LEN      80
-#define DD_MAX_NAME_LEN       80
-#define DD_MAX_TYPE_LEN       80
-#define DD_MAX_MODE_LEN       80
-#define DD_MAX_ATTR_LEN       4096/* there is a bug in the code that forces  */
-#define DD_MAX_ATTR_DESC_LEN  4096/* these two strings to be the same size */
-
-
 /* linked list of strings */
 typedef struct string_list_struct
 {
-   char cstring[DD_MAX_ATTR_DESC_LEN];
+   char *cstring;
    struct string_list_struct *next_string;
 } string_list_struct;
 
@@ -29,7 +20,7 @@ typedef struct string_list_struct
 /* struct to contain attribute information */
 typedef struct data_dict_attribute_list_struct
 {
-   char attribute[DD_MAX_ATTR_LEN];
+   char *attribute;
    string_list_struct *first_description;
    struct data_dict_attribute_list_struct* next_attribute;
 } data_dict_attribute_list_struct;
@@ -38,10 +29,10 @@ typedef struct data_dict_attribute_list_struct
 /* struct used to contain an entry in the data dictionary */
 typedef struct data_dict_element_struct
 {
-   char  level[DD_MAX_LEVEL_LEN];/* string used to store level ("1.2.3") */
-   char  name[DD_MAX_NAME_LEN];  /* string used to store name ("mix_martini") */
-   char  type[DD_MAX_TYPE_LEN];  /* string used to store type ("process") */
-   char  mode[DD_MAX_MODE_LEN];  /* only valid for "actions" */
+   char  *level;/* string used to store level ("1.2.3") */
+   char  *name;  /* string used to store name ("mix_martini") */
+   char  *type;  /* string used to store type ("process") */
+   char  *mode;  /* only valid for "actions" */
 
    /* only valid for "actions" */
    data_dict_attribute_list_struct *first_attribute_ptr;
@@ -96,10 +87,10 @@ void data_dict_print_to_screen(data_dictionary_struct *dictionary_ptr);
 
 
 /* data dictionary element struct accessor functions */
-void data_dict_get_level(data_dict_element_struct* element_ptr, char *level);
-void data_dict_get_name(data_dict_element_struct* element_ptr, char *name);
-void data_dict_get_type(data_dict_element_struct* element_ptr, char *type);
-void data_dict_get_mode(data_dict_element_struct* element_ptr, char *mode);
+void data_dict_get_level(data_dict_element_struct* element_ptr, char **level);
+void data_dict_get_name(data_dict_element_struct* element_ptr, char **name);
+void data_dict_get_type(data_dict_element_struct* element_ptr, char **type);
+void data_dict_get_mode(data_dict_element_struct* element_ptr, char **mode);
 void data_dict_get_child_levels(data_dict_element_struct* element_ptr,
                                 char *child_levels);
 data_dict_element_struct* data_dict_get_parent(
@@ -121,7 +112,8 @@ data_dict_attribute_list_struct* data_dict_get_attribute_list(
 data_dict_attribute_list_struct* data_dict_get_next_attribute(
                                data_dict_attribute_list_struct* attr_list_ptr);
 void data_dict_get_attribute_type(
-               data_dict_attribute_list_struct* attr_list_ptr, char* attr_type);
+               data_dict_attribute_list_struct* attr_list_ptr, 
+	       char** attr_type);
 
 
 /* data dictionary attribute description accessor functions */
@@ -130,7 +122,7 @@ string_list_struct* data_dict_get_attribute_desc_list(
 string_list_struct* data_dict_get_next_attribute_desc(
                                         string_list_struct* attr_desc_list_ptr);
 void data_dict_get_attribute_desc(string_list_struct* attr_desc_list_ptr,
-                                  char* attr_desc);
+                                  char** attr_desc);
 
 
 /* data dictionary element struct mutatoror functions */

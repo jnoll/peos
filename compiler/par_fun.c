@@ -276,6 +276,11 @@ int primlist_func(data_dictionary_struct *dictionary_ptr, char *parent_name)
          strcpy(parent_name, prev_parent_name);
 
          break;
+      case ID:
+	 printf("ID\n");
+         push_back(); 
+	 clear_token_buffer();
+         strcpy(token_buffer,"action");
       case ACTION:
          strcpy(type,token_buffer);
          match_token(ID);
@@ -304,6 +309,8 @@ int primlist_func(data_dictionary_struct *dictionary_ptr, char *parent_name)
          strcpy(parent_name, prev_parent_name);
 
          break;
+      case PROCESS:
+         syntax_error("PROCESS definition repeated"); 
       default: push_back(); return;
       }
    }

@@ -111,15 +111,22 @@ printf ("new file name is %s\n", filename);
 **			  the names of all the children of that point.
 **
 ******************************************************************************/
-char* print_children(char* output_str, data_dict_element_struct* element_ptr,char omit[1024])
+char* print_children(char* output_str, data_dict_element_struct* element_ptr)
 {
-	static char name[DD_MAX_NAME_LEN];
-	static char type[DD_MAX_TYPE_LEN];
+	char **name;
+	char **type;
 	data_dict_element_list_struct *child_list_ptr = NULL;
 	data_dict_element_struct *child_element_ptr = NULL;
 
-	memset(name, 0, DD_MAX_NAME_LEN);
-	memset(type, 0, DD_MAX_TYPE_LEN);
+	if ((name = malloc(sizeof(char *))) == NULL) {
+	  printf("\nERROR[print_children]:memory allocation\n");
+          return NULL;
+        }
+	if ((type = malloc(sizeof(char *))) == NULL) {
+	  printf("\nERROR[print_children]:memory allocation\n");
+          return NULL;
+        }
+
 
 	/* get each child and append it to given string */
 	child_list_ptr = data_dict_get_child_list(element_ptr);
@@ -129,12 +136,12 @@ char* print_children(char* output_str, data_dict_element_struct* element_ptr,cha
 		data_dict_get_name(child_element_ptr, name);
 		data_dict_get_type(child_element_ptr, type);
 		/* if this is a child we do not want to print then skip, otherwise append */
-		if ((omit == NULL)  || (strcmp(omit,name) != 0)) {
-			strcat(output_str,name);
-			strcat(output_str," ");
-		}
+		strcat(output_str,*name);
+		strcat(output_str," ");
 		child_list_ptr = data_dict_get_next_child(child_list_ptr);
 	}
+	free(name);
+	free(type);
 	return output_str; 
 }
 
@@ -150,29 +157,41 @@ char* print_children(char* output_str, data_dict_element_struct* element_ptr,cha
 ******************************************************************************/
 char* get_actions(char action_str[1024], data_dict_element_struct* element_ptr, Boolean iteration_flag)
 {
-	static char type[DD_MAX_TYPE_LEN];
-	static char name[DD_MAX_NAME_LEN];
+	char **name;
+	char **type;
 	data_dict_element_list_struct *child_list_ptr = NULL;
 	data_dict_element_struct *child_element_ptr = NULL;
 	char temp_str[1024] = "\0";
 	strcpy(action_str,"");
 
-	memset(name, 0, DD_MAX_NAME_LEN);
-	memset(type, 0, DD_MAX_TYPE_LEN);
+        if ((name = malloc(sizeof(char *))) == NULL) {
+           printf("\ERROR[get_actions]:memory allocation\n");
+           return NULL;
+        }
+        if ((type = malloc(sizeof(char *))) == NULL) {
+           printf("\ERROR[get_actions]:memory allocation\n");
+           return NULL;
+        }
 
 	data_dict_get_type(element_ptr,type);
-	if ((strcmp(type,"action") == 0) || (strcmp(type,"branch") == 0)) {
+	if ((strcmp(*type,"action") == 0) || (strcmp(*type,"branch") == 0)) {
 		data_dict_get_name(element_ptr,name);
-		sprintf(action_str,"%s ",name);
+		sprintf(action_str,"%s ",*name);
+		free(*name);
+		free(name);
+		free(*type);
+		free(type);
 		return action_str;
 	}
-	else if ((strcmp(type,"sequence") == 0) ||
-		(strcmp(type,"task") == 0)) {
+	else if ((strcmp(*type,"sequence") == 0) ||
+		(strcmp(*type,"task") == 0)) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		child_element_ptr = data_dict_get_child(child_list_ptr);
+		free(*type);
+		free(type);
 		return get_actions(temp_str,child_element_ptr,FALSE);
 	}
-	else if (strcmp(type,"iteration") == 0) {
+	else if (strcmp(*type,"iteration") == 0) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		child_element_ptr = data_dict_get_child(child_list_ptr);
 		strcat(action_str,get_actions(temp_str,child_element_ptr,FALSE));
@@ -184,15 +203,19 @@ char* get_actions(char action_str[1024], data_dict_element_struct* element_ptr, 
 				 strcat(action_str,get_actions(temp_str,element_ptr,FALSE));
 			}
 		}
+		free(*type);
+		free(type);
 		return action_str;
 	}
-	else if (strcmp(type,"selection") == 0) {
+	else if (strcmp(*type,"selection") == 0) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		while (child_list_ptr != NULL) {
 			child_element_ptr = data_dict_get_child(child_list_ptr);
 			strcat(action_str,get_actions(temp_str,child_element_ptr,TRUE));
 			child_list_ptr = data_dict_get_next_child(child_list_ptr);
 		}
+		free(*type);
+		free(type);
 		return action_str;
 	}
 }
@@ -321,39 +344,40 @@ int write_data(OUTPUT_STRUCT output, data_dict_element_struct* element_ptr,
 	int count = line_count;
 	char output_str[1024];
 	char temp_str[1024];
-	static char name[DD_MAX_NAME_LEN];
-	static char type[DD_MAX_TYPE_LEN];
-	static char mode[DD_MAX_MODE_LEN];
-	static char attribute_type[DD_MAX_ATTR_LEN];
-	static char attribute_description[DD_MAX_ATTR_DESC_LEN];
+	char **name;
+	char **type;
+	char **mode;
+	char **attribute_type;
+	char **attribute_description;
 	data_dict_element_list_struct *child_list_ptr = NULL;
 	data_dict_element_struct *child_element_ptr = NULL;
 	data_dict_attribute_list_struct *temp_attr_ptr = NULL;
 	string_list_struct *temp_string_ptr = NULL;
 
-	memset(name, 0, DD_MAX_NAME_LEN);
-	memset(type, 0, DD_MAX_TYPE_LEN);
+	attribute_type = malloc(sizeof(char *));
+	attribute_description = malloc(sizeof(char *));
+	name = malloc(sizeof(char *));
+	type = malloc(sizeof(char *));
 	strcpy(output_str,"");
 
 	data_dict_get_name(element_ptr, name);
 	data_dict_get_type(element_ptr, type);
 
 	/* if action, print out all of its attributes */
-	if (strcmp(type,"action") == 0)
+	if (strcmp(*type,"action") == 0)
 	{
-		memset(mode, 0, DD_MAX_MODE_LEN);
-		memset(attribute_type, 0, DD_MAX_ATTR_LEN);
-		memset(attribute_description, 0, DD_MAX_ATTR_DESC_LEN);
+	        mode = malloc(sizeof(char *));	
 
 		data_dict_get_mode(element_ptr,mode);
-		sprintf(output_str,"%s type action mode %s ",name,mode);
+		sprintf(output_str,"%s type action mode %s ",*name,*mode);
 
 		/* go through attribute list */
 		temp_attr_ptr = data_dict_get_attribute_list(element_ptr);
 		while (temp_attr_ptr != NULL)
 		{
 			data_dict_get_attribute_type(temp_attr_ptr,attribute_type);
-			sprintf(temp_str,"%s { ",attribute_type);
+			sprintf(temp_str,"%s { ",*attribute_type);
+			free(*attribute_type);
 			strcat(output_str,temp_str);
 
 			/* print each description */
@@ -361,20 +385,29 @@ int write_data(OUTPUT_STRUCT output, data_dict_element_struct* element_ptr,
 			while (temp_string_ptr != NULL)
 			{
 				data_dict_get_attribute_desc(temp_string_ptr,attribute_description);
-				sprintf(temp_str,"\"%s\" ",attribute_description);
+				sprintf(temp_str,"\"%s\" ",*attribute_description);
 				strcat(output_str,temp_str);
+				free(*attribute_description);
 				temp_string_ptr = data_dict_get_next_attribute_desc(temp_string_ptr);
 			}
 			strcat(output_str,"} ");
 			temp_attr_ptr = data_dict_get_next_attribute(temp_attr_ptr);
 		}
 		write_cpml_data(count,output_str,filetype,output);
+		free(*name);
+		free(name);
+		free(*type);
+		free(type);
+		free(attribute_description);
+		free(attribute_type);
+                free(*mode);
+	        free(mode);
 		return count+1;
 	}
-	else if (strcmp(type,"branch") == 0)
+	else if (strcmp(*type,"branch") == 0)
 	{
-		sprintf(output_str,"%s type %s children ( ",name,type);	
-		strcpy(output_str,print_children(output_str,element_ptr,NULL));
+		sprintf(output_str,"%s type %s children ( ",*name,*type);	
+		strcpy(output_str,print_children(output_str,element_ptr));
 		strcat(output_str,")");
 		write_cpml_data(count,output_str,filetype,output);
 		count += 1;
@@ -388,9 +421,12 @@ int write_data(OUTPUT_STRUCT output, data_dict_element_struct* element_ptr,
 		count = write_data(output,child_element_ptr,filetype,count);
 		child_list_ptr = data_dict_get_next_child(child_list_ptr);
 	}
+	free(*name);
+	free(name);
+	free(*type);
+	free(type);
 	return count;
 }
-
 
 
 
@@ -409,8 +445,8 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	char output_str[1024];
 	char temp_str[1024];
 	char action_str[1024] = "\0";
-	static char type[DD_MAX_TYPE_LEN];
-	static char name[DD_MAX_NAME_LEN];
+	char **name;
+	char **type;
 	data_dict_element_list_struct *child_list_ptr = NULL;
 	data_dict_element_struct *child_element_ptr = NULL;
 	int temp_line = 0;
@@ -419,14 +455,14 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 	int i;
 	
 	strcpy(output_str, "");
-	memset(type, 0, DD_MAX_TYPE_LEN);
-	memset(name, 0, DD_MAX_NAME_LEN);
+	name = malloc(sizeof(char *));
+	type = malloc(sizeof(char *));
 	
 	data_dict_get_type(element_ptr, type);
 	data_dict_get_name(element_ptr, name);
 
 	/* if process node, print out start, continue with recursive traversal, write end */
-	if (strcmp(type,"process") == 0)
+	if (strcmp(*type,"process") == 0)
 	{
 		strcat(output_str,"start");
 		write_cpml_data(current_line,output_str,filetype,output);
@@ -445,7 +481,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(output_str,"call error");
 		write_cpml_data(current_line,output_str,filetype,output);
 	}
-	else if (strcmp(type,"iteration") == 0)
+	else if (strcmp(*type,"iteration") == 0)
 	{
 		/* save current line so we cna jump back at end of loop */
 		temp_line = current_line;
@@ -477,13 +513,14 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		child_element_ptr = data_dict_get_child(child_list_ptr);
 		/* There might be several actions for each child in the tree, so 
 		 * we must print jump values for each action we produce */
+		free(*type);
 		data_dict_get_type(child_element_ptr,type);
-		if (strcmp(type,"iteration") == 0) {
+		if (strcmp(*type,"iteration") == 0) {
 			if (get_next_action(child_element_ptr) != get_next_action(element_ptr))
 				sprintf(temp_str,"%d %d %d",current_line+1,current_line+1,
 					current_line+path_length(element_ptr)-5);
 		}
-		else if (strcmp(type,"selection") == 0) {
+		else if (strcmp(*type,"selection") == 0) {
 			for(i=0;i<num_children(child_element_ptr);i++) {
 				sprintf(temp_str,"%d ",current_line+1);
 				strcat(output_str,temp_str);
@@ -529,9 +566,13 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		else
 			strcat(output_str,print_allbut_end(action_str,temp_str));
 		write_cpml_data(current_line,output_str,filetype,output);
+		free(*name);
+		free(name);
+		free(*type);
+		free(type);
 		return current_line+1;
 	}
-	else if (strcmp(type,"selection") == 0)
+	else if (strcmp(*type,"selection") == 0)
 	{
 		strcpy(output_str,"call set ready ");
 		strcpy(action_str,get_actions(temp_str,element_ptr,FALSE));
@@ -559,7 +600,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		/* There might be several actions for each child in the tree, so
 		 * we must print out line numbers for each one */
 		data_dict_get_type(child_element_ptr,type);
-		if (strcmp(type,"selection") == 0) {
+		if (strcmp(*type,"selection") == 0) {
 			for (i=0;i<num_children(child_element_ptr);i++) {
 				sprintf(temp_str," %d",current_line+1);
 				strcat(output_str,temp_str);
@@ -577,7 +618,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 				child_element_ptr = data_dict_get_child(child_list_ptr);
 				new_line += path_length(child_element_ptr) + 2;
 				data_dict_get_type(data_dict_get_child(data_dict_get_next_child(child_list_ptr)),type);
-				if (strcmp(type,"selection") == 0) {
+				if (strcmp(*type,"selection") == 0) {
 					for (i=0;i<num_children(data_dict_get_child(data_dict_get_next_child(child_list_ptr)));i++) {
 						sprintf(temp_str," %d",new_line);
 						strcat(output_str,temp_str);
@@ -599,8 +640,9 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		{
 			child_element_ptr = data_dict_get_child(child_list_ptr);
 			strcpy(output_str,"call set none ");
+			free(*type);
 			data_dict_get_type(child_element_ptr,type);
-			if (strcmp(type,"selection") == 0) {
+			if (strcmp(*type,"selection") == 0) {
 				strcat(output_str,get_tokens(action_str,temp_str,count,num_children(child_element_ptr)));
 				count += num_children(child_element_ptr);
 			}
@@ -623,9 +665,13 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 				current_line += 1;
 			}
 		}
+		free(*name);
+		free(name);
+		free(*type);
+		free(type);
 		return current_line;
 	}
-	else if (strcmp(type,"branch") == 0)
+	else if (strcmp(*type,"branch") == 0)
 	{
 		strcpy(output_str,"push 0");
 		write_cpml_data(current_line,output_str,filetype,output);
@@ -685,11 +731,15 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 			current_line += 1;
 			child_list_ptr = data_dict_get_next_child(child_list_ptr);
 		}
+		free(*name);
+		free(name);
+		free(*type);
+		free(type);
 		return current_line;
 	}
-	else if (strcmp(type,"action") == 0)
+	else if (strcmp(*type,"action") == 0)
 	{
-		sprintf(output_str,"call set ready %s",name);
+		sprintf(output_str,"call set ready %s",*name);
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
 		sprintf(output_str,"jzero %d",error_line);
@@ -698,7 +748,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(output_str,"pop");
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		sprintf(output_str,"call wait done %s",name);
+		sprintf(output_str,"call wait done %s",*name);
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
 		sprintf(output_str,"jzero %d",error_line);
@@ -707,7 +757,7 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		strcpy(output_str,"pop");
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
-		sprintf(output_str,"call assert %s",name);
+		sprintf(output_str,"call assert %s",*name);
 		write_cpml_data(current_line,output_str,filetype,output);
 		current_line += 1;
 		sprintf(output_str,"jzero %d",error_line);
@@ -715,10 +765,14 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		current_line += 1;
 		strcpy(output_str,"pop");
 		write_cpml_data(current_line,output_str,filetype,output);
+		free(*name);
+		free(name);
+		free(*type);
+		free(type);
 		return current_line+1;
 	}
-	else if ((strcmp(type,"sequence") == 0) ||
-		(strcmp(type,"task") == 0)) {
+	else if ((strcmp(*type,"sequence") == 0) ||
+		(strcmp(*type,"task") == 0)) {
 		/* we basically do nothing except continue down the tree */
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		while (child_list_ptr != NULL)
@@ -728,11 +782,15 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 								filetype);
 			child_list_ptr = data_dict_get_next_child(child_list_ptr);
 		}
+		free(*name);
+		free(name);
+		free(*type);
+		free(type);
 		return current_line;
 	}
 	else 
 	{
-		printf("Action %s currently not supported or incorrect\n",type);
+		printf("Action %s currently not supported or incorrect\n",*type);
 	}
 	return 0;
 }
@@ -750,17 +808,20 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 int path_length(data_dict_element_struct* element_ptr)
 {
 	int sum = 0;
-	static char type[DD_MAX_TYPE_LEN];
+	char **type;
 	data_dict_element_list_struct *child_list_ptr = NULL;
 	data_dict_element_struct *child_element_ptr = NULL;
 
-	memset(type, 0, DD_MAX_TYPE_LEN);
+	if ((type = malloc(sizeof(char *))) == NULL) {
+		printf("\nERROR[path_length]-memory allocation\n");
+		return sum;
+	}
 	child_list_ptr = data_dict_get_child_list(element_ptr);
 	while (child_list_ptr != NULL)
 	{
 		child_element_ptr = data_dict_get_child(child_list_ptr);
 		data_dict_get_type(child_element_ptr, type);
-		if (strcmp(type,"action") == 0)
+		if (strcmp(*type,"action") == 0)
 			sum += 9; /* currently an action takes 9 lines of machine code */
 		else
 			sum += path_length(child_element_ptr);
@@ -769,14 +830,16 @@ int path_length(data_dict_element_struct* element_ptr)
 	data_dict_get_type(element_ptr, type);
 	/* all of these numbers come from the op-code specification and need to be changed
 	 * if the op-code changes at all! */
-	if (strcmp(type,"branch") == 0)
+	if (strcmp(*type,"branch") == 0)
 		sum += num_children(element_ptr) + 15;
-	else if (strcmp(type,"action") == 0)
+	else if (strcmp(*type,"action") == 0)
 		sum = 9;
-	else if (strcmp(type,"iteration") == 0)
+	else if (strcmp(*type,"iteration") == 0)
 		sum += 8;
-	else if (strcmp(type,"selection") == 0)
+	else if (strcmp(*type,"selection") == 0)
 		sum += num_children(element_ptr)*2 + 4;
+	free(*type);
+	free(type);
 	return sum;
 }
 
@@ -817,11 +880,15 @@ char * create_cpml_filename (char *pml, char *cpml, char* filetype)
     char *ptr = NULL;
     char *ext_ptr;
 
-	ext_ptr = strrchr(pml,'.');
-	ext_ptr++;
-	*ext_ptr = '\0';
    	ptr = (char *)malloc(strlen(pml) + strlen(filetype) + 1);
     	strcpy(ptr, pml);
+	ext_ptr = strrchr(ptr,'.');
+        if (strcmp(ext_ptr,".pp") == 0) {
+           *ext_ptr = '\0';
+           ext_ptr = strrchr(ptr,'.');
+	}
+	ext_ptr++;
+	*ext_ptr = '\0';
 	if (strcmp(filetype,TEXT_MODE) == 0) {
 	   strcat(ptr,"txt");
 	} else {
@@ -925,7 +992,7 @@ void store_gdbm_data(GDBM_FILE dbf, int key_data, char* content_data)
 **
 **  Function/Method Name: retrieve_gdbm_data
 **  Precondition:  gdbm output data.
-**  Postcondition: Single level content data retrieved and retured to
+**  Postcondition: Single level content data retrieved and returned to
 **                 the user.  If failed to retrieve data, it
 **                 returns (char *) NULL.
 **
@@ -974,6 +1041,7 @@ char *retrieve_gdbm_data (GDBM_FILE dbf, int key_data)
 void test_retrieval (OUTPUT_STRUCT output)
 {
     char    *cpml_data=(char *) NULL;
+    int i = 1;;
 
     if (output.dbf == (GDBM_FILE) NULL) {
         printf ("Can't test gdbm. GDBM is null.\n");
@@ -981,15 +1049,11 @@ void test_retrieval (OUTPUT_STRUCT output)
     }
     printf ("\n________________________________________________________\n");
     printf ("\nRetrieval test.\n");
-    cpml_data = retrieve_gdbm_data (output.dbf, 1);
-    printf ("retreive data is:\t%s\n", cpml_data);
-    free (cpml_data);
-    cpml_data = retrieve_gdbm_data (output.dbf, 16);
-    printf ("retreive data is:\t%s\n", cpml_data);
-    free (cpml_data);
-
-    cpml_data = retrieve_gdbm_data (output.dbf, 100);
-    if (cpml_data == (char *) NULL) printf ("Failed to find %s\n", "test");
-
+    while((cpml_data = retrieve_gdbm_data (output.dbf, i)) != NULL) {
+       printf ("retreived:\t%d %s\n", i,cpml_data);
+       free (cpml_data);
+       i++;
+    }
+    printf ("Failed at %d;either at end or error; compare with text\n", i);
     printf ("\n________________________________________________________\n");
 }

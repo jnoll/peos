@@ -39,10 +39,22 @@ Boolean data_dict_add_root(data_dictionary_struct *dictionary_ptr, char *level,
    }
 
    /* populate the root with the specified information */
-   strncpy(dictionary_ptr->root->level, level, DD_MAX_LEVEL_LEN);
-   strncpy(dictionary_ptr->root->name, name, DD_MAX_NAME_LEN);
-   strncpy(dictionary_ptr->root->type, type, DD_MAX_TYPE_LEN);
-   strncpy(dictionary_ptr->root->mode, mode, DD_MAX_MODE_LEN);
+   if ((dictionary_ptr->root->level = (char *)calloc(strlen(level)+1,
+       sizeof(char))) != NULL) {
+      strcpy(dictionary_ptr->root->level, level);
+   }
+   if ((dictionary_ptr->root->name= (char *)calloc(strlen(name)+1,
+       sizeof(char))) != NULL) {
+      strcpy(dictionary_ptr->root->name, name);
+   }
+   if ((dictionary_ptr->root->type = (char *)calloc(strlen(type)+1,
+       sizeof(char))) != NULL) {
+      strcpy(dictionary_ptr->root->type, type);
+   }
+   if ((dictionary_ptr->root->mode = (char *)calloc(strlen(mode)+1,
+       sizeof(char))) != NULL) {
+      strcpy(dictionary_ptr->root->mode, mode);
+   }
 
    return TRUE;
 }
@@ -71,7 +83,6 @@ data_dict_element_struct* data_dict_get_root(
 **    Function/Method Name: data_dict_get_element
 **    Precondition:         dictionary_ptr points to a valid data dictionary
 **                          struct.
-**                          name cannot exceed DD_MAX_NAME_LEN chars in length
 **    Postcondition:        Returns the element associated with the given name.
 **                          Otherwise NULL is returned.
 **    Description:          Returns the element associated with the given name.
@@ -92,11 +103,6 @@ data_dict_element_struct* data_dict_get_element(
 **    Function/Method Name: data_dict_add_entry
 **    Precondition:         dictionary_ptr already has been assigned a root and
 **                          points to a valid data dictionary struct.
-**                          parent_name cannot DD_MAX_NAME_LEN exceed chars.
-**                          level cannot DD_MAX_LEVEL_LEN exceed chars.
-**                          name cannot DD_MAX_NAME_LEN exceed chars.
-**                          type cannot DD_MAX_TYPE_LEN exceed chars.
-**                          mode cannot DD_MAX_MODE_LEN exceed chars.
 **    Postcondition:        Returns "FALSE" and writes an error message to stdio
 **                          if any of the following errors occur:
 **                          - There is not an element associated with the parent
@@ -134,10 +140,22 @@ Boolean data_dict_add_entry(data_dictionary_struct *dictionary_ptr,
    }
 
    /* populate the entry with the specified information */
-   strncpy(new_element_ptr->level, level, DD_MAX_LEVEL_LEN);
-   strncpy(new_element_ptr->name, name, DD_MAX_NAME_LEN);
-   strncpy(new_element_ptr->type, type, DD_MAX_TYPE_LEN);
-   strncpy(new_element_ptr->mode, mode, DD_MAX_MODE_LEN);
+   if ((new_element_ptr->level = (char *)calloc(strlen(level)+1,
+        sizeof(char))) != NULL) {
+      strcpy(new_element_ptr->level, level);
+   }
+   if ((new_element_ptr->name = (char *)calloc(strlen(name)+1,
+        sizeof(char))) != NULL) {
+      strcpy(new_element_ptr->name, name);
+   }
+   if ((new_element_ptr->type = (char *)calloc(strlen(type)+1,
+        sizeof(char))) != NULL) {
+      strcpy(new_element_ptr->type, type);
+   }
+   if ((new_element_ptr->mode = (char *)calloc(strlen(mode)+1,
+        sizeof(char))) != NULL) {
+      strcpy(new_element_ptr->mode, mode);
+   }
    new_element_ptr->parent_ptr = parent_ptr;
 
    /* add the new entry to the parents list of children */
@@ -154,9 +172,6 @@ Boolean data_dict_add_entry(data_dictionary_struct *dictionary_ptr,
 /******************************************************************************
 **    Function/Method Name: data_dict_action_add_desc
 **    Precondition:         dictionary_ptr must point to valid dictionary struct
-**                          action_name cannot exceed DD_MAX_NAME_LEN in length.
-**                          desc_type cannot exceed DD_MAX_ATTR_LEN in length.
-**                          desc_text cannot exceed DD_MAX_ATTR_DESC_LEN in len.
 **    Postcondition:        Returns "FALSE" and writes an error to stdio if any
 **                          of the following events occur.
 **                          - there is not an action associated with the
@@ -220,7 +235,10 @@ Boolean data_dict_action_add_desc(data_dictionary_struct *dictionary_ptr,
       }
 
       /* populate the new attribute */
-      strncpy(curr_attr_ptr->attribute, desc_type, DD_MAX_ATTR_DESC_LEN);
+      if ((curr_attr_ptr->attribute = 
+         (char *)calloc(strlen(desc_type)+1,sizeof(char))) != NULL) {
+         strcpy(curr_attr_ptr->attribute, desc_type);
+      }
 
       if (action_ptr->first_attribute_ptr == NULL)
       {
@@ -252,7 +270,8 @@ Boolean data_dict_action_add_desc(data_dictionary_struct *dictionary_ptr,
    }
 
    /* populate the new string */
-   strncpy(new_string_ptr->cstring, desc_text, DD_MAX_ATTR_DESC_LEN);
+   new_string_ptr->cstring = (char *)calloc(strlen(desc_text)+1,sizeof(char));
+   strcpy(new_string_ptr->cstring, desc_text);
 
    /* add the new string to the list */
    if (curr_attr_ptr->first_description == NULL)
@@ -286,16 +305,18 @@ void data_dict_print_to_screen(data_dictionary_struct *dictionary_ptr)
 /******************************************************************************
 **    Function/Method Name: data_dict_get_level
 **    Precondition:         element_ptr may or may not be NULL.
-**                          level must be DD_MAX_LEVEL_LEN characters in length
 **    Postcondition:        If element_ptr is not null, level will be set to
 **                          the level associated with the element.
 **    Description:          Get the level associated with the given element.
 ******************************************************************************/
-void data_dict_get_level(data_dict_element_struct* element_ptr, char *level)
+void data_dict_get_level(data_dict_element_struct* element_ptr, char **level)
 {
    if (element_ptr != NULL)
    {
-      strncpy(level, element_ptr->level, DD_MAX_LEVEL_LEN);
+      if ((*level = (char *)calloc(strlen(element_ptr->level)+1,
+           sizeof(char))) != NULL) {
+         strcpy(*level, element_ptr->level);
+      }
    }
 }
 
@@ -303,16 +324,18 @@ void data_dict_get_level(data_dict_element_struct* element_ptr, char *level)
 /******************************************************************************
 **    Function/Method Name: data_dict_get_name
 **    Precondition:         element_ptr may or may not be NULL.
-**                          name must be DD_MAX_NAME_LEN characters in length
 **    Postcondition:        If element_ptr is not null, name will be set to
 **                          the name associated with the element.
 **    Description:          Get the name associated with the given element.
 ******************************************************************************/
-void data_dict_get_name(data_dict_element_struct* element_ptr, char *name)
+void data_dict_get_name(data_dict_element_struct* element_ptr, char **name)
 {
    if (element_ptr != NULL)
    {
-      strncpy(name, element_ptr->name, DD_MAX_NAME_LEN);
+      if ((*name = (char *)calloc(strlen(element_ptr->name)+1,
+           sizeof(char))) != NULL) {
+         strcpy(*name, element_ptr->name);
+      }
    }
 }
 
@@ -320,16 +343,18 @@ void data_dict_get_name(data_dict_element_struct* element_ptr, char *name)
 /******************************************************************************
 **    Function/Method Name: data_dict_get_type
 **    Precondition:         element_ptr may or may not be NULL.
-**                          type must be DD_MAX_TYPE_LEN characters in length
 **    Postcondition:        If element_ptr is not null, type will be set to
 **                          the type associated with the element.
 **    Description:          Get the type associated with the given element.
 ******************************************************************************/
-void data_dict_get_type(data_dict_element_struct* element_ptr, char *type)
+void data_dict_get_type(data_dict_element_struct* element_ptr, char **type)
 {
    if (element_ptr != NULL)
    {
-      strncpy(type, element_ptr->type, DD_MAX_TYPE_LEN);
+      if((*type = (char *)calloc(strlen(element_ptr->type)+1,
+          sizeof(char))) != NULL) {
+         strcpy(*type, element_ptr->type);
+      }
    }
 }
 
@@ -337,16 +362,18 @@ void data_dict_get_type(data_dict_element_struct* element_ptr, char *type)
 /******************************************************************************
 **    Function/Method Name: data_dict_get_mode
 **    Precondition:         element_ptr may or may not be NULL.
-**                          mode must be DD_MAX_MODE_LEN characters in length
 **    Postcondition:        If element_ptr is not null, mode will be set to
 **                          the mode associated with the element.
 **    Description:          Get the mode associated with the given element.
 ******************************************************************************/
-void data_dict_get_mode(data_dict_element_struct* element_ptr, char *mode)
+void data_dict_get_mode(data_dict_element_struct* element_ptr, char **mode)
 {
    if (element_ptr != NULL)
    {
-      strncpy(mode, element_ptr->mode, DD_MAX_MODE_LEN);
+      if((*mode = (char *)calloc(strlen(element_ptr->mode)+1,
+          sizeof(char))) != NULL) {
+         strcpy(*mode, element_ptr->mode);
+      }
    }
 }
 
@@ -355,7 +382,6 @@ void data_dict_get_mode(data_dict_element_struct* element_ptr, char *mode)
 **    Function/Method Name: data_dict_get_child_levels
 **    Precondition:         element_ptr may or may not be NULL
 **                          child_levels must be the following size
-**                          DD_MAX_LEVEL_LEN * DD_MAX_NUM_CHILDREN.
 **    Postcondition:        If element_ptr is not NULL, child_levels will
 **                          contain level information for all of the elements
 **                          children, otherwise NULL is returned.
@@ -531,18 +557,19 @@ data_dict_attribute_list_struct* data_dict_get_next_attribute(
 /******************************************************************************
 **    Function/Method Name: data_dict_get_attribute_type
 **    Precondition:         attr_list_ptr may or may not be NULL
-**                          attr_type must be DD_MAX_ATTR_LEN in length
 **    Postcondition:        If attr_list_ptr is not NULL, attr_type will
 **                          contain the corresponding attribute type.
 **    Description:          Get the attribute type associated with the given
 **                          attribute.
 ******************************************************************************/
 void data_dict_get_attribute_type(
-                data_dict_attribute_list_struct* attr_list_ptr, char* attr_type)
+                data_dict_attribute_list_struct* attr_list_ptr, char** attr_type)
 {
    if (attr_list_ptr != NULL)
    {
-      strncpy(attr_type, attr_list_ptr->attribute, DD_MAX_ATTR_LEN);
+      *attr_type = (char *)calloc(strlen(attr_list_ptr->attribute)+1,
+         sizeof(char));
+      strcpy(*attr_type, attr_list_ptr->attribute);
    }
 }
 
@@ -587,7 +614,6 @@ struct string_list_struct* data_dict_get_next_attribute_desc(
 /******************************************************************************
 **    Function/Method Name: data_dict_get_attribute_desc
 **    Precondition:         attr_desc_list_ptr may or may not be NULL
-**                          attr_desc is a string DD_MAX_ATTR_DESC_LEN in length
 **    Postcondition:        If attr_desc_list_ptr is valid, attr_desc will be
 **                          populated with the corresponding attribute
 **                          description.
@@ -595,11 +621,14 @@ struct string_list_struct* data_dict_get_next_attribute_desc(
 **                          given attribute description list.
 ******************************************************************************/
 void data_dict_get_attribute_desc(struct string_list_struct* attr_desc_list_ptr,
-                                  char* attr_desc)
+                                  char** attr_desc)
 {
    if (attr_desc_list_ptr != NULL)
    {
-      strncpy(attr_desc, attr_desc_list_ptr->cstring, DD_MAX_ATTR_DESC_LEN);
+      if ((*attr_desc = (char *)calloc(strlen(attr_desc_list_ptr->cstring)+1,
+         sizeof(char))) != NULL) {
+         strcpy(*attr_desc, attr_desc_list_ptr->cstring);
+      }
    }
 }
 
@@ -607,8 +636,6 @@ void data_dict_get_attribute_desc(struct string_list_struct* attr_desc_list_ptr,
 /******************************************************************************
 **    Function/Method Name: data_dict_set_level
 **    Precondition:         element_ptr is a pointer to the node to be modified
-**                          level is the desired level whose length cannot
-**                          exceed DD_MAX_LEVEL_LEN.
 **    Postcondition:        If the element_ptr is not null, its level will be
 **                          set to the specified value.
 **    Description:          Set the level of the given data dictionary element.
@@ -617,7 +644,10 @@ void data_dict_set_level(data_dict_element_struct* element_ptr, char* level)
 {
    if (element_ptr != NULL)
    {
-      strncpy(element_ptr->level, level, DD_MAX_LEVEL_LEN);
+     if ((element_ptr->level = (char *)calloc(strlen(level)+1,
+          sizeof(char))) != NULL) {
+        strcpy(element_ptr->level, level);
+    } 
    }
 }
 
@@ -625,8 +655,6 @@ void data_dict_set_level(data_dict_element_struct* element_ptr, char* level)
 /******************************************************************************
 **    Function/Method Name: data_dict_set_name
 **    Precondition:         element_ptr is a pointer to the node to be modified
-**                          name is the desired name whose length cannot exceed
-**                          DD_MAX_NAME_LEN.
 **    Postcondition:        If the element_ptr is not null, its name will be
 **                          set to the specified value.
 **    Description:          Set the name of the given data dictionary element.
@@ -635,7 +663,10 @@ void data_dict_set_name(data_dict_element_struct* element_ptr, char* name)
 {
    if (element_ptr != NULL)
    {
-      strncpy(element_ptr->name, name, DD_MAX_NAME_LEN);
+      if ((element_ptr->name = (char *)calloc(strlen(name)+1,
+           sizeof(char))) != NULL) {
+         strcpy(element_ptr->name, name);
+      }
    }
 }
 
@@ -643,15 +674,12 @@ void data_dict_set_name(data_dict_element_struct* element_ptr, char* name)
 /******************************************************************************
 **    Function/Method Name: data_dict_set_type
 **    Precondition:         element_ptr is a pointer to the node to be modified
-**                          type is the desired type whose length cannot exceed
-**                          DD_MAX_TYPE_LEN.
 **    Postcondition:        "FALSE" is returned if the element_ptr is NULL or
 **                          the specified type is.  An error message is logged
 **                          to stdio.
 **                          "TRUE" is returned if the the element's type field
 **                          was set correctly.
-**    Description:          Set the mode field in the given element if the mode
-**                          is valid.
+**    Description:          Set the mode field in the given element.
 ******************************************************************************/
 Boolean data_dict_set_type(data_dict_element_struct* element_ptr, char* type)
 {
@@ -662,21 +690,15 @@ Boolean data_dict_set_type(data_dict_element_struct* element_ptr, char* type)
       return FALSE;
    }
 
-   if ((strcmp(type, "process") == 0)   || (strcmp(type, "task") == 0)     ||
-       (strcmp(type, "iteration") == 0) || (strcmp(type, "branch") == 0)   ||
-       (strcmp(type, "selection") == 0) || (strcmp(type, "sequence") == 0) ||
-       (strcmp(type, "action") == 0))
-   {
-      strncpy(element_ptr->type, type, DD_MAX_TYPE_LEN);
+   if ((element_ptr->type = (char *)calloc(strlen(type)+1,
+        sizeof(char))) != NULL) {
+      strcpy(element_ptr->type, type);
       return TRUE;
+   } else {
+      printf(
+          "\nERROR:[data_dict_set_type]-Unable to set type. memory allocation");
+      return FALSE;
    }
-
-   /* an invalid type was entered */
-   printf("\nERROR:[data_dict_set_type]-Unable to set type  ");
-   printf("The mode must be one of the following values:");
-   printf("\n\t\"process\", \"iteration\", \"selection\", \"action\", ");
-   printf("\"task\", \"branch\", or \"sequence\"");
-   return FALSE;
 }
 
 
@@ -684,7 +706,6 @@ Boolean data_dict_set_type(data_dict_element_struct* element_ptr, char* type)
 **    Function/Method Name: data_dict_set_mode
 **    Precondition:         element_ptr is a pointer to the node to be modified
 **                          mode is the desired mode and can be no more than
-**                          DD_MAX_MODE_LEN characters in length.
 **    Postcondition:        "FALSE" is returned if the element_ptr is NULL or
 **                          the specified mode is an invalid type.  An error
 **                          message is logged to stdio.
@@ -702,17 +723,17 @@ Boolean data_dict_set_mode(data_dict_element_struct* element_ptr, char* mode)
       return FALSE;
    }
 
-   if ((strcmp(mode, "manual") == 0) || (strcmp(mode, "executable") == 0))
-   {
-      strncpy(element_ptr->mode, mode, DD_MAX_MODE_LEN);
+   if ((element_ptr->mode = (char *)calloc(strlen(mode)+1,
+        sizeof(char))) != NULL) {
+      strcpy(element_ptr->mode, mode);
       return TRUE;
+   } else {
+      printf(
+          "\nERROR:[data_dict_set_mode]-Unable to set mode. memory allocation");
+      return FALSE;
    }
-
-   /* the desired mode was invalid */
-   printf("\nERROR:[data_dict_set_mode]-Unable to set mode.  ");
-   printf("The mode must be either \"manual\" or \"executable\"");
-   return FALSE;
 }
+
 
 
 /******************************************************************************
@@ -769,17 +790,18 @@ Boolean add_level_info_to_data_dictionary(data_dictionary_struct*dictionary_ptr)
 ******************************************************************************/
 void add_level_info_recursively(data_dict_element_struct* element_ptr)
 {
-   char parent_level[DD_MAX_LEVEL_LEN];
-   char child_level[DD_MAX_LEVEL_LEN];
+   char **parent_level;
+   char *child_level;
    int  num_children;
    data_dict_element_list_struct *child_list_ptr = NULL;
    data_dict_element_struct* child_element_ptr = NULL;
 
-   if (element_ptr != NULL)
-   {
+   if (element_ptr != NULL) {
       /* reset the parent and child level */
-      memset(parent_level, 0, DD_MAX_LEVEL_LEN);
-      memset(child_level, 0, DD_MAX_LEVEL_LEN);
+      if ((parent_level = malloc(sizeof(char *))) == NULL) {
+	printf("\nERROR memory limitations\n");
+        return;
+      }
 
       /* get the elements level */
       data_dict_get_level(element_ptr, parent_level);
@@ -795,8 +817,12 @@ void add_level_info_recursively(data_dict_element_struct* element_ptr)
          child_element_ptr = data_dict_get_child(child_list_ptr);
 
          /* set the child's level */
-         sprintf(child_level, "%s.%d", parent_level, num_children);
-         data_dict_set_level(child_element_ptr, child_level);
+         if ((child_level = (char *)calloc(strlen(*parent_level)+
+              sizeof(int)+2,sizeof(char))) != NULL) {
+            sprintf(child_level, "%s.%d", *parent_level, num_children);
+            data_dict_set_level(child_element_ptr, child_level);
+	    free(child_level);
+         }
 
          /* recursively traverse the data dictionary tree */
          add_level_info_recursively(child_element_ptr);
@@ -804,6 +830,7 @@ void add_level_info_recursively(data_dict_element_struct* element_ptr)
          /* get the next child ptr */
          child_list_ptr = data_dict_get_next_child(child_list_ptr);
       }
+      free(parent_level);
    }
 }
 
@@ -871,8 +898,6 @@ Boolean data_dict_add_child_element(data_dict_element_struct *parent_ptr,
 **    Function/Method Name: data_dict_dfs_find_element
 **    Precondition:         element is a pointer to a data_dict_element_struct
 **                          and may or may not be NULL.
-**                          name is an array of characters no longer than
-**                          DD_MAX_NAME_LEN characters.
 **                          match_found is an int* that initially points to
 **                          "FALSE"
 **    Postcondition:        If the name specified was found in an element in

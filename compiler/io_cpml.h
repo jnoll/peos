@@ -15,7 +15,7 @@ typedef struct output {
 Boolean write_cpml(char* pml_filename, data_dictionary_struct* dictionary_ptr,
 			char* filetype);
 
-char* print_children(char* output_str, data_dict_element_struct* element_ptr,char omit[1024]);
+char* print_children(char* output_str, data_dict_element_struct* element_ptr);
 
 char* get_actions(char action_str[1024], data_dict_element_struct* element_ptr, Boolean iteration_flag);
 
