@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: vm_harness.c,v $
-* Version:      $Id: vm_harness.c,v 1.3 2003/08/31 18:38:49 jnoll Exp $ ($Name:  $)
+* Version:      $Id: vm_harness.c,v 1.4 2003/11/10 23:20:10 jshah1 Exp $ ($Name:  $)
 * Description:  Command line driver for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Feb  9 11:26:52 2003
@@ -17,7 +17,6 @@
 */
 #include <stdlib.h>
 #include <stdio.h>
-#include "vm.h"
 #include "events.h"
 #include "action.h"
 

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: driver.c$
-* Version:      $Id: vm_driver.c,v 1.1 2003/06/24 21:01:55 jnoll Exp $ ($Name:  $)
+* Version:      $Id: vm_driver.c,v 1.2 2003/11/10 23:20:10 jshah1 Exp $ ($Name:  $)
 * Description:  Command line driver for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Feb  9 11:26:52 2003
@@ -17,7 +17,6 @@
 */
 #include <stdlib.h>
 #include <stdio.h>
-#include "vm.h"
 #include "events.h"
 
 int

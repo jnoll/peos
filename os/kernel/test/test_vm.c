@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <check.h>
 
-#include "vm.h"
 #include "process.h"
 #include "test_util.h"
 
