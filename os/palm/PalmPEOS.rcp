@@ -5,9 +5,8 @@ USABLE
 SAVEBEHIND
 BEGIN
 	TITLE "Run Action(s)"
-	BUTTON "Run" ID RunButton AT (20 120 36 12) USABLE LEFTANCHOR FRAME
-	BUTTON "Done" ID DoneButton AT (80 120 36 12) USABLE LEFTANCHOR FRAME
-	BUTTON "List Processes" ID ListProcessesButton AT (40 140 100 12) LEFTANCHOR FRAME
+	BUTTON "Switch to New Process" ID ListProcessesButton AT (40 140 100 12) LEFTANCHOR FRAME
+	LIST "Actions" ID ActionList AT (10 60 50 AUTO) VISIBLEITEMS 5
 
 END
 
@@ -17,5 +16,5 @@ SAVEBEHIND
 BEGIN
 	TITLE "Process Selection"
 	LABEL "Select a process to run" ID ProcessNameLabel AT (10 30) USABLE FONT 7
-	LIST "Processes" ID ProcessList AT (10 60 50 AUTO) VISIBLEITEMS 5 FONT 10 
+	LIST "Processes" ID ProcessList AT (10 60 50 AUTO) VISIBLEITEMS 5 
 END

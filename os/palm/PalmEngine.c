@@ -13,10 +13,11 @@
 #include "PalmEngine.h"
 #include "PalmUI.h"
 
-char palm_msg[512];   /* holder for msgs to sendUI */
-int act_number = 0; /* 7 actions in timesheet */
-/* state act_state */
-/* VM_state vm_state; --see PalmVM.h */
+/* global variables */
+char palm_msg[512]; /* holder/buffer for msgs to sendUI */
+MemHandle actionsH; // handle to context.actions memory space
+MemHandle instrH; // handle to instructions array
+MemHandle inStrings[200]; //array of handles to instruction strings
 
 /*
  * lists available processes
@@ -38,18 +39,17 @@ processNode listModels()
   NextHandle = First.Next;
 
   while(DmGetNextDatabaseByTypeCreator
-	(newSearch,&searchState,NULL,'PEOS',false,&cardNum,&dbID) == errNone) {	
-      Handle = NextHandle;	
-      CurrentNode = MemHandleLock(Handle);
-      DmDatabaseInfo(cardNum,dbID,modelName,NULL,NULL,
-		     NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-      StrCopy(CurrentNode->process,modelName);
-      CurrentNode->Next = MemHandleNew(sizeof(processNode));
-      NextHandle = CurrentNode->Next;
-      MemHandleUnlock(Handle);
-
-      newSearch=false;
-    }
+	(newSearch,&searchState,NULL,'PEOS',false,&cardNum,&dbID) == errNone) {	      Handle = NextHandle;	
+	CurrentNode = MemHandleLock(Handle);
+	DmDatabaseInfo(cardNum,dbID,modelName,NULL,NULL,
+		       NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+	StrCopy(CurrentNode->process,modelName);
+	CurrentNode->Next = MemHandleNew(sizeof(processNode));
+	NextHandle = CurrentNode->Next;
+	MemHandleUnlock(Handle);
+	
+	newSearch=false;
+  }
   if (newSearch==false) { /* found at least one model file */
     CurrentNode = MemHandleLock(Handle);
     MemHandleFree(CurrentNode->Next);
@@ -67,100 +67,14 @@ processNode listModels()
  * and load the contained instructions into the
  * instruction array.
  */
-processNode loadProcess(char p_name[])
+int loadProcess(char p_name[])
 {
-  processNode First;
-  processNode *CurrentNode;
-  MemHandle Handle, NextHandle;
-
-  LocalID modelID;
-  DmOpenRef openModel;  
-  MemHandle record; 
-  ActAndState *actions[MAX_ACTS]; //structure to hold actions and their state
-  ActAndState *as;
-
-  /* find/open the process model ... file? 
-   * create an instance of the process, to run.
-   * -requires filling the instruction array,
-   * setting register values (SP, PC), stack */
-
-  modelID = DmFindDatabase(0,p_name);
-
-  if(modelID!=0) //pdb file was found
-    {
-      int i=0,j,actionIndex=0,h;
-      char* recordBuf;
-      char buf[512];
-      char c='c';
-	
-      //open database for access
-      openModel = DmOpenDatabase(0,modelID,dmModeReadOnly);
-
-
-      record = DmQueryRecord(openModel,1);
-      recordBuf = MemHandleLock(record);	
-		
-      //fill action array
-      //	do 
-
-      for(h=0;h<7;h++)
-
-	{
-	  char temp[64];
-	  //scan past the line number
-	  while(recordBuf[i++]!=' '){ ; }
-
-	  //copy action name into buffer
-	  for(j=0;recordBuf[i]!=' ';i++)
-	    {	
-			
-	      buf[j++]=recordBuf[i];
-	    }
-		
-	  //create action structure and put it in array
-	  as = (ActAndState *)malloc(sizeof(ActAndState));
-	  actions[actionIndex] = as;
-
-	  //copy buffer into action name field of structure
-	  buf[j]='\0';
-	  //StrCopy(&(actions[0]->ActName),buf);
-	  strncpy(temp,buf,StrLen(buf));
-
-	  WinDrawChars(buf,StrLen(buf),50,100);
-
-	  //scan till next line
-	  while(recordBuf[i]!='\n'&&recordBuf[i]!='\0') { i++;}
-
-	}// while(StrCompare(buf,"start")!=0&&recordBuf[i]!='\0');
-
-      MemHandleUnlock(record);
-		
-    }
-
-  First.Next = MemHandleNew(sizeof(processNode));
-  Handle = First.Next;
-  CurrentNode = MemHandleLock(Handle);
-  StrCopy(CurrentNode->process, "timesheet.001");
-  StrCopy(CurrentNode->action, ""); /* we haven't loaded it yet */
-  
-  CurrentNode->act_state = ACT_READY; /* waiting to be instantiated... */
-  CurrentNode->Next = MemHandleNew(sizeof(processNode));
-  NextHandle = CurrentNode->Next;
-  MemHandleUnlock(Handle);
-  
-  if (loadInstructions() != 0) { //error case - reading file
-    /* this will come from persistence layer */
-    context.PC = 0;
-    context.SP = -1; /* means stack's empty */
-    
-    /* DEBUG */
-    sendUI("Loading...");
-
-    runVM();
+  if (loadInstructions(p_name) != 0) { //error case - reading file
+    sendUI("ERROR in loadProcess()");//call error msg or something...
+    return 1;
   } else {
-    ;//call error msg or something...
+    return runVM();
   }
-  return First;
 } /* loadProcess */
 
 /* lists all actions that're in progress or waiting to be started... */
@@ -169,148 +83,258 @@ actionNode listActions()
   actionNode First;  //first element in the list 
   actionNode *CurrentNode;
   MemHandle Handle, NextHandle;
-  ActAndState *p;
   int i = 0;
-     
+  int flag=1;
+
   First.Next = MemHandleNew(sizeof(actionNode));
-  Handle = First.Next;
-  CurrentNode = MemHandleLock(Handle);
-  for (p = context.actions; p->ActName; p++) { /* XXX context.actions MUST have NULL name in last element. */
-    if (p->ActState == ACT_READY || p->ActState == ACT_RUNNING){ 
-      StrCopy(CurrentNode->readyAction.ActName, p->ActName);
-      CurrentNode->readyAction.ActState = p->ActState;
-      CurrentNode->Next = MemHandleNew(sizeof(processNode));
+  NextHandle = First.Next;
+
+  while(i<context.PROC_NACT) {
+    if( context.actions[i].ActState == ACT_READY ||
+        context.actions[i].ActState == ACT_RUNNING ) {
+      Handle = NextHandle;
+      CurrentNode = MemHandleLock(Handle);
+      CurrentNode->readyAction = &context.actions[i];
+      CurrentNode->Next = MemHandleNew(sizeof(actionNode));
       NextHandle = CurrentNode->Next;
       MemHandleUnlock(Handle);
+      flag=0;
     }
+    i++;
   }
-     
+  
+  if(flag==1)
+    First.Next = NULL;
+  else {
+    CurrentNode = MemHandleLock(Handle);
+    CurrentNode->Next = NULL;
+  }
+    
   return First;
 } /* listActions */
 
 
+void freeArgs(void) {
 
-int loadInstructions()
-
-{
-  int size = 256; /* default size of actions, instructions array */
-  int numAct = 0;
-  context.actions = (ActAndState *)malloc(size*sizeof(ActAndState));
-  instr_array = (char *)malloc(size*sizeof(char *)); 
-  /* have to constantly check this as it's filled, 
-   * dynamically expand it if it fills up */
-
-  /* check for numAct = size - if it does, re'allocate processActions
-   * else -> until we hit 'start', put the first word of the instr.
-   * in ActName, set state to NONE */
-  /* repeat for instr_array until we exhaust the model file */
-  instr_array[0] = "get_card type action mode manual provides {timecard.status==blank} script {try Accounting dept. if supervisor doesn't have timecards.}";
-  instr_array[1] = "enter_pay_period type action mode manual requires {timecard.status==blank}provides{timecard.status==ready}agent{employee}";
-  instr_array[2] = "fill_hours type action mode manual requires{timecard.status==ready record_of_hours}provides{timecard.status==filled}agent{employee}";
-  instr_array[3] = "fill_totals type action mode manual requires{timecard.status==filled calculator} provides{timecard.status==totaled}agent{employee}";
-  instr_array[4] = "sign_card type action mode manual requires{timecard.status==totaled}agent{employee}script{sign & date the timecard yourself.}";
-  instr_array[5] = "approve_card type action mode manual requires{timecard.status==totaled}provides{timecard.status==signed}agent{supervisor}script{get approval & signature/date from supervisor.}";
-  instr_array[6] = "turn_in type action mode manual requires{timecard.status==signed}provides{paycheck}agent{employee}script{turn in filled/totaled/signed/countersigned timecard to the Accounting or HR dept.}";
-  /* insert NULL as last action name - for listActions */
-
-  instr_array[7] = "start";
-  instr_array[8] = "push 0";
-  instr_array[9] = "pop";
-  instr_array[10] = "call set ready get_card";
-  instr_array[11] = "jzero 79";
-  instr_array[12] = "pop";
-  instr_array[13] = "call wait done get_card";
-  instr_array[14] = "jzero 79";
-  instr_array[15] = "pop";
-  instr_array[16] = "call assert";
-  instr_array[17] = "jzero 79";
-  instr_array[18] = "push 0";
-  instr_array[19] = "pop";
-  instr_array[20] = "call set ready enter_pay_period";
-  instr_array[21] = "jzero 79";
-  instr_array[22] = "pop";
-  instr_array[23] = "call wait done enter_pay_period";
-  instr_array[24] = "jzero 79";
-  instr_array[25] = "pop";
-  instr_array[26] = "call assert";
-  instr_array[27] = "jzero 79";
-  instr_array[28] = "push 0";
-  instr_array[29] = "pop";
-  instr_array[30] = "call set ready fill_hours";
-  instr_array[31] = "jzero 79";
-  instr_array[32] = "pop";
-  instr_array[33] = "call wait done fill_hours";
-  instr_array[34] = "jzero 79";
-  instr_array[35] = "pop";
-  instr_array[36] = "call assert";
-  instr_array[37] = "jzero 79";
-  instr_array[38] = "push 0";
-  instr_array[39] = "pop";
-  instr_array[40] = "call set ready fill_totals";
-  instr_array[41] = "jzero 79";
-  instr_array[42] = "pop";
-  instr_array[43] = "call wait done fill_totals";
-  instr_array[44] = "jzero 79";
-  instr_array[45] = "pop";
-  instr_array[46] = "call assert";
-  instr_array[47] = "jzero 79";
-  instr_array[48] = "push 0";
-  instr_array[49] = "pop";
-  instr_array[50] = "call set ready sign_card";
-  instr_array[51] = "jzero 79";
-  instr_array[52] = "pop";
-  instr_array[53] = "call wait done sign_card";
-  instr_array[54] = "jzero 79";
-  instr_array[55] = "pop";
-  instr_array[56] = "call assert";
-  instr_array[57] = "jzero 79";
-  instr_array[58] = "push 0";
-  instr_array[59] = "pop";
-  instr_array[60] = "call set ready approve_card";
-  instr_array[61] = "jzero 79";
-  instr_array[62] = "pop";
-  instr_array[63] = "call wait done approve_card";
-  instr_array[64] = "jzero 79";
-  instr_array[65] = "pop";
-  instr_array[66] = "call assert";
-  instr_array[67] = "jzero 79";
-  instr_array[68] = "push 0";
-  instr_array[69] = "pop";
-  instr_array[70] = "call set ready turn_in";
-  instr_array[71] = "jzero 79";
-  instr_array[72] = "pop";
-  instr_array[73] = "call wait done turn_in";
-  instr_array[74] = "jzero 79";
-  instr_array[75] = "pop";
-  instr_array[76] = "call assert";
-  instr_array[77] = "jzero 79";
-  instr_array[78] = "end";
-  instr_array[79] = "call error";
-
-  context.SP = 0;
-  context.PC = 7;
-  context.A = -1; /* the initial value of the accumulator... */
-  return 0;
+  MemHandleUnlock(argActions);
+  MemHandleFree(argActions);
 }
 
+/* This funcion will take the first node of a linked list
+   of action nodes and deallocate all the memory space
+   for this list
+*/
+void deListActions(actionNode an) {
+  actionNode* Current;
+  MemHandle nextHandle,handle;
+  
+  handle = an.Next;
+
+  while(handle!=NULL){
+    Current = MemHandleLock(handle);
+    nextHandle = Current->Next;
+    
+    MemHandleUnlock(handle);
+    MemHandleFree(handle);
+    handle = nextHandle;
+  }
+  
+} /* end deListActions */
+
+void deListProcesses(processNode pn) {
+
+  processNode* Current;
+  MemHandle nextHandle,handle;
+  
+  handle = pn.Next;
+
+  while(handle!=NULL){
+    Current = MemHandleLock(handle);
+    nextHandle = Current->Next;     
+    MemHandleUnlock(handle);
+    MemHandleFree(handle);
+    handle = nextHandle;
+    
+  }
+  
+} /* end deListProcesses */
+
+int loadInstructions(char* p_name)
+{
+  LocalID modelID;
+  DmOpenRef openModel;  
+  MemHandle record; 
+  ActAndState *as;
+  int i;
+  
+  /* find/open the process model file 
+   * create an instance of the process, to run.
+   * -requires filling the instruction array,
+   * setting register values (SP, PC), stack */
+  
+  modelID = DmFindDatabase(0,p_name);
+  
+  if(modelID!=0) { //pdb file was found
+    char* recordBuf;
+    char temp[64];
+    ActAndState* as;
+    MemHandle asH; 
+    int bufI,tempI;
+    int instrI = 0; // index into instruction array	
+    Boolean keepReading = true;
+    int actionsSize; // size of context.actions in bytes
+    int insSize; // size of instr_array in bytes
+
+    context.PROC_NACT = 0; // index of action array...
+
+    //open database for access
+    openModel = DmOpenDatabase(0,modelID,dmModeReadOnly);
+    
+    //open record and lock it for access
+    record = DmQueryRecord(openModel,1);
+    recordBuf = MemHandleLock(record);	
+    
+    // create space for all the ActAndState's
+    // need to dynamically adjust size if we run out of space
+    actionsSize = sizeof(ActAndState)*15;
+    actionsH = MemHandleNew(actionsSize);
+    context.actions = MemHandleLock(actionsH);
+    
+    // parse buffer
+    bufI = 2; // 1st action name begins at buffer[2]
+    
+    while(keepReading) { // scan each line til "start"
+      tempI=0;
+      
+      // get the first word after the line number
+       while ( recordBuf[bufI]!=' ' &&
+	      recordBuf[bufI]!='\n') {
+	temp[tempI++] = recordBuf[bufI++];
+      }
+      
+      temp[tempI] = '\0'; //temp now contains action name
+  
+      if( strcmp(temp,"start")!=0 ) { // create a new ActAndState
+	StrCopy(context.actions[context.PROC_NACT].ActName,temp);
+	context.actions[context.PROC_NACT].ActState = ACT_NONE;
+	
+	context.PROC_NACT++; //the number of actions in the process
+	
+	// scan til new line
+	while(recordBuf[bufI++]!='\n') { ; } // do nothing
+	
+	//scan next line number
+	while(recordBuf[bufI++]!=' ') { ; } // do nothing
+	
+	// bufI is now at position of next action name	
+      } else 
+	keepReading = false;
+      
+      // make sure we still have room in context.actions
+      if ( actionsSize <= (context.PROC_NACT+1)*sizeof(ActAndState *) ) {
+	ActAndState* tempActions;
+	MemHandle temp;
+	
+	actionsSize = actionsSize*2;
+	temp = MemHandleNew(actionsSize*(sizeof(ActAndState)));
+	tempActions = MemHandleLock(temp);
+	
+	memcpy(tempActions,context.actions,sizeof(context.actions));
+	context.actions = tempActions;
+	MemHandleUnlock(actionsH);
+	MemHandleFree(actionsH);
+	
+	actionsH = temp;
+      } // end if
+    } // end while 
+    
+    // now we can fill instruction array
+    keepReading = true;
+    
+    // make space for instruction array
+    // dynamically adjust size if necessary
+    insSize = sizeof(char *) * 100;
+    instrH = MemHandleNew(insSize);
+    instr_array = MemHandleLock(instrH);
+    
+    //create space for "start" in instruction array
+    inStrings[instrI] = MemHandleNew(StrLen("start")+1);
+    instr_array[instrI] = MemHandleLock(inStrings[instrI]);
+    StrCopy(instr_array[instrI],"start");
+    instrI++;
+    
+    // bufI is at newline following "start" instruction
+    bufI++; // now bufI is at next line number
+    
+    while(keepReading) {
+      // scan line number
+      while(recordBuf[bufI++]!=' ') { ; } // do nothing
+      
+      tempI = 0;
+      // scan instruction
+      while(recordBuf[bufI]!= '\n' &&
+	    recordBuf[bufI]!= '\0' &&
+	    recordBuf[bufI]!= EOF ) {
+	temp[tempI++] = recordBuf[bufI++];	
+      }
+      
+      temp[tempI] = '\0';
+      
+      // load instruction array	
+      inStrings[instrI] = MemHandleNew(StrLen(temp)+1);
+      instr_array[instrI] = MemHandleLock(inStrings[instrI]);
+      StrCopy(instr_array[instrI],temp);
+      instrI++;
+      
+      if(recordBuf[bufI] == '\n') {
+	bufI++; // bufI is at next line number
+	if(recordBuf[bufI]=='\0' ||
+	   recordBuf[bufI]==EOF )
+	  break;
+      } else
+	break;
+    } // end while
+ 
+    inStrings[instrI] = NULL;
+    MemHandleUnlock(record);
+    
+    context.PC = 0;
+    context.SP = -1; /* due to implementation of push() in PalmVM */ 
+    context.A = -1;
+
+    return 0;
+  } // end if
+  
+  return -1;
+}/* loadInstructions */
 
 int runVM()
 {
-      
-  switch (execute()) { /* "context" is global, don't need to pass it */
+
+  switch (execute()) {
   case SYSCALL: /* vm made a syscall */
+    
     /* examine global syscall argument structure for call id
      * and parameters.
      * do the system call. */
+    /* !push(1) for success! */
     /* if (syscall requires waiting) { */
-    /* save process state
-     * switch to another process */
-    /*    } */
+    /*   save process state
+     *   switch to another process */
+    /* } */
+    if(handleSysCall() != 0)
+      return 1; /* error - possibly no match for action */
     
-    break;
+    if(context.PROC_WAITING == 1) { /* return control to the user */
+      break;
+    } else {
+	sendUI("about to recursively call runVM");
+	return runVM(); /* go back to execute() - next instruction */
+    }
   case COMPLETE:
     /* process finished */
     /* delete the database file, free up any resources */
+    removeState();
     sendUI("Process Completed.");
     break;
    
@@ -331,94 +355,174 @@ int runVM()
   return 0;
 } /* runVM */
 
-int selectAction(char p_name[], char act_name[])
+int handleSysCall()
 {
-  /*
+  int i;
+  int j = 0;
+  int error = 0;
+
+  switch(SysCallArgs.opcode) {
+  case(OP_SET):
+    /* loop through SysCallArgs.acts array, of size SysCallArgs.nact */
+    for(i=0; i<SysCallArgs.data.act.nact; i++) {
+      /* find matching action in context.actions */
+      while(StrCompare(SysCallArgs.data.act.acts[i], 
+		       context.actions[j].ActName) != 0) {
+	/* loop thru process's actions array till we find a match */
+	if(++j >= context.PROC_NACT) {
+
+	  //DEBUG
+	  sprintf(palm_msg, "handleSysCall: no match for %s", 
+		  SysCallArgs.data.act.acts[i]);
+	  sendUI(palm_msg);
+
+	  error = 1; /* no match found */
+	  break; /* go to next in SysCallArgs.acts array */
+	}
+      }/* when loop exits, SysCallArgs.acts[i] = context.actions[j].ActName */
+      /* set the state, if we found a match */
+      if(error == 0) { /* found match */
+	context.actions[j].ActState = SysCallArgs.data.act.destState;
+      } else { /* no match for one of the actions! */
+	/* NOTE: do here whatever we do in runVM() in 
+	 * case of an INTERN_ERROR returned by the VM's
+	 * execute() function */
+	sendUI("Internal Error - on 'call set...'");
+	push(0); /* error */
+	return 1; /* to runVM */
+      }
+    }
+    /* call UI function to present a list of all READY/RUNNING actions */
+    push(1); /* "for success" */
+    break;
+  case(OP_WAIT):
+    /* We're not changing the state of any actions here...
+     *  rather, we have to "wait" till _any_ one of the actions in
+     *  SysCallArgs.data.act.actions enters the state SysCallArgs.
+     *  data.act.destState in response to a user action/input.
+     * 
+     */
+    context.PROC_WAITING = 1; /* the process must now wait for user input */
+    /* _what_ we're waiting for is what's in SysCallArgs.data.act.actions,
+     * and SysCallArgs.data.act.destState. */
+    push(1);
+    break;
+  case(OP_FORK):
+    /* defer */
+    /* saveState(); - of parent */
+    /* XXX Create a new context here, so the parent doesn't */
+    /*   get clobbered. */
+    /* context.PC = SysCallArgs.line; - of child process (its own context) */
+    abort();
+    break;
+  case(OP_JOIN):
+    /* defer */
+    abort();
+    break;
+  case(OP_EXIT):
+    removeState();
+    /* display: SysCallArgs.status, the exit status code */
+    break;
+  case(OP_SELECT):
+    /* skip */
+    push(1); /* to simulate success */
+    break;
+  case(OP_ASSERT):
+    /* skip */
+    push(1); /* to simulate success */
+    break;
+   default:
+    break;
+  } /* switch on opcode */
+  return 0;
+}
+
+/* the function called by PalmUI when an action is selected by
+ * the user. selectAction() will check the state of the action
+ * selected (by looking in context.actions), and either:
+ * -- set to RUNNING, return control to the user if it's READY.
+ * (or)
+ * -- set to DONE, return runVM() - which calls execute() - to
+ * the PalmUI caller, if the action is in the RUNNING state.
+ */
+int selectAction (char act_name[])
+{
+  int j = 0;
+
+  /* find matching action in context.actions */
+  while(StrCompare(act_name, context.actions[j].ActName) != 0) {
+    /* loop thru process's actions array till we find a match */
+    
+    if(++j >= context.PROC_NACT) { /* no matches! */
+      push(0); //--error condition
+      return 1;
+    }
+  }
+
+  if(context.actions[j].ActState == ACT_READY) {
+    /* set act_name's state to RUNNING */
+    /* return control to the user */
+    /* set the state, if we found a match */    
+    
     sprintf(palm_msg, "DOING - %s", act_name);
     sendUI(palm_msg);
-  */
-
-  runVM();
-
-  //act_state = RUNNING;
-  return 0;
-} /* selectAction */
-
-int finishAction(char p_name[], char act_name[])
-{
-  /*
+    context.actions[j].ActState = ACT_RUNNING;
+    return 0; /* _not_ returning to the VM yet... */
+  } else if(context.actions[j].ActState == ACT_RUNNING) {
+    /* called when a user clicks a "RUNNING" action to "finish" it...
+     * set the selected action's state to DONE, run the VM */
+    /* set the state, if we found a match */
+    
     sprintf(palm_msg, "FINISHED - %s", act_name);
     sendUI(palm_msg);
-  */
+    context.actions[j].ActState = ACT_DONE;
+    
+    /** HACK - tell runVM() we're not waiting for user input any more **/
+    /* "hack" because we're assuming that we were waiting for
+     * act_name to go to ACT_DONE */
+    /* MM: To really get this functionality working, we'll have to check if
+     the process is waiting; if it is, we'll have to check if we're going
+     to the desired state, and if that's true we'll have to check if act_name 
+     matches any of SysCallArgs.data.act.acts between 0 and SysCallArgs.
+     data.act.nact --> if so, push the index (one-based) of the action 
+     onto the stack. Else ... we're still waiting. */
+    context.PROC_WAITING = 0; 
+    push(1); /* tells VM we completed the 'call wait' syscall successfully */
+    
+    /* free up the memory taken by SysCallArgs */
+    freeArgs();
 
-  runVM();
+    /* go back to the VM, continue executing 
+       until encounter another system call requiring
+       user input (WAIT) */
+    return runVM(); 
+  } else {
+    return 1;
+  }
+} /* selectAction */
 
-  /*
-    act_number++;
-    act_state = READY;
-  */
+int saveState(char p_name[])
+{
+  /* save the state ("context" structure) in
+   * a file with an appropriate name, so that
+   * it can be restored later for resumption */
   return 0;
-} /* finishAction */
+}
 
-
-/*MM: searches for a file in the directory structure identified
- * by COMP_DIR and with the same name as the argument "processName"
- * and ending in ".txt".  If the file can be opened for reading,
- * getModel returns the path of the file as a char *.
- * In PalmPEOS, the Engine will incorporate function(s) to find
- * all model files on the device, and open/read them when necessary.
- */
-/*jn: Correct.  Move this to engine.*/
-
-/*
-  char * getModel(char * processName)
-  {
-  char * model = NULL;
-  char * file = NULL;
-  char * filend = NULL;
-  char * path = getenv(COMP_DIR);
-  char begin = '/';
-  char end = '.';
-  FILE* fd; // file descriptor
+int removeState(char p_name[])
+{
+  int i;
+  /* called when a process instance has been
+   * completed, to delete the state file 
+   * associated with that instance, that
+   * was saved on the device */
   
-  model = (char *) malloc(256);
-  
-  if(model == NULL) {
-  perror("NO MORE SPACE");
-  return model;
+/* deallocate instruction array */
+  MemHandleUnlock(instrH);
+  MemHandleFree(instrH);
+  for(i=0;inStrings[i]!=NULL;i++) {
+    MemHandleUnlock(inStrings[i]);
+    MemHandleFree(inStrings[i]);
   }
-  if(processName == NULL) {
-  perror("NO Process Name passed in.");
-  free(model);
-  return model;
-  } else {
-  file = strrchr(processName, begin);
-  file = (file == NULL) ? processName : ++file;
-  filend = strchr(file, end);
-  filend = (filend == NULL) ? processName+strlen(processName) : filend;
-  if(file >= filend) {
-  perror("Could not find the model name from processName");
-  free(model);
-  return model;
-  } 
-  }
-  if(path && strlen(path)) {
-  strcpy(model, path);
-  if(path[strlen(path) -1] != '/')
-  strcat(model, "/");
-  strncat(model, file,  filend - file);
-  strcat(model, ".txt");
-  } else {
-  strcpy(model, "./");
-  strncat(model, file,  filend - file);
-  strcat(model, ".txt");
-  }
-  
-  if ((fd=(FILE*)fopen(model, "r")) == NULL) {
-  return NULL;
-  } else {
-  fclose(fd);
-  }
-  return model;
-  } //getModel
-*/
+  return 0;
+}

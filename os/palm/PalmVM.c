@@ -12,6 +12,12 @@
 #include "PalmVM.h"
 #include "PalmEngine.h"
 
+/* global variables - see PalmEngine.h for declaration */
+SysCallParameters SysCallArgs; 
+processContext context; /* what'll be saved as the persistence layer */
+char ** instr_array; /* dynamic array - filled by Engine */
+MemHandle argActions; /* global handle to memory for SysCallArgs.acts array */
+
 VM_state execute(); 
 void nextOPCode(char * op);
 int push(int arg); /* returns 1 if stack's full... */
@@ -60,25 +66,25 @@ void  errExit(void )
 VM_state execute()
 {
   char op[256]; /*MM: current "op" instruction, from model file */
-  
+  int PC_Offset;
+
+  /****NOTE*** 
+       line numbers are off!!
+       if we want to jzero 79, but we've put 'start' at instr_array[0]
+       when it's at "line number" 7 in the model file...*/
+  PC_Offset = context.PROC_NACT; /* 'jzero 79' will set PC = (79-PC_Offset) */
+				    
   while (true) {
     /* fetch next opcode/instruction */
     nextOPCode(op);
 
-    /* interpret/execute opcode */
-    if (strncmp(op, "start", 5) == 0) { 
-      context.PC++;
-    } else if (strncmp(op, "end", 3) == 0) {
+    //WinDrawChars(op, StrLen(op), 10, 10*context.PC+10);
+
+    /* interpret/execute opcode, searching in length order... */
+    if (StrNCompare(op, "end", 3) == 0) {
       context.PC--;
-      //cond = 0;
       return COMPLETE;
-    } else if (strncmp(op, "push", 4) == 0) {
-      int arg;
-      /* sscanf(op+4, "%d", &arg); */
-      arg = StrAToI(op+4);
-      push(arg);
-      context.PC++;
-    } else if (strncmp(op, "pop", 3) == 0) {
+    } else if (StrNCompare(op, "pop", 3) == 0) {
       char* token;
       context.A = pop();
       token = strtok(op+3," \n");       
@@ -86,8 +92,14 @@ VM_state execute()
 	;//add_var(process,token,(char*)context.A); /* see add_var comments */
       }
       context.PC++;
-    } else if (strncmp(op, "goto", 4) == 0) {
-      context.PC = StrAToI(op+4);
+    } else if (StrNCompare(op, "push", 4) == 0) {
+      int arg;
+      /* sscanf(op+4, "%d", &arg); */
+      arg = StrAToI(op+4);
+      push(arg);
+      context.PC++;
+    } else if (StrNCompare(op, "goto", 4) == 0) {
+      context.PC = StrAToI(op+4) - PC_Offset;
     } else if (StrNCompare(op, "jump", 4) == 0) {
       int i;
       char * token;
@@ -96,13 +108,15 @@ VM_state execute()
       for (i = 0; i <= context.A; i++) {
 	token = strtok(0, " \n\t");
       }
-      context.PC = StrAToI(token);
-    } else if (strncmp(op, "jzero", 5) == 0) {
+      context.PC = StrAToI(token) - PC_Offset;
+    } else if (StrNCompare(op, "start", 5) == 0) { 
+      context.PC++;
+    } else if (StrNCompare(op, "jzero", 5) == 0) {
       context.A = pop();
       if (context.A == 0) {
 	char * token;
 	token = strtok(op+5, " \n\t");
-	context.PC = StrAToI(token);
+	context.PC = StrAToI(token) - PC_Offset;
       } else {
 	context.PC++;
       }
@@ -117,18 +131,20 @@ VM_state execute()
       context.A--;
       push(context.A);
       context.PC++;
-    } else if (StrNCompare(op, "call", 4) == 0) {
-      if( fillArgs() == 0 ) {
+    } else if (StrNCompare(op, "call err", 8) == 0) {
+      return PROC_ERROR; 
+    } else if (StrNCompare(op, "call exit", 9) == 0) {
+      SysCallArgs.opcode = OP_EXIT;
+      return COMPLETE;
+      /* return SYSCALL; -special case of SysCall, handled separately, here */
+    } else if (StrNCompare(op, "call", 4) == 0) { /* all other system calls */
+      if(fillArgs() == 0) {/* fillArgs depends on PC being unchanged to here */
 	context.PC++;
 	return SYSCALL;
       } else {
 	context.PC++;
 	return INTERN_ERROR;
       }
-    } else if (StrNCompare(op, "call exit", 9) == 0) {
-      return COMPLETE;
-    } else if (StrNCompare(op, "call err", 8) == 0) {
-      return PROC_ERROR; // to the Engine
     }
   };
   return INTERN_ERROR;
@@ -140,7 +156,7 @@ VM_state execute()
  */
 void nextOPCode(char * op)
 {
-  strcpy(op, instr_array[context.PC]);
+  StrCopy(op, instr_array[context.PC]);
 } /* nextOPCode */
 
 /* only called (from execute()) in case of an instruction
@@ -149,59 +165,83 @@ void nextOPCode(char * op)
 int fillArgs() 
 {
   char op[256];
-  strcpy(instr_array[context.PC], op+5); /* eliminate "call " from opcode */
+  char * token;
+  StrCopy(op, instr_array[context.PC]); 
 
-  if( StrNCompare(op, "set", 3) == 0 ) {
-    char * token;
-       
-    SysCallArgs.opcode = SET;
-    if( StrNCompare(op+4, "ready", 5) == 0 ) {
+  //token = strtok(op," \n\t");//scan the "call"
+  //token = strtok(0 ," \n\t"); //scan the opcode ("set", "wait", "join"...)
+  //token = strtok(0," \n\t"); 
+  //if(token!=NULL){ //if NULL, probably dealing w/ "join" -> no 3rd word in instr
+  //token = strtok(0,"\n"); /* token now contains _all remaining_ args for 
+  //		       set and wait instructions */
+  //argActions = MemHandleNew(StrLen(token)+1);
+  //SysCallArgs.data.act.acts[0] = MemHandleLock(argActions);
+    // }
+
+  if( StrNCompare(op+5, "set", 3) == 0 ) {
+    SysCallArgs.opcode = OP_SET;
+    if (StrNCompare(op+9, "none", 4) == 0 ) {
+      SysCallArgs.data.act.destState = ACT_NONE;    
+    } else if( StrNCompare(op+9, "ready", 5) == 0 ) {
       SysCallArgs.data.act.destState = ACT_READY;
-    } else if (StrNCompare(op+4, "none", 4) == 0 ) {
-      SysCallArgs.data.act.destState = ACT_NONE;
     } else {
       return 1; /* error state */
     }
-    token = strtok(op+3, " \n\t");
+    
+    /* allocate the memory... */
+    argActions = MemHandleNew(StrLen(op)+1);
+    SysCallArgs.data.act.acts[0] = MemHandleLock(argActions);
+    
+    token = strtok(op," \n\t");//scan the "call [opcode] [destState]"
+    token = strtok(0," \n\t"); //scan the opcode ("set", "wait", "join"...)
+    token = strtok(0," \n\t"); 
+    token = strtok(0," \n\t"); /* get the *first* action in the list */
     SysCallArgs.data.act.nact = 0;
+    
     while (token) {
       StrCopy(SysCallArgs.data.act.acts[SysCallArgs.data.act.nact++], token);
       token = strtok(0, " \n\t");
     }
-  } else if (StrNCompare(op, "wait", 4) == 0) {
-    char * token;
-
-    SysCallArgs.opcode = WAIT;
-    if( StrNCompare(op+5, "done", 4) == 0) {
+  } else if (StrNCompare(op+5, "wait", 4) == 0) {
+    SysCallArgs.opcode = OP_WAIT;
+    if( StrNCompare(op+10, "done", 4) == 0) {
       SysCallArgs.data.act.destState = ACT_DONE;
-    } else if (StrNCompare(op, "active", 6) == 0) {
+    } else if (StrNCompare(op+10, "active", 6) == 0) {
       SysCallArgs.data.act.destState = ACT_RUNNING;
     } else {
       return 1; /* error state */
     }
-    token = strtok(op+14, " \n\t");
+    
+    /* allocate the memory... */
+    argActions = MemHandleNew(StrLen(op)+1);
+    SysCallArgs.data.act.acts[0] = MemHandleLock(argActions);
+    
+    token = strtok(op," \n\t");//scan the "call [opcode] [destState]"
+    token = strtok(0," \n\t"); //scan the opcode ("set", "wait", "join"...)
+    token = strtok(0," \n\t"); 
+    token = strtok(0," \n\t"); /* get the *first* action in the list */
     SysCallArgs.data.act.nact = 0;
+    
     while (token) { 
       StrCopy(SysCallArgs.data.act.acts[SysCallArgs.data.act.nact++], token);
-      SysCallArgs.data.act.nact++;
       token = strtok(0, " \n\t");
     }
-  } else if (StrNCompare(op, "select", 6) == 0) {
-    SysCallArgs.opcode = SELECT;
+  } else if (StrNCompare(op+5, "select", 6) == 0) {
+    SysCallArgs.opcode = OP_SELECT;
     /* Select an artifact from the repository that satisfies the query.
      *  The query is in the form attribute_name==value. Multiple queries
      *  on the same syscall are separated by && */
-    StrCopy(SysCallArgs.data.query, op+7); /* elim. "select " */
-  } else if (StrNCompare(op, "assert", 6) == 0) {
+    StrCopy(SysCallArgs.data.query, op+12); /* elim. "select " */
+  } else if (StrNCompare(op+5, "assert", 6) == 0) {
     /* forget select, assert: Noll */
-    SysCallArgs.opcode = ASSERT;
-    StrCopy(SysCallArgs.data.query, op+7); /* elim. "assert " */
-  } else if (StrNCompare(op, "fork", 4) == 0) {
+    SysCallArgs.opcode = OP_ASSERT;
+    //StrCopy(SysCallArgs.data.query, op+12); /* elim. "assert " */
+  } else if (StrNCompare(op+5, "fork", 4) == 0) {
     /* set opcode to fork, set line# */
-    SysCallArgs.opcode = FORK;
-    SysCallArgs.data.line = StrAToI(op+5); /* elim. "fork_" */
-  } else if (StrNCompare(op, "join", 4) == 0) {
-    SysCallArgs.opcode = JOIN; /* defer this till after R2: Noll */
+    SysCallArgs.opcode = OP_FORK;
+    SysCallArgs.data.line = StrAToI(op+10); /* elim. "fork_" */
+  } else if (StrNCompare(op+5, "join", 4) == 0) {
+    SysCallArgs.opcode = OP_JOIN; /* defer this till after R2: Noll */
   }
   
   return 0; /* successful completion */

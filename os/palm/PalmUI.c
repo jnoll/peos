@@ -11,17 +11,10 @@
 #include "PalmEngine.h"
 
 char old_msg[512];
-int timesheet_action_counter = 0; /* *ugly* hard-wiring of timesheet */
-state timesheet_action_state = READY;
+char selection[dmDBNameLength]; //store user's selection from process list
+processNode firstPN; // store the first node in the linked list
+actionNode firstAN; // store the first node in the action list --for deallocation
 
-static void drawProcessList (UInt16 itemNum, RectangleType *bounds, Char **itemsText)
-{
-  WinDrawChars(processListItems[itemNum],
-		StrLen(processListItems[itemNum]),
-		bounds->topLeft.x,
-		bounds->topLeft.y);
-}
-  
 void sendUI(char new_msg[])
 {
   /* DRAW MULTIPLE LINES OF TEXT */
@@ -34,16 +27,15 @@ void sendUI(char new_msg[])
   /*   while (msg && *msg)  */
   /*     { */
   /*       widthToOffset = FntWidthToOffset(msg, msgLength, */
-  /*    					   pixelWidth, NULL, &msgWidth); */
+  /*    					pixelWidth, NULL, &msgWidth); */
   /* or FntGlueWidthToOffset in PalmOSGlue in OS3.1 & later */
   /*       WinDrawChars(msg, widthToOffset, 0, y); */
   /*       y += FntLineHeight(); */
   /*       msg += widthToOffset; */
   /*       msgLength = StrLen(msg); */
   /*     } */
-  
-  WinEraseChars(old_msg, StrLen(old_msg), 10, 60);  
-  WinDrawChars(new_msg, StrLen(new_msg), 10, 60);
+  WinEraseChars(old_msg, StrLen(old_msg), 10, 300);  
+  WinDrawChars(new_msg, StrLen(new_msg), 10, 30);
   StrCopy(old_msg, new_msg);
 }
 
@@ -53,13 +45,18 @@ static Boolean AppHandleEvent(EventPtr eventP)
   Boolean handled = false;
   FormType *frmP;
   ListType *lstP;
-  
-if (eventP->eType == frmLoadEvent) {
-      // Initialize and activate the form resource.
-      formId = eventP->data.frmLoad.formID;
-      frmP = FrmInitForm(formId);
-      FrmSetActiveForm(frmP);
-      handled = true;
+  actionNode First; /* these are used for RunActionForm */
+  actionNode* Current; /* ibid. */
+  char ** actionItems; /* ibid. */
+  MemHandle A_handle, nextHandle, actionItemsH; /* ibid. - for _actions_ list */
+  MemHandle P_handle, listItemsH, nextItemH; /* for accessing the
+						avail. processes list */
+  if (eventP->eType == frmLoadEvent) {
+    // Initialize and activate the form resource.
+    formId = eventP->data.frmLoad.formID;
+    frmP = FrmInitForm(formId);
+    FrmSetActiveForm(frmP);
+    handled = true;
   } else if (eventP->eType == frmOpenEvent) {
     //Load the form resource.
     frmP = FrmGetActiveForm();
@@ -67,121 +64,136 @@ if (eventP->eType == frmLoadEvent) {
     formId = eventP->data.frmOpen.formID;
     //if its the SelectProcessForm, need to populate list
     if (formId == SelectProcessForm) {
-	FormType *activeForm;
-	int numChoices = 0;
-	int current = 0;
-	processNode init = listModels();
-	processNode *currentNode;
-	
-	activeForm = FrmGetActiveForm();
-        lstP = FrmGetObjectPtr(activeForm, FrmGetObjectIndex(activeForm, ProcessList));
-	// Set list draw function
-	LstSetDrawFunction(lstP, drawProcessList);
+      FormType *activeForm;
+      int numChoices = 0;
+            
+      processNode init = listModels();
+      processNode *currentNode;
+      P_handle = init.Next;
+      firstPN = init;
 
-	//fill array of process to list
-	currentNode = MemHandleLock(init.Next);
-	StrCopy(processListItems[current],currentNode->process);
-	MemHandleFree(currentNode->Next);
-	MemHandleUnlock(init.Next);
-	MemHandleFree(init.Next);
+      activeForm = FrmGetActiveForm();
+      lstP = FrmGetObjectPtr(activeForm, FrmGetObjectIndex(activeForm, 
+							   ProcessList));
 	
-	numChoices = 1;
-	LstSetListChoices(lstP, NULL, numChoices);
-		
+      /* allocate space for processListItems
+       * start with 10, expand if need be
+       */
+      listItemsH = MemHandleNew(10*sizeof(char *));
+      processListItems = MemHandleLock(listItemsH);
+
+      //fill array of process to list
+      while (P_handle != NULL) {
+	currentNode = MemHandleLock(P_handle);
+	processListItems[numChoices] = currentNode->process;
+	nextHandle = currentNode->Next;
+	P_handle = nextHandle;
+	numChoices++;
+	//after leaving this form we need to unlock and free memory
+      }
+      
+      LstSetListChoices(lstP,processListItems,numChoices);
+      FrmDrawForm(frmP);
+      //LstDrawList(lstP); /* not needed */
     }
     // if its the RunActionForm display the process name 
-	 
-    FrmDrawForm(frmP);
     
     if (formId == RunActionForm) {
-      char process[15];
-      processNode init = loadProcess("timesheet");
-      processNode *currentNode;
-      currentNode = MemHandleLock(init.Next);
-      StrCopy(process,currentNode->process);
-      MemHandleFree(currentNode->Next);
-      MemHandleUnlock(init.Next);
-      MemHandleFree(init.Next);
-      WinDrawChars(process,StrLen(process),10,15);
+      FormType* activeForm;
+      int numActions = 0;
+      char temp[256]; /* DEBUG */
+            
+      FrmDrawForm(frmP);
+      activeForm = FrmGetActiveForm();
+      lstP = FrmGetObjectPtr(activeForm, FrmGetObjectIndex(activeForm, 
+							   ActionList));
+
+      loadProcess(selection); // calls loadInstructions(), then calls runVM()
+
+      actionItemsH = MemHandleNew(context.PROC_NACT);
+      actionItems = MemHandleLock(actionItemsH);
+
+      First = listActions();
+      A_handle = First.Next;
+      firstAN = First;
+
+      // populate array of list items
+      while(A_handle!=NULL){
+	Current = MemHandleLock(A_handle);
+	actionItems[numActions++] = Current->readyAction->ActName;
+	WinDrawChars(actionItems[numActions-1], 
+		     StrLen(actionItems[numActions-1]), 10, 10*numActions+10);
+	nextHandle = Current->Next;
+	A_handle = nextHandle;
+      }
+
+      LstSetListChoices(lstP,actionItems,numActions);
+      FrmDrawForm(frmP);
+      //LstDrawList(lstP); /* not needed */
     }   
     handled = true;
   } else if (eventP->eType == lstSelectEvent) {
-      //diplay process that user selected
-      FormType *activeForm;
-      int selection; //store user's selection
-
-      activeForm = FrmGetActiveForm();
-      lstP = FrmGetObjectPtr(activeForm, FrmGetObjectIndex(activeForm, ProcessList));
-      selection = LstGetSelection(lstP);
-      if (selection == 0) 
-		FrmGotoForm(RunActionForm);     
-  }  else if (eventP->eType == ctlSelectEvent) {
-    if (eventP->data.ctlEnter.controlID == RunButton) {
-      if (timesheet_action_state == READY) {
-	switch(timesheet_action_counter) {
-	case 0:
-	  selectAction("timesheet", "get_card");
-	  break;
-	case 1:
-	  selectAction("timesheet", "enter_pay_period");
-	  break;
-	case 2:
-	  selectAction("timesheet", "fill_hours");
-	  break;
-	case 3:
-	  selectAction("timesheet", "fill_totals");
-	  break;
-	case 4:
-	  selectAction("timesheet", "sign_card");
-	  break;
-	case 5:
-	  selectAction("timesheet", "approve_card");
-	  break;
-	case 6:
-	  selectAction("timesheet", "turn_in");
-	  break;
-	default:
-	  break;
-	} /* switch */
-	timesheet_action_state = RUNNING;
+    FormType *activeForm;
+    char act_name[256]; /* a temp holder for the selected *action* name,
+			   _if_ we're dealing with the _ActionList_ */
+    activeForm = FrmGetActiveForm();
+    
+    /* discern between ProcessList, ActionList event (which form) */
+    if(FrmGetFormId(activeForm) == SelectProcessForm) {
+      lstP = FrmGetObjectPtr(activeForm, 
+			     FrmGetObjectIndex(activeForm, ProcessList));
+      StrCopy(selection,LstGetSelectionText(lstP, LstGetSelection(lstP)));
+      //WinDrawChars(selection,StrLen(selection),10,50);
+      deListProcesses(firstPN); /* unlock, free up memory... */
+      FrmGotoForm(RunActionForm);     
+    } else if(FrmGetFormId(activeForm) == RunActionForm) {
+      int numActions = 0;
+      lstP = FrmGetObjectPtr(activeForm, 
+			     FrmGetObjectIndex(activeForm, ActionList));
+      StrCopy(act_name, LstGetSelectionText(lstP, LstGetSelection(lstP)));
+      
+      selectAction(act_name); /* tell the Engine which action was clicked */
+      deListActions(firstAN); //free up the memory...
+      
+      /* repopulate the list, re-draw the form */
+      actionItemsH = MemHandleNew(context.PROC_NACT*sizeof(char *));
+      actionItems = MemHandleLock(actionItemsH);
+      
+      First = listActions(); //gets all READY/RUNNING actions
+      A_handle = First.Next;
+      
+      // populate array of list items
+      while(A_handle!=NULL){
+	Current = MemHandleLock(A_handle);
+	actionItems[numActions++] = Current->readyAction->ActName;
+	nextHandle = Current->Next;
+	A_handle = nextHandle;
       }
-    } else if (eventP->data.ctlEnter.controlID == DoneButton) {
-      if (timesheet_action_state == RUNNING) {
-	switch(timesheet_action_counter) {
-	case 0:
-	  finishAction("timesheet", "get_card");
-	  break;
-	case 1:
-	  finishAction("timesheet", "enter_pay_period");
-	  break;
-	case 2:
-	  finishAction("timesheet", "fill_hours");
-	  break;
-	case 3:
-	  finishAction("timesheet", "fill_totals");
-	  break;
-	case 4:
-	  finishAction("timesheet", "sign_card");
-	  break;
-	case 5:
-	  finishAction("timesheet", "approve_card");
-	  break;
-	case 6:
-	  finishAction("timesheet", "turn_in");
-	  break;
-	default:
-	  break;
-	}/* switch */
-	++timesheet_action_counter;
-	timesheet_action_state = READY;
-      }
-    } else if (eventP->data.ctlEnter.controlID == ListProcessesButton) {
-      timesheet_action_counter = 0;
-      timesheet_action_state = RUNNING;
-      handled = true;
-      FrmGotoForm(SelectProcessForm);
+      
+      LstSetListChoices(lstP,actionItems,numActions);
+      //LstDrawList(lstP);
+      frmP = FrmGetActiveForm(); /* we were getting an error w/o this... */
+      FrmDrawForm(frmP); /* re-draw the form */
+    } else {  /* error case */
+      WinDrawChars("Error in lstSelectEvent:RunAction", 
+		   StrLen("Error in lstSelectEvent:RunAction"), 10, 30);
     }
     handled = true;
+  } else if (eventP->eType == ctlSelectEvent) {
+    /* include these two lines in PalmPEOS.prc for buttons...
+       BUTTON "Run" ID RunButton AT (20 120 36 12) USABLE LEFTANCHOR FRAME
+       BUTTON "Done" ID DoneButton AT (80 120 36 12) USABLE LEFTANCHOR FRAME
+    */
+    /* substituted these buttons with ActionList -
+       see lstSelectEvent's handler */
+    handled = true;
+  } else if (eventP->data.ctlEnter.controlID == ListProcessesButton) {
+
+    // currently (R2, 3/14/3), running process instance is lost
+    // -- in future releases we'll need to save the state 
+    //    of this process instance
+    handled = true;
+    FrmGotoForm(SelectProcessForm);
   } else if (eventP->eType == appStopEvent) {
     // Unload the form resource.
     frmP = FrmGetActiveForm();
@@ -200,6 +212,9 @@ UInt32 PilotMain(UInt16 cmd, MemPtr cmdPBP, UInt16 launchFlags)
   switch (cmd) {
   case sysAppLaunchCmdNormalLaunch:
     
+    //trying to get rid of invalid font errors
+    //FntSetFont(stdFont);
+    
     FrmGotoForm(SelectProcessForm);
     
     do {
@@ -213,7 +228,6 @@ UInt32 PilotMain(UInt16 cmd, MemPtr cmdPBP, UInt16 launchFlags)
 	    FrmDispatchEvent(&event);
       
     } while (event.eType != appStopEvent);
-    
     break;
     
   default:

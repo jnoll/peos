@@ -4,7 +4,7 @@
  * Date: 11/1/02
  */
 
-char processListItems[10][15];
+char** processListItems;
 
 /* takes a string, displays it on the
  * Palm's screen

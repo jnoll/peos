@@ -6,6 +6,7 @@
 #define STACK_LENGTH (256) /* max length of the stack... */
 #define MAX_ACTS (256)
 #define MAX_DB_NAME (32) /* see listModels() in PalmEngine.c */
+#define MAX_ACT_NAME (512)
 
 typedef enum {
   ACT_NONE,
@@ -17,7 +18,7 @@ typedef enum {
 } action_state;
 
 typedef struct {
-  char* ActName;
+  char ActName[MAX_ACT_NAME];
   action_state ActState;
 } ActAndState;
 
@@ -26,14 +27,14 @@ typedef struct {
  * it will wait for them to reach the destState (as a result of
  * a command from the user/UI */
 typedef enum {
-  SET,
-  WAIT,
-  FORK, 
-  JOIN,
-  EXIT,
-  SELECT,
-  ASSERT,
-  QUERY
+  OP_SET,
+  OP_WAIT,
+  OP_FORK, 
+  OP_JOIN,
+  OP_EXIT,
+  OP_SELECT,
+  OP_ASSERT,
+  OP_QUERY
 } SysCallOpcode;
 
 /* global struct to handle parameters of a system call */
@@ -56,9 +57,12 @@ typedef struct {
 typedef struct {
   int stack[STACK_LENGTH]; 
   ActAndState *actions;  
+  int PROC_NACT;
   int PC; /* program counter - set by Engine, used in VM */
-  int SP; /* index of top of stack */ 
+  int SP; /* index of top of stack - should start @ -1 due to impl of push()*/ 
   int A; /* the "accumulator" register */
+  int PROC_WAITING; /* '0' if process is not waiting, '1' if it's waiting
+		     * for input from the user */
 } processContext;
 
 typedef struct {
@@ -70,29 +74,29 @@ typedef struct {
 
 /* A linked list to hold the available actions (READY/RUNNING), 
  * filled when listActions() is called, and each element of which
- * is displayed by the UI as a choice for the user to select... */
+ * is displayed by the UI as a choice for the user to select... 
+ * NOTE: _only_ used for listActions()! */
 typedef struct { 
-  ActAndState readyAction;
+  ActAndState* readyAction;
   MemHandle Next;
-} actionNode; /* Used for listActions() - analogous to listModels() */
+} actionNode;
 
-/* global variable - vm:execute() pushes arguments, returns
+/* global variables */
+/* vm:execute() pushes arguments, returns
  * SYSCALL to Engine, which evaluates the arguments on 
  * SysCallArgs, performs the necessary action(s), and
  * returns control to the user. */
-SysCallParameters SysCallArgs; 
+extern char palm_msg[512];   /* holder/buffer for msgs to sendUI */
 
-processContext context; /* what'll be saved as the persistence layer */
+extern SysCallParameters SysCallArgs; 
+extern processContext context; /* what'll be saved as the persistence layer */
+extern char ** instr_array; /* dynamic, like ActArray*/
+extern MemHandle actionsH; /* handle to context.actions array */
+extern MemHandle argActions; /* handle to SysCallArgs.acts */
 
-/* global variables */
-extern char palm_msg[512];   /* holder for msgs to sendUI */
-extern action_state act_state;
-
-char ** instr_array; /* dynamic, like ActArray*/
-
+/* PalmEngine functions */
 processNode listModels();
-processNode loadProcess(char p_name[]);
+int loadProcess(char p_name[]);
 actionNode listActions();
-int selectAction(char p_name[], char act_name[]);
-int finishAction(char p_name[], char act_name[]);
+int selectAction(char act_name[]);
 
