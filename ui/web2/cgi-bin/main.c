@@ -74,7 +74,7 @@ int main()
       if(alist[j].state == 1 || alist[j].state == 2 || alist[j].state == 4){
         printf("<tr>\n");
         printf("<td width=\"100px\" valign=\"top\">\n"); 
-        printf("active\n");
+        printf("%s\n", state);
         printf("</td>\n");
         printf("<td width=\"150\" valign=\"top\">");
         print_action(pid, alist[j].name, state);
