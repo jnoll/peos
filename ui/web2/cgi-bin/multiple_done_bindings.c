@@ -31,9 +31,6 @@ int main()
     pidstr = (char *) getvalue("pid", cgivars);
     pid = atoi(pidstr);
  
-//  printf("Content-Type: text/plain\n\n") ;
-//  printf("pid=%dprocess_filename=%s\n",pid,process_filename);
-
     for(i=0,num_actions=0; cgivars[i]; i+=2) {
         if(strcmp(cgivars[i],"actions") == 0) {
 	    actions[num_actions] = cgivars[i+1];
@@ -45,9 +42,8 @@ int main()
 
     num_unbound_resources=0;
 
-    unbound_resource_list = (peos_resource_t *) calloc(25, sizeof(peos_resource_t));
+    unbound_resource_list = (peos_resource_t *) calloc(256, sizeof(peos_resource_t));
 
- //   printf("Content-Type: text/plain\n\n") ;
         
     for(i=0; i<num_actions; i++) {
 	int num_resources;    
@@ -68,9 +64,9 @@ int main()
 	        }
 	    }
 	}
+	if(resources) free(resources);
     }
 
- //   printf("\nubres_no=%d",num_unbound_resources);
 
     for(i=0; i < num_unbound_resources; i++) {
 	char *value;    

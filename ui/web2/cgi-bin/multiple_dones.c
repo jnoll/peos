@@ -54,7 +54,7 @@ int main()
 
     for(i=0,num_actions=0; cgivars[i]; i+=2) {
         if(strcmp(cgivars[i],"actions") == 0) {
-	    actions[num_actions] = strdup(cgivars[i+1]);
+	    actions[num_actions] = cgivars[i+1];
             num_actions++;
 	}
     }
@@ -63,16 +63,13 @@ int main()
 
     num_unbound_resources=0;
 
-    unbound_resource_list = (peos_resource_t *) calloc(25, sizeof(peos_resource_t));
+    unbound_resource_list = (peos_resource_t *) calloc(256, sizeof(peos_resource_t));
 
-//    printf("Content-Type: text/plain\n\n") ;
     
     for(i=0; i<num_actions; i++) {
         char *pidstr = strtok(actions[i],"$");
 	pid = atoi(pidstr);
-//	printf("pid=%d\n",pid);
 	act_names[i] = strtok(NULL, "\0");
-//	printf("act_name=%s",act_names[i]);
     }
     
         
@@ -96,10 +93,9 @@ int main()
 	        }
 	    }
 	}
+	if(resources) free(resources);
     }
 
-//    printf("\nubres_no=%d",num_unbound_resources);
-    
 
     if(num_unbound_resources == 0)  {
 	for(i=0; i<num_actions; i++) {
@@ -144,7 +140,7 @@ int main()
     free(cgivars);
 
     if(unbound_resource_list) free(unbound_resource_list);
-    
+ 
 
     exit(0);    
 }	

@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS = -g -Wall -I$(OS_DIR) -I../../..
 
 LD = gcc
-LIBS = -lpml
+LIBS = -lpml 
 LDFLAGS = -g -L../../../pml
 
 

@@ -76,6 +76,7 @@ int main()
 
     if(unbound_resource_list) free(unbound_resource_list);
     
+    if(resources) free(resources);   
      
     /** Free anything that needs to be freed **/
     for (i=0; cgivars[i]; i++)

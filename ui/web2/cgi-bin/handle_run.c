@@ -62,12 +62,10 @@ int main()
     }
 	    
 
-//    printf("Content-Type: text/plain\n\n") ;
     
     unbound_resource_list = (peos_resource_t *) calloc(num_resources+1, sizeof(peos_resource_t));
     num_unbound_resources = 0;
     for(i=0; i < num_resources; i++) {
-//	printf("%s=%s=%s\n",resources[i].name,resources[i].value,resources[i].qualifier);    
         if((strcmp(resources[i].qualifier,"any") == 0) || (strcmp(resources[i].qualifier,"new") == 0)) {
             strcpy(unbound_resource_list[num_unbound_resources].name,resources[i].name);
             num_unbound_resources++;
@@ -79,9 +77,6 @@ int main()
 	    }
 	}
     }
-
-//    printf("num_unbound=%d\n",num_unbound_resources);
-//    printf("num_resources=%d\n",num_resources); 
 
     if((num_unbound_resources == 0) || (num_resources == 0)) {
         if(strcmp(resource_type,"requires") == 0) {
@@ -128,6 +123,7 @@ int main()
     free(cgivars);
 
     if(unbound_resource_list) free(unbound_resource_list);
+    if (resources) free(resources);
 
     exit(0);    
 }	
