@@ -123,7 +123,7 @@ char *get_resource_qualifier(int pid, char *resource_name)
 
 START_TEST(test_list_models)
 {
-    int i, failed = 0;
+    int i, j, failed = 0;
     char *model_dir = "test_models";
     char **models = NULL;
 
@@ -144,6 +144,7 @@ START_TEST(test_list_models)
     models = peos_list_models();
 
     /* Post: A list of all model file names in directory. */
+    /* *** old section 
     for (i = 0; i < 10; i++) {
 	char filename[256];
 
@@ -155,7 +156,22 @@ START_TEST(test_list_models)
 	    failed = 1;
 	}
     }
-
+    */
+    /* if the filenames are not sorted in increasing order
+       there are n^2 possibilities
+    */
+    for (i = 0; i < 10; i++) {
+	char filename[256];
+	sprintf(filename, "%d",  i);
+	for(j = 0; j < 10; j++) 
+  		if (!strcmp(models[j], filename)) break;
+ 	if (j>=10){
+		char msg[BUFSIZ];
+		sprintf(msg, "model file %s not found (%s)", filename, models[i]);
+		fail(msg);
+		failed = 1;
+	}
+    }
     if (!failed) {
 	char cmd[BUFSIZ];
 
