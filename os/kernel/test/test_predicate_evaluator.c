@@ -167,15 +167,78 @@ START_TEST(test_is_provides_true_2)
 }
 END_TEST
 
-START_TEST(test_pe_eval)
+//----------------------
+START_TEST(test_pe_perform_predicate_eval)
 {
-   
+
+	int TREE_OP_t = EQ,
+	    TREE_OP_t_left = DOT,
+	    TREE_OP_t_right = DOT;
+	    
+	char* TREE_ID_t_left_right ="timestamp",* TREE_ID_t_right_right="timestamp";
+	/* normal case */
+	if(TREE_OP_t >= EQ && TREE_OP_t <= GT){
+		if(TREE_OP_t_left == DOT && TREE_OP_t_right == DOT){
+			if(!strcmp("timestamp", TREE_ID_t_left_right) && !strcmp("timestamp", TREE_ID_t_right_right)){
+				/* this should be accessed */
+			}else 
+				fail ("Should never have gotten here!");
+		}
+	}
+	
+	
+	TREE_OP_t = EQ-1;
+	/* bad case 1 */
+	if(TREE_OP_t >= EQ && TREE_OP_t <= GT){
+		if(TREE_OP_t_left == DOT && TREE_OP_t_right == DOT){
+			if(!strcmp("timestamp", TREE_ID_t_left_right) && !strcmp("timestamp", TREE_ID_t_left_right)){
+				fail ("Should never have gotten here!");
+			}
+		}
+	}
+	
+	TREE_OP_t = GT;
+	TREE_OP_t_left=EQ;
+	
+	
+	/* bad case 2 */
+	if(TREE_OP_t >= EQ && TREE_OP_t <= GT){
+		if(TREE_OP_t_left == DOT && TREE_OP_t_right == DOT){
+			if(!strcmp("timestamp", TREE_ID_t_left_right) && !strcmp("timestamp", TREE_ID_t_left_right)){
+				fail ("Should never have gotten here!");
+			}
+		}
+	}
+	
 }
 END_TEST
 
-START_TEST(test_pe_perform_predicate_eval)
+START_TEST(test_pe_eval)
 {
-   
+/* 
+	-1 return conditions:
+	* buf1 resource file is not found
+	* buf2 resource file is not found
+	* the TREE_IP was not found
+	* condition and method of evaluation flags do not any one's implemented
+	
+	1 return conditions:
+	* TREE OP condition evaluated to true
+	0 return conditions:
+	* TREE OP condition evaluated to false
+*/
+	int resource_one_exists = 1,
+	    resource_two_exists = 1,
+	    cond_meth_satisfied = 1;
+	    
+	 
+   	if(cond_meth_satisfied){
+		if(resource_one_exists && resource_two_exists)
+		
+		fail_unless(resource_one_exists && resource_two_exists,
+			"resources do not exist, no comparison should be made");
+		
+	}
 }
 END_TEST
 

@@ -54,6 +54,9 @@ test_graph: test_graph.o $(TEST_OBJS)
 test_tclinterp: test_tclinterp.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(filter-out tclinterp.o, $(TEST_OBJS)) $(TEST_LIBS)
 
+test_resources: test_resources.o $(TEST_OBJS)
+	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) predicate_evaluator.o $(TEST_LIBS)
+
 test_%: test_%.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) $(TEST_LIBS) 
 

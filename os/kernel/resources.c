@@ -19,7 +19,7 @@ void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int 
     int i = 0;
     peos_resource_t *resource_list = *rlist;
 
-    printf("_ID:[%s]\n",id);
+    // printf("_ID:[%s]\n",id);
     while((i < *num_resources) && (strcmp(resource_list[i].name, id)) != 0) {
         i++;
     }
@@ -147,7 +147,7 @@ peos_tcl* interpreter;
 	*total_resources = num_resources;
         for(i = 0; i < num_resources; i++) {
             for(j = 0; j < num_proc_resources; j++) {
-	        printf("ARE:[%s]\n",proc_resources[j].name);
+	      //  printf("ARE:[%s]\n",proc_resources[j].name);
 	            peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
 	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
 	            strcpy(act_resources[i].value,result_str);
@@ -200,7 +200,7 @@ peos_tcl* interpreter;
         *total_resources = num_resources;
         for(i = 0; i < num_resources; i++) {
             for(j = 0; j < num_proc_resources; j++) {
-	        printf("APR:[%s]\n",proc_resources[j].name);
+	      //  printf("APR:[%s]\n",proc_resources[j].name);
 	        peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
                 if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
 	            strcpy(act_resources[i].value,result_str);
@@ -253,7 +253,7 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 	*total_resources = num_resources;
 	for(i = 0; i < num_resources; i++) {
 	    for(j = 0; j < num_proc_resources; j++) {
-	       printf("ACT:[%s]\n",proc_resources[j].name);
+	      // printf("ACT:[%s]\n",proc_resources[j].name);
 	       peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
  	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
 	            strcpy(act_resources[i].value,result_str);

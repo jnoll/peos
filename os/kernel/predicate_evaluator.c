@@ -13,6 +13,7 @@
 #include "process.h"
 #include "resources.h"
 
+
 typedef int PE_CONDITION;
 typedef int PE_METHOD;
 #define PE_COND_RA_RA 1 /* Resource-Attrib, Resource-Attrib */
@@ -164,7 +165,7 @@ void pe_perform_predicate_eval(Tree t)
 	if(TREE_OP(t) >= EQ && TREE_OP(t) <= GT){
 		//pe_evals[pe_current]=TREE_OP(t);
 		if(TREE_OP(t->left) == DOT && TREE_OP(t->right) == DOT){
-			if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->left->right))){
+			if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->right->right))){
 				if((res = pe_eval(PE_COND_RA_RA, PE_METH_FILE_TIMESTAMP, t))==1)
 					printf(stderr,"pe_update says TRUE!");
 				else if(res == 0) fprintf(stderr,"pe_update says FALSE!");
