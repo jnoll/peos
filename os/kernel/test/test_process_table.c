@@ -767,6 +767,78 @@ START_TEST(test_print_after_escaping)
 }
 END_TEST
 
+START_TEST(test_print_xml_iteration)
+{
+    int abytes, nbytes;	
+    FILE *expected, *actual;	
+    char expectedmem[BUFSIZ], actualmem[BUFSIZ];
+    
+    Graph g = (Graph) malloc(sizeof(struct graph));
+    Node source, sink, act_0;
+
+    source = make_node("p", ACT_READY, PROCESS, 0);
+    PID(source) = 0;
+    act_0 = make_node("act_0", ACT_READY, ACTION, 1);
+    source -> next = act_0;
+    PID(act_0) = 0;
+    sink = make_node("p", ACT_READY, PROCESS, 2);
+    act_0 -> next = sink;
+    sink -> next = NULL;
+
+    source -> predecessors = NULL;
+    source -> successors = (List) make_list(act_0, NULL, NULL, NULL, NULL);
+    act_0 -> predecessors = (List) make_list(source,act_0,NULL,NULL,NULL);
+    act_0 -> successors = (List) make_list(sink,act_0,NULL,NULL,NULL);
+    sink -> predecessors = (List) make_list(act_0, NULL, NULL, NULL, NULL);
+    sink -> successors = (List) ListCreate();
+ 
+    g -> source = source;
+    g -> sink = sink;
+
+    
+
+    expected = fopen("expected.xml", "w");
+
+    fprintf(expected, "<iteration>\n");
+    fprintf(expected, "<action name=\"act_0\" state=\"READY\">\n");
+    fprintf(expected, "<script>\nscript\n</script>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
+    fprintf(expected, "</action>\n");
+    fprintf(expected, "</iteration>\n");
+    fclose(expected);
+    mark_point();
+
+    expected = fopen("expected.xml", "r");
+    memset(expectedmem, 0, BUFSIZ);
+    nbytes = fread(expectedmem, sizeof(char), BUFSIZ, expected);
+    fclose(expected);
+    mark_point();
+ 
+    actual = fopen("actual.xml", "w");
+
+    print_graph(g, actual);
+    fclose(actual);
+
+    mark_point();
+
+    actual = fopen("actual.xml", "r");
+    memset(actualmem, 0, BUFSIZ);
+    abytes = fread(actualmem, sizeof(char), BUFSIZ, actual);
+    fail_unless(abytes == nbytes, "file size");
+    fclose(actual);
+    mark_point();
+
+    fail_unless (strcmp(actualmem, expectedmem) == 0, "print_graph_iteration:proc table xml contents differ");
+
+   unlink("expected.xml");
+  unlink("actual.xml");
+}
+END_TEST
+    
+
 Graph create_xml_test_graph()
 {
 
@@ -1177,6 +1249,7 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_print_action_node);
     tcase_add_test(tc, test_print_after_escaping);
     tcase_add_test(tc, test_print_graph);
+    tcase_add_test(tc, test_print_xml_iteration);
     tcase_add_test(tc, test_save_proc_table_xml);
 
     sr = srunner_create(s);
