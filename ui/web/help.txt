@@ -1,4 +1,4 @@
-port 14176 -- see webui.cfg
+port 14523 -- see webui.cfg
 Use this:
 gcc webui.c SMTP.c getcgivars.c interface.c smpsock.c strlib.c config.c -o
 webui.cgi  
