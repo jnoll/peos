@@ -1,7 +1,9 @@
 #!/bin/sh
 
 export QUERY_STRING="0+test_script=ready"
-create_testtable
+cp proc_table.dat old_table.dat
+cp test_table.dat proc_table.dat
+
 action_page.cgi > output
 
 if !(grep "Action: test_script   (ready)" output)
@@ -63,4 +65,6 @@ then
   echo
 fi
 
+cp proc_table.dat test_table.dat
+cp old_table.dat proc_table.dat
 rm output
