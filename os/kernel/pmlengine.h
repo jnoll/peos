@@ -29,6 +29,7 @@ void toThreeDigits(char * outString, const int procRun);
 int compare_ints(const int * a, const int * b);
 int createInstance(char * processName);
 int kernelRunAction(char * proc, char * act);
+int kernelQueryState(char option);
 
 void pmlLogin(void);
 int authenticate(char * uname, char * passwd);
