@@ -23,6 +23,8 @@ typedef struct peos_context_tag {
     peos_other_node_t *other_nodes;
 } peos_context_t;
 
+
+
 /* This has to be here because load_proc_table needs to set it. */
 extern peos_context_t *current_process;
 

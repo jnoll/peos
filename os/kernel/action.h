@@ -15,6 +15,13 @@ typedef struct {
 	vm_act_state state;
 } peos_other_node_t;
 
+typedef struct {
+	int pid;
+	char *name;
+	char *value;
+} peos_resource_t;
+
+
 typedef enum { 
     ACT_SCRIPT, ACT_AGENT, ACT_REQUIRES, ACT_PROVIDES, ACT_TOOL 
 } peos_field_t;

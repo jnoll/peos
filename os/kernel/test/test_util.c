@@ -15,6 +15,17 @@ int fork_status = CK_NOFORK;
 int verbosity = CK_NORMAL;
 /* Utility functions. */
 
+
+Tree make_tree(char *sval,int ival, Tree left, Tree right)
+{
+	Tree t = (Tree) malloc (sizeof (struct tree));
+	t -> sval = sval;
+	t -> ival = ival;
+	t -> left = left;
+	t -> right = right;
+	return t;
+}
+
 Node make_node(char *name, vm_act_state state, int type)
 {
 
@@ -76,6 +87,17 @@ Graph stub_makegraph(char *file)
    Node act_1 = (Node) malloc (sizeof(struct node));
    Node sel = (Node) malloc (sizeof(struct node));
    Node join = (Node) malloc (sizeof(struct node));
+   Tree t1 = make_tree("y",0,NULL,NULL);
+   Tree t2 = make_tree("modified",0,NULL,NULL);
+   Tree t3 = make_tree(NULL,DOT,t1,t2);
+   Tree t4 = make_tree("true",0,NULL,NULL);
+   Tree t5 = make_tree(NULL,EQ,t3,t4);
+
+   Tree t6 = make_tree("x",0,NULL,NULL);
+
+   Tree t7 = make_tree("x",0,NULL,NULL);
+   Tree t8 = make_tree("z",0,NULL,NULL);
+   Tree t9 = make_tree(NULL,AND,t7,t8);
 
    sel->name = "sel";
    join->name = "sel";
@@ -85,6 +107,11 @@ Graph stub_makegraph(char *file)
    join->type = JOIN;
    join -> data = (void *) malloc (sizeof (struct data));
    STATE(join) = ACT_NONE;
+
+   act_0 -> requires = t5;
+   act_0 -> provides = t6;
+   act_1 -> requires = t9;
+   act_1 -> provides = NULL;
    
    g -> source = source;
    g -> sink = sink;
@@ -114,8 +141,8 @@ Graph stub_makegraph(char *file)
    act_1 -> script = "test script";
    MARKED(act_1) = 0;
    STATE(act_1) = ACT_NONE;
-			   
-   
+
+  
    return g;
    
 }

@@ -15,7 +15,7 @@
 extern Graph stub_makegraph(char *file);
 extern Item stub_ListIndex(List, int);
 extern Node make_node(char *, vm_act_state, int type);
-
+extern Tree make_tree(char *,int, Tree,Tree);
 
 /* Globals. */
 int lineno = 1;
@@ -663,7 +663,27 @@ START_TEST(test_mark_iter_nodes)
 	fail_unless(STATE(act_2) == ACT_READY, "act_2 not ready");
 }
 END_TEST
-												  
+
+START_TEST(test_make_resource_list)
+{
+	int num_resources = 0;
+	char *ptr = "y";
+	peos_resource_t *resource_list = (peos_resource_t *) calloc(256,sizeof(peos_resource_t));
+	
+	Tree t1 = make_tree("y",0,NULL,NULL);
+	Tree t2 = make_tree("modified",0,NULL,NULL);
+	Tree t3 = make_tree(NULL,DOT,t1,t2);
+	Tree t4 = make_tree("true",0,NULL,NULL);
+	Tree t5 = make_tree(NULL,EQ,t3,t4);
+
+	make_resource_list(t5,resource_list,&num_resources);
+
+	fail_unless(num_resources == 1,"num_resources wrong");
+    fail_unless(strcmp(resource_list[0].name,ptr) == 0,"resource name wrong");
+
+}	
+END_TEST
+	
 
 START_TEST(test_initialize_graph)
 {
@@ -1001,7 +1021,7 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_find_node);
     tcase_add_test(tc, test_find_node_nonaction);
 
-    tc = tcase_create("makegraph");
+   tc = tcase_create("makegraph");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_makegraph);
     tcase_add_test(tc,test_makegraph_error);
@@ -1010,6 +1030,11 @@ main(int argc, char *argv[])
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_mark_successors);
 
+    tc = tcase_create("make resource list");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_make_resource_list);
+
+ 
     tc = tcase_create("action done");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_action_done);

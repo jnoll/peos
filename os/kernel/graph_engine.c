@@ -24,6 +24,7 @@ void add_iteration_lists(Graph g);
 
 
 
+
 int  annotate_graph(Graph g, peos_context_t *context)
 {
 	
@@ -70,6 +71,7 @@ void sanitize(Graph g)
 Graph makegraph(char *file)
 {
 	filename = file;
+	
 	lineno = 1;
 	yyin = fopen(filename, "r");
 	yyparse();
@@ -79,6 +81,7 @@ Graph makegraph(char *file)
 	if(program != NULL)
 	{
 	initialize_graph(program);
+
 	}
 	return program;
 	}
@@ -148,6 +151,86 @@ Node find_node(Graph g, char *node_name)
 	}
         return NULL;
 }	
+
+void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources)
+{
+	int i;
+   if(t)
+       {
+        if((IS_OP_TREE(t)) && (TREE_OP(t) == DOT))
+          {
+	      i = 0;	  
+	      while((i < *num_resources) && (strcmp(resource_list[i].name,TREE_ID(t->left))) != 0)
+	      {	      
+		i++;
+	      }
+	      if(i == *num_resources)
+	      {
+              resource_list[*num_resources].name = TREE_ID(t->left);
+	      resource_list[*num_resources].value = NULL;
+	      *num_resources = *num_resources + 1;
+
+	      }
+              return;
+          }
+        else
+          {
+              if(IS_ID_TREE(t))
+               {
+		 i = 0;
+                 while((i < *num_resources) && (strcmp(resource_list[i].name,TREE_ID(t))) != 0)
+                  {
+                    i++;
+                  }
+                 if(i == *num_resources)
+                 {
+         	 resource_list[*num_resources].name = TREE_ID(t);
+		 resource_list[*num_resources].value = NULL;
+	         *num_resources = *num_resources + 1;
+
+		 }
+                 return;
+              }
+               else
+               {
+                if((IS_OP_TREE(t)) && (TREE_OP(t) == EQ))
+                 {
+                  make_resource_list(t->left,resource_list,num_resources);
+                 }
+                else
+                 {                       
+		   make_resource_list(t->left,resource_list,num_resources);
+		   make_resource_list(t->right,resource_list,num_resources);
+                 }
+              }
+         }
+      }
+       else
+            return;
+}
+
+peos_resource_t *get_resource_list(char *model, int *total_resources)
+{
+	int rsize = 256;
+	Graph g;
+	Node n;
+	int num_resources = 0;
+	peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+
+	g = makegraph(model);
+	
+	for(n = g->source->next; n != NULL; n = n -> next)
+	{
+		if(n -> type == ACTION)
+		{
+                  make_resource_list(n -> requires,resource_list,&num_resources);
+		  make_resource_list(n -> provides,resource_list,&num_resources);
+		}
+	}
+	*total_resources = num_resources;
+	return resource_list;
+}
+
 
 void mark_iter_nodes(Node n)
 {
