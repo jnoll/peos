@@ -101,8 +101,7 @@ void add_iteration_lists(Graph g)
 
 	for(node = g -> source->next; node != NULL; node = node -> next)
 	{
-          MARKED(node) = TRUE;
-	  
+         	  
 	  for(i = 0; i < ListSize(node -> predecessors); i++)
 	   {
 	     parent = (Node) ListIndex(node -> predecessors,i);
@@ -118,6 +117,7 @@ void add_iteration_lists(Graph g)
 		}
 	     }
 	   }
+	  MARKED(node) = TRUE;
 
 	  for(k = 0; k < ListSize(node -> successors); k++)
 	  {
@@ -250,6 +250,11 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
 	if(g != NULL)
 	{
 		n = find_node(g,act_name);
+		if(n == NULL)
+		{
+			fprintf(stderr,"get_resource_list_action :cannot find action");
+			return NULL;
+		}
 		make_resource_list(n -> requires,act_resources,&num_resources);
 		make_resource_list(n -> provides,act_resources,&num_resources);
 		*total_resources = num_resources;
