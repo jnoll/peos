@@ -15,7 +15,7 @@ if ($ARGV[0]) {
    $InstallDir = $ARGV[0] . "/";
    print "Install Directory = $InstallDir\n";
 } else {
-   $InstallDir = $ENV{HOME} . "/webui/";
+   $InstallDir = $ENV{HOME} . "/public_html/webui/";
    print "No install directory passed to script Defaulting to $InstallDir\n";
 }
 $InstallDir =~ s/\/\//\//;
