@@ -16,7 +16,7 @@ void print_row(int pid, char *name, char *state)
     printf("<td style=\"vertical-align: top;\">%d<br></td>", pid);
     printf("<td style=\"vertical-align: top;\"><a href = action_page.cgi?pid=%d&act_name=%s&process_filename=%s>%s</a><br></td>",pid, name, process_filename, name);
     printf("<td style=\"vertical-align: top;\">%s<br></td>", state);
-    printf("<td style=\"vertical-align: top;\"><input type =\"checkbox\" name=\"actions\" value=\"%d#%s\"<br></td>",pid,name);
+    printf("<td style=\"vertical-align: top;\"><input type =\"checkbox\" name=\"actions\" value=\"%d$%s\" onclick=\"checkChoice(this)\"><br></td>",pid,name);
     printf("</tr>");
  
 }
@@ -30,7 +30,12 @@ void list_actions()
 		                                                                                                     
     char ** result = peos_list_instances();
 
-    printf("<form name=\"form\" action=\"test_page.cgi\">");
+    if(result[0] == NULL) {
+        printf("No Processes Instantiated\n");
+	return;
+    }
+
+    printf("<form name=\"pickform\" action=\"multiple_dones.cgi\">");
     printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%;\">");
     printf("<tbody>");
     printf("<tr>");
@@ -57,6 +62,7 @@ void list_actions()
     printf("<td style=\"vertical-align: top;\"></td>");
     printf("<td style=\"vertical-align: top;\"></td>");
     printf("<td style=\"vertical-align: top;\"><input type=\"Submit\" name=\"Submit\" value=\"Submit Dones\"><br></td></tr>");
+    printf("<input type=\"hidden\" name=\"process_filename\" value=\"%s\">",process_filename);
     printf("</tbody>");
     printf("</table>");
     printf("</form>");
@@ -84,7 +90,28 @@ int main()
     peos_set_process_table_file(process_filename);
     
     print_header("Action List");
-        
+     
+    printf("<SCRIPT LANGUAGE=\"JavaScript\">");
+    printf("<!-- Begin\n");
+    printf("function checkChoice(field) {\n");
+    printf("var i;\n");
+    printf("var frag = new Array();\n");
+    printf("frag = field.value.split('$');\n");
+    printf("if(field.checked == true) {\n");
+    printf("for (i = 0; i < document.pickform.actions.length; i++) {\n");
+    printf("var tmp = new Array();");
+    printf("tmp = document.pickform.actions[i].value.split('$');\n");
+    printf("if(tmp[0] != frag[0]) {\n");
+    printf("document.pickform.actions[i].checked = false;\n");
+    printf("}\n");
+    printf("}\n");
+    printf("}\n");
+    printf("}\n");
+    printf(" //  End -->");
+    printf("//  </script>");
+
+    print_noscript();
+
     list_actions();
     printf("<a href=process_listing.cgi?process_filename=%s>create process</a>",process_filename);
     printf("</body>\n") ;

@@ -1,8 +1,3 @@
-/*
- * Functions to generate html.
- * $ID$
- */
-//#include <kernel/vm.h>
 #include <stdio.h>
 #include <kernel/action.h>
 #include <kernel/events.h>
@@ -35,6 +30,14 @@ print_header(char *title)
     printf("</font></center>\n");
 
 }
+
+void print_noscript()
+{
+    printf("<noscript>\n");
+    printf("<b> This page requires Java Script Support. Please turn on Java Script and reload this page");
+    printf("</noscript>");
+}
+		    
 
 void print_action(int pid, char* action, char *state)
 {

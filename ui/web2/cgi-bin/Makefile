@@ -29,7 +29,7 @@ TESTS = test_login.sh \
 	test_process_listing.sh \
 	
 
-CGI = login.cgi action_list.cgi action_page.cgi create_process.cgi process_listing.cgi action_event.cgi handle_run.cgi bind_resources.cgi
+CGI = login.cgi action_list.cgi action_page.cgi create_process.cgi process_listing.cgi action_event.cgi handle_run.cgi bind_resources.cgi multiple_dones.cgi
 SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)
 
 PML = test_action.pml readme.pml
