@@ -1,21 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../../../os/kernel/events.h"
-#include "../../../os/kernel/vm.h"
-#include "../../../os/kernel/process_table.h"
+#include "kernel/events.h"
+#include "kernel/action.h"
+#include "kernel/process_table.h"
 #include "html.h" 
 
-void print_row(peos_action_t *action, char *state);
+//void print_row(peos_action_t *action, int index, int pid);
 
 
 int main()
 {
-  int i, action_count=0;
-  peos_action_t **alist, **total_list;
+  int j, pid=0, action_count=0;
+  char *state;
+  peos_action_t *alist;
   peos_resource_t *resource;
-  int resource_num;
+  int num_actions;
 
+  state = (char *)calloc(10, sizeof(char));
   print_header("Worklist");
 
 
@@ -42,47 +44,54 @@ int main()
 
   load_proc_table("proc_table.dat");
 
-  alist = peos_list_actions(ACT_RUN);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-	print_row(alist[i], "active");
+  alist = peos_list_actions(pid, &num_actions);
+  if(alist){
+    for(j = 0; j < num_actions; j++){
+      switch(alist[j].state){
+	case 1:  
+          strcpy(state, "ready");
+	  break;
+	case 2:
+	  strcpy(state, "active");
+	  break;
+	case 3:
+	  strcpy(state, "done");
+	  break;
+	case 4:
+	  strcpy(state, "suspend");
+	  break;
+	case 5:
+	  strcpy(state, "abort");
+	  break;
+	case 6:
+	  strcpy(state, "new");
+	  break;
+	default:
+	  strcpy(state, "none");
+	  break;
+      }
+	  
+      if(alist[j].state == 1 || alist[j].state == 2 || alist[j].state == 4){
+        printf("<tr>\n");
+        printf("<td width=\"100px\" valign=\"top\">\n"); 
+        printf("active\n");
+        printf("</td>\n");
+        printf("<td width=\"150\" valign=\"top\">");
+        print_action(pid, alist[j].name, state);
+        printf("</td>\n");
+        printf("<td width=\"300\" valign=\"top\">");
+        print_resource(pid, alist[j].name);
+        printf("</td>\n");
+        printf("<td width=\"300\" valign=\"top\">");
+        print_script(pid, alist[j].name);
+        printf("</td>\n");
+        printf("</tr>\n");
+      }
     }
-  }  
-
-  alist = peos_list_actions(ACT_SUSPEND);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-	print_row(alist[i], "suspended");
-    }
-  }
-
-  alist = peos_list_actions(ACT_READY);
-  if(alist && alist[0]){
-    for(i=0; alist[i]; i++){
-	print_row(alist[i], "ready");
-    }
-  }
+  } 
 
   save_proc_table("proc_table.dat");
 
   print_process_button();
   return 0;
-}
-
-void print_row(peos_action_t *action, char *state)
-{
-    printf("<tr>\n");
-    printf("<td width=\"100px\" valign=\"top\">\n"); 
-    printf("active\n");
-    printf("</td>\n");
-    printf("<td width=\"150\" valign=\"top\">");
-    print_action(action->pid, action->name, state);
-    printf("</td>\n");
-    printf("<td width=\"300\" valign=\"top\">");
-    print_resource(action->pid, action->name);
-    printf("</td>\n");
-    printf("<td width=\"300\" valign=\"top\">");
-    print_script(action->pid, action->name);
-    printf("</td>\n");
-    printf("</tr>\n");
-}
+}	

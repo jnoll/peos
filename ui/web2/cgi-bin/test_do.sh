@@ -33,7 +33,7 @@ then
 fi
 export QUERY_STRING="0+test_script=done"
 do.cgi > output
-if !(grep "test_script 3" proc_table.dat > /dev/null)
+if !(grep "model: none" proc_table.dat > /dev/null)
 then
   echo
   echo Failed finishing process.

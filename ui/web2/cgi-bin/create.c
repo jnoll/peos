@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <kernel/events.h>
 #include <kernel/process_table.h>
-#include <kernel/vm.h>
+#include <kernel/action.h>
 
 int main()
 {

@@ -2,10 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <kernel/events.h>
-#include <kernel/vm.h>
+#include <kernel/action.h>
 #include <kernel/process_table.h>
 
-void get_script(int pid, char *action);
 void print_resource(int pid, char *action);
 
 int main()

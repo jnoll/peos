@@ -2,8 +2,8 @@
  * Functions to generate html.
  * $ID$
  */
-#include <kernel/vm.h>
-#include <kernel/action.h>
+//#include <kernel/vm.h>
+#include </home/wchu/summer/peos/src/os/kernel/action.h>
 void
 print_header(char *title)
 {
@@ -42,7 +42,7 @@ void print_script(int pid, char *action)
   char *script;
   int i=0;
 
-  script = (char *) get_field(pid, action, ACT_SCRIPT);
+  script = (char *) peos_get_script(pid, action);
 
   if(script) {
     for(i=0; i<40; i++){

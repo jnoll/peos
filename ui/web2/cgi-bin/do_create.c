@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <kernel/vm.h>
+#include <kernel/action.h>
 #include <kernel/process_table.h>
 #include <kernel/events.h>
 

@@ -1,22 +1,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../../../os/kernel/events.h"
-#include "../../../os/kernel/vm.h"
-#include "../../../os/kernel/process_table.h"
+#include "kernel/events.h"
+#include "kernel/action.h"
+#include "kernel/process_table.h"
 
 void suspend_active(int pid, peos_action_t *temp);
 void run_action(int pid, char *action);
 void finish_action(int pid, char *action);
 void resume_action(int pid, char *action);
 void suspend_action(int pid, char *action);
-int load_action(peos_action_t *action, int pid);
 
 int main()
 {
   char *input, *temp, *action, *state;
-  int i, pid, ret_load;
-  peos_action_t **alist;
+  int i, pid, ret_load, alist_pid=0;
+  peos_action_t *alist;
 
   printf("%s%c%c\n","Content-Type:text/html;charset=iso-8859-1",13,10);
 
@@ -31,15 +30,34 @@ int main()
 
 
   if(strcmp(state, "done") == 0) {
+    int num_actions;
     finish_action(pid, action);
     load_proc_table("proc_table.dat");
-    alist = peos_list_actions(ACT_READY);
-    for(i = 0; alist[i]; i++){
-      ret_load = load_action(alist[i], pid);
-      if(ret_load == 1)
-        return 0;	
+    alist = peos_list_actions(alist_pid, &num_actions);
+    printf("num_act=%d", num_actions);
+    for(i = 0; i < num_actions; i++){
+      printf("pid=%d", pid);
+      printf("alistpid=%d", alist_pid);
+      if((pid == alist_pid) && (alist[i].state == 1)){
+        printf("<html>\n");
+        printf("<head>\n");
+        printf("<body onload=\"window.location.href='action_page.cgi?%d+%s=%s'\"\n", pid, alist[i].name, "ready"); 
+        printf("</body>\n");
+        printf("</head>\n");
+        printf("</html>\n");
+	return 0;
+      } 
+      printf("i=%d\n",i);
+      printf("NA=%d\n",num_actions);
     }
+    printf("<html>\n");
+    printf("<head>\n");
+    printf("<body onload=\"window.location.href='main.cgi'\"\n");
+    printf("</body>\n");
+    printf("</head>\n");
+    printf("</html>\n");
   }
+
   if(strcmp(state, "suspend") == 0) {
     suspend_action(pid, action);
   }
@@ -74,7 +92,7 @@ void run_action(int pid, char *action)
   vm_exit_code status;
 
   load_proc_table("proc_table.dat");
-  if((status = peos_run_action(pid, action)) == VM_ERROR
+  if((status = peos_set_action_state(pid, action, ACT_RUN)) == VM_ERROR
      || status == VM_INTERNAL_ERROR) {
     printf("process executed an illegal instruction and has been terminated\n");
   }
@@ -88,7 +106,7 @@ void finish_action(int pid, char *action)
   vm_exit_code status;
 
   load_proc_table("proc_table.dat");
-  if((status = peos_finish_action(pid, action)) == VM_ERROR
+  if((status = peos_set_action_state(pid, action, ACT_DONE)) == VM_ERROR
       || status == VM_INTERNAL_ERROR) {
   printf("Process executed an illegal instruction and has been terminated\n");
   }
@@ -100,7 +118,7 @@ void resume_action(int pid, char *action)
   vm_exit_code status;
 
   load_proc_table("proc_table.dat");
-  if((status = peos_run_action(pid, action)) == VM_ERROR
+  if((status = peos_set_action_state(pid, action, ACT_RUN)) == VM_ERROR
       || status == VM_INTERNAL_ERROR) {
     printf("Process executed an illegal instruction and has been terminated\n");
   }
@@ -112,7 +130,7 @@ void suspend_action(int pid, char *action)
   vm_exit_code status;
 
   load_proc_table("proc_table.dat");
-  if((status = peos_suspend_action(pid, action)) == VM_ERROR) {
+  if((status = peos_set_action_state(pid, action, ACT_SUSPEND)) == VM_ERROR) {
     printf("VM ERROR\n");
   }
   if(status == VM_INTERNAL_ERROR) {
@@ -120,19 +138,3 @@ void suspend_action(int pid, char *action)
   }
   save_proc_table("proc_table.dat");
 }
-
-int load_action(peos_action_t *action, int pid)
-{
-  if(pid == action->pid){
-    printf("<html>\n");
-    printf("<head>\n");
-    printf("<body onload=\"window.location.href='action_page.cgi?%d+%s=%s'\"\n", action->pid, action->name, "ready"); 
-    printf("</body>\n");
-    printf("</head>\n");
-    printf("</html>\n");
-    return 1;
-  }
-  else
-    return 0;
-}
-
