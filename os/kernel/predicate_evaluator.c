@@ -29,15 +29,54 @@
 
 
 extern char *act_state_name(vm_act_state state);
+
+int pe_isdirempty(char* path)
+{
+
+	peos_tcl* interpreter;
+	char* result_str=NULL;
+	char* args=NULL;
+	int result =0;
+#ifdef PE_DEBUG_B
+	printf("pe_isdirempty called!\n");
+#endif
+	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
+		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+		return 0;
+	}
+	if(!result_str){
+		result_str = (char*)malloc(sizeof(char)*(255));
+	}
+	if(!args){
+		args = (char*)malloc(sizeof(char)*(255));
+	}
+	sprintf(args, "filecount %s", path);
+#ifdef PE_DEBUG_B
+	printf("Is this what i want? %s\n", args);
+#endif
+	peos_tcl_script(interpreter, "tclf_filecount.tcl");
+	Tcl_Eval(interpreter->interp, args);
+	if(result_str) free (result_str);
+	if(args) free (result_str);
+#ifdef PE_DEBUG_B
+	printf("Result for pe_isdirempty(%s): %s\n", path, interpreter->interp->result);
+#endif
+        result = (!strcmp(interpreter->interp->result,"0")) ? 1 : 0;
+	peos_tcl_delete(interpreter);
+	return result;
+}
+
 int pe_timestamp(char* file1, char*file2)
 {
 
 	peos_tcl* interpreter;
 	char* result_str=NULL;
 	char* args=NULL;
+	int result =0;
 #ifdef PE_DEBUG_B
 	printf("pe_timestamp called!\n");
 #endif
+	if(!strcmp(file1,"$$") || !strcmp(file2,"$$")) return 0;
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return 0;
@@ -59,8 +98,9 @@ int pe_timestamp(char* file1, char*file2)
 #ifdef PE_DEBUG_B
 	printf("Result for pe_timestamp(%s, %s): %s\n", file1, file2, interpreter->interp->result);
 #endif
+        result = strcmp(interpreter->interp->result,"1") ? 0 : 1;
 	peos_tcl_delete(interpreter);
-	return 1;
+	return result;
 }
 
 int pe_spellcheck(char* filename)
@@ -68,9 +108,11 @@ int pe_spellcheck(char* filename)
 	peos_tcl* interpreter;
 	char* result_str=NULL;
 	char* args=NULL;
+	int result =0;
 #ifdef PE_DEBUG_B
 	printf("pe_spellcheck called!\n");
 #endif
+        if(!strcmp(filename,"$$")) return 0;
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return 0;
@@ -92,8 +134,9 @@ int pe_spellcheck(char* filename)
 #ifdef PE_DEBUG_B
 	printf("Result for pe_spellcheck(%s): %s\n", filename, interpreter->interp->result);
 #endif
+        result = strcmp(interpreter->interp->result,"") ? 0 : 1;
 	peos_tcl_delete(interpreter);
-	return strcmp(interpreter->interp->result,"") ? 0 : 1;
+	return result;
 }
 
 int pe_file_size(char* filename)
@@ -102,8 +145,10 @@ int pe_file_size(char* filename)
 	char* result_str=NULL;
 	char* args=NULL;
 	int return_val=0, digits=1, i=0;
-	
+#ifdef PE_DEBUG_B
 	fprintf(stderr,"pe_filesize called!\n");
+#endif
+	if(!strcmp(filename,"$$")) return 0;
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return 0;
@@ -190,26 +235,28 @@ char* pe_get_resval(int pid,char* resource_name)
 	char* result_str=NULL;
 	peos_tcl* interpreter;
 #ifdef PE_DEBUG_A
-	printf("Entering pe_get_resval \n");
+	fprintf(stderr, "Entering pe_get_resval \n");
 #endif
 	if(peos_tcl_start(&(interpreter))==TCL_ERROR){
 		fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
 		return NULL;
 	}
 #ifdef PE_DEBUG_A
-	printf("Started tcl\n");
+	fprintf(stderr, "Started tcl\n");
 #endif
 	if(!result_str){
 		result_str = (char*)malloc(sizeof(char)*(255));
 	}
 	for(j = 0; j < num_proc_resources; j++) {
 #ifdef PE_DEBUG_A
-	printf("loop =>\n");
+	fprintf(stderr, "loop =>\n");
 #endif
 		peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
 #ifdef PE_DEBUG_A
-	printf("<=\n");
+	fprintf(stderr, "<=\n");
+	fprintf(stderr, "Didnt match: %s %s\n", resource_name, proc_resources[j].name);
 #endif
+		if(resource_name != NULL)
 		if(!strcmp(resource_name,proc_resources[j].name)) {
 #ifdef PE_DEBUG_A
 			fprintf(stderr, "Resource: name:%s value%s tclvalue:%s\n ", proc_resources[j].name,
@@ -217,6 +264,9 @@ char* pe_get_resval(int pid,char* resource_name)
 #endif
 			return result_str;
 		}
+#ifdef PE_DEBUG_A
+			fprintf(stderr, "Didnt match: %s %s\n", resource_name, proc_resources[j].name);
+#endif
 	}
 #ifdef PE_DEBUG_A
 			fprintf(stderr, "Resource didnt match returned: %s\n", resource_name);
@@ -273,24 +323,34 @@ int pe_perform_predicate_eval(int pid, Tree t)
 	#endif
 			if(TREE_OP(t->left) == DOT && TREE_OP(t->right) == DOT){
 				if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->right->right))){
-					return pe_file_exists(pe_get_resval(pid, TREE_ID(t))) && pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
+					return pe_file_exists(pe_get_resval(pid, TREE_ID(t->left->left))) && pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
 				}
 			}
 			else if(TREE_OP(t->left) == DOT){
 				if(!strcmp("spellchecked", TREE_ID(t->left->right)) ==
 				pe_perform_predicate_eval(pid, t->right))
-					return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));	
+					return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));
+				else if(!strcmp("clean", TREE_ID(t->left->right)) ==
+				pe_perform_predicate_eval(pid, t->right))
+					return pe_isdirempty(pe_get_resval(pid, TREE_ID(t->left->left)));
 			}
 
+
 		}
-		else if ( (TREE_OP(t) >= OR && TREE_OP(t) <= AND)
-			){
+		else if ( TREE_OP(t) == OR ){
 #ifdef PE_DEBUG
-			fprintf(stderr, "OR-AND\n");
+			fprintf(stderr, "OR\n");
 #endif
-			return (pe_perform_predicate_eval(pid,t->left) && 			
-				pe_perform_predicate_eval(pid,t->right));
+			return (pe_perform_predicate_eval(pid,t->left) ||
+				pe_perform_predicate_eval(pid,t->right)) ? 1:0;
 		}
+		else if ( TREE_OP(t) == AND ){
+#ifdef PE_DEBUG
+			fprintf(stderr, "AND\n");
+#endif
+			return (pe_perform_predicate_eval(pid,t->left) && 
+				pe_perform_predicate_eval(pid,t->right))  ? 1:0;
+		}	
 #ifdef PE_DEBUG
 		else fprintf(stderr, "Nothing\n");
 #endif
@@ -368,12 +428,12 @@ eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_lis
 	    if(!fnd)printf("\nn-  - - - - AND treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
 	    if(!fnd)fnd=!fnd;
 #endif
-                eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list,num_resources, rsize, "\0")  ) ? 1 : 0;
+                //eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list,num_resources, rsize, "\0")  ) ? 1 : 0;
 		
-	        eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
+	       // eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
 			      
 	    }
-	    break;
+	   // break;
 	    case OR: {
 #ifdef PE_DEBUG
 	    if(!fnd)printf("\nn-  - - - - OR treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
