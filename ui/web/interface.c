@@ -207,7 +207,7 @@ engine_reply *reply;
         if(!createForm){
             ret_value = add_message(ret_value,"<ul>\n");
         }
-        else{
+        else if(createForm==1) {
             ret_value = add_message(ret_value, "<form method=post name=\"actionSelection\">\n");
             ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('run')\">\n");
             ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\"><hr>\n");
@@ -228,7 +228,7 @@ engine_reply *reply;
                         ret_value = add_message(ret_value,"<br>\n");
                         freereply(reply);
                     }
-                    else{
+                    else if(createForm==1) {
                         reply = enginereply(response->value);
 
                         ret_value = add_message(ret_value, "<p><input type=\"radio\" name=\"model_action\"");
@@ -250,7 +250,7 @@ engine_reply *reply;
         if(!createForm){
             ret_value = add_message(ret_value,"</ul>\n");
         }
-        else{
+        else if(createForm==1) {
            ret_value = add_message(ret_value, "<hr>\n");
            ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('run')\">\n");
            ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\">\n");
@@ -296,7 +296,7 @@ int modelcount = 0;
         if(!createForm){
             ret_value = add_message(ret_value,"<ul>\n");
         }
-        else{
+        else if(createForm==1) {
            ret_value = add_message(ret_value, "<form method=post name=\"actionSelection\">\n");
            ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('create')\">\n");
            ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\"><hr>\n");
@@ -313,7 +313,7 @@ int modelcount = 0;
                         ret_value = add_message(ret_value,response->value);
                         ret_value = add_message(ret_value,"<br>\n");
                     }
-                    else{
+                    else if(createForm==1) {
                         modelcount++;
                         ret_value = add_message(ret_value, "<p><input type=\"radio\" name=\"model_action\"");
                         ret_value = add_message(ret_value, " value=\"");
@@ -329,7 +329,7 @@ int modelcount = 0;
         if(!createForm){
             ret_value = add_message(ret_value,"</ul>\n");
         }
-        else{
+        else if(createForm==1) {
            ret_value = add_message(ret_value, "<hr>\n");
            ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('create')\">\n");
            ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\">\n");
@@ -350,7 +350,7 @@ int taskcount = 0;
 	fprintf(s.S_out,"available\n");
 	fflush(s.S_out);
 
-        if(createForm){
+        if(createForm==1){
             ret_value = add_message(ret_value, "<form method=post name=\"actionSelection\">\n");
             ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('run')\">\n");
             ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\"><p>\n");
@@ -360,7 +360,7 @@ int taskcount = 0;
 	ret_value = add_message(ret_value,"<table border=\"1\">\n");
 	ret_value = add_message(ret_value,"<tr>\n");
 
-        if(createForm){
+        if(createForm==1){
             ret_value = add_message(ret_value,"<th>&nbsp;</th>\n");
         }
 	ret_value = add_message(ret_value,"<th>Process</th>\n");
@@ -387,10 +387,9 @@ int taskcount = 0;
 			taskcount++;
                         
 			ret_value = add_message(ret_value,"<tr>\n");
-
 			reply = enginereply(response->value);
 
-                        if(createForm){
+                        if(createForm==1){
                             ret_value = add_message(ret_value, "<td bgcolor=\"yellow\"><input type=\"radio\" name=\"model_action\"");
                             ret_value = add_message(ret_value, " value=\"");
                             ret_value = add_message(ret_value, reply->process);
@@ -435,13 +434,14 @@ int taskcount = 0;
 
 			
 			freereply(reply);
+
 		}
 		freeresponse(response);
 	} while(response->cont == 1);
 
 	ret_value = add_message(ret_value,"</table>\n");
 
-        if(createForm){
+        if(createForm==1){
            ret_value = add_message(ret_value, "<p>\n");
            ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('run')\">\n");
            ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\">\n");
@@ -467,7 +467,7 @@ int taskcount = 0;
         if(!createForm){ 
            ret_value = add_message(ret_value, "<br>\n"); 
         }
-        else{
+        else if(createForm==1) {
            ret_value = add_message(ret_value, "<form method=post name=\"actionSelection\">\n");
            ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('done')\">\n");
            ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\"><hr>\n");
@@ -501,8 +501,9 @@ int taskcount = 0;
 
 			ret_value = add_message(ret_value,"<br>\n<br>\n");
 
+			freereply(reply);
                     }
-                    else{
+                    else if(createForm==1) {
                         taskcount++;
                         reply = enginereply(response->value);
                         ret_value = add_message(ret_value, "<p><input type=\"radio\" name=\"model_action\"");
@@ -515,14 +516,15 @@ int taskcount = 0;
                         ret_value = add_message(ret_value, " ");
                         ret_value = add_message(ret_value,reply->task);
                         ret_value = add_message(ret_value, "\n");
-                    }
 
 			freereply(reply);
+                    }
+
                 }
                 freeresponse(response);
         } while(response->cont == 1);
 
-        if(createForm){
+        if(createForm==1){
            ret_value = add_message(ret_value, "<hr>\n");
            ret_value = add_message(ret_value, "<input type=\"button\" name=\"submit\" value=\"submit\" onClick=\"javascript:callCGI('done')\">\n");
            ret_value = add_message(ret_value, "<input type=\"reset\" name=\"clear\" value=\"clear selection\">\n");
