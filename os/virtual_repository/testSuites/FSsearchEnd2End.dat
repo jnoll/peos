@@ -1,5 +1,7 @@
 ID EQ file:///testDir/testfile1.c
-ID EQ file:///testDir/testfile3.c
 ID EQ file://FSsearchEnd2End.dat
-ID EQ file://testFSsearchEnd2End.c
-ID EQ file://testFSsearchEmpty.c
+ID EQ file:///testDir/testfile1.c AND DATE EQ 03/07/2003
+ID EQ file:///testDir/testfile1.c AND DATE LT 03/08/2003
+ID EQ file:///testDir/testfile1.c AND DATE GT 03/06/2003
+ID EQ file:///testDir/testfile1.c AND NAME EQ testfile1.c
+ID EQ file:///testDir/testfile1.c AND NAME ~ testfile1.c

@@ -32,7 +32,7 @@ FSsearchInvalidActualResult.txt \
 FSsearchEmptyActualResult.txt\
 UNITandResultActualResult.txt \
 UNITorResultActualResult.txt \
-UnitquerywaitInvalidActualResult.txt \
+UnitquerywaitActualResult.txt \
 testEmailActualResult.txt
 
 FS_EXPECTED_RESULT_FILES = \
@@ -42,14 +42,14 @@ FSsearchInvalidExpectedResult.txt \
 FSsearchEmptyExpectedResult.txt\
 UNITandResultExpectedResult.txt \
 UNITorResultExpectedResult.txt \
-UnitquerywaitInvalidExpectedResult.txt \
+UnitquerywaitExpectedResult.txt \
 testEmailExpectedResult.txt
 			 
 FS_QUERY_FILES = \
 FSsearchEnd2EndQuery.dat \
 FSsearchSeekQuery.dat
 
-all: $(TESTS)
+all: $(TESTS) copyvr
 
 $(LIB): $(OBJECTS)
 	$(MAKE) -C ..
@@ -63,6 +63,9 @@ test%: test%.o $(LIB)
 
 %.o: ../%.c
 	$(CC) $(CFLAGS) $<
+
+copyvr:
+	cp ../vr.rc .
 
 test:	$(TESTS)
 
@@ -84,8 +87,8 @@ test:	$(TESTS)
 	testUNITorResult > UNITorResultActualResult.txt
 	diff UNITorResultExpectedResult.txt UNITorResultActualResult.txt
 	
-	testUnitquerywait > UnitquerywaitInvalidActualResult.txt
-	diff UnitquerywaitInvalidActualResult.txt UnitquerywaitInvalidActualResult.txt 
+	testUnitquerywait > UnitquerywaitActualResult.txt
+	diff UnitquerywaitExpectedResult.txt UnitquerywaitActualResult.txt
 
 #	diff testEmailExpectedResult.txt testEmailActualResult.txt
 #	testEmail > testEmailActualResult.txt

@@ -58,7 +58,7 @@ int main( void )
 	setInvalidResult( numQueries, expectedResultFile ) ;
 	
 	printQueryList(myQueries);
-	fwrite( "\nqueue list is empty!\n\n\n", sizeof( char ), strlen("\nqueue list is empty!\n\n\n"), expectedResultFile ) ;
+	fwrite( "\nqueue list is empty!\n\n", sizeof( char ), strlen("\nqueue list is empty!\n\n"), expectedResultFile ) ;
 	
 	testInputEmpty = fopen ( "UnitquerywaitEmpty.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputEmpty ) ;
@@ -101,8 +101,9 @@ int main( void )
 	fclose( testInputValid ) ;
 	
 	printQueryList(myQueries);
-		
+	fwrite( "\n", sizeof ( char ), strlen( "\n" ), expectedResultFile ) ;	
 	fclose( expectedResultFile ) ;
+	
 	
 	
 	return 0 ;
