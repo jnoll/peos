@@ -292,20 +292,32 @@ public class displayPO{
 	{
 		NodeList nl = root.getChildNodes();
 		Node rr;
+                String rrlist=new String();
 		for (int i = 0; i<nl.getLength(); i++)
 		{
 			rr=nl.item(i);
 			if (rr.getLocalName() != null && rr.getLocalName().equals("req_resource"))
 			{
-				if ( ((Element)rr).getAttribute("value").equals("$$") )
-					return "<B>Required Resources: </B>".concat(
-		                                ((Element)rr).getAttribute("name")); 
-				return "<B>Required Resources: </B>".concat(
-				((Element)rr).getAttribute("name") + "=" + ((Element)rr).getAttribute("value"));
+                                rrlist=rrlist.concat("<B>Required Resource: </b> ");
+                                
+				
+                                if ( ((Element)rr).getAttribute("value").equals("$$") )
+                                {
+                                    rrlist=rrlist.concat(((Element)rr).getAttribute("name")); 
+                                    rrlist+="<br>";
+                                }
+                                else{
+                                    rrlist+="";
+                                    rrlist=rrlist.concat(
+                                    ((Element)rr).getAttribute("name") + "=" + ((Element)rr).getAttribute("value"));
+                                    rrlist+="<br>";
+                                }
 			}
 		}
-	
-		return ("No required resources.");
+                if (rrlist.equals(""))
+                    return ("No required resources.<br>");
+                else
+                    return rrlist;
 		
 	}
 	public String[] getResourceList(int pid)
@@ -339,7 +351,7 @@ public class displayPO{
 	{
 		NodeList nl=root.getChildNodes();
 		Node rr;
-		if (getRR(root).equals("No required resources."))
+		if (getRR(root).equals("No required resources.<br>"))
 			return false;
 		for (int i = 0; i<nl.getLength(); i++)
 		{
@@ -357,38 +369,68 @@ public class displayPO{
 		return true;
 	}
 	
-	public String getRRName(Element root)
+
+        public String[] getRRName(Element root)
 	{
 		NodeList nl=root.getChildNodes();
 		Node rr;
-		if (getPR(root).equals("No required resources."))
+                
+                if (getRR(root).equals("No provided resources.<br>"))
 			return null;
-		for (int i = 0; i<nl.getLength(); i++)
-		{
-			rr=nl.item(i);
-			if (rr.getLocalName() != null && rr.getLocalName().equals("req_resource"))
-			{
-				return (((Element)rr).getAttribute("name"));
-			}
-		}
-		return null;
+                int rrCount=0;
+                for (int i = 0; i<nl.getLength(); i++) //counting number of PRs
+                {
+                    rr=nl.item(i);
+                    if (rr.getLocalName() != null 
+                        && rr.getLocalName().equals("req_resource"))
+                        rrCount++;
+                }
+                String[] rrList=new String[rrCount];
+                
+                int countUp=0;
+                for (int i=0; i<nl.getLength(); i++)
+                {
+                    rr=nl.item(i);
+                    if (rr.getLocalName() != null 
+                            && rr.getLocalName().equals("req_resource"))
+                    {
+                        rrList[countUp]= ( ((Element)rr).getAttribute("name") );
+                        countUp++;
+                    }
+                }
+                for (int i=0; i<rrList.length; i++)
+                    System.out.println(rrList[i]);
+                
+                return rrList;
 	}
-	public String getPRName(Element root)
+	public String[] getPRName(Element root)
 	{
 		NodeList nl=root.getChildNodes();
 		Node rr;
-                System.out.println("DFNV");
-		if (getPR(root).equals("No required resources."))
+                
+                if (getPR(root).equals("No provided resources.<br>"))
 			return null;
-		for (int i = 0; i<nl.getLength(); i++)
-		{
-			rr=nl.item(i);
-			if (rr.getLocalName() != null && rr.getLocalName().equals("prov_resource"))
-			{
-				return (((Element)rr).getAttribute("name"));
-			}
-		}
-		return null;
+                int prCount=0;
+                for (int i = 0; i<nl.getLength(); i++) //counting number of PRs
+                {
+                    rr=nl.item(i);
+                    if (rr.getLocalName() != null && rr.getLocalName().equals("prov_resource"))
+                        prCount++;
+                }
+                String[] prList=new String[prCount];
+                
+                int countUp=0;
+                for (int i=0; i<nl.getLength(); i++)
+                {
+                    rr=nl.item(i);
+                    if (rr.getLocalName() != null && rr.getLocalName().equals("prov_resource"))
+                    {
+                        prList[countUp]= ( ((Element)rr).getAttribute("name") );
+                        countUp++;
+                    }
+                }
+		
+                return prList;
 	}
 	public int doesFinishNeedValue(Element root)
 	{
@@ -401,8 +443,8 @@ public class displayPO{
 			rr=nl.item(i);
 			if (rr.getLocalName() != null && rr.getLocalName().equals("prov_resource"))
 			{
-				if (((Element)rr).getAttribute("qualifier").equals("abstract"))
-					return 0;
+				//if (((Element)rr).getAttribute("qualifier").equals("abstract"))
+				//	return 0;
 				if (((Element)rr).getAttribute("qualifier").equals("new"))
 					return 1;
 				if (((Element)rr).getAttribute("value").equals("$$"))
@@ -439,42 +481,7 @@ public class displayPO{
 			System.err.println(e);
 		}
 	}
-	public void finishSetValue(Element root, String value,int pid)
-	{
-		NodeList nl=root.getChildNodes();
-                Node rr;
-		String resource_name=null;
-                for (int i = 0; i<nl.getLength(); i++)
-                {
-                        rr=nl.item(i);
-                        if (rr.getLocalName() != null && rr.getLocalName().equals("prov_resource"))
-                        {
-				resource_name=((Element)rr).getAttribute("name");
-                        }
-                }
-		Process peos;
-		Runtime r = Runtime.getRuntime();
-		String test=(SetupPath.getPeos()+" -r " + pid +
-			 " " + resource_name + " " + value);
-		try{
-			peos = r.exec(test);
-                        peos.waitFor();
-			peos = r.exec(SetupPath.getPeos()+ " -n " +pid + " " 
-				+ root.getAttribute("name") + " finish"); 
-			try{
-                                peos.waitFor();
-                        }
-                        catch(Exception e2)
-                        {       System.err.println(e2); }
 
-			reparse(pid);
-			
-		}
-		catch(Exception e)
-		{
-			System.err.println(e);
-		}
-	}
 	public void abort(Element root, int pid)
 	{
 		Process peos;
@@ -540,9 +547,7 @@ public class displayPO{
 		{
 			rr=nl.item(i);
 			if (rr.getLocalName() != null && rr.getLocalName().equals("req_resource"))
-			{
-				if (((Element)rr).getAttribute("qualifier").equals("abstract"))
-					return 0;
+			{				
 				if (((Element)rr).getAttribute("qualifier").equals("new"))
 					return 1; 
 				if (((Element)rr).getAttribute("value").equals("$$"))
@@ -552,47 +557,23 @@ public class displayPO{
 		return 0;
 
 	}
-	public void startSetValue(Element root, String value, int pid)
-	{
-		NodeList nl=root.getChildNodes();
-                Node rr;
-		String resource_name=null;
-                for (int i = 0; i<nl.getLength(); i++)
-                {
-                        rr=nl.item(i);
-                        if (rr.getLocalName() != null && rr.getLocalName().equals("req_resource"))
-                        {
-				resource_name=((Element)rr).getAttribute("name");
-                        }
-                }
-		Process peos;
-		Runtime r = Runtime.getRuntime();
-		String test=(SetupPath.getPeos()+" -r " + pid +
-			 " " + resource_name  + " " + value);
-		try{
-			peos = r.exec(test);
-			peos.waitFor();
-			peos = r.exec(SetupPath.getPeos()+ " -n " +pid + " " 
-				+ root.getAttribute("name") + " start");
-			try{
-                                peos.waitFor();
-                        }
-                        catch(Exception e2)
-                       	{
-			       System.err.println("found an error :-/ " +e2); 
-		}
-			reparse(pid);
-			DataInputStream peos_err=new DataInputStream(peos.getErrorStream());
-			String err_in;
-			while ((err_in = peos_err.readLine()) != null)
-				System.out.println("peos:" +err_in);
-
-		}
-		catch(Exception e)
-		{
-			System.err.println("Found an error :( \n" + "StartSV: "+ e);
-		}
-	}
+        public void bindResource(String resourceName, String value, int pid)
+        {
+            Process peos;
+            Runtime r = Runtime.getRuntime();
+            String test = (SetupPath.getPeos() + " -r " + pid + " "
+            + resourceName + " " + value);
+            try{
+                    peos = r.exec(test);
+                    peos.waitFor();
+                    reparse(pid);
+            }
+            catch(Exception e2)
+            {
+                System.err.println(e2);
+            }            
+        }
+        
 
 	public void start(Element root, int pid)
 	{
@@ -659,23 +640,34 @@ public class displayPO{
 	}
 	public String getPR(Element root)
 	{
-		NodeList nl = root.getChildNodes();
+            NodeList nl = root.getChildNodes();
 		Node rr;
+                String prlist=new String();
 		for (int i = 0; i<nl.getLength(); i++)
 		{
 			rr=nl.item(i);
 			if (rr.getLocalName() != null && rr.getLocalName().equals("prov_resource"))
 			{
-				if ( ((Element)rr).getAttribute("value").equals("$$") )
-					return "<B>Provided Resources: </B>".concat(
-		                                ((Element)rr).getAttribute("name")); 
-				return "<B>Provided Resources: </B>".concat(
-				((Element)rr).getAttribute("name") + "=" + ((Element)rr).getAttribute("value"));
+                                prlist=prlist.concat("<B>Provided Resource: </b> ");
+                                
+				
+                                if ( ((Element)rr).getAttribute("value").equals("$$") )
+                                {
+                                    prlist=prlist.concat(((Element)rr).getAttribute("name")); 
+                                    prlist+="<br>";
+                                }
+                                else{
+                                    prlist+="";
+                                    prlist=prlist.concat(
+                                    ((Element)rr).getAttribute("name") + "=" + ((Element)rr).getAttribute("value"));
+                                    prlist+="<br>";
+                                }
 			}
 		}
-	
-		return ("No provided resources.");
-		
+                if (prlist.equals(""))
+                    return ("No provided resources.<br>");
+                else
+                    return prlist;		
 	}
 	
 	public ResourceMap getResources()

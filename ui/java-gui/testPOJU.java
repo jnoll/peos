@@ -96,8 +96,8 @@ public class testPOJU extends TestCase{
 	{
 		ActionMap map = test1.getActions();
 		map.setToFirstAction(0);
-		String result = test1.getRRName(map.getNextActionDetails(0).getElement());
-		assertTrue(result.equals("time_sheet"));
+		String[] result = test1.getRRName(map.getNextActionDetails(0).getElement());
+		assertTrue(result[0].equals("time_sheet"));
 		//if (result.equals("time_sheet"))
 		//	return true;
 		//else

@@ -29,7 +29,7 @@ public class testSFASJU extends TestCase{
 		//return false;
 	}
 
-	public void testStartSet()
+/*	public void testStartSet()
 	{
 		Element testElem=testAM.getActionByName(0,"Turn_it_in");
 		test.startSetValue(testElem, "whatever",0);
@@ -39,7 +39,15 @@ public class testSFASJU extends TestCase{
 		//if (test.doesStartNeedValue(testElem)==0)
 		//	return true;
 		//return false;
-	}
+	}*/
+        public void testBindResources()
+        {
+            Element testElem=testAM.getActionByName(0,"Turn_it_in");         
+            assertTrue(test.doesStartNeedValue(testElem) == 1);
+            test.bindResource("time_sheet","my_head_is_a_giant_bucket", 0);
+            testElem=testAM.getActionByName(0,"Turn_it_in");            
+            assertTrue(test.doesStartNeedValue(testElem) == 0);            
+        }
 
 	public void testStart()
 	{
