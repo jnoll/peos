@@ -5,6 +5,7 @@
  ************************************************************************/
 
 #include "form.h"
+#include "debug.h"
 #include "variables.h"
 #include "resultLinkedList.h"
 #include "queryLinkedList.h"
@@ -134,11 +135,13 @@ void getSearchPath( )
       			while( fgets( oneLine, 100, configFile ) != NULL )
    			{
        				word = strtok( oneLine, "=" ) ;
+       				_assert( __FILE__, __LINE__, word ) ;
        				while( !doneSearchPath )
     				{
        					if( strncmp( "SEARCHDIR", word, 9 ) == 0 )
     					{
        						word = strtok( NULL, "\n" ) ;
+		       				_assert( __FILE__, __LINE__, word ) ;
    						strcpy( searchPath, word ) ;
 						doneSearchPath = 1 ;
 					}
@@ -185,6 +188,7 @@ int getFile( const char *filename, const struct stat *statptr, int flag )
 	switch ( flag )
 	{
 		case FTW_F : 	position = strrchr(filename, '/' ) ; 
+       				_assert( __FILE__, __LINE__, position ) ;
 				index = filename - position; 
 				
 				if( index < 0 )

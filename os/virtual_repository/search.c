@@ -72,14 +72,14 @@ void selectLoop( )
 
 	if ( FD_ISSET( STDIN, &readfds ) )
 	{
-		_debug(__FILE__,__LINE__,1, "receiving..." ) ;		
+		_debug( __FILE__, __LINE__, 1, "receiving..." ) ;		
 		fgets( queryString, sizeof( queryString), stdin ) ;
 		query_wait( queryString, call, d ) ;
 		queryString[0] = '\0' ;	
 	}
 	else
 	{
-		_debug(__FILE__,__LINE__,2, "timed out...." ) ;
+		_debug( __FILE__, __LINE__, 2, "timed out...." ) ;
 		poll_vr( ) ;
 		tempQueries = myQueries ;
 		while( tempQueries != NULL )

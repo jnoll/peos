@@ -5,6 +5,7 @@
  ************************************************************************/
 
 #include "form.h"
+#include "debug.h"
 #include "variables.h"
 #include "queryLinkedList.h"
 #include <stdio.h> 
@@ -54,6 +55,7 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
 			listpointer = ( queryList* ) listpointer -> link ;
 
 		listpointer -> link = ( struct queryList * ) malloc ( sizeof ( queryList ) ) ;
+		_assert( __FILE__, __LINE__, listpointer -> link ) ;
 		listpointer = ( queryList * ) listpointer -> link;
 		listpointer -> link = NULL;
 		listpointer -> oneQuery = ( query* ) data ;
@@ -62,6 +64,7 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
 	else
 	{
 		listpointer = ( queryList * ) malloc ( sizeof ( queryList ) ) ;
+		_assert( __FILE__, __LINE__, listpointer ) ;
 		listpointer -> link = NULL;
 		listpointer -> oneQuery = ( query* ) data ;
 		return listpointer ;

@@ -5,6 +5,7 @@
  ************************************************************************/
 
 #include "form.h"
+#include "debug.h"
 #include "variables.h"
 #include "resultLinkedList.h"
 #include <stdio.h> 
@@ -82,17 +83,21 @@ resultList* addResultItem( resultList *listpointer, const char *data )
 			listpointer = ( resultList* ) listpointer -> link ;
 		
 		listpointer -> link = ( struct resultList  * ) malloc ( sizeof ( resultList ) ) ;
+		_assert( __FILE__, __LINE__, listpointer -> link) ;
 		listpointer = ( resultList* ) listpointer -> link ;
 		listpointer -> link = NULL ;
 		listpointer -> oneResult = ( char * ) malloc ( ( strlen( data ) + 1 ) * sizeof( char ) ) ;
+		_assert( __FILE__, __LINE__, listpointer -> oneResult ) ;
 		strcpy( listpointer -> oneResult, data ) ;
 		return lp ;
     	}
 	else
 	{
 		listpointer = ( resultList* ) malloc ( sizeof ( resultList ) ) ;
+		_assert( __FILE__, __LINE__, listpointer ) ;
 		listpointer -> link = NULL ;
 		listpointer -> oneResult = ( char * ) malloc ( ( strlen( data ) + 1 )  * sizeof( char ) ) ;
+		_assert( __FILE__, __LINE__, listpointer -> oneResult ) ;
 		strcpy( listpointer -> oneResult, data ) ;
 		return listpointer ;
     	}

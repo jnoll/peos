@@ -6,7 +6,8 @@ FSseeker.o \
 queryLinkedList.o \
 resultLinkedList.o \
 setup_repositories.o \
-vrepo.o
+vrepo.o \
+debug.o
 
 VROBJECTS = \
 setup_repositories.o \

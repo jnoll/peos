@@ -5,6 +5,7 @@
  ************************************************************************/
 
 #include "form.h"
+#include "debug.h"
 #include "variables.h"
 #include "vrepo.h"
 #include "FSseeker.h"

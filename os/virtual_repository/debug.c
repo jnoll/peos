@@ -25,7 +25,7 @@ void _debug(char *file, int line,int level,char *fmt, ...)
 	va_list argp;
 	
 	va_start(argp, fmt);
-	if (debug_level > level)
+	if (debug_level >= level)
 	{
 		fprintf(stderr, "\n\n");
 		fprintf(stderr, "%s %d:  ",file,line);
@@ -39,6 +39,22 @@ void set_debug(char *mylevel)
 {
 	if (mylevel != NULL)
 		debug_level = atoi(mylevel);
+}
+
+
+/************************************************************************
+ * Function:	_assert							*
+ *									*
+ * Description:	checks if pointer is NULL 				*
+ ************************************************************************/
+ 
+void _assert( char *file, int line, void *pointer )
+{
+	if ( pointer == NULL ) 
+	{
+		_debug( file, line, 0, "NULL pointer!\n" ) ;	
+		exit(1) ;
+	}
 }
 
 
