@@ -1,3 +1,16 @@
+/*pml_state.c*/
+
+/*-------------------------------------------------------------
+A Summary of changes made to this code by Summer 2000.
+
+Function names had to be changed slightly.  When the generic 
+exported interface functions took over the pml_state function
+names (because the calls in the VM were not changed in Summer 2000),
+the names in this file had to be made unique.
+
+
+-------------------------------------------------------------*/
+
 /* MODULE DESCRIPTION *****************************************
 Description:  PML State Repository Implementation
 
@@ -9,7 +22,10 @@ Dependencies: pml_state.h
 /* INCLUDES **************************************************/
 
 #include <sys/types.h>
-#include "pml_state.h"
+#include "pml_state.h" 
+#include "repository.h"
+/*#include "C:\WINDOWS\DESKTOP\My Briefcase\CU Masters Andy\CSC 5728\pml_state.h"*/
+
 #include <errno.h>
 #include <fcntl.h>
 #include <math.h>
@@ -48,10 +64,10 @@ static int idxfd = -1;                /* index file descriptor */
 static int datfd = -1;                /* data file descriptor */
 static int shmid = -1;                /* shared memory id */
 static int semid = -1;                /* access semaphore id */
-static pml_shm_t *shmp = NULL;        /* management structure */ 
-static caddr_t idxmap = MAP_FAILED;   /* index memory map */
-static key_t shmkey = PML_SHM_KEY;    /* shared memory key */
-static key_t semkey = PML_SEM_KEY;    /* access semaphore key */
+static pml_shm_t* shmp = NULL;        /* management structure */ 
+static caddr_t idxmap  = MAP_FAILED;  /* index memory map */
+static key_t shmkey    = PML_SHM_KEY; /* shared memory key */
+static key_t semkey    = PML_SEM_KEY; /* access semaphore key */
 
 /* index file and path */
 char idxpth[PML_MAX_PTH] = PML_IDX_FILE; 
@@ -60,9 +76,9 @@ char idxpth[PML_MAX_PTH] = PML_IDX_FILE;
 char datpth[PML_MAX_PTH] = PML_DAT_FILE;
 
 /* shared access read/write lock control structures */
-struct sembuf r_lock[2] = { 1, 0, 0, 0, 1, SEM_UNDO };
+struct sembuf r_lock[2]  = { 1, 0, 0, 0, 1, SEM_UNDO };
 struct sembuf r_ulock[1] = { 0, -1, IPC_NOWAIT|SEM_UNDO };
-struct sembuf w_lock[2] = { 0, 0, 0, 1, 1, SEM_UNDO };
+struct sembuf w_lock[2]  = { 0, 0, 0, 1, 1, SEM_UNDO };
 struct sembuf w_ulock[1] = { 1, -1, IPC_NOWAIT|SEM_UNDO };
 
 /*************************************************************/
@@ -92,8 +108,12 @@ WARNING:
           pml repository may be opened at a time.  Opening 
           multiple pml repositories will result in corruption 
           of internal managment structures.
+NOTE: (summer 2000) toward the end of this function, "floor"
+      is commented out.  It was causing an undefined
+      error, so it was removed.  It is not needed due to truncation
+      regardless.
 **************************************************************/
-int pml_open_repository(const char *path, pml_mode_t mode)
+int pmlstate_open_repository(const char *path, pml_mode_t mode)
 {
   /* local variable declarations */
   union semun semv;        /* semaphore initializer */
@@ -131,7 +151,7 @@ int pml_open_repository(const char *path, pml_mode_t mode)
         continue;
       }
 
-      pml_close_repository();
+      pmlstate_close_repository();
 
       return -1;
     }
@@ -183,14 +203,14 @@ int pml_open_repository(const char *path, pml_mode_t mode)
             continue;
           }
 
-          pml_close_repository();
+          pmlstate_close_repository();
 
           return -1;
         }
       }
       else
       {
-        pml_close_repository();
+        pmlstate_close_repository();
 
         return -1;
       }
@@ -206,7 +226,7 @@ int pml_open_repository(const char *path, pml_mode_t mode)
        PROT_READ|PROT_WRITE, MAP_SHARED, idxfd, 0)) 
        == MAP_FAILED)
   {
-    pml_close_repository();
+    pmlstate_close_repository();
     return -1;
   }
 
@@ -214,7 +234,7 @@ int pml_open_repository(const char *path, pml_mode_t mode)
   if ((shmid = 
        shmget(shmkey, sizeof(pml_shm_t), IPC_CREAT|PML_PRM_MSK)) < 0)
   {
-    pml_close_repository();
+    pmlstate_close_repository();
     return -1;  
   }
 
@@ -223,7 +243,7 @@ int pml_open_repository(const char *path, pml_mode_t mode)
       (pml_shm_t *)shmat(shmid, (char *)0, PML_PRM_MSK)) 
        == (pml_shm_t *)-1)
   {
-    pml_close_repository();
+    pmlstate_close_repository();
     return -1;  
   }
 
@@ -232,7 +252,7 @@ int pml_open_repository(const char *path, pml_mode_t mode)
   {
     if ((semid = semget(semkey, 2, IPC_CREAT|PML_PRM_MSK)) < 0)
     {
-      pml_close_repository();
+      pmlstate_close_repository();
       return -1;
     }
 
@@ -240,7 +260,7 @@ int pml_open_repository(const char *path, pml_mode_t mode)
     if (semctl(semid, 0, SETVAL, semv) < 0 ||
         semctl(semid, 1, SETVAL, semv) < 0)
     {
-      pml_close_repository();
+      pmlstate_close_repository();
       return -1;
     }
   }
@@ -252,12 +272,12 @@ int pml_open_repository(const char *path, pml_mode_t mode)
     if ((iofs = lseek(idxfd, 0, SEEK_END)) < 0)
     {
       PML_WULOCK;
-      pml_close_repository();
+      pmlstate_close_repository();
       return -1;
     }
 
     /* get current record count */
-    shmp->nrec = (unsigned long)floor(iofs / sizeof(pml_rec_t));
+    shmp->nrec = (unsigned long) /* floor*/ (iofs / sizeof(pml_rec_t));
      
     /* unlock table */
     PML_WULOCK;
@@ -281,7 +301,7 @@ Outputs:
 Notes:  Closes index and data files, resets file descriptors
         and unmaps index from virtual memory.
 *************************************************************/
-int pml_close_repository(void)
+int pmlstate_close_repository(void)
 {
   /* write lock for i/o flushing */
   if (PML_WLOCK == 0) 
@@ -350,7 +370,7 @@ Notes:  Appends a blank index record to the pmlstate
         location in virtual memory.  A maximum of PML_MAX_OBJ
         objects may be written to the pml state database.
 *************************************************************/
-pml_obj_t pml_create_object(void)
+pml_obj_t pmlstate_create_object(void)
 {
   /* local variable declarations */  
   int err = 0;
@@ -419,7 +439,7 @@ Outputs:
 Notes:  Objects marked for deletion are not actually deleted
         until a call to pml_pack_objects is executed.
 *************************************************************/
-int pml_delete_object(pml_obj_t objp)
+int pmlstate_delete_object(pml_obj_t objp)
 {
   /* test for valid pointer */
   if (objp != NULL)
@@ -456,7 +476,7 @@ Outputs:
 
 Notes:  Unimplemented.
 *************************************************************/
-int pml_pack_objects(void)
+int pmlstate_pack_objects(void)
 {
   /* lock table for reading */
   if (PML_RLOCK == 0)
@@ -501,10 +521,12 @@ Outputs:
 
 Notes:  Returns -1 if object attribute does not exist. 
 *************************************************************/
-int pml_read_attribute(pml_obj_t objp, 
+int pmlstate_read_attribute(void* objptr, 
                        void *atrp, size_t alen,
                        void *valp, size_t vlen)
 {
+  /* cast the void* correctly */
+  pml_obj_t objp = (pml_obj_t)objptr;
   /* local variable declarations */
   int i = 0;
   int err = 0;
@@ -646,7 +668,7 @@ Outputs:
 Notes:  A maximum of PML_MAX_ATR attributes may be written
         to an object.  
 *************************************************************/
-int pml_write_attribute(pml_obj_t objp, 
+int pmlstate_write_attribute(pml_obj_t objp, 
                         void *atrp, size_t alen,
                         void *valp, size_t vlen)
 {
@@ -754,11 +776,14 @@ Outputs:
 Notes:  For queries which return nrecs > 0 pml_query_close
         must be called to free query result structures.
 *************************************************************/
-int pml_query_open(pml_obj_t **objp, 
+int pmlstate_query_open(void* **objptr, 
                    void *atrp, size_t alen, 
                    int op, 
                    void *valp, size_t vlen)
 {
+  /* cast the void* correctly */
+  pml_obj_t** objp = (pml_obj_t**)objptr;
+
   /* local variable declarations */
   int i = 0;
   int j = 0;
@@ -970,8 +995,11 @@ Outputs:
 Notes:  Frees query result.  Must be called for all queries
         which return nrecs > 0.
 *************************************************************/
-int pml_query_close(pml_obj_t **objp)
+int pmlstate_query_close(void* **objptr)
 {
+  /* cast the void* correctly */
+  pml_obj_t** objp = (pml_obj_t**)objptr;
+
   /* free query result */
   if (objp != NULL || *objp != NULL)
   {
@@ -982,4 +1010,32 @@ int pml_query_close(pml_obj_t **objp)
   return -1;
 }
 /*************************************************************/
+
+/*-------------------------------------------------------------
+   Function: pmlstate_init
+   Purpose : To export an interface to the pml_state_repository
+-------------------------------------------------------------*/
+int       pmlstate_init()
+{
+		repository_initexternal("PML-STATE",
+								pmlstate_open_repository,
+                                                                NULL,    /* *** see comment below */
+								pmlstate_close_repository,
+								NULL,    /* *** see comment below */
+								pmlstate_create_object,
+								pmlstate_delete_object, 
+								pmlstate_pack_objects,
+								pmlstate_read_attribute,
+								pmlstate_write_attribute, 
+								pmlstate_query_open,
+								pmlstate_query_close,
+								NULL, NULL);
+		return (int)0;
+}
+
+/* The NULL above is for the other close function for a unixfs close.  It requires a 
+repository as an argument, and the pmlstate version has a void argument list.  When the
+VM is changed, the generic version of close could be made to accept a dummy argument 
+of type repository* to allow for either call to be made from within repository_close, 
+which is now pml_close_repository(void)  */
 
