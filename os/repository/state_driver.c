@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   }
 
   /* create some objects */
-  objp1 = pml_create_object();
+  objp1 = (pml_obj_t)pml_create_object();
   objp2 = pml_create_object();
   objp3 = pml_create_object();
 
