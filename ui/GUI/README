@@ -101,7 +101,7 @@ Step8:  Install esound-0.2.8
 
 	cd ~/esound-0.2.8
 	./configure --prefix=/home/[user] 
-	vi esddsp.c (on line   change #define REAL_LIBC RTLD_NEXT to #define REAL_LIBC 0)
+	vi esddsp.c (on line 59 change #define REAL_LIBC RTLD_NEXT to #define REAL_LIBC 0)
 	make && make install
 
 Step9:  Install gnome-libs-1.4.2
