@@ -11,6 +11,7 @@
 
 //static const
 #define  DEFAULT_CAPACITY 30
+static int debug =0;
 static int started=0;
 typedef struct{
   Tcl_Interp *interp;
@@ -41,6 +42,7 @@ extern int peos_tcl_set_var(peos_tcl* ptcl, char* var_name, char* var_value);
 extern int peos_tcl_link_var(peos_tcl* ptcl, char* var_name, char* var_addr, int type);
 // Global variable
 //peos_tcl ptcl01;
+extern int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_str );
 
 #endif
 

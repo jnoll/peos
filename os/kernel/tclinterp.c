@@ -109,14 +109,14 @@ int peos_tcl_exec_cmd TCL_VARARGS_DEF(Tcl_Interp*, arg1)
     // system("echo F");
   }
   for( i = 0;i < objc;++i)
-       printf( "-->%s<--\n", Tcl_GetStringFromObj(objv[i],NULL) );
+       fprintf(stderr, "-->%s<--\n", Tcl_GetStringFromObj(objv[i],NULL) );
   if((*(info).objProc)((info).objClientData, interp, objc, objv) != TCL_OK){
     fprintf(stderr,"result is error");
     fflush(0);
     return TCL_ERROR;
   }
   #ifdef DEBUG 
-  printf("Tcl_GetStringResult(interp)==%s\n",Tcl_GetStringResult(interp));
+  fprintf(stderr,"Tcl_GetStringResult(interp)==%s\n",Tcl_GetStringResult(interp));
   #else
   Tcl_GetStringResult(interp);
   #endif
@@ -142,9 +142,9 @@ int peos_tcl_script(peos_tcl* ptcl, char* file_name)
     peos_tcl_start(ptcl);
     status = Tcl_EvalFile(ptcl->interp, file_name);
     if (*ptcl->interp->result != 0){
-        printf("Issue Running Script: %s\n", ptcl->interp->result); 
+        fprintf(stderr,"Issue Running Script: %s\n", ptcl->interp->result); 
     }
-    printf("Script ran, result: %s\n", status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
+    fprintf(stderr,"Script ran, result: %s\n", status == TCL_OK ? "TCL_OK" : "TCL_ERROR");
     return status;
 }
 int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_str )
@@ -153,7 +153,7 @@ int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_s
     char* str=NULL;
 
     if(!(str=(char*)malloc(sizeof(char)*(strlen(eval_str)+strlen(name_str)+50)))){
-    	fprintf(stderr,"ERROR: Insufficient memory, malloc failed in peos_tcl_eval\n");
+    	if(debug)fprintf(stderr,"ERROR: Insufficient memory, malloc failed in peos_tcl_eval\n");
     	return TCL_ERROR;
     }else{
         if(!strcmp(eval_str,"$$")){
@@ -170,15 +170,15 @@ int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_s
     result=Tcl_Eval(ptcl->interp, str);
    
     if( result == TCL_ERROR){
-       fprintf(stderr,"ERROR: failed with TCL statement: %s\n", str);
-       fprintf(stderr,"ERROR: Tcl reuturned TCL_ERROR in peos_tcl_eval\n");
+       if(debug)fprintf(stderr,"ERROR: failed with TCL statement: %s\n", str);
+       if(debug)fprintf(stderr,"ERROR: Tcl reuturned TCL_ERROR in peos_tcl_eval\n");
        strcpy(result_str,eval_str);
     }else if(result == TCL_OK){
        strcpy(result_str,ptcl->interp->result);//peos_tcl_get_var(ptcl, name_str));
-       printf("MESSAGE: successfully evaluated TCL statement: %s\n", str);
-       printf("MESSAGE: variable set: %s %s \n", peos_tcl_get_var(ptcl, name_str));
+       if(debug)fprintf(stderr,"MESSAGE: successfully evaluated TCL statement: %s\n", str);
+       if(debug)fprintf(stderr,"MESSAGE: variable set: %s %s \n", name_str, peos_tcl_get_var(ptcl, name_str));
     }else{
-       fprintf(stderr,"OTHER Tcl MESSAGE: Result %d in peos_tcl_eval\n", result);
+       if(debug)fprintf(stderr,"OTHER Tcl MESSAGE: Result %d in peos_tcl_eval\n", result);
        strcpy(result_str,eval_str);
     }
     free(str);
