@@ -15,12 +15,58 @@ the Makefile using the command "make".
 (2) How to Install
 Currently under modifications:
 a) In order to run the PEOS program you first need to locate the programs dependencies and download the tar balls from the sites that are listed.
-(Will list them when I know for sure they are working.)
+
+(I have to check these again to make sure I typed them right.)
+Package				Location                 Note
+-----------------------------------------------------------------------------------------------------
+
+libxml2                         www.xmlsoft.org    Click on ftp link on the left handside of website.
+gal-1.0	(a.k.a. gal-0.24)	www.susede/de/private/products/suse_linux/prof/packages_professional/index_group.html
+gnome-1.0                       www.gnu.org
+gdk-pixbuf-1.0                  ?
+gtkhtml-1.1                     www.openbsd.org/3.5_packages/powerpc/gtkhtml-1.1.10.tgz-contents.html
+orbit-1.0			sf.gds.tuwien.ac.at/c/cy/cygnome/?fise/=0-9,a-z,A-A
+
 
 b) Install tar packages into your home directory. Presupposing that you know how to do this.
 
-c) Developer: Type the following make commands to search for libraries and headers :
-(We list these when I get back to the lab in a few hours.)
+c) Developer: Type the following make commands:
+
+#Compiles and loads PEOS.
+all
+
+#Executes the binary file.
+runpeos
+
+#Search and output to standard out the directory names that contain the library dependencies for PEOS.
+runpeos_lib_dirs
+
+#Static library dependencies for PEOS.
+runpeos_lib_names_a
+
+#Dynamic library dependencies for PEOS.
+runpeos_lib_names_so
+
+#Path locations for static libraries.
+runpeos_lib_locations_a
+
+#Path locations for dynamic libraries.
+runpeos_lib_locations_so
+
+
+#Search and output to standard out the directory names that contain the header dependencies for PEOS.
+runpeos_header_dirs
+
+#Collect the headers
+collect_headers
+
+#Collect the libraries
+collect_libs
+
+#Creates the tar file for the user. With a new user makefile to run PEOS.
+dist
+
+Note: After the files have been downloaded from the cvs box the developer will install the tar files into his/her home directory the macros will be created to locate the header and library dependencies. The developer will then use the makefile that uses the macros from the install and will search for the files and then copy them into a tree to package for the user. The user will then be able to untar the tar ball and run PEOS. Side note: The library and header files are not saved into the CVS box.
 
 d) After all the packages have been installed, then type: make dist to package atar ball for the user. The user will have a modified makefile and will include only user previlage commands. But this is sufficient after the developer has packaged it for the user.
 
