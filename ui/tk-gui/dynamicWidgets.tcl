@@ -1,5 +1,5 @@
 #######################################################################
-## File Information: $Id: dynamicWidgets.tcl,v 1.4 1999/05/07 18:53:09 jneuder Exp $
+## File Information: $Id: dynamicWidgets.tcl,v 1.5 1999/05/07 19:05:45 jneuder Exp $
 #######################################################################
 
 package provide dynamicWidgets 1.0
@@ -159,6 +159,10 @@ proc ::dynamicWidgets::makeProcessSelect {} {
 proc ::dynamicWidgets::makeRadioButtons {} {
 	# destroy action state label widget currently in place
 	destroy .left.actionstate
+        destroy .left.inactive
+        destroy .left.started
+        destroy .left.finished
+        destroy .left.update
 
 	# radiobuttons are placed in .left frame
 	radiobutton .left.inactive -text "Inactive" -variable newActionState \
