@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>PEOS Prototype: Action Page</title>
+</head>
+<body>
+<form action="prototype.html">
+Fancy PEOS logo here.
+
+<h1>action_name_here</h1>
+
+<h2>Resources</h2>
+<a href="resource-page.html"> RequiredResource</a> 
+<a href="resource-page.html"> AnotherRequiredResource</a> 
+
+<h2>Description</h2>
+<p> The action's script field would be displayed here.  This should be
+formatted as an html paragraph (&lt;p&gt;), rather than text; we allow
+some html markup in the script field.
+
+Depending on the action state,  buttons should be displayed:
+<ol type="a">
+<li>Active - display both ``Done'' (to <em>finish</em> the action),
+and ``OK'' (to dismiss the page and redisplay the worklist).
+<li>Suspended -  display both ``Perform'' (to make the action <em>active</em>),
+and ``OK'' (to dismiss the page and redisplay the worklist).
+<li>Ready - display both ``Perform'' (so set the action to
+<em>active</em>) and ``OK'' (to dismiss the page and redisplay the worklist).
+</ol>
+
+<input type="submit" value="Done"> (or ``Perform'')
+<input type="submit" value="OK"> (or ``Dismiss'' or ``Back''?)
+</form>
+
+
+
+</body>
+</html>
