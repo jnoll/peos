@@ -13,6 +13,8 @@
 
 
 /* Globals. */
+
+char *login_name = "jnoll";
 peos_context_t process_table[PEOS_MAX_PID+1];
 Graph global_graph = NULL;
 int requires_state[5];

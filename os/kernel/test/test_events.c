@@ -12,7 +12,7 @@
 
 /* Globals. */
 char *instance_dir = NULL;
-
+char *login_name = "jnoll";
 
 /* Stubs. */
 peos_context_t *peos_get_context(int pid)

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.23 2004/02/09 19:39:37 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.24 2004/02/27 03:44:08 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -21,6 +21,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "process.h"
 #include "events.h"
 #include "graph.h"
@@ -131,20 +135,37 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
     return -1;
 }
 
+
 void log_event(char *message)
 {
     FILE *file;
     struct tm *current_info;
     time_t current;
     char times[50];
+    int filedes;
     
     time(&current);
     current_info = localtime(&current);
     current = mktime(current_info);
     strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
-    file = fopen("event.log", "a");
+
+    filedes = open("event.log", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    if (filedes < 0) {
+        fprintf(stderr, "Cannot Get Event Log File Descriptor\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    if(get_lock(filedes) < 0) {
+        fprintf(stderr, "Cannot Obtain Event Log File Lock\n");
+	exit(EXIT_FAILURE);
+    }
+    
+    file = fdopen(filedes, "a");
+
     fprintf(file, "%s %s\n", times,message);
+    release_lock(filedes);
     fclose(file);
+    close(filedes);
 }
 		    
 

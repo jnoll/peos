@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.37 2004/02/21 21:24:59 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.38 2004/02/27 03:44:08 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -132,6 +132,14 @@ char *get_script(int pid, char *act_name)
     }
 }
 	    
+
+void peos_set_loginname(char *loginname)
+{
+    if(loginname) {
+	login_name = loginname;
+    }
+}
+
 
 int set_resource_binding(int pid, char *resource_name, char *resource_value)
 {

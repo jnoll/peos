@@ -12,7 +12,7 @@
 char *instance_dir = NULL;
 peos_context_t process_table[PEOS_MAX_PID+1];
 int free_entry = 0;
-
+char *login_name = "jnoll";
 /* Stubs. */
 peos_context_t *peos_get_context(int pid)
 {
@@ -20,6 +20,16 @@ peos_context_t *peos_get_context(int pid)
 }
 
 int delete_entry(int pid)
+{
+    return 1;
+}
+
+int get_lock(int filedes)
+{
+    return 1;
+}
+
+int release_lock(int filedes)
 {
     return 1;
 }

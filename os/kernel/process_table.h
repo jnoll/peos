@@ -28,10 +28,12 @@ typedef struct peos_context_tag {
     peos_resource_t *resources;
 } peos_context_t;
 
+extern int get_lock(int filedes);
 
+extern int release_lock(int filedes);
+extern void peos_set_loginname(char *loginname);
 
-/* This has to be here because load_proc_table needs to set it. */
-extern peos_context_t *current_process;
+char *login_name;
 
 extern void set_process_table_filename(char *filename);
 

@@ -695,7 +695,7 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
     peos_context_t *context = peos_get_context(pid);
 
     this_state = act_state_name(state);
-    sprintf(msg, "jnoll %s %s %d ", this_state, action, pid);
+    sprintf(msg, "%s %s %s %d ",login_name, this_state, action, pid);
     log_event(msg);
 
     g = context -> process_graph;
@@ -705,7 +705,7 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
     }
 
     if ((exit_status =  set_act_state_graph(g, action, state)) == VM_DONE) {
-        sprintf(msg,"jnoll DONE %s %d", context->model, pid);
+        sprintf(msg,"%s DONE %s %d",login_name, context->model, pid);
         log_event(msg);
         delete_entry(context->pid);
   	return exit_status;
