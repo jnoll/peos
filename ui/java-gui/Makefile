@@ -49,6 +49,6 @@ clean:
 	rm -rf *.class
 	rm -f event.log
 	rm -f proc_table*
-#	rm -f PeosApp.cfg
+
 %.class : %.java
 	  javac ${java} $<

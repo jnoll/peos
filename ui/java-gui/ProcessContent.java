@@ -263,6 +263,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
          		map.getActionByName(pidNum,currActionName);
 			LinkNode n = map.getCurrentLink(pidNum);
 			String currentPage = n.getElement().getAttribute("name");
+                        this.topLevel.setEnabled(true);
                         createTextPane(n,currentPage);
 		}
                 else if ("cancelchange".equals(e.getActionCommand()))
@@ -270,6 +271,8 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                         resFrame.setVisible(false);
                         resFrame=null;
                         resPanel=null;
+                        this.topLevel.setEnabled(true);
+;
 		}
   		else if ("suspend".equals(e.getActionCommand()))
   		{
@@ -351,8 +354,8 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   	}
   	
   	public void finishAction()
-  	{		
-		int status;
+  	{				
+                int status;
                 map.getActionByName(pidNum,currActionName);
                 status = outline.doesFinishNeedValue(map.getCurrentAction(pidNum));
                 System.out.println(map.getCurrentAction(pidNum).getAttribute("name"));
@@ -388,39 +391,50 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
   	
   	public void changeResourceAction()
   	{		
-                
-                        if (resFrame != null)
-                        {
-                            resFrame.getContentPane().removeAll();
-                            resFrame.setVisible(false);
-                            resFrame = null;
-                        }
-	                //outline.finish(map.getCurrentAction(pidNum), pidNum);
-                        resources=new JComboBox(outline.getResourceList(pidNum));
-                        resFrame = new JFrame("Change Resources");
-                        resPanel = new JPanel();
-                        resPanel.setLayout(new GridLayout(2,2));
-                        
-                        newValue = new JTextField(50);
 
-                        JButton submit = new JButton("Submit Change");
-                        submit.setActionCommand("submitchange");
-                        submit.addActionListener(this);
+            
+            if (resFrame != null)
+            {
+                resFrame.getContentPane().removeAll();
+                resFrame.setVisible(false);
+                resFrame = null;
+            }
+	    
+            //outline.finish(map.getCurrentAction(pidNum), pidNum);            
+            resources=new JComboBox(outline.getResourceList(pidNum));                        
+            resFrame = new JFrame("Change Resources");            
+            resPanel = new JPanel();            
+            resPanel.setLayout(new GridLayout(2,2));
                         
-                        JButton cancel = new JButton("Cancel Change");
-                        cancel.setActionCommand("cancelchange");
-                        cancel.addActionListener(this);
+            newValue = new JTextField(50);
+            /*Object[] possibilities = outline.getResourceList(pidNum);
+            String s = (String)JOptionPane.showInputDialog(
+                    frame,
+                    "Pick resource to change:",
+                    "Change Resources",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    possibilities,
+                    "ham"); */
+            
+            JButton submit = new JButton("Submit Change");            
+            submit.setActionCommand("submitchange");                        
+            submit.addActionListener(this);
+                                                
+            JButton cancel = new JButton("Cancel Change");
+            cancel.setActionCommand("cancelchange");
+            cancel.addActionListener(this);
                         
-                        resFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);                      
-                        resPanel.add(resources,BorderLayout.CENTER);
-                        resPanel.add(newValue, BorderLayout.CENTER);
-                        resPanel.add(submit, BorderLayout.CENTER);
-                        resPanel.add(cancel, BorderLayout.CENTER);
+            resFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);                      
+            resPanel.add(resources,BorderLayout.CENTER);
+            resPanel.add(newValue, BorderLayout.CENTER);
+            resPanel.add(submit, BorderLayout.CENTER);
+            resPanel.add(cancel, BorderLayout.CENTER);
               
-                        resFrame.getContentPane().add(resPanel);
-                        resFrame.pack();
-                        resFrame.setVisible(true);
-                        
+            resFrame.getContentPane().add(resPanel);
+            resFrame.pack();
+            resFrame.setVisible(true);
+            this.topLevel.setEnabled(false);
                         
 
   	}
