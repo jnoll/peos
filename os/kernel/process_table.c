@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.22 2003/11/15 04:21:57 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.23 2003/11/16 04:08:09 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Thu Nov 13 17:42:46 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Fri Nov 14 12:07:58 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -111,11 +111,7 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
     if (g != NULL) {
         for(n = g -> source;n != NULL; n = n -> next) {
 	    if (n -> type == ACTION) {
-	        strcpy(act_array[num_act].name, n -> name);
-		act_array[num_act].state = STATE(n);
-		act_array[num_act].script = n -> script;
-	        num_act ++;
-                if(num_act > asize) {
+                if(num_act >= asize) {
                     asize = asize + INST_ARRAY_INCR;
                     if ((act_array = realloc(act_array,asize*sizeof(peos_action_t))) == NULL) {
 	                fprintf(stderr, "Too Many Actions\n");
@@ -123,13 +119,14 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 	                return -1;
 	              }
 		}
+	        strcpy(act_array[num_act].name, n -> name);
+		act_array[num_act].state = STATE(n);
+		act_array[num_act].script = n -> script;
+	        num_act ++;
 	    }
 	    else {
                 if((n->type == SELECTION) || (n->type == BRANCH)) {
-		    strcpy(node_array[num_nodes].name, n -> name);
-		    node_array[num_nodes].state = STATE(n);
-		    num_nodes ++;
-		    if(num_nodes > osize) {
+		    if(num_nodes >= osize) {
 		        osize = osize + INST_ARRAY_INCR;
 			if((node_array = realloc(node_array,osize*sizeof(peos_other_node_t))) == NULL) {
 			    fprintf(stderr,"Too many nodes\n");
@@ -137,6 +134,9 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 			    return -1;
 			}
 		    }
+		    strcpy(node_array[num_nodes].name, n -> name);
+		    node_array[num_nodes].state = STATE(n);
+		    num_nodes ++;
 		}
 	    }
 	}
