@@ -36,53 +36,58 @@ void makedot(Node n, char *filename)
 {
   FILE *file;
   int i, count = 0;
-	char *mapout, *gifout;
+  char *mapout, *gifout, *tempchild, *tempn;
   Node child;
   Node parent;
   struct names *list;
 
-	strtok(filename, ".");
+  strtok(filename, ".");
 
-	strcat(filename,".dot");
+  strcat(filename,".dot");
   file = fopen(filename,"w");
 
-	strtok(filename, ".");
-	fprintf(file,"digraph %s {\n", filename);
-	fprintf(file, "style = filled;\ncolor = grey;\n");
+  strtok(filename, ".");
+  fprintf(file,"digraph %s {\n", filename);
+  fprintf(file, "style = filled;\ncolor = grey;\n");
 
   while(n != NULL)
   {
 	  for(i = 0; (child = (Node) ListIndex(n->successors, i)); i++)
+       	  {
+	    if(child->dominator)
+  	    {
+	      if(strcmp(child->dominator->name, child->name) == 0)
+	      {
+	        tempchild = (char *) calloc(strlen(child->name)+5, sizeof(char));
+	        strcpy(tempchild, child->name);
+	  	strcat(tempchild, "_end");
+		if(n->type == 287 || n->type == 288)
 		{
-			if(child->dominator)
-			{
-			  if(strcmp(child->dominator->name, child->name) == 0)
-			  {
-			  	strcat(child->name, "_end");
-					if(n->type == 287 || n->type == 288)
-					{
-						strcat(n->name, "_end");
-			  		fprintf(file,"%s->%s;\n", n->name, child->name);
-						strtok(n->name,"_");
-					}
-					else
-			  		fprintf(file,"%s->%s;\n", n->name, child->name);
-					strtok(child->name, "_");
-			  }
-				else if((n->type == 287 && child->type == 270) || (n->type == 288 && child->type == 259)) 
-				{
-					strcat(n->name, "_end");
-					fprintf(file, "%s->", n->name);
-					strtok(n->name, "_");
-					fprintf(file, "%s;\n", child->name);
-				}
-			else
-	    	fprintf(file, "%s->%s;\n", n->name, child->name);
-			}
-			else
-	    	fprintf(file, "%s->%s;\n", n->name, child->name);
+	          tempn = (char *) calloc(strlen(n->name)+5, sizeof(char));
+	   	  strcpy(tempn, n->name);
+		  strcat(tempn, "_end");
+		  fprintf(file,"%s->%s;\n", tempn, tempchild);
 		}
-		n = n->next;
+		else
+		{
+		  fprintf(file,"%s->%s;\n", n->name, tempchild);
+		}
+	      }
+	      else if((n->type == 287 && child->type == 270) || (n->type == 288 && child->type == 259)) 
+	      {
+	        tempn = (char *) calloc(strlen(n->name)+5, sizeof(char));
+		strcpy(tempn, n->name);
+		strcat(tempn, "_end");
+		fprintf(file, "%s->", tempn);
+		fprintf(file, "%s;\n", child->name);
+	      }
+	      else
+	    	fprintf(file, "%s->%s;\n", n->name, child->name);
+	    }
+	    else
+	      fprintf(file, "%s->%s;\n", n->name, child->name);
+	  }
+	  n = n->next;
   }
 	fprintf(file, "}");
 	fclose(file);
