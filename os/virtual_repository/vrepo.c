@@ -9,41 +9,48 @@
 #include "vrepo.h"
 #include "seeker.h"
 #include "resultLinkedList.h"
+#include "queryLinkedList.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-void query_wait( char *queryString, void (*cback)(int, resultList *, int *), int *d  )
+void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ), int *d )
 {
 	bool isValidOp( char *op ) ; 
 	
-	char *word ;
-	char *toParse ;
+	char *word, *toParse ;
 	int i, j ;
-
+	query *newQuery ;
+	
+	newQuery = ( query * ) malloc ( sizeof ( query ) ) ;
+		
 	toParse = strtok( queryString, "\n" ) ;	// from keyboard input, otherwise remove this line...
 	
-	i = j = 0 ;	// i to keep track of data content, j to keep track of num clauses
+	i = j = 0 ;				// i to keep track of data content, j to keep track of num clauses
 	word = strtok( toParse, " " ) ;
 	while( word != NULL )
 	{
 		switch( i )
 		{
-			case 0 :	Queries[numQueries].myClauses[j].attribute = 
+			case 0 :	newQuery -> myClauses[j].attribute = 
 						(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
-					strcpy( Queries[numQueries].myClauses[j].attribute, word ) ;
+					strcpy( newQuery -> myClauses[j].attribute, word ) ;
 					break ;
 					
 			case 1 :	if( isValidOp( word ) )
-						strcpy( Queries[numQueries].myClauses[j].operator, word ) ;
+					{
+						newQuery -> myClauses[j].operator = 
+							(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
+						strcpy( newQuery -> myClauses[j].operator, word ) ;
+					}
 					else
 						printf( "invalid operator!" ) ;
 					break ;
 					
-			case 2 :	Queries[numQueries].myClauses[j].value = 
+			case 2 :	newQuery -> myClauses[j].value = 
 						(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
-					strcpy( Queries[numQueries].myClauses[j].value, word ) ;
+					strcpy( newQuery -> myClauses[j].value, word ) ;
 					break ;
 		}
 		
@@ -56,10 +63,11 @@ void query_wait( char *queryString, void (*cback)(int, resultList *, int *), int
 			i++ ;
 		word = strtok( NULL, " " ) ;
 	}
-
-	Queries[numQueries].numClauses = j ;
-	Queries[numQueries].callback = cback;
-	Queries[numQueries].data = d ;
+	
+	newQuery -> numClauses = j ;
+	newQuery -> callback = cback;
+	newQuery -> data = d ;
+	myQueries = addQueryItem( myQueries, newQuery ) ;
 	numQueries++ ;
 }
 
@@ -78,45 +86,32 @@ bool isValidOp( char *op )
 
 void poll_vr( ) 
 {
-	int i,j ;
-	int temp_numQueries;
-	void queryTool( ) ;
-	void deregister(int index);
+	queryList* queryTool( queryList *listpointer ) ;
+	void deregister( int index ) ;
 	
-	temp_numQueries = numQueries;
-	queryTool();
+	queryList *tempQueries ;
 	
-	for(i = 0; i < temp_numQueries ; i++)
+	int tag = 0 ;
+
+	myQueries = queryTool( myQueries ) ;
+	
+	tempQueries = myQueries ;
+	
+	while( tempQueries != NULL )
 	{
-		if(Queries[i].numFound )
+		if( tempQueries -> oneQuery -> numFound )
 		{
-			
-			Queries[i].callback(Queries[i].numFound, Queries[i].results, Queries[i].data);
-			printf( "%d record(s) found!\n", Queries[i].numFound ) ;
-			
-			for( j = 0 ; j < Queries[i].numClauses ; j++ )
-			{
-				free( Queries[numQueries].myClauses[j].attribute ) ;
-				free( Queries[numQueries].myClauses[j].value ) ;
-			}
-			
-			PrintQueue(Queries[i].results);
-			ClearQueue(Queries[i].results);
-			deregister(i);
+			tag = 1;
+			tempQueries -> oneQuery -> callback( tempQueries -> oneQuery -> numFound,
+						             tempQueries -> oneQuery -> results,
+						             tempQueries -> oneQuery -> data ) ;
+			printf( "%d record(s) found!\n", tempQueries -> oneQuery -> numFound ) ;
+			printResultList( tempQueries -> oneQuery -> results ) ;
+			tempQueries -> oneQuery -> removeTag = 1 ;
 		}
+		tempQueries = ( queryList* ) tempQueries -> link ;
 	}
-	
+	if ( tag )
+		myQueries = filterQueryList( myQueries ) ;
 }
 
-void deregister(int index)
-{
-	int i;
-	int temp_numQueries;
-	
-	temp_numQueries = numQueries;
-	
-	for (i = index; i < temp_numQueries -1; i++)
-		Queries[i] = Queries[i+1];
-	
-	numQueries --;
-}

@@ -10,7 +10,7 @@
 struct clause
 {
 	char *attribute ;
-	char operator[2] ;
+	char *operator ;
 	char *value ;
 } ;
 
@@ -20,15 +20,22 @@ typedef struct
 	struct resultList *link ;
 }	resultList ;
 
-struct query
+typedef struct
 {
+	int removeTag ;
 	int numClauses ;
 	struct clause myClauses[10] ;
 	char conjecture[9] ;
 	resultList *results ;
-	void (*callback)(int, resultList *, int *data);
+	void ( *callback )( int, resultList *, int *data ) ;
 	int *data;
 	int numFound ;
-} ;
+} 	query ;
+
+typedef struct
+{
+	query *oneQuery ;
+	struct queryList *link ;
+}	queryList ;
 
 #endif

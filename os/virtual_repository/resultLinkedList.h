@@ -4,7 +4,7 @@
 **	Filename : resultLinkedList.h
 */
 
-void PrintQueue (resultList * listpointer) ;
-void ClearQueue (resultList * listpointer) ;
-resultList * RemoveItem (resultList * listpointer) ;
-resultList * AddItem (resultList * listpointer, const char * data) ;
+void printResultList( resultList *listpointer ) ;
+void clearResultList( resultList *listpointer ) ;
+resultList *removeResultItem( resultList *listpointer ) ;
+resultList *addResultItem( resultList *listpointer , const char *data ) ;

@@ -13,57 +13,57 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-void PrintQueue (resultList *listpointer)
+void printResultList( resultList *listpointer )
 {
-	if (listpointer == NULL)
-		printf ("queue is empty!\n");
+	if ( listpointer == NULL )
+		printf ( "result list is empty!\n" ) ;
 	else
 	{
-    		while (listpointer != NULL)
+    		while ( listpointer != NULL )
 		{
-			printf ("%s\n", listpointer -> oneResult);
-			listpointer = (resultList*) listpointer -> link;
+			printf ( "%s\n", listpointer -> oneResult ) ;
+			listpointer = ( resultList* ) listpointer -> link ;
 		}
 	}
-	printf ("\n");
+	printf( "\n" );
 }
 
-void ClearQueue (resultList * listpointer)
+void clearResultList( resultList *listpointer )
 {
-	while (listpointer != NULL)
-		listpointer = (resultList*) RemoveItem (listpointer);
+	while ( listpointer != NULL )
+		listpointer = ( resultList* ) removeResultItem( listpointer ) ;
 }
 
-resultList * RemoveItem (resultList * listpointer)
+resultList* removeResultItem( resultList *listpointer )
 {
-	resultList * tempp;
-	tempp = (resultList*) listpointer -> link;
-	free (listpointer);
-	return tempp;
+	resultList *temp ;
+	temp = ( resultList* ) listpointer -> link ;
+	free( listpointer ) ;
+	return temp ;
 }
 
-resultList * AddItem (resultList *listpointer, const char *data)
+resultList* addResultItem( resultList *listpointer, const char *data )
 {
-	resultList * lp = listpointer;
+	resultList *lp = listpointer ;
 
-	if (listpointer != NULL)
+	if ( listpointer != NULL )
 	{
-		while (listpointer -> link != NULL)
-			listpointer = (resultList*) listpointer -> link;
+		while( listpointer -> link != NULL )
+			listpointer = ( resultList* ) listpointer -> link ;
 
-		listpointer -> link = (struct resultList  *) malloc (sizeof (resultList));
-		listpointer = (resultList*) listpointer -> link;
-		listpointer -> link = NULL;
-		listpointer -> oneResult = (char *) malloc ( strlen( data ) * sizeof( char ) ) ;
+		listpointer -> link = ( struct resultList  * ) malloc ( sizeof ( resultList ) ) ;
+		listpointer = ( resultList* ) listpointer -> link ;
+		listpointer -> link = NULL ;
+		listpointer -> oneResult = ( char * ) malloc ( strlen( data ) * sizeof( char ) ) ;
 		strcpy( listpointer -> oneResult, data ) ;
-		return lp;
+		return lp ;
     	}
 	else
 	{
-		listpointer = (resultList*) malloc (sizeof (resultList));
-		listpointer -> link = NULL;
-		listpointer -> oneResult = (char*) malloc ( strlen( data ) * sizeof( char ) ) ;
+		listpointer = ( resultList* ) malloc ( sizeof ( resultList ) ) ;
+		listpointer -> link = NULL ;
+		listpointer -> oneResult = ( char* ) malloc ( strlen( data ) * sizeof( char ) ) ;
 		strcpy( listpointer -> oneResult, data ) ;
-		return listpointer;
+		return listpointer ;
     	}
 }

@@ -1,7 +1,7 @@
 /* 
 **	Senior Design Project - PEOS Virtual Repository
 **	Author : TASK4ONE
-**	Filename : sdp.c
+**	Filename : simulator.c
 */
 
 #include "form.h"
@@ -29,50 +29,47 @@ int main( void )
 
 void selectLoop( ) 
 {
-//	void callback(int size, char myresults[][] , int * data);
-//	void (*call)(int, char [][], int *data);
-
-	void callback(int size, resultList *listPointer , int * data);
-	void (*call)(int, resultList *, int *data);
+	void callback( int size, resultList *listPointer , int *data ) ;
+	void ( *call )( int, resultList *, int * data ) ;
 	
-	struct timeval tv;
-	fd_set readfds;
+	struct timeval tv ;
+	fd_set readfds ;
 	char queryString[1000] ;
-	int * d;
-	int i ;
+	int *d ;
+	queryList *tempQueries ;
 
 	tv.tv_sec = 5 ;
 	tv.tv_usec = 500000 ;
-	call = callback;
+	call = callback ;
 	
-	FD_ZERO(&readfds);
-	FD_SET(STDIN, &readfds);
+	FD_ZERO( &readfds ) ;
+	FD_SET( STDIN, &readfds ) ;
 	
-	select(STDIN+1, &readfds, NULL, NULL, &tv);
+	select( STDIN+1, &readfds, NULL, NULL, &tv ) ;
 	
-	if ( FD_ISSET(STDIN, &readfds) )
+	if ( FD_ISSET( STDIN, &readfds ) )
 	{
-		printf("\nreceiving...\n\n");		
+		printf( "\nreceiving...\n\n" ) ;		
 		fgets( queryString, sizeof( queryString ), stdin ) ;	
 		query_wait( queryString, call, d ) ;
 		fflush( stdin ) ;
 	}
 	else
 	{
-		printf("\ntimed out....\n\n");
+		printf( "\ntimed out....\n\n" ) ;
 		poll_vr( ) ;
-		
-		for( i = 0; i < numQueries ; i++ )
+		tempQueries = myQueries ;
+		while( tempQueries != NULL )
 		{	
-			printf( "queries %d seeks %s\n", i, Queries[i].myClauses[0].value ) ;
+			printf( "queries seeks %s\n", tempQueries -> oneQuery -> myClauses[0].value ) ;
+			tempQueries = ( queryList * ) tempQueries -> link ;
 		}
 	}
 	
-	FD_CLR(STDIN, &readfds) ;
+	FD_CLR( STDIN, &readfds ) ;
 }
 
-//void callback(int size, char myresults[][], int * data)
-void callback(int size, resultList *listPointer, int * data)
+void callback( int size, resultList *listPointer, int *data )
 {	
 	printf( "calling back...\n" ) ;
 }

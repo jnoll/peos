@@ -7,7 +7,7 @@
 #ifndef VARIABLES_H
 #define VARIABLES_H
 
-struct query Queries[10] ;
+queryList *myQueries ;
 int numQueries ;
 
 #endif
