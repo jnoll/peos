@@ -5,6 +5,7 @@
 #include "../../../os/kernel/process_table.h"
 
 void print_action(peos_action_t *action, char *state);
+void get_script(peos_action_t *action);
 
 
 int main()
@@ -92,6 +93,26 @@ int main()
   printf("<td width=\"210\">\n");
   printf("</td>\n");
   printf("<td width=\"220\">\n");
+  load_proc_table("proc_table.dat");
+  alist = peos_list_actions(ACT_RUN);
+  if(alist && alist[0]){
+    for(i=0; alist[i]; i++){
+      get_script(alist[i]);
+    }
+  }  
+  alist = peos_list_actions(ACT_SUSPEND);
+  if(alist && alist[0]){
+    for(i=0; alist[i]; i++){
+      get_script(alist[i]);
+    }
+  }  
+  alist = peos_list_actions(ACT_READY);
+  if(alist && alist[0]){
+    for(i=0; alist[i]; i++){
+      get_script(alist[i]);
+    }
+  }  
+  save_proc_table("proc_table.dat");    
   printf("</td>\n");
   printf("</tr>\n");
   printf("<tr>\n");
@@ -114,4 +135,25 @@ void print_action(peos_action_t *action, char *state)
 {
   printf("<a href=\"http://linux.students.engr.scu.edu/~wchu/cgi-bin/action_page.cgi?%d+%s=%s\"> %s<br>\n", action->pid, action->name, state, action->name);
   printf("</a>");
+}
+
+void get_script(peos_action_t *action)
+{
+  char *script;
+  int i=0;
+
+  load_proc_table("proc_table.dat");
+  script = (char *) get_field(action->pid, action->name, ACT_SCRIPT);
+  save_proc_table("proc_table.dat");
+  if(script) {
+    for(i=0; i<22; i++){
+      if(script[i] == '\0')
+      break;
+      printf("%c",script[i]);
+    }
+    printf("<br>\n");
+  }
+  else {
+    printf("No Script<br>\n");
+  }
 }
