@@ -1,16 +1,13 @@
-#PML compiler
-PML = ../../compiler/compiler
+# PML compiler
+PML = ../../bin/compiler
 
-#PML flags
-PMLFLAGS = 
+# PML gdbm flags
+PMLFLAGS = -f GDBM
 
-#PML raw source
-PMLRSRC = milestone1.pml 
+# PML raw source
+PMLSRC = milestone1.pml 
 
-#PML gdbm source
-PMLGSRC = milestone1.gdbm
-
-#Instructions
-PMLCODE : ${PMLGSRC}
-          ${PML} ${PMLFLAGS} ${PMLRSRC}
+# PML compilation
+PMLGCODE:  ${PMLSRC} 
+	${PML} ${PMLFLAGS} ${PMLSRC}
 

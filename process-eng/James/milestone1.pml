@@ -1,150 +1,171 @@
 process milestone1
-  {
-  sequence deliverable_steps
-     {
-     action copy_repository
-        {
-        requires {"project repository"}
-        provides {"copy an instance of the project repository"}
-        tool     {"cvs"}
-        agent    {"developer"}
-        script   {"copy an instance of the project repository"}  
-        }
+   {
+   sequence milestone1Steps
+      {
+      action milestone1Checkout manual
+         {
+         agent    {"developer"}
+         tool     {"peos"} 
+         requires {"checkout.pml"}
+         provides {"checkout an instance of the project repository"}
+         script   {"checkout an instance of the project repository"}  
+         }
 
-     branch edit
-        {
-        sequence meta_data 
-           {
-           action create_meta_data
-              {
-              requires {"PEOSROOT/plan/PROJECT/project.body"}
-              requires {"PEOSROOT/plan/PROJECT/log.body"}
-              tool     {"cvs"}
-              agent    {"developer"}
-              script   {"edit files according to deliverable instructions"}
-              }
-           action compile_meta_data
-              {
-              requires {"PEOSROOT/plan/PROJECT/out/Makefile"}
-              provides {"PEOSROOT/plan/PROJECT/out/project.html"}
-              provides {"PEOSROOT/plan/PROJECT/out/log.html"}
-              tool     {"cvs and make"}
-              agent    {"developer"}
-              script   {"compile files using make"}
-              }
-           action verify_meta_data
-              {
-              requires {"PEOSROOT/plan/PROJECT/out/project.html"}
-              requires {"PEOSROOT/plan/PROJECT/out/log.html"}
-              tool     {"cvs and lynx"}
-              agent    {"developer"}
-              script   {"verify files for spelling and grammatical content"}
-              }
-           }
-        sequence vision_statement 
-           {
-           action create_vision_statement
-              {
-              requires {"PEOSROOT/plan/PROJECT/justification.body"}
-              tool     {"cvs"}
-              agent    {"developer"}
-              script   {"edit file according to deliverable instructions"}
-              }
-           action compile_vision_statement
-              {
-              requires {"PEOSROOT/plan/PROJECT/out/Makefile"}
-              provides {"PEOSROOT/plan/PROJECT/out/justification.html"}
-              tool     {"cvs and make"}
-              agent    {"developer"}
-              script   {"compile file using make"}
-              }
-           action verify_vision_statement
-              {
-              requires {"PEOSROOT/plan/PROJECT/out/justification.html"}
-              tool     {"cvs and lynx"}
-              agent    {"developer"}
-              script   {"verify file for spelling and grammatical content"}
-              }
-           }
-        sequence stakeholders 
+      branch milestone1Edit 
+         {
+         sequence projectLog 
             {
-            action create_stakeholders
+            action createProjectLog manual
                {
-               requires {"PEOSROOT/requirements/PROJECT/analysis.body"}
-               tool     {"cvs"}
                agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/plan/$PROJECT/log.body"}
+               provides {"/home/$USER/peos/plan/$PROJECT/log.body"}
                script   {"edit file according to deliverable instructions"}
                }
-            action compile_stakeholders
+            action compileProjectLog manual
                {
-               requires {"PEOSROOT/requirements/PROJECT/out/Makefile"}
-               provides {"PEOSROOT/requirements/PROJECT/out/analysis.html"}
-               tool     {"cvs and make"}
                agent    {"developer"}
+               tool     {"editor"}
+               requires {"make.pml"}
+               provides {"/home/$USER/peos/plan/$PROJECT/out/log.html"}
                script   {"compile file using make"}
                }
-            action verify_stakeholders
+            action verifyProjectLog manual
                {
-               requires {"PEOSROOT/requirements/PROJECT/out/analysis.html"}
-               tool     {"cvs and lynx"}
                agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/plan/$PROJECT/out/log.html"}
+               provides {"/home/$USER/peos/plan/$PROJECT/out/log.html"}
                script   {"verify file for spelling and grammatical content"}
                }
             }
-        sequence risks 
+         sequence projectDefinition 
             {
-            action create_risks
+            action createProjectDefinition manual
                {
-               requires {"PEOSROOT/plan/PROJECT/risks.body"}
-               tool     {"cvs"}
                agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/plan/$PROJECT/project.body"}
+               provides {"/home/$USER/peos/plan/$PROJECT/project.body"}
                script   {"edit file according to deliverable instructions"}
                }
-            action compile_risks
+            action compileProjectDefinition manual
                {
-               requires {"PEOSROOT/plan/PROJECT/out/Makefile"}
-               provides {"PEOSROOT/plan/PROJECT/out/risks.html"}
-               tool     {"cvs and make"}
                agent    {"developer"}
+               tool     {"peos"}
+               requires {"make.pml"}
+               provides {"/home/$USER/peos/plan/$PROJECT/out/project.html"}
                script   {"compile file using make"}
                }
-            action verify_risks
+            action verifyProjectDefinition manual
                {
-               requires {"PEOSROOT/plan/PROJECT/out/risks.html"}
-               tool     {"lynx"}
                agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/plan/$PROJECT/out/project.html"}
+               provides {"/home/$USER/peos/plan/$PROJECT/out/project.html"}
+               script   {"verify file for spelling and grammatical content"}
+               }
+            }
+         sequence projectVisionStatement 
+            {
+            action createProjectVisionStatement manual
+               {
+               agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/plan/$PROJECT/justification.body"}
+               provides {"/home/$USER/peos/plan/$PROJECT/justification.body"}
+               script   {"edit file according to deliverable instructions"}
+               }
+            action compileProjectVisionStatement manual
+               {
+               agent    {"developer"}
+               tool     {"peos"}
+               requires {"make.pml"}
+               provides {"/home/$USER/peos/plan/$PROJECT/out/justification.html"}
+               script   {"compile file using make"}
+               }
+            action verifyProjectVisionStatement manual
+               {
+               agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/plan/$PROJECT/out/justification.html"}
+               provides {"/home/$USER/peos/plan/$PROJECT/out/justification.html"}
+               script   {"verify file for spelling and grammatical content"}
+               }
+            }
+         sequence projectStateholders 
+            {
+            action createProjectStakeholders manual
+               {
+               agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/requirements/$PROJECT/analysis.body"}
+               provides {"/home/$USER/peos/requirements/$PROJECT/analysis.body"}
+               script   {"edit file according to deliverable instructions"}
+               }
+            action compileProjectStakeholders manual
+               {
+               agent    {"developer"}
+               tool     {"peos"}
+               requires {"make.pml"}
+               provides {"/home/$USER/peos/requirements/$PROJECT/out/analysis.html"}
+               script   {"compile file using make"}
+               }
+            action verifyProjectStakeholders manual
+               {
+               agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/requirements/$PROJECT/out/analysis.html"}
+               provides {"/home/$USER/peos/requirements/$PROJECT/out/analysis.html"}
+               script   {"verify file for spelling and grammatical content"}
+               }
+            }
+         sequence projectRisks 
+            {
+            action createProjectRisks manual
+               {
+               agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/plan/$PROJECT/risks.body"}
+               provides {"/home/$USER/peos/plan/$PROJECT/risks.body"}
+               script   {"edit file according to deliverable instructions"}
+               }
+            action compileProjectRisks manual
+               {
+               agent    {"developer"}
+               tool     {"peos"}
+               requires {"make.pml"}
+               provides {"/home/$USER/peos/plan/$PROJECT/out/risks.html"}
+               script   {"compile file using make"}
+               }
+            action verifyProjectRisks manual
+               {
+               agent    {"developer"}
+               tool     {"editor"}
+               requires {"/home/$USER/peos/plan/$PROJECT/out/risks.html"}
+               provides {"/home/$USER/peos/plan/$PROJECT/out/risks.html"}
                script   {"verify file for spelling and grammatical content"}
                }
             }
         }
 
-     sequence update 
-        {
-        action update_repository 
-           {
-           requires {"copy an instance of the project repository"}
-           provides {"copy an instance of the project repository with conflicts denoted"}
-           tool     {"cvs"}
-           agent    {"developer"}
-           script   {"update project repository"}  
-           }
-        action resolve_conflicts
-           {
-           requires {"conflicted file(s) and/or directory(ies)"}
-           provides {"resolved conflicted file(s) and/or directory(ies)"}
-           tool     {"cvs"}
-           agent    {"developer"}
-           script   {"resolve conflictions using editing processes"}  
-           }
-        }
+      action milestone1UpdateANDResolve manual
+         {
+         agent    {"developer"}
+         tool     {"peos"} 
+         requires {"updateANDresolve.pml"}
+         provides {"update and resolve conflictions on an instance of the project repository"}
+         script   {"update and resolve conflictions on an instance of the project repository"}  
+         }
 
-     action commit_repository 
-        {
-        requires {"copy an instance of the project repository"}
-        provides {"commit of copy into the project repository"}
-        tool     {"cvs"}
-        agent    {"developer"}
-        script   {"commit project repository"}  
-        }
-     }
-  }
+      action milestone1Checkin manual
+         {
+         agent    {"developer"}
+         tool     {"peos"} 
+         requires {"checkin.pml"}
+         provides {"checkin an instance of the project repository"}
+         script   {"checkin an instance of the project repository"}  
+         }
+      }
+   }
