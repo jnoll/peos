@@ -61,13 +61,10 @@ int main (int argc, char *argv[])
 	}
 	if (returnval == TRUE) {
 		returnval = write_cpml(*pml_filename, &data_dictionary,
-		    output_file_type,debug);
+		    output_file_type,debug,list);
 	}
 	if (ppout == FALSE) {
 		remove(*pml_filename);
-	}
-	if ((list == TRUE) && (strcmp(output_file_type,GDBM_MODE) == 0)) {
-		printf("GOING TO KEEP THE LISTING file\n");
 	}
 	return returnval;
 }

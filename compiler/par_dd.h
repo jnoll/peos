@@ -18,9 +18,7 @@
 #ifndef _PML_MSG_H_
 #include "pml_msg.h"
 #endif
-
-#define TOKEN_LEN      4096/* token buffer length */
-#define IN_BUF_SIZE    4096/* input buffer size */
+#define BUFFER_SIZE 	256
 #define EOS            '\0'    /* string termination symbol */
 
 
@@ -66,15 +64,14 @@ static struct resword rw[] = {
 *********************************************************************/
 int parse_pml(char* pml_filename,
     data_dictionary_struct* dictionary_ptr,Boolean);
-void syntax_error(char *msg);
-int next_token();
-void push_back();
-void clear_token_buffer();
-int lexical_analyzer();
-int check_resword();
-void match_token(int t);
-int primlist_func(data_dictionary_struct* dictionary_ptr, char *parent_name);
-int speclist_func(data_dictionary_struct* dictionary_ptr, char *action_name);
+int next_token(char **);
+void push_back(long);
+void clear_token_buffer(char **);
+int lexical_analyzer(char **);
+int check_resword(char **);
+void match_token(int t,char **,data_dictionary_struct *);
+int primlist_func(data_dictionary_struct*,char *,char **);
+int speclist_func(data_dictionary_struct*,char *,char **);
 
 /*********************************************************************
 **   Declarations of the global variables
@@ -83,7 +80,6 @@ int speclist_func(data_dictionary_struct* dictionary_ptr, char *action_name);
 FILE *in_fptr;
 token look_a_head;
 int line_no;
-char token_buffer[TOKEN_LEN];
 int num_unnamed_types;
 int error_flag;
 #endif

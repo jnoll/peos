@@ -19,5 +19,6 @@ Boolean old_format;
 #define TEXT_MODE "text"
 #define CPML_MODE "cpml"
 #define GDBM_MODE "gdbm"
+#define LIST_MODE "list"
 
 #endif	/* End of _DEFS_H_ */

@@ -22,6 +22,7 @@
 typedef struct output {
 	GDBM_FILE dbf;
 	FILE *fptr;
+	Boolean list;
 } OUTPUT_STRUCT;
 
 typedef struct vars {
@@ -40,7 +41,7 @@ void add_to_ready(char* name);
 int check_for_ready(char* name);
 
 Boolean write_cpml(char* pml_filename, data_dictionary_struct* dictionary_ptr,
-    char* filetype,Boolean debug);
+    char* filetype,Boolean debug,Boolean list);
 
 char* print_children(char* output_str, data_dict_element_struct* element_ptr);
 

@@ -463,6 +463,20 @@ void data_dict_print_to_screen(data_dictionary_struct *dictionary_ptr)
 }
 
 /******************************************************************************
+**    Function/Method Name: data_dict_destroy
+**    Precondition:         dictionary_ptr points to a valid structure
+**    Postcondition:        The contents of the data dictionary are released.
+**    Description:          Removes elements of data dictionary and frees 
+**			    memory allocated via recursive calls to 
+**			    data_dict_dfs_remove.
+******************************************************************************/
+
+void data_dict_destroy(data_dictionary_struct *dictionary_ptr)
+{
+	data_dict_dfs_remove(dictionary_ptr->root);
+}
+
+/******************************************************************************
 **    Function/Method Name: data_dict_get_level
 **    Precondition:         element_ptr may or may not be NULL.
 **    Postcondition:        If element_ptr is not null, level will be set to
@@ -1206,5 +1220,93 @@ void data_dict_print_element(data_dict_element_struct *element)
 			temp_child_ptr = temp_child_ptr->next_element;
 		}
 		printf("\n");
+	}
+}
+
+/******************************************************************************
+**    Function/Method Name: data_dict_dfs_remove
+**    Precondition:         element is a pointer to a data_dict_element_struct
+**                          and may or may not be NULL.
+**    Postcondition:        The contents of the data dictionary have been
+**                          displayed to stdio.
+**    Description:          Remove elements from the data dictionary.
+******************************************************************************/
+
+void data_dict_dfs_remove(data_dict_element_struct *element)
+{
+	data_dict_element_list_struct *temp_ptr = NULL;
+	data_dict_element_list_struct *delete_ptr = NULL;
+
+	/* check to see if we have reached a tree leaf */
+	if(element != NULL) {
+
+		/*
+		 * Recursively call the dfs find function on all
+		 * remaining children.
+		 */
+		temp_ptr = element->first_child_ptr;
+
+		while(temp_ptr != NULL) {
+			/* make the recursive call */
+			data_dict_dfs_remove(temp_ptr->data_ptr);
+			delete_ptr = temp_ptr;
+			temp_ptr = temp_ptr->next_element;
+			free(delete_ptr);
+			delete_ptr = NULL;
+			
+		}
+		free(element);
+		element = NULL;
+	}
+}
+
+/******************************************************************************
+**    Function/Method Name: data_dict_delete_element_
+**    Precondition:         element is a pointer to a data_dict_element_struct
+**                          and may or may not be NULL.
+**    Postcondition:        The contents of the element has been displayed to
+**                          stdio.
+**    Description:          Delete the contents of each element.
+******************************************************************************/
+
+void data_dict_delete_element(data_dict_element_struct *element)
+{
+	data_dict_attribute_list_struct *temp_attr_ptr = NULL;
+	data_dict_attribute_list_struct *delete_attr_ptr = NULL;
+	struct string_list_struct *temp_string_ptr = NULL;
+	struct string_list_struct *delete_string_ptr = NULL;
+
+	data_dict_element_struct* temp = NULL;
+
+	if(element != NULL) {
+		if(element->level != NULL) {
+			free(element->level);
+		}
+		if(element->name != NULL) {
+			free(element->name);
+		}
+		if(element->type!= NULL) {
+			free(element->type);
+		}
+		if(element->mode!= NULL) {
+			free(element->mode);
+		}
+
+		delete_attr_ptr = element->first_attribute_ptr;
+		temp_attr_ptr = element->first_attribute_ptr;
+		while(temp_attr_ptr != NULL) {
+
+			temp_string_ptr = temp_attr_ptr->first_description;
+			delete_string_ptr = temp_attr_ptr->first_description;
+			while(temp_string_ptr != NULL) {
+				temp_string_ptr = temp_string_ptr->next_string;
+				free(delete_string_ptr);
+				delete_string_ptr = temp_string_ptr;
+			}
+			temp_attr_ptr = temp_attr_ptr->next_attribute;
+			free(delete_attr_ptr->attribute);
+			delete_attr_ptr = temp_attr_ptr;
+
+		}
 	}
 }

@@ -137,6 +137,7 @@ Boolean data_dict_set_mode(data_dict_element_struct* element_ptr, char *mode);
 Boolean add_level_info_to_data_dictionary(
     data_dictionary_struct *dictionary_ptr);
 void add_level_info_recursively(data_dict_element_struct* element_ptr);
+void data_dict_destroy(data_dictionary_struct *dictionary_ptr);
 
 /******************************************************************************
 ** "Private" Data Dictionary Functions
@@ -149,5 +150,7 @@ data_dict_element_struct* data_dict_dfs_find_element(
 
 void data_dict_dfs_print(data_dict_element_struct *element);
 void data_dict_print_element(data_dict_element_struct *element);
+void data_dict_dfs_remove(data_dict_element_struct *element);
+void data_dict_delete_element(data_dict_element_struct *element);
 
 #endif

@@ -39,9 +39,8 @@ int ready_list_ptr = 0;
 ******************************************************************************/
 
 Boolean write_cpml(char* pml_filename, data_dictionary_struct* dictionary_ptr,
-    char* filetype,Boolean debug)
+    char* filetype,Boolean debug,Boolean list)
 {
-
 	char *filename;
 	char *module = "write_cpml";
 	char msg[MSG_SIZE];
@@ -53,27 +52,54 @@ Boolean write_cpml(char* pml_filename, data_dictionary_struct* dictionary_ptr,
 	/* Generate cpml file name. */
 	if (strlen (pml_filename) <= 0) return FALSE;
 	filename = create_cpml_filename (pml_filename, filename, filetype); 
-	if (filename == (char *) NULL) {
-		return FALSE;
-	}
-	if (strlen (filename) == 0) {
+	if ((filename == (char *) NULL) || 
+	    (strlen(filename) == 0)) {
 		pmlprint(ERROR,PMLNULL,module,
 		    "Failed to generate CPML file name.");
+		data_dict_destroy(dictionary_ptr);
 		return FALSE;
 	}
 
+	output.list = list;
 	if ((strcmp (filetype, TEXT_MODE) == 0) || 
   	    (strcmp (filetype, CPML_MODE) == 0)) {
-		 output.fptr = fopen (filename, "w");
+		output.fptr = fopen (filename, "w");
 		if (output.fptr == NULL) {
 			pmlprint(ERROR,PMLFOPN,module,filename);
+			data_dict_destroy(dictionary_ptr);
 			return FALSE;
 		}
 	} else if (strcmp(filetype,GDBM_MODE) == 0) {
 		output.dbf = create_gdbm(filename, "write");
 		if (output.dbf == (GDBM_FILE) NULL) {
 			pmlprint(ERROR,PMLFOPN,module,filename);
+			data_dict_destroy(dictionary_ptr);
 			return FALSE;
+		}
+		if (output.list == TRUE) {
+			filename = create_cpml_filename(pml_filename,
+			    filename, LIST_MODE); 
+			if ((filename == (char *) NULL) || 
+	    		    (strlen(filename) == 0)) {
+				pmlprint(ERROR,PMLNULL,module,
+				    "Failed to generate list file name.");
+				gdbm_close(output.dbf);
+				data_dict_destroy(dictionary_ptr);
+				return FALSE;
+			}
+			/*
+			 * Previous errors were caused by a failure to 
+			 * allocate memeory.  This is rather fatal since
+			 * memory allocation is used in subsequent
+			 * function calls.  Failure to open a list file
+			 * results in no listing only.  The compilation
+			 * can continue unaffected. 
+			 */
+			output.fptr = fopen (filename, "w");
+			if (output.fptr == NULL) {
+				pmlprint(ERROR,PMLFOPN,module,filename);
+				output.list = FALSE;
+			}
 		}
 	}
 
@@ -94,17 +120,22 @@ Boolean write_cpml(char* pml_filename, data_dictionary_struct* dictionary_ptr,
 	}
 
 	if ((strcmp (filetype, TEXT_MODE) == 0) || 
-	    (strcmp (filetype, CPML_MODE) == 0)) 
+	    (strcmp (filetype, CPML_MODE) == 0)) {
 		fclose (output.fptr);
-	else if (strcmp(filetype,GDBM_MODE) == 0)
+	} else if (strcmp(filetype,GDBM_MODE) == 0) {
+		if(output.list == TRUE) {
+			fclose (output.fptr);
+		}
 		gdbm_close(output.dbf);
-	else {
+	} else {
 		sprintf(msg,"Failed to close output file, %s",filename);
 		pmlprint(ERROR,PMLNULL,module,msg);
+		data_dict_destroy(dictionary_ptr);
 		return FALSE;
 	}
 	sprintf(msg,"PML code in %s format generated.",filetype);
 	pmlprint(INFO,PMLNULL,module,msg);
+	data_dict_destroy(dictionary_ptr);
 	return TRUE;
 }
 
@@ -479,8 +510,8 @@ int write_data(OUTPUT_STRUCT output, data_dict_element_struct* element_ptr,
     char* filetype,int line_count)
 {
 	int count = line_count;
-	char output_str[1024];
-	char temp_str[1024];
+	char output_str[4096];
+	char temp_str[4096];
 	char **name;
 	char **type;
 	char **mode;
@@ -544,9 +575,7 @@ int write_data(OUTPUT_STRUCT output, data_dict_element_struct* element_ptr,
                 free(*mode);
 	        free(mode);
 		return count+1;
-	}
-	else if (strcmp(*type,"branch") == 0)
-	{
+	} else if (strcmp(*type,"branch") == 0) {
 		sprintf(output_str,"%s type %s children ( ",*name,*type);	
 		strcpy(output_str,print_children(output_str,element_ptr));
 		strcat(output_str,")");
@@ -556,8 +585,7 @@ int write_data(OUTPUT_STRUCT output, data_dict_element_struct* element_ptr,
 	
 	/* continue recursively traversing tree to print all data(nodes) */
 	child_list_ptr = data_dict_get_child_list(element_ptr);
-	while (child_list_ptr != NULL)
-	{
+	while (child_list_ptr != NULL) {
 		child_element_ptr = data_dict_get_child(child_list_ptr);
 		count = write_data(output,child_element_ptr,filetype,count);
 		child_list_ptr = data_dict_get_next_child(child_list_ptr);
@@ -583,10 +611,10 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 {
 	char *module = "write_cpml_recursively";
 	char msg[MSG_SIZE];
-	char output_str[1024];
-	char temp_str[1024];
-	char temp_str2[1024];
-	char action_str[1024] = "\0";
+	char output_str[4096];
+	char temp_str[4096];
+	char temp_str2[4096];
+	char action_str[4096] = "\0";
 	static char var_name[64];
 	char* query_str; 
 	char* temp_ptr;
@@ -1348,14 +1376,17 @@ char * create_cpml_filename (char *pml, char *cpml, char* filetype)
 Boolean write_cpml_data(int line_num, char* data_str, char* mode,
     OUTPUT_STRUCT output)
 {
-	if (strcmp(mode,TEXT_MODE) == 0)
+	if (strcmp(mode,TEXT_MODE) == 0) {
 		/* print out line number for readability only */
 		fprintf(output.fptr,"%d %s\n",line_num,data_str);
-	else if (strcmp(mode,CPML_MODE) == 0)
+ 	} else if (strcmp(mode,CPML_MODE) == 0) {
 		fprintf(output.fptr,"%d %s\n",line_num,data_str);
-	else if (strcmp(mode,GDBM_MODE) == 0)
+	} else if (strcmp(mode,GDBM_MODE) == 0) {
+		if (output.list == TRUE)
+			fprintf(output.fptr,"%d %s\n",line_num,data_str);
 		store_gdbm_data(output.dbf, line_num, data_str);
-	else {
+	
+	} else {
 		pmlprint(ERROR,PMLNULL,"write_cpml_data",
 		    "Failed to write out to cpml (output).");
 		return FALSE;
