@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.36 2004/02/20 02:38:35 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.37 2004/02/21 21:24:59 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -136,20 +136,73 @@ char *get_script(int pid, char *act_name)
 int set_resource_binding(int pid, char *resource_name, char *resource_value)
 {
     int i;
-    peos_context_t *context = peos_get_context(pid);
-    peos_resource_t *resources = context -> resources;
-    int num_resources = context -> num_resources;
 
+    peos_resource_t *resources;
+    peos_context_t *context = peos_get_context(pid);
+    int num_resources;
+
+    if(context == NULL) return -1;
+    resources = context -> resources;
+    num_resources = context -> num_resources;
+
+    if(resources == NULL) return -1;
+    
     for(i = 0; i < num_resources; i++) {
         if(strcmp(resources[i].name,resource_name) == 0) {
-	    strcpy(resources[i].value,resource_value);
-	    return 1;
+	    if(strlen(resource_value) < RESOURCE_FIELD_LENGTH) {	
+                strcpy(resources[i].value,resource_value);
+	        return 1;
+	    }
+	    else {
+	        fprintf(stderr, "buffer overflow in set resource binding\n");
+		return -1;
+	    }
 	}
-    }
-
+    }	
     return -1;
 }
 
+
+char *get_resource_binding(int pid, char *resource_name)
+{
+    int i;
+    int num_resources;
+
+    peos_context_t *context = peos_get_context(pid);
+    peos_resource_t *resources;
+    if(context == NULL) return NULL;
+    resources = context -> resources;
+    num_resources = context -> num_resources;
+    if(resources == NULL) return NULL;
+         
+    for(i = 0; i < num_resources; i++) {
+        if(strcmp(resources[i].name,resource_name) == 0) {
+	    return resources[i].value;
+	}
+    }
+    return NULL;
+}
+
+
+char *get_resource_qualifier(int pid, char *resource_name)
+{
+    int i;
+    int num_resources;
+
+    peos_context_t *context = peos_get_context(pid);
+    peos_resource_t *resources;
+    if(context == NULL) return NULL;
+    resources = context -> resources;
+    num_resources = context -> num_resources;
+    if(resources == NULL) return NULL;
+         
+    for(i = 0; i < num_resources; i++) {
+        if(strcmp(resources[i].name,resource_name) == 0) {
+	    return resources[i].qualifier;
+	}
+    }
+    return NULL;
+}
 
 
 /* XXX remove this - it's just as easy to use the graph directly. */

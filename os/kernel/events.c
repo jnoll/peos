@@ -117,6 +117,16 @@ int peos_set_resource_binding(int pid, char *resource_name, char *value)
     return set_resource_binding(pid, resource_name, value);
 }    
 
+char *peos_get_resource_binding(int pid, char *resource_name)
+{
+    return get_resource_binding(pid, resource_name);
+}
+
+char *peos_get_resource_qualifier(int pid, char *resource_name)
+{
+    return get_resource_qualifier(pid, resource_name);
+}
+
 peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
 {
     peos_resource_t *resources;

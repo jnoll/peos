@@ -107,6 +107,19 @@ int set_resource_binding(int pid, char *resource_name, char *resource_value)
 }
 
 
+char *get_resource_binding(int pid, char *resource_name)
+{
+    return "binding";
+}
+
+
+char *get_resource_qualifier(int pid, char *resource_name)
+{
+    return "qualifier";
+}
+
+
+
 
 START_TEST(test_list_models)
 {

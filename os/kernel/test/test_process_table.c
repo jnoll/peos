@@ -188,6 +188,85 @@ START_TEST(test_set_resource_binding)
 END_TEST;
 
 
+START_TEST(test_set_resource_binding_overflow)
+{
+    int i;
+    char long_res[400];
+    FILE *old_stderr;
+    
+    peos_resource_t *resources = (peos_resource_t *) calloc(3,sizeof(peos_resource_t));
+    peos_context_t *context = &(process_table[0]);
+
+
+    if (verbosity != CK_VERBOSE) {
+        old_stderr = stderr;
+	stderr = fopen("/dev/null", "w");
+    }
+    
+    
+    for(i = 0; i < 399; i++) {
+        long_res[i] = 'a';
+    }
+    long_res[i] = '\0';    
+ 
+    context -> pid = 0;
+    context -> resources = resources;
+    context -> num_resources = 3;
+
+    for(i = 0; i < 3; i++){
+	sprintf(resources[i].name, "r%d",i);
+	sprintf(resources[i].value, "val");
+    }
+
+    fail_unless(set_resource_binding(0, "r2", long_res) == -1, "overflow value");
+    if (verbosity != CK_VERBOSE) {
+        fclose(stderr);
+        stderr = old_stderr;
+    }
+    
+}
+END_TEST
+
+START_TEST(test_get_resource_binding)
+{
+    int i;
+    peos_resource_t *resources = (peos_resource_t *) calloc(3,sizeof(peos_resource_t));
+    peos_context_t *context = &(process_table[0]);
+
+    context -> pid = 0;
+    context -> resources = resources;
+    context -> num_resources = 3;
+
+    for(i = 0; i < 3; i++){
+	sprintf(resources[i].name, "r%d",i);
+	sprintf(resources[i].value, "val%d",i);
+    }
+
+    fail_unless(strcmp(get_resource_binding(0, "r2"), "val2") == 0 , "get binding");
+}
+END_TEST
+
+START_TEST(test_get_resource_qualifier)
+{
+    int i;
+    peos_resource_t *resources = (peos_resource_t *) calloc(3,sizeof(peos_resource_t));
+    peos_context_t *context = &(process_table[0]);
+
+    context -> pid = 0;
+    context -> resources = resources;
+    context -> num_resources = 3;
+
+    for(i = 0; i < 3; i++){
+	sprintf(resources[i].name, "r%d",i);
+	sprintf(resources[i].value, "val%d",i);
+	sprintf(resources[i].qualifier, "qualifier%d",i);
+    }
+
+    fail_unless(strcmp(get_resource_qualifier(0, "r2"), "qualifier2") == 0 , "get qualifier wrong");
+}
+END_TEST
+
+    
 START_TEST(test_set_resource_binding_no_resource)
 {
    int i;
@@ -685,10 +764,13 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_load_proc_table);
     tcase_add_test(tc, test_save_proc_table);
 
-    tc = tcase_create("set resource binding");
+    tc = tcase_create("set/get resource binding/qualifier");
     suite_add_tcase(s, tc);
     tcase_add_test(tc,test_set_resource_binding);
+    tcase_add_test(tc,test_set_resource_binding_overflow);
     tcase_add_test(tc,test_set_resource_binding_no_resource);
+    tcase_add_test(tc, test_get_resource_binding);
+    tcase_add_test(tc, test_get_resource_qualifier);
 
     tc = tcase_create("list actions");
     suite_add_tcase(s, tc);

@@ -5,6 +5,8 @@
 
 #define INST_ARRAY_INCR (256)    
 
+#define RESOURCE_FIELD_LENGTH (256)
+
 typedef enum {
     VM_DONE = 0, VM_ERROR, VM_INTERNAL_ERROR, VM_SYSCALL, VM_CONTINUE
 } vm_exit_code;

@@ -80,6 +80,11 @@ extern char *peos_get_act_state(int pid, char *act_name);
 
 int peos_set_resource_binding(int pid, char *resource_name, char *value);
 
+
+char *peos_get_resource_binding(int pid, char *resource_name);
+
+char *peos_get_resource_qualifier(int pid, char *resource_name);
+
 extern char *act_state_name(vm_act_state state);
 
 #endif
