@@ -105,7 +105,7 @@ public class displayPO{
                                     update=true;
                                 else
                                     update = false;
-                                System.out.println(pidNum + " " + Boolean.toString(update));
+                                
                                 model=model.substring(2);                                
                                 if (update == true)
                                 {                                

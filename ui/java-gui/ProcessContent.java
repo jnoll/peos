@@ -120,7 +120,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		splitPane.setDividerLocation(220);
 		splitPane.setDividerSize(5);
 		
-		TreeModel model = tree.getModel();
+		//TreeModel model = tree.getModel();
                 map.setToFirstAction(pidNum);
 		createTextPane(n,currentPage);
 	
@@ -585,8 +585,8 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 				    "<br> " + outline.getPR(n.getElement()) + 
 				    "<br> Script: " + "   " + script;
 
-		TreePath path = tree.getNextMatch((String)map.printCurrentName(pidNum),0,Position.Bias.Forward);
-                tree.setSelectionPath(path);
+		//TreePath path = tree.getNextMatch((String)map.printCurrentName(pidNum),0,Position.Bias.Forward);
+                //tree.setSelectionPath(path);
 		if(outline.resumeLabelOk(map.getCurrentAction(pidNum)))	
 			start.setText("Resume");
 		else

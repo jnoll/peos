@@ -78,12 +78,18 @@ public class ActionMap{
                                 || stateValue.equals("RUN"))
                             {
                                 DefaultMutableTreeNode leaf = 
-                                    new DefaultMutableTreeNode(payload.getAttribute("name"));
+                                    new DefaultMutableTreeNode(payload.getAttribute("name") 
+                                        + "(" +i + ")");
                                 pids[i].add(leaf);
                             }
                         }
+                        
                         probe = probe.getNext();
                     }
+                    if (pids[i].getChildCount()==0)
+                        {
+                            pids[i].add(new DefaultMutableTreeNode("No Available Actions"));
+                        }
                     this.setCurrent(i,curr);
                 }
                 

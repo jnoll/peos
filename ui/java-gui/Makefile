@@ -15,7 +15,8 @@ java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JUNIT_INCLUDE}:${JAVAGUI_JAR}:.
 
 all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class \
 	DisabledPreferencesFactory.class Help.class ActionMap.class LinkedList.class LinkNode.class \
-	SetupPath.class MyFileFilter.class ResourceMap.class SpecLoader.class
+	SetupPath.class MyFileFilter.class ResourceMap.class SpecLoader.class \
+	ActionViewer.class
 	jar cf java-gui.jar *.class
 	mv java-gui.jar ./include
 disp:

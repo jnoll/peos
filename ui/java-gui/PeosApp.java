@@ -19,6 +19,10 @@ public class PeosApp extends JFrame implements ActionListener
 	private String activePs[] = new String[11];
 	private boolean internalFrameOpen = false;
         private displayPO outline;        
+        private ActionViewer testViewer;
+        
+        //0 for process oriented view, 1 for action oriented view
+        private int currentViewMode=0;
         
 	public JMenu fileMenu;
 	public JMenuBar menuBar;        
@@ -52,15 +56,15 @@ public class PeosApp extends JFrame implements ActionListener
  			        screenSize.height - inset*2   );
                 
 	    	//Set up the GUI.
-                actionWindow=new JPanel();
+            //    actionWindow=new JPanel();
                 
            //     actionWindow.setBounds(inset, inset, 
              //                          screenSize.width - inset *2, 
                //                        screenSize.height - inset*2);
 		menuBar = new JMenuBar();
        		setJMenuBar(createMenuBar());
-                blah = new JTree(outline.getActions().getReadyActionList());
-                actionWindow.add(blah);
+        //        blah = new JTree(outline.getActions().getReadyActionList());
+          //      actionWindow.add(blah);
 		tabbedPane = new JTabbedPane();
 		getContentPane().add(createToolBar(),BorderLayout.PAGE_START);
 		deleteB.setEnabled(false);
@@ -194,18 +198,17 @@ public class PeosApp extends JFrame implements ActionListener
                 {                              
                     switchView.setText("Switch to Process Mode");
                     switchView.setActionCommand("ProcessMode");
-                    //getContentPane().setVisible(false);
+
                     getContentPane().remove(tabbedPane);
-                    actionWindow.remove(blah);
-                    blah = new JTree(outline.getActions().getReadyActionList());
-                    actionWindow.add(blah);
-                    actionWindow.setLayout(new GridLayout(1,1));
-                    getContentPane().add(actionWindow, BorderLayout.CENTER);
+
+                    testViewer = new ActionViewer(outline,this);
+                    getContentPane().add(testViewer);
                     deleteB.setEnabled(false);
                     
                     show();
-                    
-                    actionWindow.setVisible(true);
+                    testViewer.setVisible(true);
+                    currentViewMode=1;
+
 
                 }
                 else if ("ProcessMode".equals(e.getActionCommand()))
@@ -213,13 +216,14 @@ public class PeosApp extends JFrame implements ActionListener
                     switchView.setText("Switch to Action Mode");
                     switchView.setActionCommand("ActionMode");
                     //getContentPane().setVisible(true);
-                    getContentPane().remove(actionWindow);
+                    getContentPane().remove(testViewer);
                     getContentPane().add(tabbedPane,BorderLayout.CENTER);
                     deleteB.setEnabled(true);
-                    actionWindow.setVisible(false);
+                    testViewer.setVisible(false);
                     tabbedPane.setVisible(true);
                     hide();
                     show();
+                    currentViewMode=0;
                     
                 
                 }
@@ -227,18 +231,32 @@ public class PeosApp extends JFrame implements ActionListener
 		{
 			if (getNumCurrActive() >= 11)
 			{
-   	                 	 JOptionPane.showMessageDialog(getContentPane(),
-                                	 "Please delete some processes before trying to load again.",
-                                    	 "Process Overload",
-	                                 JOptionPane.ERROR_MESSAGE);	
+                            JOptionPane.showMessageDialog(getContentPane(),
+                                "Please delete some processes before trying to load again.",
+                                "Process Overload",
+                                JOptionPane.ERROR_MESSAGE);	
 			}
 			else
 			{
-				loadProcess();
-				menuBar.removeAll();
-       				setJMenuBar(createMenuBar());
-			}
-			//deleteB.setEnabled(true);
+                            
+                            loadProcess();
+                            menuBar.removeAll();
+                            setJMenuBar(createMenuBar());
+                            if (currentViewMode==1)
+                            {                              
+                                switchView.setText("Switch to Process Mode");
+                                switchView.setActionCommand("ProcessMode");
+                                getContentPane().remove(testViewer);
+                                getContentPane().remove(tabbedPane);
+                                
+                                testViewer=new ActionViewer(outline,this);
+                                getContentPane().add(testViewer);
+                                testViewer.setVisible(true);
+                                show();
+                            }
+                                
+                        }
+			
 		}
 		else if ("active".equals(e.getActionCommand()))
 		{
@@ -279,7 +297,7 @@ public class PeosApp extends JFrame implements ActionListener
                            "Delete Confirmation",
                            JOptionPane.YES_NO_OPTION);
 
-                        System.out.println("deleting: " + pidInt);
+                        
                     	if (n == JOptionPane.YES_OPTION) {
                             delete(pidInt);
                     	}
@@ -295,6 +313,7 @@ public class PeosApp extends JFrame implements ActionListener
 
 			if (tabbedPane.getTabCount() == 0)
 				deleteB.setEnabled(false);
+                        
 
 		}	
 		else if("online".equals(e.getActionCommand()))
@@ -309,6 +328,7 @@ public class PeosApp extends JFrame implements ActionListener
 		}
 		else 
 			quit();
+                
 	}
 	
 	public int getNumCurrActive()
@@ -327,7 +347,7 @@ public class PeosApp extends JFrame implements ActionListener
         public void delete(int pidInt)
         {
             if (findTabIndex(pidInt) != -1)
-                System.out.println("tab:" + findTabIndex(pidInt));
+                
               
 				{
 					//tabbedPane.remove(tabbedPane.getSelectedIndex());
