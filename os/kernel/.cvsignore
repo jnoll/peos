@@ -2,6 +2,6 @@
 *.tar
 TODO BUGS
 xref TAGS tags cscope.out cflow
-shell
+shell daemon
 .depend
 event.log
