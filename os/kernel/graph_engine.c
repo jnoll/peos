@@ -91,7 +91,37 @@ Graph makegraph(char *file)
 	}
 }
 
-	
+void mark_for_iteration(Graph g)
+{
+	 Node node,parent,child;
+	 int i,k;
+
+	 MARKED(g -> source) = TRUE;
+	 for(node = g -> source->next; node != NULL; node = node -> next)
+         {
+            for(i = 0; i < ListSize(node -> predecessors); i++)
+              {
+                  parent = (Node) ListIndex(node -> predecessors,i);
+                  if (MARKED(parent) == FALSE)
+	             {
+			     ITER_START(node) = TRUE;
+		     }
+	      }
+
+	    MARKED(node) = TRUE;
+
+	    for(k = 0; k < ListSize(node -> successors); k++)
+              {
+                  child = (Node) ListIndex(node -> successors,k);
+                  if(MARKED(child) == TRUE)
+                     {
+			     ITER_END(node) = TRUE;
+		     }
+	      }
+	 }
+}
+
+
 void add_iteration_lists(Graph g)
 {
 	Node node,child,parent,child1,child2;
@@ -110,7 +140,7 @@ void add_iteration_lists(Graph g)
 	        for(j=0; j < ListSize(parent -> successors); j++) 
 	        {
 		   child = (Node) ListIndex(parent->successors,j);
-		   if(strcmp(child->name,node->name) != 0)
+		   if((strcmp(child->name,node->name) != 0) && (ITER_START(child) == FALSE))
 		   {
                      ListPut(ITER_END_NODES(node),child);
 		   }
@@ -207,7 +237,7 @@ void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources
               }
                else
                {
-                if((IS_OP_TREE(t)) && (TREE_OP(t) == EQ))
+                if((IS_OP_TREE(t)) && ((TREE_OP(t) == EQ) || (TREE_OP(t) == NE) || (TREE_OP(t) == GE) || (TREE_OP(t) == LE) || (TREE_OP(t) == LT) || (TREE_OP(t) == GT)))
                  {
                   make_resource_list(t->left,resource_list,num_resources);
                  }
@@ -227,7 +257,7 @@ void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources
 /* 
  * This function is used to get the list of resources for a particular action
  * The return value is a list of peos_resource_t and not a list of strings, because
- * this lets me reuse the function make_resource_list above. If I had to retun a list of strings
+ * this lets me reuse the function make_resource_list above. If I had to return a list of strings
  * then I would have to write another fuunction which would be same as make_resource_list
  * but would make a list of strings.
  *
@@ -566,10 +596,14 @@ void initialize_graph(Graph g)
 	    n -> data = (void *) malloc (sizeof (struct data));
             MARKED(n) = FALSE;
             STATE(n) = ACT_NONE;
+	    ITER_START(n) = FALSE;
+	    ITER_END(n) = FALSE;
 	    ITER_START_NODES(n) = ListCreate();
 	    ITER_END_NODES(n) = ListCreate();
 	  
 	}
+	mark_for_iteration(g);
+	sanitize(g);
 	add_iteration_lists(g);
 	sanitize(g);
 	mark_successors(g->source->next,ACT_READY);
