@@ -730,7 +730,7 @@ START_TEST(test_print_after_escaping)
     char str[20]="<input type=\"&test\">";
 
     expected = fopen("expected.xml", "w");
-    fprintf(expected, "&lt;input type=\"&amp;test\"&gt;");
+    fprintf(expected, "&lt;input type=&quot;&amp;test&quot;&gt;");
     fclose(expected);
     mark_point();
 

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.41 2004/04/28 21:14:58 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.42 2004/05/14 00:58:39 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -522,6 +522,8 @@ void print_after_escaping(char *str, FILE *fp)
 			   break;
 		case '&' : fprintf(fp, "&amp;");
 			   break;
+	        case '"' : fprintf(fp, "&quot;");
+                            break;		
 		default : fprintf(fp, "%c",str[i]);
 			  break;
 	    }
