@@ -10,3 +10,4 @@
 
 void setup_fs( ) ;
 void setup_mail( ) ;
+void setup_vr( ) ;

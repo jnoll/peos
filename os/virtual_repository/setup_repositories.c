@@ -30,3 +30,8 @@ void setup_fs( )
 	repos_list[repos_ctr].name = "email" ;
 	repos_ctr ++;
 }*/
+
+void setup_vr( ) 
+{
+	setup_fs( );
+}
