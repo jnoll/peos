@@ -1,4 +1,6 @@
 import junit.framework.*;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class testACJU extends TestCase{
 
@@ -78,6 +80,15 @@ public class testACJU extends TestCase{
         {
             assertEquals("<TABLE border=1><TR align=center><TD>State</TD><TD>Action</TD></TR><tr><td>"
                 +"Ready</td><td><a href=\"[1]overview\">overview</a></td></tr></TABLE>",map.buildActionList());
+        }
+        
+        public void testBuildActionTree()
+        {
+            DefaultMutableTreeNode tester = map.buildActionTree();
+            assertEquals(tester.getUserObject(), "Actions");
+            tester = (DefaultMutableTreeNode)tester.getChildAt(2).getChildAt(0);
+            assertEquals(tester.getUserObject(), "(1)overview");           
+            
         }
 	public void testParseActionString()
 	{
