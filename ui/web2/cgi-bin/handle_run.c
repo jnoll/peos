@@ -98,7 +98,7 @@ int main()
         print_header("Please Supply Resource Bindings");
 	print_javascript();    
         printf("<form name=\"pickform\" action=\"bind_resources.cgi?pid=%d&process_filename=%s&act_name=%s&resource_type=%s\">",pid,process_filename,action_name,resource_type);
-        printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" width=\"100%\">");
+        printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" width=\"100%%\">");
         printf("<tbody>");
 	for(i=0;i < num_unbound_resources; i++) {
 	    printf("<tr>");

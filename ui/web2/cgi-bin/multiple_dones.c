@@ -112,7 +112,7 @@ int main()
         print_header("Please Supply Resource Bindings");
 	print_javascript();
         printf("<form name=\"pickform\" action=\"multiple_done_bindings.cgi?\">");
-        printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" width=\"100%\">");
+        printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" width=\"100%%\">");
         printf("<tbody>");
 	for(i=0;i < num_unbound_resources; i++) {
 	    printf("<tr>");

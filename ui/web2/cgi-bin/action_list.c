@@ -8,7 +8,7 @@
 #include "html.h" 
 
 
-char *process_filename;
+char *process_filename = NULL;
 
 void print_row(int pid, char *name, char *state)
 {
@@ -37,7 +37,7 @@ void list_actions()
     }
 
     printf("<form name=\"pickform\" action=\"multiple_dones.cgi\">");
-    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%;\">");
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%%;\">");
     printf("<tbody>");
     printf("<tr>");
     printf("<td style=\"vertical-align: top;\">Process Id<br></td>");
@@ -76,7 +76,7 @@ void list_actions()
 int main()
 {
     
-    char **cgivars ;
+    char **cgivars, *login_name;
     int i ;
     char *start;
     
@@ -84,9 +84,11 @@ int main()
     cgivars = getcgivars();
 
     start = (char *) getvalue("start", cgivars);
-    process_filename = (char *) getvalue("process_filename", cgivars);
+    login_name = (char *) getvalue("process_filename", cgivars);
+    process_filename = (char *) malloc((strlen(login_name) + strlen(".dat")) * sizeof(char));
+    strcpy(process_filename, login_name);
     if(strcmp(start,"true") == 0) {
-        strcat(process_filename,".dat");	    
+        strcat(process_filename, ".dat"); 
     }
 
     peos_set_process_table_file(process_filename);

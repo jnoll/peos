@@ -16,19 +16,18 @@ void list_models()
     
     char ** result = (char **) peos_list_models();
 
-    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%;\">");
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%%;\">");
     printf("<tbody>");
     printf("<tr>");
     printf("<td style=\"vertical-align: top;\">Processes<br></td>");
     printf("</tr>");
      
     for(i=0; result && result[i]; i++) {
-	char *model = strcat(result[i],".pml");    
         printf("<tr>");
-        printf("<td style=\"vertical-align: top;\"><a href=create_process.cgi?model=%s&process_filename=%s>%s</a><br></td>",model, process_filename, result[i]);
+        printf("<td style=\"vertical-align: top;\"><a href=create_process.cgi?model=%s.pml&process_filename=%s>%s</a><br></td>", result[i], process_filename, result[i]);
         printf("</tr>");
-	    
     }
+	    
     printf("</tbody>");
     printf("</table>");
 	 
