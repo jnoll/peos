@@ -34,7 +34,7 @@ main (int argc, char *argv[])
   gtk_set_locale ();
   gconf_init (argc, argv, NULL);
   gtk_init (&argc, &argv);
-  gtk_rc_parse ("./gtk/gtkrc");
+  //gtk_rc_parse ("./gtk/gtkrc");
 
   exec_path = getPath();
   if(exec_path == NULL) {
