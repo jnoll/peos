@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: main.c$
-* Version:      $Id: main.c,v 1.1 2004/01/11 20:32:54 jnoll Exp $ ($Name:  $)
+* Version:      $Id: main.c,v 1.2 2004/01/13 20:50:51 jnoll Exp $ ($Name:  $)
 * Description:  Menu driven interface for PEOS.
 * Author:       John Noll, Santa Clara University
 * Created:      Fri Jun 27 19:35:11 2003
-* Modified:     Sun Jan 11 10:49:39 2004 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Tue Jan 13 08:20:24 2004 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -25,8 +25,10 @@ char *XCursesProgramName="peos";
 
 extern int display_process(int pid);
 
-CDKSCREEN *cdkscreen		= 0;
-WINDOW *cursesWin		= 0;
+#define DEFAULT_HINT "B)ack to previous screen, Q)uit, ? for help"
+CDKSCREEN *cdkscreen = 0;
+WINDOW *cursesWin = 0;
+CDKLABEL *hint = 0;
 
 void quit()
 {
@@ -40,12 +42,83 @@ void quit()
     exit (0);
 }
 
+void display_msg(char *txt)
+{
+    char **msg = CDKsplitString(txt, '\n');
+    
+    popupLabel (cdkscreen, msg, CDKcountStrings(msg)); 
+    CDKfreeStrings(msg);
+}
+
+int handle_default_keys(EObjectType cdktype GCC_UNUSED,
+		       void *target GCC_UNUSED,
+		       void *clientData GCC_UNUSED, chtype key)
+{
+   boolean escape = FALSE;
+   chtype actual;
+
+   switch (key) {
+   case KEY_LEFT:
+   case 'b':
+   case 'B':
+       escape = TRUE;
+       break;
+   case 'q':
+       quit();
+       break;
+   case '?':
+       display_msg("Type 'B' or 'b' to go to previous screen\n'q' to quit\n'?' for help.\nHit any key to continue.");
+       escape = FALSE;
+       break;
+   default: 
+       escape = FALSE;
+       break;
+   }
+
+   return escape;
+}
+
+void bind_default_keys(void *object)
+{
+    bindCDKObject (0, object, KEY_LEFT, handle_default_keys, NULL);
+    bindCDKObject (0, object, 'b', handle_default_keys, NULL);
+    bindCDKObject (0, object, 'B', handle_default_keys, NULL);
+    bindCDKObject (0, object, 'q', handle_default_keys, NULL);
+    bindCDKObject (0, object, '?', handle_default_keys, NULL);
+}
+
+
+void display_hint(char *line1, char *line2)
+{
+    char *msg[3];
+    int i, width;
+    boolean box = FALSE;
+
+
+    if (hint == 0) {
+	width = getmaxx(cdkscreen->window);
+	msg[0] = (char *)calloc(width + 1, sizeof(char));
+	memset(msg[0], ' ', width);
+	msg[width] = '\0';
+	msg[1] = msg[0];
+	hint = newCDKLabel(cdkscreen,
+			   CENTER, BOTTOM,
+			   msg, 2,
+			   box, FALSE);
+    }
+
+    i = 0;
+    msg[i++] = line1;
+    msg[i++] = line2 ? line2 : DEFAULT_HINT;
+    eraseCDKLabel(hint);
+    setCDKLabel(hint, msg, i, box);
+    drawCDKLabel(hint, box);
+}
 
 display_main_menu()
 {
     CDKSCROLL *peosMenu;
     char *menulist[MAX_MENU_ITEMS];
-    char *msg[10];
     int entry, selection;
 
 /* Create the menu lists. */
@@ -58,18 +131,15 @@ display_main_menu()
 
 /* Create the menu. */
     peosMenu = newCDKScroll(cdkscreen, 
-			    CENTER, CENTER,
+			    CENTER, TOP,
 			    RIGHT,
-			    0, 0,
-			    "<C></K>PEOS Enactment Interface<!K>\n<C>Select an Operation",
+			    -2, 0,
+			    "<C></K>PEOS Enactment Interface<!K>",
 			    menulist, entry,
 			    TRUE,
 			    A_REVERSE,
 			    TRUE, TRUE);
-
-/* Define the help key binding. */
-/*bindCDKObject (vMENU, peosMenu, '?', helpCB, 0);*/
-
+    bind_default_keys(peosMenu);
 
 /* Loop until we are done. */
     while (1) {
@@ -77,6 +147,8 @@ display_main_menu()
 	refreshCDKScreen (cdkscreen);
 
 /* Activate the menu */
+	display_hint("</K><RET><!K> Selects an operation.", 
+		     "Q)uit, ? for help");
 	selection= activateCDKScroll(peosMenu, 0);
 	switch (selection) {
 	case 0:			/* View process instances. */
@@ -86,12 +158,10 @@ display_main_menu()
 	    display_model_list();
 	    break;
 	case 2:		/* View worklist */
-	    msg[0] = "View Worklist";
-	    popupLabel (cdkscreen, msg, 1); 
+	    display_msg("View Worklist");
 	    break;
 	case 3:		/* View->action */
-	    msg[0] = "About->Help";
-	    popupLabel (cdkscreen, msg, 1);
+	    display_msg("Help");
 	    break;
 	case 4:
 	    destroyCDKScroll(peosMenu);

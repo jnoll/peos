@@ -4,63 +4,168 @@
 
 extern CDKSCREEN *cdkscreen;
 extern WINDOW *cursesWin;
+extern void display_hint(char *l1, char *l2);
+void bind_default_keys(void *object);
 
+int bind_ready_state(CDKSWINDOW *view, peos_action_t *action);
+int bind_run_state(CDKSWINDOW *view, peos_action_t *action);
+int bind_suspend_state(CDKSWINDOW *view, peos_action_t *action);
 
-char **list_actions(peos_action_t *alist, int num_actions)
+handle_action_keys(EObjectType cdktype GCC_UNUSED,
+		   void *target,
+		   void *client_data, chtype key)
 {
+    char *msg[5], *hint, temp[256], title[BUFSIZ];
+    char *d_buttons[] = {"OK", "Cancel"};
+    int i = 0;
+    int status;
+    boolean escape = FALSE;
+    peos_event event;
+    peos_action_t *action = (peos_action_t *)client_data;
 
-    char **result = NULL, buf[BUFSIZ];
-    int i;
-
-    result = (char **)calloc(num_actions + 1, sizeof(char *));
-    for (i = 0; i < num_actions; i++) {
-	switch (alist[i].state) {
-	case ACT_NONE:
-	case ACT_NEW:
-	    snprintf(buf, sizeof(buf), "%s", alist[i].name);
-	    break;
-	case ACT_PENDING:
-	case ACT_DONE:
-	    snprintf(buf, sizeof(buf), "</D>%s<!D> (done)", alist[i].name);
-	    break;
-	case ACT_DEAD: 
-	case ACT_ABORT:
-	    snprintf(buf, sizeof(buf), "%s", alist[i].name);
-	    break;
-
-	    /* Ready actions. */
-	case ACT_BLOCKED:
-	    snprintf(buf, sizeof(buf), "</U>%s<!U> (blocked)", alist[i].name);
-	    break;
-	case ACT_READY:
-	    snprintf(buf, sizeof(buf), "</U>%s<!U> (ready)", alist[i].name);
-	    break;
-	case ACT_AVAILABLE:
-	    snprintf(buf, sizeof(buf), "</U>%s<!U> (avail)", alist[i].name);
+    switch (key) {
+    case 'F': case 'f': case 'P': case 'p':
+	switch (key) {
+	case 'F': case 'f':
+	    if (action->state != ACT_RUN && action->state != ACT_SUSPEND) {
+		display_msg("ERROR: action not active/suspended; can't finish");
+		quit();
+	    }
+	    event = PEOS_EVENT_FINISH;
+	    sprintf (temp, "<C>Completing action </U>%s<!U>", action->name);
+	    i = 0;
+	    msg[i++] = copyChar (temp);
+	    msg[i++] = "<C>Select OK to return to worklist.";
+	    msg[i++] = "<C>and select another action->";
 	    break;
 
-	    /* Running actions. */
-	case ACT_SUSPEND:
-	    snprintf(buf, sizeof(buf), "</K>%s<!K> (suspend)", alist[i].name);
+	case 'P': case 'p':
+	    if (action->state != ACT_BLOCKED && action->state != ACT_READY
+		&& action->state != ACT_AVAILABLE) {
+		display_msg("ERROR: action not available; can't perform");
+		quit();
+	    }
+	    event = PEOS_EVENT_START;
+	    sprintf (temp, "<C>Performing action </U>%s<!U>", action->name);
+	    i = 0;
+	    msg[i++] = copyChar (temp);
+	    msg[i++] = "<C>Select OK to return to instructions.";
+	}
+
+	if ((popupDialog (cdkscreen, msg, i, d_buttons, 2) == 0)) {
+	    if ((status = peos_notify(action->pid, action->name, event)) == VM_ERROR 
+		|| status == VM_INTERNAL_ERROR) 
+		{
+		    display_msg("process executed an illegal instruction and has been terminated\n");
+		    quit();
+		} 
+	    if (event == PEOS_EVENT_FINISH) {
+		escape = TRUE;	/* Return to action list. */
+	    } else {
+		/* Have to reset state here, because action state is not
+		   retrieved from kernel again. */
+		action->state = ACT_RUN;
+		/* Reset key bindings for new state. */
+		bind_run_state(target, action);
+	    }
+	}
+	break;
+
+    case 'S': case 's': case 'R': case 'r':
+	switch (key) {
+	case 'S': case 's': 
+	    /* Suspend */
+	    if (action->state != ACT_RUN) {
+		display_msg("ERROR: action not active; can't suspend.");
+		quit();
+	    }
+
+	    event = PEOS_EVENT_SUSPEND;
+	    sprintf(temp, "<C>Suspending Action </U>%s<!U>", action->name);
+	    i = 0;
+	    msg[i++] = copyChar (temp);
+	    msg[i++] = "<C>Select OK to return to worklist.";
+	    msg[i++] = "<C>and select another action.";
+	    escape = TRUE;
 	    break;
-	case ACT_RUN:
-	    snprintf(buf, sizeof(buf), "</K>%s<!K> (active)", alist[i].name);
+
+	case 'R': case 'r':
+	    /* Resume */
+	    if (action->state != ACT_SUSPEND) {
+		display_msg("ERROR: action not suspended; can't resume.");
+		quit();
+	    }
+	    event = PEOS_EVENT_START;
+	    sprintf(temp, "<C>Resuming action </U>%s<!U>", action->name);
+	    i = 0;
+	    msg[i++] = copyChar (temp);
+	    msg[i++] = "<C>Select OK to return to instructions.";
 	    break;
 	}
-	result[i] = strdup(buf); 
-    }
-    result[i] = NULL;
 
-    return result;
+	if ((popupDialog(cdkscreen, msg, i, d_buttons, 2) == 0)) {
+	    if ((status = peos_notify(action->pid, action->name, event)) == VM_ERROR 
+		|| status == VM_INTERNAL_ERROR) {
+		printf("process executed an illegal instruction and has been terminated\n");
+		quit();
+	    } else {
+		if (event == PEOS_EVENT_SUSPEND) {
+		    bind_suspend_state(target, action);
+		} else {
+		    action->state = ACT_RUN;
+		    bind_run_state(target, action);
+		}
+	    }
+	}
+    } 
+    return escape;
+}
+
+
+bind_ready_state(CDKSWINDOW *view, peos_action_t *action)
+{
+    cleanCDKObjectBindings(vSWINDOW, (void *)view);
+    bindCDKObject (0, view, 'P', handle_action_keys, (void *)action); 
+    bindCDKObject (0, view, 'p', handle_action_keys, (void *)action); 
+    bind_default_keys(view);
+    display_hint("</K>P<!K>)erform this action", NULL);
+
+}
+
+bind_suspend_state(CDKSWINDOW *view, peos_action_t *action)
+{
+    cleanCDKObjectBindings(vSWINDOW, (void *)view);
+
+    bindCDKObject(0, view, 'F', handle_action_keys, (void *)action); 
+    bindCDKObject(0, view, 'f', handle_action_keys, (void *)action); 
+    bindCDKObject(0, view, 'R', handle_action_keys, (void *)action); 
+    bindCDKObject(0, view, 'r', handle_action_keys, (void *)action); 
+    bind_default_keys(view);
+    display_hint("</K>F<!K>)inish this action; </K>R<!K>)esume this action.",
+		 NULL);
+}
+
+/* Bind keys and return hint string. */
+bind_run_state(CDKSWINDOW *view, peos_action_t *action)
+{
+    cleanCDKObjectBindings(vSWINDOW, (void *)view);
+
+    bindCDKObject(0, view, 'F', handle_action_keys, (void *)action); 
+    bindCDKObject(0, view, 'f', handle_action_keys, (void *)action); 
+    bindCDKObject(0, view, 'S', handle_action_keys, (void *)action); 
+    bindCDKObject(0, view, 's', handle_action_keys, (void *)action); 
+    bind_default_keys(view);
+    display_hint("</K>F<!K>)inish this action; </K>S<!K>)uspend this action to do another",
+		 NULL);
 }
 
 
 void display_action(int pid, int index)
 {
     peos_action_t *alist, action;
-    char *msg[5], temp[256], title[BUFSIZ];
-    CDKVIEWER *view;
-    char *buttons[40], *d_buttons[] = {"OK", "Cancel"};
+    char *hint, title[BUFSIZ];;
+    CDKSWINDOW *view;
+
     char *info[5];
     char *loginName;
     char *script, **script_lines;
@@ -69,38 +174,39 @@ void display_action(int pid, int index)
 
     while (1) {
 	if ((alist = peos_list_actions(pid, &num_actions)) == NULL) {
-	    exit(0);
+	    display_msg("Unable to retrieve action list.");
+	    quit();
 	}
 
 	action = alist[index];
 
-	b = 0;
+	/* Create the view. */
+	sprintf (title, "<C>Action: </K>%20s<!K>", action.name);
+	view = newCDKSwindow (cdkscreen,
+			      CENTER, TOP,
+			      -4, 0,
+			      title,
+			      1024,
+			      TRUE, FALSE);
+
+
 	switch (action.state) {
 	case ACT_READY:
 	case ACT_AVAILABLE:
 	case ACT_BLOCKED:
-	    buttons[b++] = "Perform";
+	    bind_ready_state(view, &action);
 	    break;
 	case ACT_RUN:
-	    buttons[b++] = "Finish";
-	    buttons[b++] = "Suspend";
+	    bind_run_state(view, &action);
 	    break;
 	case ACT_SUSPEND:
-	    buttons[b++] = "Finish";
-	    buttons[b++] = "Resume";
+	    bind_suspend_state(view, &action);
 	    break;
 	default:
+	    bind_default_keys(view);
 	    break;
 	}
-	buttons[b++] = "Back";
 
-	/* Create the view. */
-	view = newCDKViewer (cdkscreen,
-			     CENTER, CENTER, 
-			     0, 0,
-			     buttons, b, 
-			     A_REVERSE,
-			     TRUE, FALSE);
 
 	/* Could we create the viewer widget? */
 	if (view == 0) {
@@ -114,14 +220,13 @@ void display_action(int pid, int index)
 	}
 
 
-	/* Set up the viewer title, and the contents to the widget. */
+	/* Get the script and install as window text. */
 	script = peos_get_script(action.pid, action.name);
 	script_lines = CDKsplitString(script, '\n');
-	sprintf (title, "<C>Action:</K>%20s<!K>", action.name);
-	setCDKViewer (view, title, script_lines, CDKcountStrings(script_lines), A_REVERSE, TRUE, TRUE, TRUE);
+	setCDKSwindow(view, script_lines, CDKcountStrings(script_lines), TRUE);
 
 	/* Activate the viewer widget. */
-	selection = activateCDKViewer (view, 0);
+	activateCDKSwindow (view, 0);
 
 
 	/* Check how the person exited from the widget.*/
@@ -130,157 +235,11 @@ void display_action(int pid, int index)
 	    destroyCDKViewer(view);
 	    refreshCDKScreen(cdkscreen);
 	    break;
-	} else if (view->exitType == vNORMAL) {
-	    int i = 0;
-	    int status;
-	    peos_event event;
-
-	    if (selection == b-1) {
-		/* Back */
-		destroyCDKViewer(view);
-		refreshCDKScreen(cdkscreen);
-		break;
-	    } else if (selection == 0) {
-		/* Perform or Finish */
-		switch (action.state) {
-		case ACT_RUN:
-		case ACT_SUSPEND:
-		    event = PEOS_EVENT_FINISH;
-		    sprintf (temp, "<C>Completing action </U>%s<!U>", action.name);
-		    msg[i++] = copyChar (temp);
-		    msg[i++] = "<C>Select OK to return to worklist.";
-		    msg[i++] = "<C>and select another action.";
-		    break;
-		case ACT_READY:
-		case ACT_BLOCKED:
-		case ACT_AVAILABLE:
-		    event = PEOS_EVENT_START;
-		    sprintf (temp, "<C>Performing action %s", action.name);
-		    msg[i++] = copyChar (temp);
-		    msg[i++] = "<C>Select OK to return to instructions.";
-		    break;
-		}
-
-		if ((popupDialog (cdkscreen, msg, i, d_buttons, 2) == 0)) {
-		    if ((status = peos_notify(action.pid, action.name, event)) == VM_ERROR 
-			|| status == VM_INTERNAL_ERROR) {
-			printf("process executed an illegal instruction and has been terminated\n");
-		    } 
-		    if (event == PEOS_EVENT_FINISH) {
-			break;	/* Return to action list. */
-		    } 
-		}
-	    } else if (selection == 1 && action.state == ACT_RUN) {
-		if (action.state == ACT_RUN) {
-		    /* Suspend */
-		    event = PEOS_EVENT_SUSPEND;
-		    sprintf (temp, "<C>Suspending Action </U>%s<!U>", action.name);
-		    msg[i++] = copyChar (temp);
-		    msg[i++] = "<C>Select OK to return to worklist.";
-		    msg[i++] = "<C>and select another action.";
-		} else {
-		    /* Resumed */
-		    event = PEOS_EVENT_START;
-		    sprintf (temp, "<C>Resuming action </U>%s<!U>", action.name);
-		    msg[i++] = copyChar (temp);
-		    msg[i++] = "<C>Select OK to return to instructions.";
-		}
-
-		if ((popupDialog (cdkscreen, msg, i, d_buttons, 2) == 0)) {
-		    if ((status = peos_notify(action.pid, action.name, event)) == VM_ERROR 
-			|| status == VM_INTERNAL_ERROR) {
-			printf("process executed an illegal instruction and has been terminated\n");
-			exit(1);
-		    } 
-		}
-	    }
 	}
 
 	/* Clean up. */
+	CDKfreeStrings(script_lines);
 	destroyCDKViewer(view);
 	refreshCDKScreen(cdkscreen);
     }
 }
-
-scroll_to_available(CDKSCROLL *scrollList, peos_action_t *alist, int num_actions)
-{
-    int i;
-
-    /* Scroll forward to first available action. */
-    for (i = 0; i < num_actions; i++) {
-	if (alist[i].state == ACT_BLOCKED ||
-	    alist[i].state == ACT_AVAILABLE ||
-	    alist[i].state == ACT_READY ||
-	    alist[i].state == ACT_SUSPEND) {
-	    break;
-	}
-	injectCDKScroll(scrollList, KEY_DOWN);
-    }
-}
-
-display_action_list(int pid)
-{
-    CDKSCROLL *scrollList = 0;
-    char *title = "<C></K>Peos Enactment Interface<!K>\n<C>Select an action to view or perform\n<C>Ready actions are </U>emphasized<!U>, Active actions are </K>Bold<!K>\n";
-    char *msg[5];
-    char **action_names;
-    int selection, num_actions, i;
-    peos_action_t *alist;
-
-
-    /* Get list of actions. */
-    if ((alist = peos_list_actions(pid, &num_actions)) != NULL) {
-	action_names = list_actions(alist, num_actions);
-    }
-
-    /* Create the scrolling list. */
-    scrollList = newCDKScroll (cdkscreen, 
-			       CENTER, CENTER,
-			       RIGHT,
-			       0, 0,
-			       title, 
-			       action_names, num_actions,
-			       NONUMBERS,
-			       A_REVERSE,
-			       TRUE, TRUE);
-
-    while (1) {
-	/* Redraw the CDK screen. */
-	refreshCDKScreen (cdkscreen);	
-	/* Is the scrolling list null? */
-	if (scrollList == 0) {
-	    /* Exit CDK. */
-	    destroyCDKScreen (cdkscreen);
-	    endCDK();
-
-	    /* Print out a message and exit. */
-	    printf ("Oops. Could not make scrolling list. Is the window too small?\n");
-	    exit (1);
-	}
-
-	/* Activate the scrolling list. */
-	scroll_to_available(scrollList, alist, num_actions);
-	selection = activateCDKScroll (scrollList, 0);
-
-	/* Determine how the widget was exited. */
-	if (scrollList->exitType == vESCAPE_HIT) {
-	    break;
-	} else if (scrollList->exitType == vNORMAL) {
-	    /* Clean up before displaying action. */
-	    CDKfreeStrings (action_names);
-	    display_action(pid, selection);
-	}
-
-	/* Get new list of actions. */
-	if ((alist = peos_list_actions(pid, &num_actions)) != NULL) {
-	    action_names = list_actions(alist, num_actions);
-	}
-
-	setCDKScrollItems(scrollList, action_names, num_actions, NONUMBERS);
-    }
-
-    CDKfreeStrings (action_names);
-    destroyCDKScroll (scrollList);
-}
-
-
