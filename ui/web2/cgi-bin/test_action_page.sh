@@ -26,7 +26,7 @@ then
   echo Failed action state.
   echo
 fi
-if !(grep '"test_script"' output > /dev/null)
+if !(grep '>test_script<' output > /dev/null)
 then
   echo
   echo Failed script.
@@ -72,7 +72,7 @@ then
   echo Failed action state.
   echo
 fi
-if !(grep '"test_script"' output > /dev/null)
+if !(grep '>test_script<' output > /dev/null)
 then
   echo
   echo Failed script.

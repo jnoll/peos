@@ -22,7 +22,8 @@ KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
 OBJECTS = html.o \
 	  getcgi.o
 
-TESTS = test_process_listing.sh \
+TESTS = test_delete_proc_table.sh \
+	test_process_listing.sh \
 	test_action_list.sh \
 	test_action_page.sh \
 	test_action_page_fail.sh \
@@ -33,12 +34,11 @@ TESTS = test_process_listing.sh \
 	test_resource_bindings.sh \
 	test_change_resource_bindings.sh \
 
-CGI = action_list.cgi action_page.cgi create_process.cgi process_listing.cgi action_event.cgi handle_run.cgi bind_resources.cgi multiple_dones.cgi multiple_done_bindings.cgi error_page.cgi resource_bindings.cgi change_resource_bindings.cgi
+CGI = action_list.cgi action_page.cgi create_process.cgi delete_proc_table.cgi process_listing.cgi action_event.cgi handle_run.cgi bind_resources.cgi multiple_dones.cgi multiple_done_bindings.cgi error_page.cgi resource_bindings.cgi change_resource_bindings.cgi
 SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)
 
 PML = test_action.pml readme.pml
 
-#all: $(CGI)
 all: test
 
 test: $(CGI) create_testtable
@@ -76,7 +76,6 @@ create_testtable: create_testtable.o
 clean: 
 	rm *.cgi
 
-#main.o action_page.o create.o do.o do_create.o resource.o: html.h
 .depend: $(SOURCES)
 	$(CC) $(CFLAGS) -MM $^ > $@
 .PHONY: test

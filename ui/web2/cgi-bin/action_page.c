@@ -39,6 +39,11 @@ int main()
     state = peos_get_act_state(pid, action_name);
     script = peos_get_script(pid, action_name);
 
+    if (script && script[0] == '"') {
+	script[strlen(script)-1] = '\0';
+	script = script + 1;
+    }
+
     req_resources = peos_get_resource_list_action_requires(pid, action_name, &num_req_resources);
     
     prov_resources = peos_get_resource_list_action_provides(pid, action_name, &num_prov_resources);
