@@ -54,26 +54,26 @@ int main()
 	    
     printf("<form name=\"actionform\" action=\"action_event.cgi\">");
 
-    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">");
-    printf("<tbody>");
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">Name<br></td>");
-    printf("<td style=\"vertical-align: top;\">%s<br></td>", action_name);
-    printf("</tr>");
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">\n");
+    printf("  <tbody>\n");
+    printf("    <tr>\n");
+    printf("      <td style=\"vertical-align: top;\">Name<br></td>\n");
+    printf("      <td style=\"vertical-align: top;\">%s<br></td>\n", action_name);
+    printf("    </tr>\n");
 
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">State<br></td>");
-    printf("<td style=\"vertical-align: top;\">%s<br></td>", state);
-    printf("</tr>");
+    printf("    <tr>\n");
+    printf("      <td style=\"vertical-align: top;\">State<br></td>\n");
+    printf("      <td style=\"vertical-align: top;\">%s<br></td>\n", state);
+    printf("    </tr>\n");
 
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">Script<br></td>");
-    printf("<td style=\"vertical-align: top;\">%s<br></td>",script);
-    printf("</tr>");
+    printf("    <tr>\n");
+    printf("      <td style=\"vertical-align: top;\">Script<br></td>\n");
+    printf("      <td style=\"vertical-align: top;\">%s<br></td>\n", script);
+    printf("    </tr>\n");
 
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">Required Resources<br></td>");
-    printf("<td style=\"vertical-align: top;\">");
+    printf("    <tr>\n");
+    printf("      <td style=\"vertical-align: top;\">Required Resources<br></td>\n");
+    printf("      <td style=\"vertical-align: top;\">");
 
     if(num_req_resources == 0) {
         printf("No Required Resources");
@@ -88,7 +88,7 @@ int main()
 		strcat(symlink_resource,process_filename);
 		unlink(symlink_resource);
 	        symlink(req_resources[i].value, symlink_resource);
-	        printf("<a href =\"%s\">%s</a>",symlink_resource,req_resources[i].name);
+	        printf("        <a href =\"%s\">%s</a>",symlink_resource,req_resources[i].name);
 		flag = 1;
 	    }
             else {	    
@@ -96,21 +96,23 @@ int main()
 	    }
 	    
 	    if(i < num_req_resources - 1) {
-	        printf(",");
+	        printf(",\n");
+	    } else {
+		printf("\n");
 	    }
         }
 	if(flag == 1) {
-	    printf("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); 	
-	    printf("<a href=\"resource_bindings.cgi?process_filename=%s&pid=%d&act_name=%s&resource_type=requires\">Change Bindings</a>",process_filename,pid,action_name);
+	    printf("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); 
+	    printf("\n        <a href=\"resource_bindings.cgi?process_filename=%s&pid=%d&act_name=%s&resource_type=requires\">Change Bindings</a><br>\n",process_filename,pid,action_name);
 	}	    
     }
 
-    printf("<br></td>");
-    printf("</tr>");
+    printf("      </td>\n");
+    printf("    </tr>\n");
 
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">Provided Resources<br></td>");
-    printf("<td style=\"vertical-align: top;\">");
+    printf("    <tr>\n");
+    printf("      <td style=\"vertical-align: top;\">Provided Resources<br></td>\n");
+    printf("      <td style=\"vertical-align: top;\">");
  
     if(num_prov_resources == 0) {
         printf("No Provided Resources");
@@ -125,7 +127,7 @@ int main()
 		strcat(symlink_presource,process_filename);
 		unlink(symlink_presource);
 	        symlink(prov_resources[i].value, symlink_presource);
-	        printf("<a href =\"%s\">%s</a>",symlink_presource,prov_resources[i].name);
+	        printf("\n        <a href =\"%s\">%s</a>",symlink_presource,prov_resources[i].name);
 		flag = 1;
 	    }	
 	    else {
@@ -133,48 +135,50 @@ int main()
 	    }
 	    
 	    if(i < num_prov_resources - 1) {
-	        printf(",");
+	        printf(",\n");
+	    } else {
+		printf("\n");
 	    }
         }
 	if(flag == 1) {
-	    printf("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); 	
-	    printf("<a href=\"resource_bindings.cgi?process_filename=%s&pid=%d&act_name=%s&resource_type=provides\">Change Bindings</a>",process_filename,pid,action_name);
+	    printf("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); 
+	    printf("\n        <a href=\"resource_bindings.cgi?process_filename=%s&pid=%d&act_name=%s&resource_type=provides\">Change Bindings</a><br>\n",process_filename,pid,action_name);
 	}	    
     }
     
-    printf("<br></td>");
-    printf("</tr>");
-    printf("</tbody>");
-    printf("</table>");
+    printf("      </td>\n");
+    printf("    </tr>\n");
+    printf("  </tbody>\n");
+    printf("</table>\n");
 
     
-    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">");
-    printf("<tbody>");
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">");
-    printf("<input type=\"Submit\" name=\"action_event\" value=\"Run\"");
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">\n");
+    printf("  <tbody>\n");
+    printf("    <tr>\n");
+    printf("      <td style=\"vertical-align: top;\">\n");
+    printf("        <input type=\"Submit\" name=\"action_event\" value=\"Run\"");
     if(strcmp(state,"RUN")==0) printf("disabled");
-    printf(">");
-    printf("<input type=\"Submit\" name=\"action_event\" value=\"Finish\"");
+    printf(">\n");
+    printf("        <input type=\"Submit\" name=\"action_event\" value=\"Finish\"");
     if(strcmp(state,"DONE")==0) printf("disabled");
-    printf(">");
-    printf("<input type=\"Submit\" name=\"action_event\" value=\"Suspend\"");
+    printf(">\n");
+    printf("        <input type=\"Submit\" name=\"action_event\" value=\"Suspend\"");
     if(strcmp(state,"RUN")!=0) printf("disabled");
-    printf(">");
-    printf("<input type=\"Submit\" name=\"action_event\" value=\"Abort\"");
+    printf(">\n");
+    printf("        <input type=\"Submit\" name=\"action_event\" value=\"Abort\"");
     if(strcmp(state,"RUN")!=0) printf("disabled");
-    printf(">");
-    printf("<br></td>");
-    printf("</tr>");
-    printf("</tbody>");
-    printf("</table>");
+    printf(">\n");
+    printf("      <br></td>\n");
+    printf("    </tr>\n");
+    printf("  </tbody>\n");
+    printf("</table>\n");
 
 
-    printf("<input type=\"hidden\" name=\"pid\" value=\"%d\">", pid);
-    printf("<input type=\"hidden\" name=\"act_name\" value=\"%s\">", action_name);
-    printf("<input type=\"hidden\" name=\"process_filename\" value=\"%s\">", process_filename);
+    printf("<input type=\"hidden\" name=\"pid\" value=\"%d\">\n", pid);
+    printf("<input type=\"hidden\" name=\"act_name\" value=\"%s\">\n", action_name);
+    printf("<input type=\"hidden\" name=\"process_filename\" value=\"%s\">\n", process_filename);
     
-    printf("</form>");   
+    printf("</form>\n"); 
     print_actionlist_link(process_filename);
     print_createprocess_link(process_filename);
     printf("</body>\n");

@@ -25,6 +25,7 @@ OBJECTS = html.o \
 TESTS = test_process_listing.sh \
 	test_action_list.sh \
 	test_action_page.sh \
+	test_action_page_fail.sh \
         test_multiple_dones.sh \
         test_handle_run.sh \
 	test_bind_resources.sh \

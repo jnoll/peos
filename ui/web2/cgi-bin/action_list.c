@@ -15,14 +15,19 @@ char *process_filename = NULL;
 
 void print_row(int pid, char *name, char *state)
 {
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">%d<br></td>", pid);
-    printf("<td style=\"vertical-align: top;\"><a href = action_page.cgi?pid=%d&act_name=%s&process_filename=%s>%s</a><br></td>",pid, name, process_filename, name);
-    printf("<td style=\"vertical-align: top;\">%s<br></td>", state);
+    printf("  <tr>\n");
+    printf("    <td style=\"vertical-align: top;\">%d<br></td>\n", pid);
+    printf("    <td style=\"vertical-align: top;\">\n");
+    printf("      <a href = \"action_page.cgi?pid=%d&act_name=%s&process_filename=%s\">%s</a><br>\n",
+	   pid, name, process_filename, name);
+    printf("    </td>\n");
+    printf("    <td style=\"vertical-align: top;\">%s<br></td>\n", state);
+    printf("    <td style=\"vertical-align: top;\">\n");
     if(strcmp(state, "PENDING") != 0) {
-        printf("<td style=\"vertical-align: top;\"><input type =\"checkbox\" name=\"actions\" value=\"%d$%s\" onclick=\"checkChoice(this)\"><br></td>",pid,name);
+	printf("       <input type =\"checkbox\" name=\"actions\" value=\"%d$%s\" onclick=\"checkChoice(this)\"><br>\n",pid,name);
     }
-    printf("</tr>");
+    printf("    </td>\n");
+    printf("  </tr>\n");
  
 }
 
@@ -33,18 +38,17 @@ void list_actions()
     int i=0;
     int j;
     int num_rows=0;
-		                                                                                                     
     char ** result = peos_list_instances();
 
-    printf("<form name=\"pickform\" action=\"multiple_dones.cgi\">");
-    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">");
-    printf("<tbody>");
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\">Process Id<br></td>");
-    printf("<td style=\"vertical-align: top;\">Action Name<br></td>");
-    printf("<td style=\"vertical-align: top;\">State<br></td>");
-    printf("<td style=\"vertical-align: top;\">Check to Indicate Done<br></td>");
-    printf("</tr>");
+    printf("<form name=\"pickform\" action=\"multiple_dones.cgi\">\n");
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">\n");
+    printf(" <tbody>\n");
+    printf("  <tr>\n");
+    printf("    <td style=\"vertical-align: top;\">Process Id<br></td>\n");
+    printf("    <td style=\"vertical-align: top;\">Action Name<br></td>\n");
+    printf("    <td style=\"vertical-align: top;\">State<br></td>\n");
+    printf("    <td style=\"vertical-align: top;\">Check to Indicate Done<br></td>\n");
+    printf("  </tr>\n");
      
     while((i <= PEOS_MAX_PID)) {
         int num_actions;
@@ -59,15 +63,16 @@ void list_actions()
 	    i++;
 	}
     }
-    printf("<tr>");
-    printf("<td style=\"vertical-align: top;\"></td>");
-    printf("<td style=\"vertical-align: top;\"></td>");
-    printf("<td style=\"vertical-align: top;\"></td>");
-    printf("<td style=\"vertical-align: top;\"><input type=\"Submit\" name=\"Submit\" value=\"Update State\" onclick=\"return validate(%d)\"><br></td></tr>",num_rows);
-    printf("<input type=\"hidden\" name=\"process_filename\" value=\"%s\">",process_filename);
-    printf("</tbody>");
-    printf("</table>");
-    printf("</form>");
+    printf("  <tr>\n");
+    printf("  	<td style=\"vertical-align: top;\"></td>");
+    printf("  	<td style=\"vertical-align: top;\"></td>");
+    printf("  	<td style=\"vertical-align: top;\"></td>");
+    printf("  	<td style=\"vertical-align: top;\"><input type=\"Submit\" name=\"Submit\" value=\"Update State\" onclick=\"return validate(%d)\"><br></td>\n",num_rows);
+    printf("  </tr>\n");
+    printf("  <input type=\"hidden\" name=\"process_filename\" value=\"%s\">\n",process_filename);
+    printf(" </tbody>\n");
+    printf("</table>\n");
+    printf("</form>\n");
 	 
 }
 
@@ -147,7 +152,7 @@ int main()
     printf("return true;");
     printf("}\n");
     printf(" //  End -->");
-    printf("//  </script>");
+    printf("//  </script>\n");
 
     print_noscript();
 
