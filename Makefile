@@ -6,5 +6,6 @@ all: dummy
 clean:
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean; done
 	rm  core *~
-
+html:
+install_html:
 dummy:
