@@ -1,6 +1,6 @@
 CC = gcc
 LDFLAGS = -g -L..
-LIBS = -lvr
+LIBS = -lvr /home/jnoll/lib/libinn.a
 CFLAGS = -g -c -I..
 LIB = ../libvr.a
 
@@ -18,7 +18,9 @@ VRsetup \
 testFSsearchEnd2End \
 testFSsearchSeek \
 testFSsearchInvalid \
-testFSsearchEmpty\
+testFSsearchEmpty \
+testUNITandResult \
+testUNITorResult
 #testEmail
 
 FS_ACTUAL_RESULT_FILES = \
@@ -27,6 +29,8 @@ FSsearchEnd2EndActualResult.txt \
 FSsearchSeekActualResult.txt \
 FSsearchInvalidActualResult.txt \
 FSsearchEmptyActualResult.txt\
+UNITandResultActualResult.txt \
+UNITorResultActualResult.txt \
 testEmailActualResult.txt
 
 FS_EXPECTED_RESULT_FILES = \
@@ -34,6 +38,8 @@ FSsearchEnd2EndExpectedResult.txt \
 FSsearchSeekExpectedResult.txt \
 FSsearchInvalidExpectedResult.txt \
 FSsearchEmptyExpectedResult.txt\
+UNITandResultExpectedResult.txt \
+UNITorResultExpectedResult.txt \
 testEmailExpectedResult.txt
 			 
 FS_QUERY_FILES = \
@@ -68,6 +74,12 @@ test:	$(TESTS)
 	
 	testFSsearchEmpty > FSsearchEmptyActualResult.txt
 	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResult.txt
+	
+	testUNITandResult > UNITandResultActualResult.txt
+	diff UNITandResultExpectedResult.txt UNITandResultActualResult.txt
+	
+	testUNITorResult > UNITorResultActualResult.txt
+	diff UNITorResultExpectedResult.txt UNITorResultActualResult.txt
 
 #	diff testEmailExpectedResult.txt testEmailActualResult.txt
 #	testEmail > testEmailActualResult.txt

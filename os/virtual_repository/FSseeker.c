@@ -25,12 +25,10 @@ char operatorType[3] ;
 char searchFile[BUFFER_SIZE] ;		// the value of the query request
 char queryDate[11] ;
 char queryName[BUFFER_SIZE] ;
-time_t filequeryTime;
+time_t fileQueryTime;
 char directoryPath[BUFFER_SIZE] ;	 //the path of the local user
 resultList *dateResults ;
 resultList *nameResults ;
-
-
 
 /************************************************************************
  * Function:	FSqueryTool						*
@@ -92,7 +90,8 @@ queryList* FSqueryTool( queryList *listpointer )
 				_debug( __FILE__, __LINE__, 5, "attribute is DATE" ) ;
 				dateResults = NULL;
 				getFSQueryDate( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
-				filequeryTime = parsedate(tempQueries -> oneQuery -> myClauses[numClauses].value,NULL);				
+				fileQueryTime = parsedate( tempQueries -> oneQuery -> myClauses[numClauses].value, NULL) ;	
+				strcpy( operatorType, tempQueries -> oneQuery -> myClauses[numClauses].operator ) ;			
 				attributeDATE( ) ;
 				if( numClauses == 0 )
 					tempResults = dateResults ;
@@ -146,6 +145,12 @@ queryList* FSqueryTool( queryList *listpointer )
 	return listpointer ;	
 }
 
+/************************************************************************
+ * Function:	attributeID						*
+ *									*
+ * Description:	Returns filenames with matching ID in a linked list.	*
+ ************************************************************************/
+ 
 resultList* attributeID( query *oneQuery, int numClauses )
 {
 	int isFileQuery( char * ) ;
@@ -187,6 +192,12 @@ resultList* attributeID( query *oneQuery, int numClauses )
 	
 	return resultID ;
 }
+
+/************************************************************************
+ * Function:	attributeDATE						*
+ *									*
+ * Description:	Walks through the tree structure for matching DATES.	*
+ ************************************************************************/
 			
 void attributeDATE( )
 {
@@ -199,6 +210,12 @@ void attributeDATE( )
 	ftw( searchPath, getDate, 5 ) ;
 }
 
+/************************************************************************
+ * Function:	attributeNAME						*
+ *									*
+ * Description:	Walks through the tree structure for matching NAMES.	*
+ ************************************************************************/
+ 
 void attributeNAME( ) 
 {
 	int getFile( const char *filename, const struct stat *statptr, int flag );
@@ -210,26 +227,124 @@ void attributeNAME( )
 	ftw( searchPath, getFile, 5 ) ;
 }
 
+/************************************************************************
+ * Function:	getDate							*
+ *									*
+ * Description:	Returns filenames of DATES that matches their		*
+ *		corresponding operators of EQ, LT, GT.			*
+ ************************************************************************/
+ 
 int getDate( const char *filename, const struct stat *statptr, int flag )
 {
 	void getFileDate( char * , char * ) ;
 
+	char theFileName[BUFFER_SIZE] = { '\0' } ;
 	char fileDate[11] ;
 		
 	switch ( flag )
 	{
 		case FTW_F : 	_debug( __FILE__, __LINE__, 1, "FTW file is %s", filename ) ;
 				_debug( __FILE__, __LINE__, 1, "statptr -> st_mtime is %s", ctime(  &statptr -> st_mtime  ) ) ;
-				_debug( __FILE__, __LINE__, 1, "filequeryTime is %s", ctime(  &filequeryTime  ) ) ;
+				_debug( __FILE__, __LINE__, 1, "fileQueryTime is %s", ctime(  &fileQueryTime  ) ) ;
+				
 				getFileDate( fileDate, ctime(  &statptr -> st_mtime  ) ) ;
-				if( difftime(filequeryTime,parsedate(fileDate,NULL)) == 0 )
-					dateResults = addResultItem( dateResults, filename ) ;
-								
+				
+				strcat( theFileName, "file://" ) ;
+				
+				if( strcmp( operatorType, "EQ" ) == 0 )
+    				{	    											
+					if( difftime( parsedate( fileDate,NULL ), fileQueryTime ) == 0 )
+					{
+						strcat( theFileName, filename ) ;
+						dateResults = addResultItem( dateResults, theFileName ) ;
+					}
+				}
+				else if( strcmp( operatorType, "LT" ) == 0 )
+				{
+					if( difftime( parsedate( fileDate,NULL ), fileQueryTime ) < 0 )
+					{
+						strcat( theFileName, filename ) ;
+						dateResults = addResultItem( dateResults, theFileName ) ;
+					}
+				}
+				else if( strcmp( operatorType, "GT" ) == 0 )
+				{
+					if( difftime( parsedate( fileDate,NULL ), fileQueryTime ) > 0 )
+					{
+						strcat( theFileName, filename ) ;
+						dateResults = addResultItem( dateResults, theFileName ) ;
+					}
+				}
+				
+				_debug( __FILE__, __LINE__, 5, "getDate theFileName is %s", theFileName ) ;				
+				
 				break ;
 	}
+	
 	return 0 ;
 }
 
+/************************************************************************
+ * Function:	getFile							*
+ *									*
+ * Description:	Returns filenames of NAMES that matches their		*
+ *		corresponding operators of ~, EQ.			*
+ ************************************************************************/
+     
+int getFile( const char *filename, const struct stat *statptr, int flag )
+{
+	char *position ;				// pointer to the requested filename
+	char target[BUFFER_SIZE] = { '\0' } ;		// value of the requested filename
+	char theFileName[BUFFER_SIZE] = { '\0' } ;
+	int index = 0 ;					// used in determining the postion of the filename
+
+	switch ( flag )
+	{
+		case FTW_F : 	position = strrchr(filename, '/' ) ; 
+       				_assert( __FILE__, __LINE__, position ) ;
+				index = filename - position; 
+				
+				if( index < 0 )
+					index *= -1;
+
+    				strcpy( target, filename + index + 1 ) ;
+    				
+    				strcat( theFileName, "file://" ) ;
+    				
+    				if( strcmp( operatorType, "~" ) == 0 )
+    				{	    											
+					if( strstr(target,queryName ) != NULL )
+					{
+						strcat( theFileName, filename ) ;
+						nameResults = addResultItem ( nameResults, theFileName );
+					}
+						
+				}
+				else if( strcmp( operatorType, "EQ" ) == 0 )
+				{
+					if( strcmp( target, queryName ) == 0 )
+					{
+						strcat( theFileName, filename ) ;
+						nameResults = addResultItem ( nameResults, theFileName );
+					}
+				}
+
+				_debug( __FILE__, __LINE__, 5, "getFile theFileName is %s", theFileName ) ;
+				
+				break ;
+	}
+	
+	
+	return 0 ;
+}
+
+/************************************************************************
+ * Function:	getFSQueryDate						*
+ *									*
+ * Description:	sets a date value in variable queryDate in the form of	*
+ *		yyyy/mm/dd given a text string of date and year		*
+ ************************************************************************/
+ 
 void getFSQueryDate( char *dateValue )
 {
 	char *word, *value, *toParse, *year, *month, *day ;
@@ -269,6 +384,15 @@ void getFSQueryDate( char *dateValue )
 	free( toParse ) ;
 	free( value ) ;	
 }
+
+/************************************************************************
+ * Function:	getFileDate						*
+ *									*
+ * Description:	sets a date value in variable value in the form of	*
+ *		yyyy/mm/dd given a text string of date and year. This	*
+ *		is for the purpose of modified time variable of the	*
+ *		Linux system						*
+ ************************************************************************/
 
 void getFileDate( char *value, char *fileTime )
 {
@@ -449,52 +573,7 @@ void getDirectoryPath( )
   	}
 }
 
-/************************************************************************
- * Function:	getFile							*
- *									*
- * Description:	Unix function that traverses from the current directory *
- *		recursively while searching for matching filename	*
- ************************************************************************/
-     
-int getFile( const char *filename, const struct stat *statptr, int flag )
-{
-	char* position ;		// pointer to the requested filename
-	char target[BUFFER_SIZE] ;		// value of the requested filename
-	int index = 0 ;			// used in determining the postion of the filename
 
-	switch ( flag )
-	{
-		case FTW_F : 	position = strrchr(filename, '/' ) ; 
-       				_assert( __FILE__, __LINE__, position ) ;
-				index = filename - position; 
-				
-				if( index < 0 )
-					index *= -1;
-
-    				strcpy( target, filename + index + 1 ) ;
-    				
-    				if( strcmp( operatorType, "~" ) == 0 )
-    				{	    											
-					if( strstr(target,queryName ) != NULL )
-					{
-						nameResults = addResultItem ( nameResults, filename );
-						_debug(__FILE__,__LINE__,2,"adding name result");
-					}
-				}
-				else if( strcmp( operatorType, "EQ" ) == 0 )
-				{
-					if( strcmp( target, queryName ) == 0 )
-					{
-						nameResults = addResultItem ( nameResults, filename );
-						_debug(__FILE__,__LINE__,2,"adding name result");
-					}
-				}
-				
-				break ;
-	}
-	
-	return 0 ;
-}
 
 	
 

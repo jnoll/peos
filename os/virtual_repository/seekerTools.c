@@ -15,6 +15,12 @@
 #include <unistd.h>
 #include <stdio.h>
 
+/************************************************************************
+ * Function:	andResult						*
+ *									*
+ * Description:	Returns the intersection of tempResults and newResults 	*
+ ************************************************************************/
+ 
 resultList* andResult( resultList* tempResults, resultList* newResults )
 {
 	resultList *andResultList = NULL ;
@@ -25,8 +31,6 @@ resultList* andResult( resultList* tempResults, resultList* newResults )
 		tempOftempResults = tempResults ;
 		while ( tempOftempResults != NULL )
 		{
-			_debug( __FILE__, __LINE__, 5, "tempOftempResults -> oneResult is %s", tempOftempResults -> oneResult ) ;
-			_debug( __FILE__, __LINE__, 5, "newResults -> oneResult is %s", newResults -> oneResult ) ;
 			if( strcmp( tempOftempResults -> oneResult, newResults -> oneResult ) == 0 )
 				andResultList = addResultItem( andResultList, tempOftempResults -> oneResult ) ;
 			tempOftempResults = ( resultList* ) tempOftempResults -> link ;
@@ -37,16 +41,21 @@ resultList* andResult( resultList* tempResults, resultList* newResults )
 	return andResultList ;
 }
 
+/************************************************************************
+ * Function:	orResult						*
+ *									*
+ * Description:	Returns the union of tempResults and newResults 	*
+ ************************************************************************/
+ 
 resultList* orResult( resultList* tempResults, resultList* newResults )
 {
 	int found ;
 	resultList *orResultList, *listpointer ; 
 	orResultList = listpointer = tempResults ;
 
-	found = 0 ;
-	
 	while ( newResults != NULL )
 	{
+		found = 0 ;
 		tempResults = listpointer ;
 		while ( tempResults != NULL && !found )
 		{
@@ -56,7 +65,7 @@ resultList* orResult( resultList* tempResults, resultList* newResults )
 		}
 		if( !found )
 			orResultList = addResultItem( orResultList, newResults -> oneResult ) ;
-	
+		
 		newResults = ( resultList* ) newResults -> link ;
 	}
 	

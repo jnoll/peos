@@ -38,7 +38,7 @@ void printQueryList( queryList *listpointer )
 						    listpointer -> oneQuery -> myClauses[i].value ) ;
 						    
 				if(listpointer -> oneQuery -> myClauses[i].conjecture != NULL)
-					printf( " %s ", 	listpointer -> oneQuery -> myClauses[i].conjecture);
+					printf( " %s", 	listpointer -> oneQuery -> myClauses[i].conjecture);
 			}
 			
 			listpointer = ( queryList* ) listpointer -> link ;

@@ -228,13 +228,13 @@ bool isValidAttribute( char *attr )
 
 bool isValidOperator( char *op )
 {
-	int i ;					// used in for loop
-	char *operators[2] = { "EQ", "~" } ;	// array that stores repository operators
+	int i ;							// used in for loop
+	char *operators[4] = { "EQ", "~", "LT", "GT" } ;	// array that stores repository operators
 	
 	if( op == NULL )
 		return false;
 		
-	for( i = 0 ; i < 2 ; i++ )
+	for( i = 0 ; i < 4 ; i++ )
 	{
 		if( ( strcmp( operators[i], op ) == 0 ) )
 			return true ;
