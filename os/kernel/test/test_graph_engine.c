@@ -349,6 +349,45 @@ START_TEST(test_action_run)
 }
 END_TEST
 
+
+START_TEST(test_action_2runs)
+{
+
+    Graph g = (Graph) malloc(sizeof(struct graph));
+    
+    Node source,sink,act_0,act_1;
+    source = make_node("p",ACT_NONE,PROCESS,0);
+    sink = make_node("p",ACT_NONE,PROCESS,3);
+
+    act_0 = make_node("act_0",ACT_RUN,ACTION,1);
+    act_1 = make_node("act_1",ACT_READY,ACTION,2);
+
+    g->source = source;
+    g-> sink = sink;
+    source->next = act_0;
+    act_0->next = act_1;
+    act_1->next = sink;
+    
+    act_0 -> predecessors = (List) make_list(source,NULL,NULL,NULL,NULL);
+    act_0 -> successors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+
+    act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    act_1 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+    sink -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    source -> successors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    
+    sink -> next = NULL;
+    
+    
+    fail_unless(action_run(g,"act_1") == 1,"return value");
+    fail_unless(STATE(source) != ACT_DONE, "source done");
+    fail_unless(STATE(sink) != ACT_DONE, "sink done");
+    fail_unless(STATE(act_0) == ACT_SUSPEND,"action 0 not suspend");
+    fail_unless(STATE(act_1) == ACT_RUN,"act_1  not run");
+
+}
+END_TEST
+
     
 START_TEST(test_action_run_selection)
 {
@@ -1136,6 +1175,7 @@ main(int argc, char *argv[])
     tcase_add_test(tc,test_action_run_selection_recursive);
     tcase_add_test(tc,test_action_run_iteration);
     tcase_add_test(tc,test_action_run_iter_sel);
+    tcase_add_test(tc,test_action_2runs);
 
     tc = tcase_create("set_process_state");
     suite_add_tcase(s,tc);

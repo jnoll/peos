@@ -368,6 +368,29 @@ void set_process_state(Graph g)
     }
 }
 
+/*
+ * At any point more than one node cannot be in ACT_RUN state
+ * This function takes care of that by setting all other actions
+ * which are in ACT_RUN state to ACT_SUSPEND
+ *
+ */
+
+void make_other_run_suspend(Graph g, char *act_name)
+{
+    
+    Node n;
+    for(n = g -> source; n != NULL; n = n -> next) {
+        if(n->type == ACTION) {
+	    if(STATE(n) == ACT_RUN) {
+	        if(strcmp(n->name, act_name) != 0) {
+	            set_node_state(n, ACT_SUSPEND);
+		}
+	    }
+	}
+    }
+}    
+ 
+				     
 
 int action_run(Graph g, char *act_name)
 {
@@ -376,6 +399,7 @@ int action_run(Graph g, char *act_name)
     n = find_node(g, act_name);
     if(n != NULL) {
 	set_node_state(n, ACT_RUN);    
+	make_other_run_suspend(g, act_name);
 	mark_iter_nodes(n);  /* handle iterations */
 	handle_selection(n); /* handle selections */
 	set_super_nodes_run(n); /*set super nodes to run */
@@ -488,8 +512,6 @@ void initialize_graph(Graph g)
 {
     Node n;
     int i = 0;
-
-
         
     for(n = g -> source; n != NULL; n = n -> next) {
         n -> data = (void *) malloc (sizeof (struct data));
