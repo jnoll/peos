@@ -119,6 +119,8 @@ int main()
     printf("<input type=\"hidden\" name=\"process_filename\" value=\"%s\">", process_filename);
     
     printf("</form>");   
+    print_actionlist_link(process_filename);
+    print_createprocess_link(process_filename);
     printf("</body>\n");
     printf("</html>\n");
 

@@ -112,6 +112,8 @@ int main()
         printf("<input type = \"hidden\" name =\"act_name\" value=\"%s\">",action_name);
         printf("<input type = \"hidden\" name =\"resource_type\" value=\"%s\">",resource_type);
 	printf("</form>");
+	print_actionlist_link(process_filename);
+	print_createprocess_link(process_filename);
 	printf("</body>");
 	printf("</html>");
 

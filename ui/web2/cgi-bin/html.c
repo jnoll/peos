@@ -37,4 +37,25 @@ void print_noscript()
     printf("<b> This page requires Java Script Support. Please turn on Java Script and reload this page");
     printf("</noscript>");
 }
-		    
+	
+void print_actionlist_link(char *process_filename)
+{
+
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">");
+    printf("<tbody>");
+    printf("<tr>");
+    printf("<td style=\"vertical-align: top;\"><a href=\"action_list.cgi?process_filename=%s&start=false\">Back to Action List</a><br></td></tr>",process_filename);
+    printf("</tbody></table>");
+}
+
+
+void print_createprocess_link(char *process_filename)
+{
+
+    printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"text-align: left; width: 100%%;\">");
+    printf("<tbody>");
+    printf("<tr>");
+    printf("<tr><td style=\"vertical-align: top;\"><a href=\"process_listing.cgi?process_filename=%s\">Create Process</a><br></td></tr>",process_filename);
+    printf("</tbody></table>");
+}
+

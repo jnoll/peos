@@ -138,7 +138,7 @@ int main()
     print_noscript();
 
     list_actions();
-    printf("<a href=process_listing.cgi?process_filename=%s>create process</a>",process_filename);
+    print_createprocess_link(process_filename);
     printf("</body>\n") ;
     printf("</html>\n") ;
 

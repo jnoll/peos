@@ -128,6 +128,8 @@ int main()
             printf("<input type = \"hidden\" name =\"actions\" value=\"%s\">",act_names[i]);
 	}
 	printf("</form>");
+	print_actionlist_link(process_filename);
+	print_createprocess_link(process_filename);
 	printf("</body>");
 	printf("</html>");
 
