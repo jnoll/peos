@@ -8,7 +8,11 @@ process updateANDresolve
          tool     {"cd /home/$USER;cvs update"}
          requires {"/home/$USER/peos"}
          provides {"/home/$USER/peos"}
-         script   {"update an instance of project repository"}
+         script   {"Update an instance of project repository \
+                    using the following LINUX shell commands... \
+                    \
+                    cd /home/$USER \
+                    cvs update"}
          }
       action resolveAction manual
          {
@@ -16,7 +20,7 @@ process updateANDresolve
          tool     {"shell or editor"}
          requires {"conflicted file(s)"}
          provides {"deconflicted file(s)"}
-         script   {"deconflict files in error"} 
+         script   {"Deconflict files in error using a LINUX shell or editor..."} 
          }
       }
    }

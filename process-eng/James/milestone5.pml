@@ -8,7 +8,7 @@ process milestone5
          tool     {"peos"} 
          requires {"checkout.pml"}
          provides {"checkout an instance of the project repository"}
-         script   {"checkout an instance of the project repository"}  
+         script   {"Start the checkout.pml process model to continue..."}
          }
 
       branch milestone5Edit 
@@ -21,7 +21,15 @@ process milestone5
                tool     {"editor"}
                requires {"/home/$USER/peos/plan/$PROJECT/plan.body"}
                provides {"/home/$USER/peos/plan/$PROJECT/plan.body"}
-               script   {"edit file according to deliverable instructions"}
+               script   {"Edit file according to deliverable instructions... \
+                          http://www.cudenver.edu/~jnoll/5728/deliverables.html \
+                          \
+                          The intent of the project plan is to capture information \
+                          concerning team members roles, file change policies for \
+                          the team members, development tasks in relation to \
+                          requirements, responsible developer, and estimated time, \
+                          and finally dependencies on components or services with \
+                          other PEOS pieces or development team members."} 
                }
             action compileDevelopmentPlan manual
                {
@@ -29,7 +37,7 @@ process milestone5
                tool     {"editor"}
                requires {"make.pml"}
                provides {"/home/$USER/peos/plan/$PROJECT/out/plan.html"}
-               script   {"compile file using make"}
+               script   {"Start the make.pml process model to continue..."}
                }
             action verifyDevelopmentPlan manual
                {
@@ -37,7 +45,7 @@ process milestone5
                tool     {"editor"}
                requires {"/home/$USER/peos/plan/$PROJECT/out/plan.html"}
                provides {"/home/$USER/peos/plan/$PROJECT/out/plan.html"}
-               script   {"verify file for spelling and grammatical content"}
+               script   {"Verify file for spelling and grammatical content..."}
                }
             }
          sequence projectDeploymentInstructions 
@@ -48,7 +56,14 @@ process milestone5
                tool     {"editor"}
                requires {"/home/$USER/peos/doc/$PROJECT/deployment.body"}
                provides {"/home/$USER/peos/doc/$PROJECT/deployment.body"}
-               script   {"edit file according to deliverable instructions"}
+               script   {"Edit file according to deliverable instructions... \
+                          http://www.cudenver.edu/~jnoll/5728/deliverables.html \
+                          \
+                          The intent of the project deployment instructions is to \
+                          document the build and install procedures for installing \
+                          that project's section of the PEOS system.  This shall \
+                          include valid environments for operation, installation \
+                          instructions, and startup procedures."}
                }
             action compileProjectDeploymentInstructions manual
                {
@@ -56,7 +71,7 @@ process milestone5
                tool     {"peos"}
                requires {"make.pml"}
                provides {"/home/$USER/peos/doc/$PROJECT/out/deployment.html"}
-               script   {"compile file using make"}
+               script   {"Start the make.pml process model to continue..."}
                }
             action verifyProjectDeploymentInstructions manual
                {
@@ -64,7 +79,7 @@ process milestone5
                tool     {"editor"}
                requires {"/home/$USER/peos/doc/$PROJECT/out/deployment.html"}
                provides {"/home/$USER/peos/doc/$PROJECT/out/deployment.html"}
-               script   {"verify file for spelling and grammatical content"}
+               script   {"Verify file for spelling and grammatical content..."}
                }
             }
          sequence projectUserGuide 
@@ -75,7 +90,11 @@ process milestone5
                tool     {"editor"}
                requires {"/home/$USER/peos/doc/$PROJECT/user-guide.body"}
                provides {"/home/$USER/peos/doc/$PROJECT/user-guide.body"}
-               script   {"edit file according to deliverable instructions"}
+               script   {"Edit file according to deliverable instructions... \
+                          http://www.cudenver.edu/~jnoll/5728/deliverables.html \
+                          \
+                          The intent of the project user guide is to document how \
+                          to use the PEOS system project, once installed."}
                }
             action compileProjectUserGuide manual
                {
@@ -83,7 +102,7 @@ process milestone5
                tool     {"peos"}
                requires {"make.pml"}
                provides {"/home/$USER/peos/doc/$PROJECT/out/user-guide.html"}
-               script   {"compile file using make"}
+               script   {"Start the make.pml process model to continue..."}
                }
             action verifyProjectUserGuide manual
                {
@@ -91,7 +110,7 @@ process milestone5
                tool     {"editor"}
                requires {"/home/$USER/peos/doc/$PROJECT/out/user-guide.html"}
                provides {"/home/$USER/peos/doc/$PROJECT/out/user-guide.html"}
-               script   {"verify file for spelling and grammatical content"}
+               script   {"Verify file for spelling and grammatical content..."}
                }
             }
          sequence projectSourceCode 
@@ -102,7 +121,7 @@ process milestone5
                tool     {"editor"}
                requires {"/home/$USER/peos/src/$PROJECT/*"}
                provides {"/home/$USER/peos/src/$PROJECT/*"}
-               script   {"create file(s) for project implementation"}
+               script   {"Create file(s) and/or directorie(s) for project implementation..."}
                }
             action createProjectSourceCodeMakefile manual
                {
@@ -110,7 +129,7 @@ process milestone5
                tool     {"editor"}
                requires {"/home/$USER/peos/src/$PROJECT/*"}
                provides {"/home/$USER/peos/src/$PROJECT/*"}
-               script   {"create makefile for project implementation"}
+               script   {"Create makefile for project implementation..."}
                }
             action createProjectSourceCodeMakefile manual
                {
@@ -118,7 +137,7 @@ process milestone5
                tool     {"cd /home/$USER/peos/src/$PROJECT;cvs add *"}
                requires {"/home/$USER/peos/src/$PROJECT/*"}
                provides {"/home/$USER/peos/src/$PROJECT/*"}
-               script   {"add file(s) for project implementation"}
+               script   {"Add file(s) and/or directorie(s) for project implementation..."}
                }
             }
         }
@@ -129,7 +148,7 @@ process milestone5
          tool     {"peos"} 
          requires {"updateANDresolve.pml"}
          provides {"update and resolve conflictions on an instance of the project repository"}
-         script   {"update and resolve conflictions on an instance of the project repository"}  
+         script   {"Start the updateANDresolve.pml process model to continue..."}
          }
 
       action milestone5Checkin manual
@@ -138,7 +157,7 @@ process milestone5
          tool     {"peos"} 
          requires {"checkin.pml"}
          provides {"checkin an instance of the project repository"}
-         script   {"checkin an instance of the project repository"}  
+         script   {"Start the checkin.pml process model to continue..."}
          }
       }
    }
