@@ -32,7 +32,7 @@ int main()
   printf("<table width=\"820px\" align=\"center\" border=\"0\" celspacing=\"0\" cellpadding=\"0\">\n");
   printf("<tr>\n");
   printf("<td width=\"50%\">\n");
-  printf(" <form name=\"model_form\" action=\"do_create.cgi\">\n");
+  printf(" <form name=\"model_form\" action=\"resource.cgi\">\n");
   printf("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
   printf("<tr>\n");
   printf("<td width=\"40%\">\n");
