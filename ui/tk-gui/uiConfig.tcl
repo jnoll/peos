@@ -1,6 +1,3 @@
-#######################################################################
-## File Information: $Id: uiConfig.tcl,v 1.5 1999/05/07 18:53:09 jneuder Exp $
-#######################################################################
 
 #######################################################################
 # Namespace name: ::uiConfig
@@ -34,7 +31,7 @@ namespace eval ::uiConfig:: {
 # Clear the Engine Port and Host Name
 #
      set UsrCfg(EngineHost) "oslab-server.cudenver.edu"
-     set UsrCfg(EnginePort) 14175
+     set UsrCfg(EnginePort) 14523
      set UsrCfg(WebBrowser) "netscape"
 #
 # List of functions which are accessible outside this

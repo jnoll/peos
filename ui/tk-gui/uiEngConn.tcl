@@ -1,6 +1,3 @@
-#######################################################################
-## File Information: $Id: uiEngConn.tcl,v 1.3 1999/05/07 18:53:09 jneuder Exp $
-#######################################################################
 
 #######################################################################
 # Namespace name: ::uiEngConn
@@ -225,7 +222,7 @@ proc ::uiEngConn::EstablishConnection { enginePort engineHost } {
 
     variable DebugOn
     variable ModuleName
-    variable UIEngineSocket -1
+    variable UIEngineSocket 1
 
     if {$DebugOn} then {
 	puts stdout [format "%s Establishing Engine Connection." \
@@ -234,7 +231,7 @@ proc ::uiEngConn::EstablishConnection { enginePort engineHost } {
 #
 # Attempt to establish a socket connection
 #
-    set socketCommand {set UIEngineSocket [socket $engineHost $enginePort]}
+    set socketCommand {set UIEngineSocket [socket $engunePort $engineHost]}
 
     if {[catch $socketCommand commandResult] != 0} then {
 #

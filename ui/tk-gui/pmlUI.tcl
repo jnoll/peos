@@ -1,6 +1,6 @@
 #!/bin/sh
 #######################################################################
-## File Information: $Id: pmlUI.tcl,v 1.4 2000/04/10 23:07:29 nmodi Exp $
+## File Information: $Id: pmlUI.tcl,v 1.5 2000/04/25 02:07:29 nmodi Exp $
 #######################################################################
 
 #
@@ -24,14 +24,14 @@ exec wish $0 "$@"
 #source readMesgField.tcl
 #source separateIdName.tcl
 #source uiConfig.tcl
-#source uiEngConn.tcl
+source uiKernelInterface.tcl
 #source uiErrorHandler.tcl
 #source uiValues.tcl
-source uiLogin.tcl
+#source uiLogin.tcl
 source uiHelp.tcl
 source uiInputValidator.tcl
-source uiProcess.tcl
-source uiAction.tcl
+source uiProcessHandler.tcl
+source uiActionHandler.tcl
 
 # Perform Some Initialization
 # ::uiConfig::Init
@@ -43,7 +43,7 @@ source uiAction.tcl
 #  source uiTest.tcl
 #} else {
 #  after idle {
-#      persistentWidgets::makeLoginWin
-       uiLogin::uiLoginScreen
+#     persistentWidgets::makeLoginWin
+      uiInputValidator::uiLoginScreen
 #  }
 #}
