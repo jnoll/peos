@@ -41,12 +41,10 @@ int main()
         resources = peos_get_resource_list_action_provides(pid, action_name, &num_resources);
     }
 	    
-//    printf("Content-Type: text/plain\n\n") ;
     
     unbound_resource_list = (peos_resource_t *) calloc(num_resources+1, sizeof(peos_resource_t));
     num_unbound_resources = 0;
     for(i=0; i < num_resources; i++) {
-//	 printf("%s=%s=%s", resources[i].name,resources[i].value,resources[i].qualifier);   
         if((strcmp(resources[i].qualifier,"any") == 0) || (strcmp(resources[i].qualifier,"new") == 0)) {
             strcpy(unbound_resource_list[num_unbound_resources].name,resources[i].name);
             num_unbound_resources++;
@@ -62,8 +60,6 @@ int main()
     for(i=0; i < num_unbound_resources; i++) {
 	char *value;    
 	value = (char *) getvalue(unbound_resource_list[i].name, cgivars);    
-//	printf("value=%s=%s\n",unbound_resource_list[i].name,value);
-//        strcpy(unbound_resource_list[i].value, (char *) getvalue(unbound_resource_list[i].name, cgivars));
 	peos_set_resource_binding(pid, unbound_resource_list[i].name, value);
     }
 
@@ -78,14 +74,7 @@ int main()
     }
     
 
-
-
-    
-
-  
-	
-
-	if(unbound_resource_list) free(unbound_resource_list);
+    if(unbound_resource_list) free(unbound_resource_list);
     
      
     /** Free anything that needs to be freed **/
