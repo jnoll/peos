@@ -16,10 +16,10 @@ import java.awt.Window;
 public class CProcessDialog extends JPanel implements ActionListener
 {
 	/**
-	 * The constructor sets up the controls that will be present in the dialog
-	 * box itself.  Note this class extends JPanel so we can insert whatever
-	 * we want then pass a reference to this instance to the JDialog class
-	 * and be done with it
+	 * The constructor sets up the controls that will be present in the 
+         * dialog box itself.  Note this class extends JPanel so we can insert 
+         * whatever we want then pass a reference to this instance to the 
+         * JDialog class and be done with it
 	 */
 	public CProcessDialog( Component Parent )
 	{
@@ -57,17 +57,16 @@ public class CProcessDialog extends JPanel implements ActionListener
 	public void showDialog()
 	{
 		JOptionPane pane = new JOptionPane( this,
-											JOptionPane.PLAIN_MESSAGE,
-											javax.swing.JOptionPane.OK_CANCEL_OPTION );
+												JOptionPane.PLAIN_MESSAGE,
+												javax.swing.JOptionPane.OK_CANCEL_OPTION );
 
-//		return pane.showOptionDialog();
-        pane.show();
+    		pane.updateUI();
 		return;
 	}
 	
 	public void actionPerformed( ActionEvent ev )
 	{
-System.out.println( "Properties Dialog" );
+		System.out.println( "Properties Dialog" );
 	}
 	private Component m_Parent;
 	private JTextField m_ProcessName;
