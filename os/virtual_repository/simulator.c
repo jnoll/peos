@@ -29,8 +29,11 @@ int main( void )
 
 void selectLoop( ) 
 {
-	void callback(int size, char myresults[][] , int * data);
-	void (*call)(int, char [][], int *data);
+//	void callback(int size, char myresults[][] , int * data);
+//	void (*call)(int, char [][], int *data);
+
+	void callback(int size, resultList *listPointer , int * data);
+	void (*call)(int, resultList *, int *data);
 	
 	struct timeval tv;
 	fd_set readfds;
@@ -68,7 +71,8 @@ void selectLoop( )
 	FD_CLR(STDIN, &readfds) ;
 }
 
-void callback(int size, char myresults[][], int * data)
+//void callback(int size, char myresults[][], int * data)
+void callback(int size, resultList *listPointer, int * data)
 {	
 	printf( "calling back...\n" ) ;
 }

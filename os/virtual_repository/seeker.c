@@ -6,6 +6,7 @@
 
 #include "form.h"
 #include "variables.h"
+#include "listManager.h"
 #include <ftw.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,12 +47,19 @@ int getFile( const char *filename, const struct stat *statptr, int flag )
 						index *= -1;
 
 	    				strcpy( target, filename + index + 1 ) ;
-
+					
 					if( strncmp( Queries[i].myClauses[0].value, target,
 					    strlen( Queries[i].myClauses[0].value ) ) == 0 )
-						strcpy( Queries[i].results[Queries[i].numFound++], filename ) ;
+					   
+					{
+					 	Queries[i].results = AddItem (Queries[i].results, filename );
+					    	Queries[i].numFound++ ;
+   				    	}
 					break;
 		}
 	}
 	return 0 ;
 }
+
+
+

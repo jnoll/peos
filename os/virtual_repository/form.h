@@ -9,23 +9,26 @@
 
 struct clause
 {
-	char attribute[50] ;
+	char *attribute ;
 	char operator[2] ;
-	char value[50] ;
+	char *value ;
 } ;
+
+typedef struct
+{
+	char *oneResult ;
+	struct resultList *link ;
+}	resultList ;
 
 struct query
 {
 	int numClauses ;
 	struct clause myClauses[10] ;
 	char conjecture[9] ;
-	char results[50][100] ;
-	void (*callback)(int, char [][], int *data);
+	resultList *results ;
+	void (*callback)(int, resultList *, int *data);
 	int *data;
 	int numFound ;
 } ;
-
-struct query Queries[10] ;
-int numQueries ;
 
 #endif

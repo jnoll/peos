@@ -8,12 +8,13 @@
 #include "variables.h"
 #include "vrepo.h"
 #include "seeker.h"
+#include "listManager.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-void query_wait( char *queryString, void (*cback)(int, char[][], int *), int *d  )
+void query_wait( char *queryString, void (*cback)(int, resultList *, int *), int *d  )
 {
 	bool isValidOp( char *op ) ; 
 	
@@ -29,17 +30,23 @@ void query_wait( char *queryString, void (*cback)(int, char[][], int *), int *d 
 	{
 		switch( i )
 		{
-			case 0 :	strcpy( Queries[numQueries].myClauses[j].attribute, word ) ;
+			case 0 :	Queries[numQueries].myClauses[j].attribute = 
+						(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
+					strcpy( Queries[numQueries].myClauses[j].attribute, word ) ;
 					break ;
+					
 			case 1 :	if( isValidOp( word ) )
 						strcpy( Queries[numQueries].myClauses[j].operator, word ) ;
 					else
 						printf( "invalid operator!" ) ;
 					break ;
-			case 2 :	strcpy( Queries[numQueries].myClauses[j].value, word ) ;
+					
+			case 2 :	Queries[numQueries].myClauses[j].value = 
+						(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
+					strcpy( Queries[numQueries].myClauses[j].value, word ) ;
 					break ;
 		}
-	
+		
 		if( i == 2 )	
 		{
 			i = 0 ;
@@ -71,7 +78,7 @@ bool isValidOp( char *op )
 
 void poll_vr( ) 
 {
-	int i;
+	int i,j ;
 	int temp_numQueries;
 	void queryTool( ) ;
 	void deregister(int index);
@@ -86,7 +93,15 @@ void poll_vr( )
 			
 			Queries[i].callback(Queries[i].numFound, Queries[i].results, Queries[i].data);
 			printf( "%d record(s) found!\n", Queries[i].numFound ) ;
-			printf( "%s\n", Queries[i].results[0] ) ;
+			
+			for( j = 0 ; j < Queries[i].numClauses ; j++ )
+			{
+				free( Queries[numQueries].myClauses[j].attribute ) ;
+				free( Queries[numQueries].myClauses[j].value ) ;
+			}
+			
+			PrintQueue(Queries[i].results);
+			ClearQueue(Queries[i].results);
 			deregister(i);
 		}
 	}
