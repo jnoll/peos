@@ -68,8 +68,8 @@ int main() {
                 if (strcasecmp(COMMAND,"login") == 0) {
                         
                         //createForm = -1;
-			pml_create(PARA1);
-                        current_msg = add_message(current_msg,"<br><hr>\n");
+			//pml_create(PARA1);
+                        //current_msg = add_message(current_msg,"<br><hr>\n");
                         /*
                         current_msg = add_message(current_msg,"<br><hr>\n");
 			pml_create(PARA1);
