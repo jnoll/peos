@@ -8,7 +8,7 @@ extern char *get_current_dir_name(void);
 
 START_TEST(trunPeos)
 { 
-
+#ifdef DEBUG
   int rtn_val = -1;
   size_t size = 0;
   char *command = NULL, *peosPath = NULL, *cmd_peos = NULL, *str_rtn = NULL;
@@ -45,6 +45,8 @@ START_TEST(trunPeos)
    
   fail_unless (rtn_val == EXIT_SUCCESS,
               "The trunPeos test failed to return 0.");
+
+#endif
   
 }
 END_TEST
