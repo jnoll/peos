@@ -16,15 +16,15 @@ jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.c
 
 	rm -f proc_table.dat
 	rm -f proc_table.dat.xml
-	java ${java} testPOJU
+	java ${java} -Dpeos.path=${path} testPOJU
 	rm -f proc_table.dat
 	rm -f proc_table.dat.xml
-	java ${java} testLoadJU
-	java ${java} testSFASJU
-	java ${java} testACJU
-	java ${java} testCRJU
-	java ${java} testActionMapJU
-	java ${java} testResourceMapJU
+	java ${java} -Dpeos.path=${path} testLoadJU
+	java ${java} -Dpeos.path=${path} testSFASJU
+	java ${java} -Dpeos.path=${path} testACJU
+	java ${java} -Dpeos.path=${path} testCRJU
+	java ${java} -Dpeos.path=${path} testActionMapJU
+	java ${java} -Dpeos.path=${path} testResourceMapJU
 
 setup: SetupPath.class
 	java ${java} SetupPath

@@ -209,14 +209,13 @@ public class displayPO{
                                 int currPid = Integer.parseInt(str);
 				if (pid == currPid)
                                 {
-                                    System.out.println(pid + "=pid" + currPid + "=currPid");
-                                    System.out.println("process==pid");
+                                    
                                     return true;
                                 }
 			}
                         else if (elemName.equals("process_table"))
                         {
-                            System.out.println("past proc_table part");
+                            
                         }
                         else return false;
 			

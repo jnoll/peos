@@ -41,7 +41,7 @@ public class ActionMap{
 			if(ActionList[i].getHead() !=null)
 				count++;
 		}
-		System.out.println("The current count is: " + count);
+		
 		return count;
 	}
 	public boolean[] listActiveProcesses()

@@ -239,7 +239,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		else if ("change".equals(e.getActionCommand()))
 		{
 			changeResourceAction();
-                        System.out.println(outline.getResourceList(pidNum));
+                        //System.out.println(outline.getResourceList(pidNum));
 			map.getActionByName(pidNum,currActionName);
 			LinkNode n = map.getCurrentLink(pidNum);
 			String currentPage = n.getElement().getAttribute("name");

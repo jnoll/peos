@@ -54,7 +54,11 @@ public class PeosApp extends JFrame implements ActionListener
 		
 		try {
 			lastDir = SetupPath.getCurrDir(); 
-		} catch (IOException temp) { System.out.println("get current working directory failed"); }
+		} 
+                catch (IOException temp) 
+                {   
+                    System.err.println(temp);
+                }
 	}
     
 	protected JMenuBar createMenuBar() 
@@ -110,7 +114,7 @@ public class PeosApp extends JFrame implements ActionListener
                 if (outline != null)
                 {
                     try{ 
-                        System.out.println("Result of PidCheck" + outline.checkForPid(0));
+                        //System.out.println("Result of PidCheck" + outline.checkForPid(0));
                     }
                     catch(Exception ee)
                     {
@@ -197,7 +201,7 @@ public class PeosApp extends JFrame implements ActionListener
 		}
 		else if("about".equals(e.getActionCommand()))
 		{
-			ImageIcon peosIcon = createImageIcon(System.getProperty("peos.help") +"/peos1sg.jpg");
+			ImageIcon peosIcon = createImageIcon(System.getProperty("peos.help") +"s/peos1sg.jpg");
 			JOptionPane.showMessageDialog(this,"          PEOS v.2\n\nCopyright c2004 by   \n       Steve Beeby\n      Gloria Chang\n\nAll Rights Reserved.  ", "About PEOS",JOptionPane.PLAIN_MESSAGE,peosIcon);
 				
 		}
@@ -213,7 +217,7 @@ public class PeosApp extends JFrame implements ActionListener
 			active = new ActiveList();
 		       	active.listOfActive();
 		} catch (IOException error)
-		{	System.out.println("getNumCurrActive: error getting array from ActiveList"); }
+		{	System.err.println(error); }
 		
 		return active.numActive();
 	}
@@ -227,7 +231,11 @@ public class PeosApp extends JFrame implements ActionListener
 			
 				try {		
 					SetupPath.delete(pidInt);
-				} catch (IOException temp) { System.out.println("actionPerformed delete: tryToDelete FAILED"); }
+				} 
+                                catch (IOException temp) 
+                                { 
+                                    System.err.println(temp);
+                                }
 	
 				menuBar.removeAll();
 				setJMenuBar(createMenuBar());         
@@ -243,7 +251,7 @@ public class PeosApp extends JFrame implements ActionListener
 			
                         int count = 0;
 			for(int i = 0; i< 11; i++){ //active.numActive(); i++) {
-                                System.out.println(i + ":" + actList[i]);
+                                
                                 if (actList[i] != null)     
                                 {   
                                     activeProcess("proc_table.dat.xml", getPidNum(actList[i]), count);
@@ -251,8 +259,11 @@ public class PeosApp extends JFrame implements ActionListener
                                 }
 			}
 		
-               	} catch (IOException error) {       
-			System.out.println("getNumCurrActive: error getting array from ActiveList"); }
+               	} 
+                catch (IOException error) 
+                {
+                    System.err.println(error); 
+                }
 	}
 
 	public int findTabIndex(int pid)
@@ -319,8 +330,11 @@ public class PeosApp extends JFrame implements ActionListener
 		try {
 			active = new ActiveList();
 		       	list = active.listOfActive();
-		} catch (IOException error)
-		{	System.out.println("listingActiveProcesses: error getting array from ActiveList"); }
+		} 
+                catch (IOException error)
+		{
+                    System.err.println(error); 
+                }
 		
 		JMenu activeMenu = new JMenu( "Active" );
 	      	activeMenu.setMnemonic(KeyEvent.VK_A);
@@ -353,8 +367,11 @@ public class PeosApp extends JFrame implements ActionListener
 		try {
 			active = new ActiveList();
 		       	list = active.listOfActive();
-		} catch (IOException error)
-		{	System.out.println("listingActiveToDelete: error getting array from ActiveList"); }
+		}
+                catch (IOException error)
+		{
+                    System.err.println(error); 
+                }
 			
      		JMenu deleteMenu = new JMenu( "Delete" );
 	      	deleteMenu.setMnemonic(KeyEvent.VK_D);
