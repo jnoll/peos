@@ -45,18 +45,6 @@ int main()
      
     print_header("Action Details");
 	    
-    printf("<SCRIPT LANGUAGE=\"JavaScript\">\n");
-    printf("<!--\n");
-    printf("function GetCookie() {\n");
-    printf("alert(\"Hello\");\n");
-    printf("return true;");
-    printf("}\n");
-    printf("// -->\n");
-    printf("</SCRIPT>\n");
-    printf("<noscript>\n");
-    printf("<b> This page requires Java Script Support. Please turn on Java Script and reload this page");
-    printf("</noscript>");
-		    
     printf("<form name=\"actionform\" action=\"action_event.cgi\">");
 
     printf("<table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" style=\"text-align: left; width: 100%;\">");
@@ -108,10 +96,18 @@ int main()
     printf("<tbody>");
     printf("<tr>");
     printf("<td style=\"vertical-align: top;\">");
-    printf("<input type=\"Submit\" name=\"action_event\" value=\"Run\">");
-    printf("<input type=\"Submit\" name=\"action_event\" value=\"Finish\">");
-    printf("<input type=\"Submit\" name=\"action_event\" value=\"Suspend\" onclick=\"GetCookie()\">");
-    printf("<input type=\"Submit\" name=\"action_event\" value=\"Abort\">");
+    printf("<input type=\"Submit\" name=\"action_event\" value=\"Run\"");
+    if(strcmp(state,"RUN")==0) printf("disabled");
+    printf(">");
+    printf("<input type=\"Submit\" name=\"action_event\" value=\"Finish\"");
+    if(strcmp(state,"DONE")==0) printf("disabled");
+    printf(">");
+    printf("<input type=\"Submit\" name=\"action_event\" value=\"Suspend\"");
+    if(strcmp(state,"RUN")!=0) printf("disabled");
+    printf(">");
+    printf("<input type=\"Submit\" name=\"action_event\" value=\"Abort\"");
+    if(strcmp(state,"RUN")!=0) printf("disabled");
+    printf(">");
     printf("<br></td>");
     printf("</tr>");
     printf("</tbody>");
