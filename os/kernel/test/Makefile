@@ -25,15 +25,12 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 TESTS = test_vm test_action test_process test_events test_process_table
 
 
-all: test  vm_harness #driver
+all: test vm_harness
 
-test:  $(TESTS) 
+test:  $(TESTS) test_assertions
 	-for i in $^ ; do $$i -f; done
 	@echo "The following test should report an Error due to assertion failure:"
 	-test_assertions -f
-
-driver: driver.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS)
 
 vm_harness: vm_harness.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS)
@@ -69,6 +66,7 @@ tags:	$(SOURCES)
 
 clean:
 	-rm *.o core
+
 reallyclean: clean
 	-rm $(TESTS) test_assertions
 
