@@ -33,8 +33,8 @@ time_t mailQueryTime ;
 queryList* EMAILqueryTool( queryList *listpointer )
 {
 	int is_email(char *value);
-	void getMailPath(char *mailPath, char *value, queryList *tempQueries );
-	void getMailBox( char *mailPath ) ;
+	void getMailPath(char *mailPath, char *value, queryList *tempQueries  );
+
 	resultList* EMAILmsgTokenizer( char *mailPath, char *value, int attributeType );
 	void getMAilDate ( char * ) ;
 	
@@ -69,7 +69,8 @@ queryList* EMAILqueryTool( queryList *listpointer )
    				_debug( __FILE__, __LINE__, 5, "attribute is %s", tempQueries -> oneQuery ->myClauses[numClauses].attribute ) ;
    				_debug( __FILE__, __LINE__, 5, "DATE value is %s", tempQueries -> oneQuery ->myClauses[numClauses].value ) ;
    				strcpy ( operatorType , tempQueries -> oneQuery ->myClauses[numClauses].operator ) ;
-   				getMailBox( mailPath ) ;
+   				getPath(mailPath,"MAILBOX");
+   				_debug( __FILE__, __LINE__, 5, "mailPath is ", mailPath) ;
    				attributeType = 2 ;
    				if( numClauses == 0 )
 					tempResults = EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ;
@@ -95,7 +96,8 @@ queryList* EMAILqueryTool( queryList *listpointer )
    				_debug( __FILE__, __LINE__, 5, "NAME value is %s", tempQueries -> oneQuery ->myClauses[numClauses].value ) ;
    				strcpy ( operatorType , tempQueries -> oneQuery ->myClauses[numClauses].operator ) ;
    				_debug( __FILE__, __LINE__, 5, "operator type is %s", operatorType ) ;
-   				getMailBox( mailPath ) ;
+   				getPath(mailPath,"MAILBOX");
+   				_debug( __FILE__, __LINE__, 5, "mailPath is ", mailPath) ;
    				attributeType = 3 ;
    				if( numClauses == 0 )
 					tempResults = EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[numClauses].value, attributeType ) ;
@@ -121,9 +123,13 @@ queryList* EMAILqueryTool( queryList *listpointer )
 				_debug( __FILE__, __LINE__, 5, "id attribute is %s", tempQueries -> oneQuery ->myClauses[numClauses].attribute ) ;
 				_debug( __FILE__, __LINE__, 5, "id value is %s", tempQueries -> oneQuery ->myClauses[numClauses].value ) ;
 				attributeType = 1 ;
+
 				if( is_email( tempQueries -> oneQuery ->myClauses[numClauses].value) )
+
 				{
+
 					getMailPath( mailPath, tempQueries -> oneQuery ->myClauses[numClauses].value, tempQueries ) ;
+
 					if( mailPath != NULL )
    					{
 						if( numClauses == 0 )
@@ -199,7 +205,6 @@ int is_email(char *value)
 
 void getMailPath(char *mailPath, char *value, queryList *tempQueries )
 {
-	void getMailBox( char *mailPath );
 	int doneSearchBox ;
 	FILE *configFile ;		
 	char oneLine[BUFFER_SIZE] ;		
@@ -208,14 +213,18 @@ void getMailPath(char *mailPath, char *value, queryList *tempQueries )
 	char searchBox[BUFFER_SIZE] = { '\0' } ;
 	int numslash = 1;
    	
+	
 	strcpy( tempValue, value + 6) ;
+	
 	
 	while( strncmp( tempValue+numslash, "/", 1 ) == 0 )
 		numslash++;
 			
 	switch(numslash)
 	{
-		case 2	:	getMailBox(mailPath); 
+
+		case 2	:	getPath(mailPath,"MAILBOX");
+   				_debug( __FILE__, __LINE__, 5, "mailPath is ", mailPath) ; 
 				break;
   			
   		case 3	:	ptrPath = rindex( tempValue, '/' ) ;
@@ -226,42 +235,6 @@ void getMailPath(char *mailPath, char *value, queryList *tempQueries )
   		default	:	tempQueries -> oneQuery ->removeTag = 1 ;
   				break ;
 	}		
-}
-
-/************************************************************************
- * Function:	getMailBox						*
- *									*
- * Description:	Function gets the mailbox form the config file.		*
- ************************************************************************/
-
-void getMailBox( char *mailPath )
-{
-	FILE *configFile ;		
-	char oneLine[BUFFER_SIZE] ;		
-	char *word ;			
-	char searchBox[BUFFER_SIZE] = { '\0' } ;
-	int doneSearchBox ;
-			
-	doneSearchBox = 0 ;
-	if( ( configFile = fopen( "vr.rc", "r" ) ) != NULL  || (configFile = fopen(strcat(getenv("HOME"),"/vr.rc"),"r") )!= NULL)
-	{	
-		while( fgets( oneLine, 500, configFile ) != NULL || !doneSearchBox )
-   		{
-   			word = strtok( oneLine, "=" ) ;
-			_assert( __FILE__, __LINE__, word ) ;
-					
-			if( strncmp( "MAILBOX", word, 7 ) == 0 )
-    			{
-       				word = strtok( NULL, "\n" ) ;
-       				_assert( __FILE__, __LINE__, word ) ;
-   				strcpy( searchBox, word ) ;
-   				doneSearchBox = 1 ;
-			}
-	    	}
-        	fclose( configFile ) ;
-        	strcpy( mailPath, searchBox ) ;
-        	_debug( __FILE__, __LINE__, 5, " in function getMailBox mailPath is %s", mailPath ) ;
-	}
 }
 
 
@@ -316,7 +289,7 @@ resultList* msgTokenizer( FILE *mailFile, char *queryValue, char *mailPath, int 
 	int EMAILidCompare ( char *mailQuery, char *mailHeader) ;
 	int EMAILdateCompare ( char *queryValue, char *dateLine ) ;
 	void getMessageID( char *idBuffer, char *messageLine ) ;
-	void getMailBox( char *mailPath ) ;
+	
 
 	char *token ;
 	char oneLine[BUFFER_SIZE] = {'\0'} ;

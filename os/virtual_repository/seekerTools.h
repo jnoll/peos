@@ -6,5 +6,5 @@
  
 resultList* andResult( resultList*, resultList* ) ;
 resultList* orResult( resultList*, resultList* ) ;
-
+void getPath(char *, char *) ;
 

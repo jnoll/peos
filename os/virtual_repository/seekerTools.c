@@ -21,6 +21,51 @@
  * Description:	Returns the intersection of tempResults and newResults 	*
  ************************************************************************/
  
+
+void getPath(char *pathBuffer, char *attribute)
+{
+FILE *configFile ;		
+char oneLine[1000] ;		
+char *word;			
+char searchBox[1000] = { '\0' } ;
+char home[1000] = { '\0' } ;
+int doneSearchBox ;
+
+			
+	doneSearchBox = 0 ;
+	strcpy(home,getenv("HOME"));
+	
+	
+	
+	
+	if( ( configFile = fopen( "vr.rc", "r" ) ) != NULL  || (configFile = fopen(strcat(home,"/vr.rc"),"r") )!= NULL)
+	{	
+		
+		while( fgets( oneLine, 500, configFile ) != NULL || !doneSearchBox )
+   		{
+   			
+   			word = strtok( oneLine, "=" ) ;
+   			
+			_assert( __FILE__, __LINE__, word ) ;
+			
+					
+			if( strcmp( attribute, word ) == 0 )
+    			{
+       				
+       				word = strtok( NULL, "\n" ) ;
+       				_assert( __FILE__, __LINE__, word ) ;
+   				strcpy( searchBox, word ) ;
+   				
+   				doneSearchBox = 1 ;
+			}
+	    	}
+        	fclose( configFile ) ;
+        	strcpy( pathBuffer, searchBox ) ;
+        	
+	}
+}
+
+
 resultList* andResult( resultList* tempResults, resultList* newResults )
 {
 	resultList *andResultList = NULL ;

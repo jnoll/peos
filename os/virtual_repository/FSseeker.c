@@ -200,10 +200,10 @@ resultList* attributeID( query *oneQuery, int numClauses )
 void attributeDATE( )
 {
 	int getDate( const char *filename, const struct stat *statptr, int flag ) ;
-	void getSearchPath( char * ) ;
+	
 	
 	char searchPath[BUFFER_SIZE] = { '\0' } ;	// the value of SEARCHDIR in the configuration file
-	getSearchPath( searchPath ) ;	
+	getPath( searchPath,"SEARCHDIR" ) ;	
 	
 	_debug( __FILE__, __LINE__, 5, "queryDate is %s", queryDate ) ;
 	_debug( __FILE__, __LINE__, 5, "searchPath is %s", searchPath ) ;
@@ -219,14 +219,17 @@ void attributeDATE( )
 void attributeNAME( ) 
 {
 	int getFile( const char *filename, const struct stat *statptr, int flag ) ;
-	void getSearchPath( char * ) ;
 	
 	char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configuration file
-	getSearchPath( searchPath ) ;	
+	getPath( searchPath,"SEARCHDIR" ) ;	
+	
+	_debug( __FILE__, __LINE__, 5, "searchPath is %s", searchPath) ;	
+
 	
 	_debug( __FILE__, __LINE__, 5, "attributeNAME( ) : queryName is %s", queryName ) ;
 	_debug( __FILE__, __LINE__, 5, "attributeNAME( ) : searchPath is %s", searchPath ) ;	
 	
+
 	ftw( searchPath, getFile, 5 ) ;
 }
 
@@ -513,47 +516,7 @@ int isFileQuery( char *value )
 		return 0 ;
 }
 		
-/************************************************************************
- * Function:	getSearchPath						*
- *									*
- * Description:	Gets the pre-configured search path from the		*
- * 		configuration file					*
- ************************************************************************/
- 
-void getSearchPath( char *searchPath )
-{
-	int doneSearchPath ;		// boolean-like sentinel for the extracting of searchPath
-	FILE *configFile ;		// file pointer to the configuration file
-   	char oneLine[BUFFER_SIZE] ;	// one line from the an opened file
-   	char *word ;			// a token during string tokenization
-   	
-   	doneSearchPath = 0 ;
-	
-   	if( !strlen( searchPath ) )
-   	{
-      		if( ( configFile = fopen( "vr.rc", "r" ) ) != NULL ||  (configFile = fopen(strcat(getenv("HOME"),"/vr.rc"),"r")) != NULL)
-   		{
-   			
-      			while( fgets( oneLine, BUFFER_SIZE, configFile ) != NULL )
-   			{
-       				word = strtok( oneLine, "=" ) ;
-       				_assert( __FILE__, __LINE__, word ) ;
-       				while( !doneSearchPath )
-    				{
-       					if( strncmp( "SEARCHDIR", word, 9 ) == 0 )
-    					{
-       						word = strtok( NULL, "\n" ) ;
-		       				_assert( __FILE__, __LINE__, word ) ;
-   						strcpy( searchPath, word ) ;
-   						_debug( __FILE__, __LINE__, 5, "in getSearchPath( ), searchPath is %s", searchPath ) ;
-						doneSearchPath = 1 ;
-					}
-				}
-    			}
-        		fclose( configFile ) ;
-  		}
-  	}
-}
+
 
 /************************************************************************
  * Function:	getDirectoryPath					*

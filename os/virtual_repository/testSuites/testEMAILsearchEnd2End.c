@@ -74,7 +74,7 @@ void setExpectedResult ( )
 {
 	char mailPath[BUFFER_SIZE] = { '\0' } ;
 	
-	getMailBox( mailPath ) ;
+	getPath(mailPath,"MAILBOX");
 	
 	if ( mailPath == NULL ) 
 		_debug( __FILE__, __LINE__, 5, "error in getMailBox" ) ;
@@ -182,7 +182,7 @@ void setTestData( queryList *listpointer )
 				if( ( strstr( valueString, "email:///" ) ) != NULL ) 
 				{
 					char mailPath[BUFFER_SIZE] = { '\0' } ;
-					getMailBox( mailPath ) ;
+					getPath(mailPath,"MAILBOX");
 					
 					if( mailPath == NULL )
 						_debug( __FILE__, __LINE__, 5, "error in getMailBox" ) ;
