@@ -1,0 +1,55 @@
+6nome-GTK-1.x 1.7
+
+* Notebook extensions on the bottom and right side have been fixed.
+
+6nome-GTK-1.x 1.6
+
+* GTKCheckMenuItem is now visible on pull down menus
+  Suggested by Volodymyr M. Lisivka <lvm@mystery.liviv.net>
+* GTKRadioMenuItem is now visible on pull down menus
+  Suggested by Volodymyr M. Lisivka <lvm@mystery.liviv.net>
+
+6nome-GTK-1.x 1.5
+
+* Mouse over effects have been added to option buttons.
+* Problems with the window list applet in GNOME 1.4 have been fixed.
+* Problems with the workplace switcher applet in GNOME 1.4 have
+  been fixed.
+
+6nome-GTK-1.x 1.4
+
+* Added mouse over effects to:
+
+    spin/toggle/normal buttons
+    radiobuttons
+    checkboxes
+    scrollbar thumbs and scrollbar steppers
+    range thumbs
+
+6nome-GTK_2.x 1.3
+
+* Spinbutton-steppers resize correct now.
+
+6nome-GTK-1.x 1.2
+
+* Fixed the unclickable scrollbar stepper problem.
+* Fixed non-resizable area of vertical and horizontal
+  scrollbar sliders.
+
+6nome-GTK-1.x 1.1
+
+* Sliders are rendered smoother now.
+* Fixed the table header in evolution.
+* Removed the rounded frame from GtkDrawingArea. The Gimp color
+  picker looks better that way.
+* Fixed a problem with focused GtkText widgets.
+* Fixed a problem with highlighted shortcuts on the Evolution Bar.
+* Fixed a problem with handle orientation on Evolution's vertical
+  toolbar.
+* Fixed a problem with unfocused selected list entries in Evolution
+
+6nome-GTK-1.x 1.0
+
+* Initial release.
+
+Marcus Petzoldt <m.petzoldt@gmx.de>
