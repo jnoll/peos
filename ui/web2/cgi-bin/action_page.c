@@ -8,7 +8,7 @@
 #include "proc_graph.h"
 
 extern Graph make_graph(char *file);
-extern void makedot(Node n, char *filename, char *action, char *state);
+extern void makedot(Node n, char *filename, char *action, char *state, int pid);
 void print_resource(int pid, char *action);
 
 int main()
@@ -62,10 +62,13 @@ int main()
     graph_name = make_graph(fname); 
     gifname = strchr(fname, '/');
     gifname++;
-    makedot(graph_name->source, fname, action, state);
+    makedot(graph_name->source, fname, action, state, pid);
     strtok(gifname, ".");
-    strcat(gifname, ".jpg");
-    printf("<img src=%s>", gifname); 
+    //strcat(gifname, ".jpg");
+    printf("<a border=\"0\" href=%s.map>\n", gifname);
+    printf("<font color=\"#FFFFFF\">\n");
+    printf("<img src=%s.jpg ISMAP>\n", gifname); 
+    printf("</a>\n");
     printf("<br><br><br>\n");
     printf("</tr>\n");
     
