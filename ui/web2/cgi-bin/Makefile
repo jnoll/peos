@@ -49,6 +49,9 @@ install:
 	for p in $(CGI); do chmod a+rx $(INSTALL_DIR)/cgi-bin/$$p; done
 	[ -d $(INSTALL_DIR)/cgi-bin ] && cp $(PML) $(INSTALL_DIR)/cgi-bin
 	chmod a+r $(INSTALL_DIR)/cgi-bin/*.pml
+	echo "AuthUserFile $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd" >> htaccess
+	echo " " >> htaccess
+	echo "require valid-user" >> htaccess
 	[ -d $(INSTALL_DIR)/cgi-bin ] && cp htaccess $(INSTALL_DIR)/cgi-bin
 	mv $(INSTALL_DIR)/cgi-bin/htaccess $(INSTALL_DIR)/cgi-bin/.htaccess
 	chmod 744 $(INSTALL_DIR)/cgi-bin/.htaccess

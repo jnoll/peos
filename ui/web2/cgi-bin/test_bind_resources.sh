@@ -91,8 +91,6 @@ then
   echo
 fi
 
-
-
 rm output
 rm test.dat
 

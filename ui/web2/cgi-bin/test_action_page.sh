@@ -102,9 +102,12 @@ RVAL=`ls -l r3test.dat | awk '{print $11}'`
 
 # Test whether unlink-symlink sequence (rebinding) works.
 export QUERY_STRING="process_filename=test.dat&pid=0&act_name=test2&resource_type=requires&r3=/new/value"
+export REQUEST_METHOD=GET
+
 change_resource_bindings.cgi | grep "Location: action_page.cgi" > /dev/null || (echo; echo "rebind resources FAILED"; echo)
 
 export QUERY_STRING="pid=0&process_filename=test.dat&act_name=test2"
+export REQUEST_METHOD=GET
 action_page.cgi > output
 
 RVAL=`ls -l r3test.dat | awk '{print $11}'`
@@ -113,7 +116,7 @@ RVAL=`ls -l r3test.dat | awk '{print $11}'`
 # This test 
 
 rm output
-rm r2test.dat
+rm r3test.dat
 rm test.dat
 
 echo "done"

@@ -36,7 +36,7 @@ int main()
     
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
     if(resources == NULL) {
-        goto_error_page(process_filename);
+        goto_error_page(process_filename, "resource list null");
 	exit(0);
     }
     
@@ -46,7 +46,7 @@ int main()
     pid = peos_run(model, resources, num_resources);
 
     if(pid < 0) {
-        goto_error_page(process_filename);
+        goto_error_page(process_filename, "pid less than 0. Could not create process");
 	exit(0);
     }
     

@@ -93,8 +93,8 @@ int main()
         login_name = (char *) getenv("REMOTE_USER");
 	enc_loginname = (char *) crypt(login_name, "df");
         for(i=0; i < strlen(enc_loginname); i++) {
-	    if(enc_loginname[i] == '/') enc_loginname[i] = 'A';
-	    if(enc_loginname[i] == '.') enc_loginname[i] = 'X';
+	    if(enc_loginname[i] == '/') enc_loginname[i] = '_';
+	    if(enc_loginname[i] == '.') enc_loginname[i] = '-';
         }
         process_filename = (char *) malloc((strlen(enc_loginname) + strlen(".dat")) * sizeof(char));
         strcpy(process_filename, enc_loginname);

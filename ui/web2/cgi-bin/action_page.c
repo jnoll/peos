@@ -46,7 +46,7 @@ int main()
     if((req_resources == NULL) || (prov_resources == NULL)) {
         for (i=0; cgivars[i]; i++) free(cgivars[i]) ;
         free(cgivars) ;
-        goto_error_page(process_filename);
+        goto_error_page(process_filename, "resource list NULL");
 	exit(0);
     }
      
@@ -83,13 +83,10 @@ int main()
         for(i=0; i < num_req_resources; i++) {
 	    if((strcmp(req_resources[i].value, "$$") != 0) && (strcmp(req_resources[i].qualifier, "abstract") != 0)){
 		char *symlink_resource;
-		char *temp = (char *) malloc((strlen(req_resources[i].name)+strlen(process_filename)) * sizeof(char));
-		strcpy(temp, req_resources[1].name);
-		strcat(temp, process_filename);
-		unlink(temp);
-		symlink_resource = (char *) malloc((strlen(req_resources[i].name)+strlen(process_filename)) * sizeof(char));
+		symlink_resource = (char *) malloc((strlen(req_resources[i].name)+strlen(process_filename)+1) * sizeof(char));
 		strcpy(symlink_resource, req_resources[i].name);
 		strcat(symlink_resource,process_filename);
+		unlink(symlink_resource);
 	        symlink(req_resources[i].value, symlink_resource);
 	        printf("<a href =\"%s\">%s</a>",symlink_resource,req_resources[i].name);
 		flag = 1;
@@ -123,14 +120,10 @@ int main()
         for(i=0; i < num_prov_resources; i++) {
 	    if((strcmp(prov_resources[i].value, "$$") != 0) && (strcmp(prov_resources[i].qualifier, "abstract") != 0)) {
 		char *symlink_presource;
-		char *temp;
-		temp = (char *) malloc((strlen(prov_resources[i].name)+strlen(process_filename)) * sizeof(char));
-		strcpy(temp, prov_resources[i].name);
-		strcat(temp,process_filename);
-		unlink(temp);
-		symlink_presource = (char *) malloc((strlen(prov_resources[i].name)+strlen(process_filename)) * sizeof(char));
+		symlink_presource = (char *) malloc((strlen(prov_resources[i].name)+strlen(process_filename)+1) * sizeof(char));
 		strcpy(symlink_presource, prov_resources[i].name);
 		strcat(symlink_presource,process_filename);
+		unlink(symlink_presource);
 	        symlink(prov_resources[i].value, symlink_presource);
 	        printf("<a href =\"%s\">%s</a>",symlink_presource,prov_resources[i].name);
 		flag = 1;

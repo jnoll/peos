@@ -41,7 +41,7 @@ int main()
     }
 
     if(resources == NULL) {
-        goto_error_page(process_filename);
+        goto_error_page(process_filename, "resource list null");
         for (i=0; cgivars[i]; i++)
            free(cgivars[i]) ;
         free(cgivars);
