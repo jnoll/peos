@@ -6,6 +6,7 @@
 #include "IPCHandler.h"
 #include "UIMessageHandler.h"
 #include "EventHandler.h"
+#include "TimedEventHandler.h"
 
 const int kBacklog = 5;
 
@@ -29,6 +30,7 @@ ProcessStatusHandler::ProcessStatusHandler( bool repUsed )
 
 ProcessStatusHandler::~ProcessStatusHandler()
 {
+    delete timedEventHandler;
     map<UIMessageHandler*, IPCHandler*>::iterator itr;
 
     for ( itr = processMap.end(); itr != processMap.begin(); --itr )
@@ -129,7 +131,8 @@ void ProcessStatusHandler::Run()
         perror( "listen call failed" );
         exit( 1 );
     }
-
+    timedEventHandler = new TimedEventHandler(repositoryUsed);
+    timedEventHandler->Init();
     while( true )
     {
         int newsockfd;

@@ -10,6 +10,7 @@
 class IPCHandler;
 class UIMessageHandler;
 class EventHandler;
+class TimedEventHandler;
 
 class ProcessStatusHandler
 {
@@ -38,8 +39,8 @@ private:
     int                                         sessionCount;
     int                                         sockfd;
     bool                                        repositoryUsed;
-			
-protected:
+    TimedEventHandler*                          timedEventHandler;
+	 protected:
 	ProcessStatusHandler( bool = false );	
 };
 

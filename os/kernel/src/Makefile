@@ -15,6 +15,9 @@ NAME = OSServices
 # keep track of dependencies automatically
 .KEEP_STATE:
 
+# path for executable when using make install
+INSTALLPATH = ../../../bin/
+
 DEBUG = -g
 INCLUDES = -I../include
 DEFINES  = -D_REENTRANT
@@ -43,7 +46,8 @@ OBJS = 	DataAccessInterface.o \
 	UIMessageHandler.o \
 	VMInterface.o \
 	main.o \
-        OSSemaphore.o
+        OSSemaphore.o\
+	TimedEventHandler.o
 
 # Compile the program
 $(NAME): $(OBJS)
@@ -58,3 +62,6 @@ clean:
 
 bare:
 	rm -f *.o core $(NAME)
+
+install:
+	cp $(NAME) $(INSTALLPATH)

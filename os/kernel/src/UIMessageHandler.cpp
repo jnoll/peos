@@ -12,6 +12,9 @@
 #include <sys/stat.h>
 #include <string>
 
+#define strcasecmp strcmp
+
+
 const int invalidSocket = -1;
 int UIMessageHandler::sessionCount = 0;
 
