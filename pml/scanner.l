@@ -12,7 +12,11 @@
 # include <pml/tokens.h>
 # include <pml/scanner.h>
 #ifdef PALM
+#define FILE FileHand
 #include <PalmOS.h>
+#include <FileStream.h>
+#include "palmfunctions.c"
+//#include <PalmConvert.c>
 #endif
 
 /* Public variable definitions */

@@ -1,11 +1,14 @@
 CC	= m68k-palmos-gcc 
-CFLAGS	= -DPALM -I.. -g -Wall
-PalmCUnit= ~/PalmCUnit/PalmCUnit
+CFLAGS	= -DPALM -I.. -I../os/palm -IPalmCUnit -I. -g -Wall
+PalmCUnit= /home/shinobi/PalmCUnit/PalmCUnit
 
 LIB = libpalmpml.a
 
-OBJS	= graph.o list.o parser.o tree.o scannerPalm.o
+OBJS	= graph.o list.o parser.o tree.o scannerPalm.o palmfunctions.o
 SRCS	= parser.c scanner.c y.tab.h
+TEST_OBJS = ${OBJS} ${PalmCUnit}/PalmCUnit.o ${PalmCUnit}/TestParser.o \
+		${PalmCUnit}/TestRun.o ${PalmCUnit}/TestDB.o ${PalmCUnit}/AssertImpl.o \
+		${PalmCUnit}/Util.o
 YFLAGS	= -d
 
 
@@ -13,8 +16,21 @@ all:		$(LIB)
 
 $(LIB):		$(SRCS) $(OBJS)		
 		rm -f $(LIB)
-		ar cru $(LIB) $(OBJS)
-		ranlib $(LIB) || true
+#		ar cru $(LIB) $(OBJS)
+#		ranlib $(LIB) || true
+
+CUnit:		
+		pilrc -ro -allowEditID -q ${PalmCUnit}/PalmCUnit.rcp ${PalmCUnit}/PalmCUnit.ro
+		mv PalmCUnitRsc.h ${PalmCUnit}
+
+testbuild:	${SRCS} ${TEST_OBJS} CUnit
+		m68k-palmos-multigen ${PalmCUnit}/PalmCUnit.def
+		m68k-palmos-gcc -c PalmCUnit-sections.s
+		m68k-palmos-gcc -Xlinker -M -Xlinker --cref -g ${TEST_OBJS} \
+		-lPalmOSGlue -o ${PalmCUnit}/PalmCUnit PalmCUnit-sections.ld \
+		> PalmCUnit.map 2>&1
+		
+#		build-prc ${PalmCUnit}/PalmCUnit.def -o PalmCUnit.prc -n PalmCUnit -c UntT ${PalmCUnit}/PalmCUnit.ro ${PalmCUnit}/PalmCUnit
 
 traverse:	traverse.o $(LIB)
 	$(CC) -o $@ $< $(LIB)
@@ -27,7 +43,8 @@ t:              t.o $(LIB)
 
 
 
-clean:;		rm -f $(LIB) $(OBJS)
+clean:;		rm -f $(LIB) $(TEST_OBJS)
+		rm -f PalmCU*
 
 clobber:;	rm -f $(LIB) $(OBJS) $(SRCS) y.tab.h libpml.a
 
