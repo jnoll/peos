@@ -24,7 +24,7 @@ proc indent {stream} {
     }
 }
 
-proc preamble {tfile pfile {shell ../../shell}} {
+proc preamble {tfile pfile {shell ../kernel_wrapper}} {
     
     puts $tfile "model: ${pfile}.pml"
     puts $tfile "shell: $shell"
@@ -115,10 +115,10 @@ proc selection {pfile num_act} {
 }
 
 proc emit_act {tfile pid act} {
-    puts $tfile "act_state $pid $act ready"
-    puts $tfile "do $pid $act"
-    puts $tfile "act_state $pid $act active"
-    puts $tfile "done $pid $act"
+    puts $tfile "assert $pid $act READY"
+    puts $tfile "notify $pid $act start"
+    puts $tfile "assert $pid $act RUN"
+    puts $tfile "notify $pid $act finish"
 }
 
 proc emit_concurrent {tfile pname actions iterations} {
@@ -132,7 +132,7 @@ proc emit_concurrent {tfile pname actions iterations} {
 	    foreach act $actions {
 		emit_act $tfile $j $act
 	    }
-	    puts $tfile "proc_done $pid $pname"
+	    puts $tfile "assert_done $pid $pname"
 	}
 	incr i $j
     }
@@ -145,7 +145,7 @@ proc emit_sequential {tfile pname actions iterations} {
 	foreach act $actions {
 	    emit_act $tfile $pid $act
 	}
-	puts $tfile "proc_done $pid $pname"
+	puts $tfile "assert_done $pid $pname"
     }
 }
 
@@ -246,7 +246,7 @@ set iterations 1
 set proc_table_size 10
 set num_act 1
 set tests {}
-set shell "../../shell"
+set shell "../kernel_wrapper"
 set mode sequential
 set iteration_workaround 1
 set i 0
