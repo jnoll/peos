@@ -2,4 +2,5 @@
 IMAGES = $(wildcard *.jpg)
 install: 
 	cp $(IMAGES) $(INSTALL_DIR)/images
-	chmod a+r $(INSTALL_DIR)/images/$(IMAGES)
+	chmod a+r $(INSTALL_DIR)/images/*.jpg
+

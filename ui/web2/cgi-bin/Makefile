@@ -32,8 +32,9 @@ test: $(CGI) create_testtable
 
 install: 
 	[ -d $(INSTALL_DIR)/cgi-bin ] && cp $(CGI) $(INSTALL_DIR)/cgi-bin
-	[ -d $(INSTALL_DIR)/cgi-bin ] && cp $(PML) $(INSTALL_DIR)/cgi-bin
 	for p in $(CGI); do chmod a+rx $(INSTALL_DIR)/cgi-bin/$$p; done
+	[ -d $(INSTALL_DIR)/cgi-bin ] && cp $(PML) $(INSTALL_DIR)/cgi-bin
+	chmod a+r $(INSTALL_DIR)/cgi-bin/*.pml
 
 create_testtable: create_testtable.o
 	$(LD) -o $@ $(LDFLAGS) $< $(OBJECTS) $(LIBS)
