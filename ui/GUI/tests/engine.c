@@ -149,5 +149,6 @@ getPath(void)
      */
     peos = peos_in_dir("/home/jshah1/bin");
     /* return ~jshah1/bin/peos or NULL (no peos found) */
+
     return peos;
 }

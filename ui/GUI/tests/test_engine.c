@@ -6,28 +6,20 @@ extern char *get_current_dir_name(void);
 #include "engine.h"
 #include "glo.h"
 
+
 START_TEST(trunPeos)
-{ 
+{
+ 
   int rtn_val = -1;
   size_t size = 0;
-  char *command = NULL, *peosPath = NULL, *cmd_peos = NULL, *str_rtn = NULL;
+  char *command = NULL, *cmd_peos = NULL, *str_rtn = NULL;
 
-#ifdef DEBUG
-  /* Locate the bin directory that contains peos executable. */ 
-  peosPath = getPath();
-  fail_unless (peosPath != NULL,
-              "Unable to locate peos executable. \n");
-
-  /* Construct peos command */
-  size = strlen(peosPath) + strlen(" -c Test.pml") + 1;
+  /* Construct peos command with peos exe in a known directory */
+  size = strlen("/home/jshah1/bin/peos -c Test.pml") + 1;
   cmd_peos = (char *) malloc((size_t) size * sizeof(char));
   size = 0;
 
-  /* Add NULL character */
-  strcpy(cmd_peos, peosPath);
-  free(peosPath);
-  peosPath = NULL;
-  strcat(cmd_peos, " -c Test.pml");
+  strcpy(cmd_peos, "/home/jshah1/bin/peos -c Test.pml");
   
   /* Construct commnand argument for runPeos((char *) str) */
   size = strlen(cmd_peos) + strlen(" >message 2>&1") + 1;
@@ -37,8 +29,8 @@ START_TEST(trunPeos)
   strcat(command, " >message 2>&1");
   free(cmd_peos);
   cmd_peos = NULL;
-
-/* OK Point 2 */
+  
+  /* call runPeos((char *) str) with command */
   rtn_val = runPeos((char *) command);
   free(command);
   command = NULL;
@@ -46,7 +38,6 @@ START_TEST(trunPeos)
   fail_unless (rtn_val == EXIT_SUCCESS,
               "The trunPeos test failed to return 0.");
 
-#endif
   
 }
 END_TEST
