@@ -16,8 +16,9 @@ int main()
     cgivars = getcgivars();
     
     process_filename = (char *) getvalue("process_filename", cgivars);
-    
+
     if (unlink(process_filename) == 0) {
+	print_header("Delete Process Table");
 	printf("<p>Process table '%s' deleted.\n", process_filename);
     } else {
         goto_error_page(process_filename, "failed to delete process table.");

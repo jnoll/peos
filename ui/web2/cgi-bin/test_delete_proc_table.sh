@@ -8,6 +8,20 @@ export REQUEST_METHOD=GET
 create_testtable
 delete_proc_table.cgi > output
 
+if !(grep "<title>Delete Process Table</title>" output > /dev/null)
+then
+  echo
+  echo Failed Title: expected '<title>Delete Process Table</title>'.
+  echo
+fi
+
+if !(grep "<h1>Delete Process Table</h1>" output > /dev/null)
+then
+  echo
+  echo Failed Heading: expected '<h1>Delete Process Table</h1>'.
+  echo
+fi
+
 if !(grep "Process table 'test.dat' deleted." output > /dev/null)
 then
   echo

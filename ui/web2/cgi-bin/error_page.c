@@ -22,9 +22,8 @@ int main()
     msg = (char *) getvalue("msg", cgivars);
 
     print_header("System Error");
-    printf("\nThe system encountered an error while processing your request.<br>");
+    printf("\nThe system encountered an error while processing your request.<br>\n");
     printf("\nError Message: %s\n<br>",msg);
-    printf("\nEither you are trying to create more than 11 process instances, or there was some internal error. Please try again.\n<br>");
     print_actionlist_link(process_filename);
 
     

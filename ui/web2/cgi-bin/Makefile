@@ -57,12 +57,14 @@ install:
 	echo "AuthUserFile $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd" >> htaccess
 	echo " " >> htaccess
 	echo "require valid-user" >> htaccess
-	[ -d $(INSTALL_DIR)/cgi-bin ] && cp htaccess $(INSTALL_DIR)/cgi-bin
-	mv $(INSTALL_DIR)/cgi-bin/htaccess $(INSTALL_DIR)/cgi-bin/.htaccess
+	[ -d $(INSTALL_DIR)/cgi-bin ] && cp htaccess $(INSTALL_DIR)/cgi-bin/.htaccess
 	chmod 744 $(INSTALL_DIR)/cgi-bin/.htaccess
-	[ -d $(INSTALL_DIR)/cgi-bin/hidden ] && cp hidden/htpasswd $(INSTALL_DIR)/cgi-bin/hidden
-	mv $(INSTALL_DIR)/cgi-bin/hidden/htpasswd $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd
-	chmod 744 $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd
+	[ -d $(INSTALL_DIR)/cgi-bin/hidden ] || mkdir $(INSTALL_DIR)/cgi-bin/hidden
+	# Don't overwrite existing htpasswd file.
+	if [ ! -f $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd ] ; then \
+		cp hidden/htpasswd $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd ;\
+		chmod 744 $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd ;\
+	fi
 
 
 

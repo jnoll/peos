@@ -9,6 +9,9 @@ build:
 install: 
 	@@[ -n "$(HTML_DIR)" ] || (echo "You must set your HTML_DIR env. variable to the directory where the PEOS web UI is to be installed."; exit 1)
 	[ -d $(INSTALL_DIR) ] || mkdir $(INSTALL_DIR)
+	cp index.html $(INSTALL_DIR)
+	chmod a+r $(INSTALL_DIR)/index.html
+	chmod go-w $(INSTALL_DIR)/index.html
 	[ -d $(INSTALL_DIR)/cgi-bin ] || mkdir $(INSTALL_DIR)/cgi-bin
 	[ -d $(INSTALL_DIR)/cgi-bin/hidden ] || mkdir $(INSTALL_DIR)/cgi-bin/hidden
 	[ -d $(INSTALL_DIR)/images ] || mkdir $(INSTALL_DIR)/images
