@@ -28,6 +28,7 @@ int is_requires_true(int pid, char *act_name)
     }
     else {
         struct stat buf;
+	if(strcmp(resources[0].value,"$$") == 0) return 0;
 	if(stat(resources[0].value, &buf) == -1) {
 	    if(errno == ENOENT) { /* If stat failed because file didn't exist */
 	        return 0;
@@ -55,6 +56,7 @@ int is_provides_true(int pid, char *act_name)
     }
     else {
         struct stat buf;
+	if(strcmp(resources[0].value,"$$") == 0) return 0;
 	if(stat(resources[0].value, &buf) == -1) {
 	    if(errno == ENOENT) { /* If stat failed because file didn't exist */
 	        return 0;
