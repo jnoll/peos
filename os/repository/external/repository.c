@@ -29,6 +29,7 @@ the enumeration could determine which function to call.
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "pml_state.h"
 #include "repository.h"
 /*#include "C:\WINDOWS\DESKTOP\My Briefcase\CU Masters Andy\CSC 5728\unixfs_repository.h"*/
 
@@ -456,10 +457,4 @@ int repository_queryrewind(query_result)
 		return (int)0;
 }
 
-/* THIS IS FOR TESTING PURPOSES, IF YOU STILL SEE IT,
-   IT'S BECAUSE I FORGOT TO DELETE IT !!!     */
 
-int main()
-{
-return 0;
-}
