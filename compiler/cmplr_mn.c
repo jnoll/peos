@@ -34,7 +34,7 @@ void print_usage();
 
 int main (int argc, char *argv[])
 {
-	char **pml_filename;
+	char *pml_filename;
 	char *module = "main";
 	char output_file_type[5];
 	data_dictionary_struct data_dictionary;
@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
 	pmlprint(INFO,PMLVER,module,NULL);
 
 	/* make sure the user typed in valid command line arguments */
-	returnval = validate_inputs(argc, argv, pml_filename, output_file_type, 
+	returnval = validate_inputs(argc, argv, &pml_filename, output_file_type, 
 	    &ppout,&list,&debug);
 	if (returnval == FALSE) {
 		pmlprint(ERROR,PMLINP,module,NULL);
@@ -56,15 +56,15 @@ int main (int argc, char *argv[])
 		return returnval;
 	} else {
 		/* parse the file to make sure it is a valid PML file */
-		returnval = parse_pml(*pml_filename, &data_dictionary,
+		returnval = parse_pml(pml_filename, &data_dictionary,
 		    debug);
 	}
 	if (returnval == TRUE) {
-		returnval = write_cpml(*pml_filename, &data_dictionary,
+		returnval = write_cpml(pml_filename, &data_dictionary,
 		    output_file_type,debug,list);
 	}
 	if (ppout == FALSE) {
-		remove(*pml_filename);
+		remove(pml_filename);
 	}
 	return returnval;
 }
