@@ -92,6 +92,7 @@ clean:
 
 clobber:	clean
 	rm $(TESTS)
+	rm proc_table* message
 
 # Dependencies
 include .depend
