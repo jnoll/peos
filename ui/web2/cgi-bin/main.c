@@ -194,7 +194,7 @@ void print_resource(peos_action_t *action)
         if(resources[i].name[j] == '\0' || resources[i].name[j] == '\n')
           break;
         if (resources[i].name[j] == '\"') continue; /* Don't display quotes. */
-          printf("%c",resources[i].name[j]);
+	  printf("<a href=\"%s\">%c", resources[i].value, resources[i].name[j]);
       }
       if(i != num_resources-1)
         printf(", ");

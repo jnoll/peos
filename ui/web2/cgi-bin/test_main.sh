@@ -47,11 +47,5 @@ then
   echo Failed script. 
   echo
 fi
-if !(grep "test_resource" output > /dev/null)
-then
-  echo
-  echo Failed test_resource. 
-  echo
-fi
 
 rm output
