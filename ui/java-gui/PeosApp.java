@@ -297,8 +297,8 @@ public class PeosApp extends JFrame implements ActionListener
 		filter.setDescription("pml files");	
 
 		fileChooser.setFileFilter(filter);
-		fileChooser.setCurrentDirectory(new File(lastDir));
-
+		//fileChooser.setCurrentDirectory(new File(lastDir));
+                fileChooser.setCurrentDirectory(new File(System.getProperty("peos.pml")));
           	int result = fileChooser.showOpenDialog (this);
 
 	        // user clicked Cancel button on dialog
