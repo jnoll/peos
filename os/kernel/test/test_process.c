@@ -197,44 +197,38 @@ END_TEST
 
 START_TEST(test_log_event)
 {
-  int nbytes,abytes;
-  FILE *file;
-  char expected[BUFSIZ],actual[BUFSIZ];
-  char times[20];
-  struct tm *current_info;
-  time_t current;
-  char msg[256];
+    int nbytes,abytes;
+    FILE *file;
+    char expected[BUFSIZ],actual[BUFSIZ];
+    char times[256];
+    struct tm *current_info;
+    time_t current;
+    char *msg = "jnoll RUN act_0 1";
+    /* setup */
+    time(&current);
+    current_info = localtime(&current);
+    current = mktime(current_info);
+    strftime(times,256,"%b %d %Y %H:%M",localtime(&current));
+    sprintf(expected, "%s %s\n", times, msg);
+    
+    unlink("event.log");	/* start with empty log. */
 
-  time(&current);
-  current_info = localtime(&current);
-  current = mktime(current_info);
-  strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
-  file = fopen("expected_event.log", "a");
-  strcpy(msg,"jnoll RUN act_0 1");
-  fprintf(file, "%s %s\n", times,msg);
-  fclose(file);
-                                                                          mark_point();
-									  file = fopen("expected_event.log","r");
-  memset(expected,0,BUFSIZ);
-  nbytes = fread(expected,sizeof(char),BUFSIZ,file);
-  fclose(file);
-  mark_point();
+    mark_point();
   
-  /* action */
-  log_event(msg);
+    /* action */
+    log_event(msg);
 
-  /* post */
-  file = fopen("event.log", "r");
-  memset(actual,0,BUFSIZ);
-  abytes = fread(actual,sizeof(char),BUFSIZ,file);
-  fail_unless(abytes == nbytes, "file size");
-  fclose(file);
-  mark_point();
-   
-  fail_unless(strcmp(actual,expected) == 0, "event.log differs");
-   unlink("expected_event.log");
-   unlink("event.log");
+    /* post */
+    file = fopen("event.log", "r");
+    memset(actual,0,BUFSIZ);
+    nbytes = strlen(expected);
+    abytes = fread(actual,sizeof(char),BUFSIZ,file);
+    fail_unless(abytes == nbytes, "file size");
+    fclose(file);
+    mark_point();
+    fail_unless(strcmp(actual,expected) == 0, "event.log differs");
 
+    unlink("event.log");
 }
 END_TEST
 
