@@ -25,8 +25,8 @@ resultList* andResult( resultList* tempResults, resultList* newResults )
 		tempOftempResults = tempResults ;
 		while ( tempOftempResults != NULL )
 		{
-			//_debug( __FILE__, __LINE__, 2, "tempOftempResults -> oneResult is %s", tempOftempResults -> oneResult ) ;
-			//_debug( __FILE__, __LINE__, 2, "newResults -> oneResult is %s", newResults -> oneResult ) ;
+			_debug( __FILE__, __LINE__, 5, "tempOftempResults -> oneResult is %s", tempOftempResults -> oneResult ) ;
+			_debug( __FILE__, __LINE__, 5, "newResults -> oneResult is %s", newResults -> oneResult ) ;
 			if( strcmp( tempOftempResults -> oneResult, newResults -> oneResult ) == 0 )
 				andResultList = addResultItem( andResultList, tempOftempResults -> oneResult ) ;
 			tempOftempResults = ( resultList* ) tempOftempResults -> link ;
@@ -36,23 +36,6 @@ resultList* andResult( resultList* tempResults, resultList* newResults )
 	
 	return andResultList ;
 }
-
-/*resultList* andResult( resultList* tempResults, resultList* newResults )
-{
-	resultList *andResultList = NULL ;	
-	while ( newResults != NULL )
-	{
-		while ( tempResults != NULL )
-		{
-			if( strcmp( tempResults -> oneResult, newResults -> oneResult ) == 0 )
-				andResultList = addResultItem( andResultList, tempResults -> oneResult ) ;
-			tempResults = ( resultList* ) tempResults -> link ;
-		}
-		newResults = ( resultList* ) newResults -> link ;
-	}
-	
-	return andResultList ;
-}*/
 
 resultList* orResult( resultList* tempResults, resultList* newResults )
 {

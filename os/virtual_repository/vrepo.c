@@ -64,7 +64,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].attribute = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 5, "Attribute is %s", word ) ;
+						_debug( __FILE__, __LINE__,2, "Attribute is %s", word ) ;
 					}
 					break ;
 						
@@ -73,7 +73,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].operator = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 5, "Operator is %s", word ) ;
+						_debug( __FILE__, __LINE__, 2, "Operator is %s", word ) ;
 					}						
 					break ;
 					
@@ -81,6 +81,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].value = strdup( word ) ;
 						numParses++ ;
+						_debug( __FILE__, __LINE__, 2, "Value is %s", word ) ;
 					}
 					break ;
 			
@@ -88,18 +89,20 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[numClauses].conjecture = strdup( word ) ;
 						numParses++ ;
-						_debug( __FILE__, __LINE__, 5, "Value is %s", word ) ;
+						_debug( __FILE__, __LINE__, 2, "Conjecture is %s", word ) ;
 					}
 					else
+					{
 						_debug(__FILE__,__LINE__,2,"invalid conjecture");
+					}
 					break ;
 		}
 		
-		_debug(__FILE__,__LINE__,1,"parsing word %s number of parses is : %d number of tokens: %d",word,numParses,numTokens);
+		_debug(__FILE__,__LINE__,5,"parsing word %s number of parses is : %d number of tokens: %d",word,numParses,numTokens);
 		word = strtok( NULL, " " ) ;
 	}
 	
-	if( ((numClauses *4) + numParses )== numTokens )
+	if( ( ( numClauses * 4 + numParses ) == numTokens ) && ( numParses == 3 ) )
 	{
 		_debug( __FILE__, __LINE__, 5, "Storing Clause" ) ;
 		newQuery -> callback = cback;
@@ -108,6 +111,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 		newQuery -> removeTag = 0 ;
 		newQuery -> numClauses = numClauses ;
 		newQuery -> results = NULL ;
+		newQuery -> myClauses[numClauses].conjecture = NULL ;
 		myQueries = addQueryItem( myQueries, newQuery ) ;
 		numParses = 0 ;
 	}
@@ -199,19 +203,6 @@ void poll_vr( )
  *		attribute of the repository. 				*
   ************************************************************************/
 
-/*bool isValidAttribute( char *attr )
-{
-	int i ;					// used in for loop
-	char attributes[1][2] = { "ID" } ;	// array that stores repository attributes
-		
-	for( i = 0 ; i < sizeof(attributes) / sizeof(attributes[0] ) ; i++ )
-	{
-		if( attr == NULL || ( strcmp( attributes[i], attr ) != 0 ) )
-			return false ;
-	}
-	return true ;
-}*/
-
 bool isValidAttribute( char *attr )
 {
 	int i ;						// used in for loop
@@ -238,14 +229,17 @@ bool isValidAttribute( char *attr )
 bool isValidOperator( char *op )
 {
 	int i ;					// used in for loop
-	char operators[1][2] = { "EQ" } ;	// array that stores repository operators
+	char *operators[2] = { "EQ", "~" } ;	// array that stores repository operators
 	
-	for( i = 0 ; i < sizeof(operators) / sizeof(operators[0] ) ; i++ )
+	if( op == NULL )
+		return false;
+		
+	for( i = 0 ; i < 2 ; i++ )
 	{
-		if( op == NULL || ( strcmp( operators[i], op ) != 0 ) )
-			return false ;
+		if( ( strcmp( operators[i], op ) == 0 ) )
+			return true ;
 	}
-	return true ;
+	return false;
 }
 
 

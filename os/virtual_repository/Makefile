@@ -29,7 +29,7 @@ install:
 
 clean:
 	-rm $(OBJECTS)
-	-rm core
+	-rm core*
 	-rm search
 
 

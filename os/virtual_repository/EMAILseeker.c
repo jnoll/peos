@@ -186,6 +186,7 @@ int is_email(char *value)
 
 void getMailPath(char *mailPath, char *value )
 {
+	void getMailBox( char *mailPath );
 	int doneSearchBox ;
 	FILE *configFile ;		
 	char oneLine[BUFFER] ;		
@@ -202,8 +203,8 @@ void getMailPath(char *mailPath, char *value )
 	switch(numslash)
 	{
 		case 2: 
-			doneSearchBox = 0 ;
-   			if( ( configFile = fopen( "config.txt", "r" ) ) != NULL )
+			/*doneSearchBox = 0 ;
+   			if( ( configFile = fopen( "vr.rc", "r" ) ) != NULL  ||  (configFile = fopen(strcat(getenv("HOME"),"/vr.rc"),"r")) != NULL)
 			{	
 				while( fgets( oneLine, 500, configFile ) != NULL || !doneSearchBox )
    				{
@@ -219,9 +220,10 @@ void getMailPath(char *mailPath, char *value )
 					}
 	    			}
         			fclose( configFile ) ;
-        			strcpy( mailPath, searchBox ) ;
+        			strcpy( mailPath, searchBox ) ;*/
+        			getMailBox(mailPath);
         			break;
-  			}
+  			//}
   			
   		case 3:
   			ptrPath = rindex( tempValue, '/' ) ;
@@ -243,7 +245,7 @@ void getMailBox( char *mailPath )
 	int doneSearchBox ;
 			
 	doneSearchBox = 0 ;
-	if( ( configFile = fopen( "config.txt", "r" ) ) != NULL )
+	if( ( configFile = fopen( "vr.rc", "r" ) ) != NULL  || (configFile = fopen(strcat(getenv("HOME"),"/vr.rc"),"r") )!= NULL)
 	{	
 		while( fgets( oneLine, 500, configFile ) != NULL || !doneSearchBox )
    		{
@@ -498,9 +500,9 @@ int EMAILdateCompare ( char *queryValue, char *dateLine )
 
 int EMAILsubjectCompare ( char *queryValue, char *subjectLine )
 {
-	_debug( __FILE__, __LINE__, 1, "subjectLine is %s", subjectLine ) ;
-	_debug( __FILE__, __LINE__, 1, "strpbrk(subjectLine," ") %s", (strpbrk(subjectLine," ") +1) ) ;
-	_debug( __FILE__, __LINE__, 1, "queryValue %s", queryValue ) ;
+	_debug( __FILE__, __LINE__, 5, "subjectLine is %s", subjectLine ) ;
+	_debug( __FILE__, __LINE__, 5, "strpbrk(subjectLine," ") %s", (strpbrk(subjectLine," ") +1) ) ;
+	_debug( __FILE__, __LINE__, 5, "queryValue %s", queryValue ) ;
 			
 	if( strstr( (strpbrk(subjectLine," ") +1), queryValue) != NULL )
 		return 1 ;

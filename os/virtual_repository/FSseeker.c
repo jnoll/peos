@@ -10,6 +10,7 @@
 #include "resultLinkedList.h"
 #include "queryLinkedList.h"
 #include "seekerTools.h"
+#include "FSseeker.h"
 #include <ftw.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,15 +20,15 @@
 
 #define BUFFER_SIZE 1000
 
-query *ftwQuery ;			// will contain the Query data for ftw traversing in getFile function
-char searchFile[BUFFER_SIZE] ;		// the value of the query request
-static char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configuration file
-char directoryPath[BUFFER_SIZE] ;	// the path of the local user
 int doneDirectoryPath = 0 ;		// boolean-like sentinel for the extracting of directoryPath
-resultList *dateResults ;
-resultList *nameResults ;
+char operatorType[3] ;
+char searchFile[BUFFER_SIZE] ;		// the value of the query request
 char queryDate[11] ;
 char queryName[BUFFER_SIZE] ;
+char directoryPath[BUFFER_SIZE] ;	 //the path of the local user
+resultList *dateResults ;
+resultList *nameResults ;
+
 
 /************************************************************************
  * Function:	FSqueryTool						*
@@ -38,13 +39,11 @@ char queryName[BUFFER_SIZE] ;
 
 queryList* FSqueryTool( queryList *listpointer )
 {
-	int getFile( const char *filename, const struct stat *statptr, int flag ) ;
-	void getSearchPath( ) ;
 	void getDirectoryPath( ) ;
-	resultList* attributeID( query *, int ) ;
-	void attributeDATE( char*, int ) ;
+	void getFSQueryDate( char * ) ;
+	void attributeDATE( ) ;
 	void attributeNAME( ) ;
-
+	resultList* attributeID( query *, int ) ;
 	
    	char oneLine[BUFFER_SIZE] ;	// one line from the an opened file
    	char *word ;			// a token during string tokenization
@@ -52,7 +51,6 @@ queryList* FSqueryTool( queryList *listpointer )
    	queryList *tempQueries ;	// a pointer to the query list arguement
    	resultList *tempResults ;
    	   	
-   	getSearchPath( ) ;
    	getDirectoryPath( ) ;
   	
 	tempQueries = listpointer ;
@@ -64,72 +62,66 @@ queryList* FSqueryTool( queryList *listpointer )
 		for( numClauses = 0 ; numClauses <= tempQueries -> oneQuery -> numClauses ; numClauses++ )
 		{
 			_debug( __FILE__, __LINE__, 5, "numClauses count is %d", numClauses ) ;
-			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "DATE" ) == 0 )
-			{
-				_debug( __FILE__, __LINE__, 2, "attribute is DATE" ) ;
-				dateResults = NULL;				
-				attributeDATE( tempQueries -> oneQuery -> myClauses[numClauses].value, numClauses ) ;
-				if( numClauses == 0 )
-					tempResults = dateResults ;
-				else
-				{
-					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
-					{
-						_debug( __FILE__, __LINE__, 2, "conjecture is AND") ;
-						tempResults = andResult( tempResults, dateResults ) ;
-					}
-					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
-					{
-						_debug( __FILE__, __LINE__, 2, "conjecture is OR") ;
-						tempResults = orResult( tempResults, dateResults ) ;
-					}
-				}
-			}
-	
 			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "ID" ) == 0 )
 			{
-				_debug( __FILE__, __LINE__, 2, "attribute is ID") ;
+				_debug( __FILE__, __LINE__, 5, "attribute is ID") ;
 				if( numClauses == 0 )
 					tempResults = attributeID( tempQueries -> oneQuery, numClauses ) ;
 				else
 				{
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
 					{
-						_debug( __FILE__, __LINE__, 2, "conjecture is AND") ;
+						_debug( __FILE__, __LINE__, 5, "conjecture is AND") ;
 						tempResults = andResult( tempResults, attributeID( tempQueries -> oneQuery, numClauses ) ) ;
 					}
 
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
 					{
-						_debug( __FILE__, __LINE__, 2, "conjecture is OR") ;
+						_debug( __FILE__, __LINE__, 5, "conjecture is OR") ;
 						tempResults = orResult(tempResults, attributeID( tempQueries -> oneQuery, numClauses ) ) ;
 					}
 				}
 			}
-			
-			
-			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "NAME" ) == 0 )
+	
+			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "DATE" ) == 0 )
 			{
-				nameResults = NULL;
-				_debug( __FILE__, __LINE__, 5, "attribute is NAME") ;
-				strcpy( queryName, tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
-				attributeNAME( ) ;
+				_debug( __FILE__, __LINE__, 5, "attribute is DATE" ) ;
+				dateResults = NULL;
+				getFSQueryDate( tempQueries -> oneQuery -> myClauses[numClauses].value ) ;				
+				attributeDATE( ) ;
 				if( numClauses == 0 )
-				{
-					tempResults = nameResults ;
-				}
+					tempResults = dateResults ;
 				else
 				{
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
 					{
 						_debug( __FILE__, __LINE__, 5, "conjecture is AND") ;
-						tempResults = andResult( tempResults, nameResults ) ;
+						tempResults = andResult( tempResults, dateResults ) ;
 					}
 					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
 					{
 						_debug( __FILE__, __LINE__, 5, "conjecture is OR") ;
-						tempResults = orResult( tempResults, nameResults ) ;
+						tempResults = orResult( tempResults, dateResults ) ;
 					}
+				}
+			}
+	
+			
+			if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses].attribute, "NAME" ) == 0 )
+			{
+				_debug( __FILE__, __LINE__, 5, "attribute is NAME") ;
+				nameResults = NULL;
+				strcpy( operatorType, tempQueries -> oneQuery -> myClauses[numClauses].operator ) ;
+				strcpy( queryName, tempQueries -> oneQuery -> myClauses[numClauses].value ) ;
+				attributeNAME( ) ;
+				if( numClauses == 0 )
+					tempResults = nameResults ;
+				else
+				{
+					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "AND" ) == 0 )
+						tempResults = andResult( tempResults, nameResults ) ;
+					if( strcmp( tempQueries -> oneQuery -> myClauses[numClauses-1].conjecture, "OR" ) == 0 )
+						tempResults = orResult( tempResults, nameResults ) ;
 				}
 				
 			}
@@ -160,6 +152,7 @@ resultList* attributeID( query *oneQuery, int numClauses )
 	if( isFileQuery( oneQuery -> myClauses[numClauses].value ) )
 	{		
 		char tempPath[BUFFER_SIZE] = {'\0'} ;
+		char resultPath[BUFFER_SIZE] = {'\0'} ;
 		int numslash = 1 ;
    	
 		strcpy( searchFile, ( oneQuery -> myClauses[numClauses].value ) + 5 ) ;
@@ -172,8 +165,10 @@ resultList* attributeID( query *oneQuery, int numClauses )
 					strcat( tempPath, searchFile + 1 ) ;
 					if( strlen( tempPath ) > ( strlen( directoryPath ) + 1 ) )
 						if( stat( tempPath, &statBuffer ) == 0 )
-							resultID = addResultItem( resultID, tempPath ) ;
-					
+						{
+							sprintf( resultPath, "file://%s", tempPath ) ;
+							resultID = addResultItem( resultID, resultPath ) ;
+						}					
 					break ;
 
   			case 3:		if( strlen( searchFile ) > 3 )
@@ -188,12 +183,13 @@ resultList* attributeID( query *oneQuery, int numClauses )
 	return resultID ;
 }
 			
-void attributeDATE( char *value, int numClauses )
+void attributeDATE( )
 {
-	void getFSQueryDate( char * ) ;
 	int getDate( const char *filename, const struct stat *statptr, int flag ) ;
 	
-	getFSQueryDate( value ) ;
+	char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configuration file
+	getSearchPath( searchPath ) ;	
+	
 	_debug( __FILE__, __LINE__, 5, "queryDate is %s", queryDate ) ;
 	ftw( searchPath, getDate, 5 ) ;
 }
@@ -202,7 +198,10 @@ void attributeNAME( )
 {
 	int getFile( const char *filename, const struct stat *statptr, int flag );
 	
-	_debug( __FILE__, __LINE__, 2, "queryName is %s", queryName ) ;	
+	char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configuration file
+	getSearchPath( searchPath ) ;	
+	
+	_debug( __FILE__, __LINE__, 5, "queryName is %s", queryName ) ;	
 	ftw( searchPath, getFile, 5 ) ;
 }
 
@@ -233,7 +232,6 @@ void getFSQueryDate( char *dateValue )
 {
 	char *word, *value, *toParse, *year, *month, *day ;
 	int numParses ;
-	
 	
 	numParses = 0 ;
 	word = NULL ;
@@ -385,19 +383,22 @@ int isFileQuery( char *value )
  * 		configuration file					*
  ************************************************************************/
  
-void getSearchPath( )
+void getSearchPath( char *searchPath )
 {
 	int doneSearchPath ;		// boolean-like sentinel for the extracting of searchPath
 	FILE *configFile ;		// file pointer to the configuration file
-   	char oneLine[BUFFER_SIZE] ;		// one line from the an opened file
+   	char oneLine[BUFFER_SIZE] ;	// one line from the an opened file
    	char *word ;			// a token during string tokenization
    	
    	doneSearchPath = 0 ;
 	
    	if( !strlen( searchPath ) )
    	{
-      		if( ( configFile = fopen( "config.txt", "r" ) ) != NULL )
+      		
+      		
+      		if( ( configFile = fopen( "vr.rc", "r" ) ) != NULL ||  (configFile = fopen(strcat(getenv("HOME"),"/vr.rc"),"r")) != NULL)
    		{
+   			
       			while( fgets( oneLine, BUFFER_SIZE, configFile ) != NULL )
    			{
        				word = strtok( oneLine, "=" ) ;
@@ -462,27 +463,28 @@ int getFile( const char *filename, const struct stat *statptr, int flag )
 
     				strcpy( target, filename + index + 1 ) ;
     				
-    					    											
-				if( strstr(target,queryName ) != NULL )
-				{
-					nameResults = addResultItem ( nameResults, filename );
-					_debug(__FILE__,__LINE__,2,"adding name result");
+    				if( strcmp( operatorType, "~" ) == 0 )
+    				{	    											
+					if( strstr(target,queryName ) != NULL )
+					{
+						nameResults = addResultItem ( nameResults, filename );
+						_debug(__FILE__,__LINE__,2,"adding name result");
+					}
 				}
+				else if( strcmp( operatorType, "EQ" ) == 0 )
+				{
+					if( strcmp( target, queryName ) == 0 )
+					{
+						nameResults = addResultItem ( nameResults, filename );
+						_debug(__FILE__,__LINE__,2,"adding name result");
+					}
+				}
+				
 				break ;
 	}
 	
 	return 0 ;
 }
-
-
-
-
-// NAME attribute facility
-		/*if( strchr( searchFile, ':' ) == NULL )	
-		{
-			ftwQuery = tempQueries -> oneQuery ;
-			ftw( searchPath, getFile, 5 ) ;
-		}*/
 
 	
 

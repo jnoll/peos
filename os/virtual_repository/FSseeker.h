@@ -9,3 +9,4 @@
  ************************************************************************/
 
 queryList* FSqueryTool( queryList * ) ;
+void getSearchPath( char * ) ;

@@ -1,3 +1,0 @@
-SEARCHDIR=/users/student/psaw
-MAILBOX=/var/spool/mail/psaw
-
