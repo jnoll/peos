@@ -10,11 +10,13 @@
 #include "debug.h"
 #include "resultLinkedList.h"
 #include "queryLinkedList.h"
+#include "EMAILseeker.h"
 #include <ftw.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
+#define BUFFER 1000
 
 /************************************************************************
  * Function:	MailqueryTool						*
@@ -23,19 +25,20 @@
  *		matching senders in the unix mail system.		*
 ************************************************************************/
 
-queryList* MailqueryTool( queryList *listpointer )
+queryList* EMAILqueryTool( queryList *listpointer )
 {
-	void getMailPath( char *mailPath, char *value );
 	int is_email(char *value);
-	int EMAILmsgTokenizer( char *mailPath );
+	void getMailPath(char *mailPath, char *value );
+	int EMAILidCompare ( char *mailQuery, char *mailHeader) ;
+	int EMAILmsgTokenizer( char *mailPath, char *value );
 	
 	int doneSearchBox,msgResult ;
 	struct stat statBuffer ;	
 	FILE *mailFile ;
 	char *repository ;		
-	char oneLine[100] ;
-	char searchMsgID[100] ;
-	char mailPath[100] = { '\0' } ;
+	char oneLine[BUFFER] ;
+	char searchMsgID[BUFFER] ;
+	char mailPath[BUFFER] = { '\0' } ;
 	   	
    	queryList *tempQueries ;	// a pointer to the querylist arguement
    	
@@ -50,12 +53,8 @@ queryList* MailqueryTool( queryList *listpointer )
 			getMailPath( mailPath, tempQueries -> oneQuery ->myClauses[0].value) ;
 			
 			if( mailPath != NULL )
-			{
-				//printf( "mailPath in seeker %s\n", mailPath ) ;	
-				
 				msgResult = EMAILmsgTokenizer( mailPath,tempQueries -> oneQuery ->myClauses[0].value);
-			}
-			
+	
 			if (msgResult)
 			{
 				tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results,
@@ -64,7 +63,6 @@ queryList* MailqueryTool( queryList *listpointer )
 			}
 							
 			tempQueries = ( queryList* ) tempQueries -> link ;
-			
 		}
 	}
 	return listpointer ;
@@ -83,16 +81,16 @@ queryList* MailqueryTool( queryList *listpointer )
 int is_email(char *value)
 {
 	char *repository ;		// a token that defines the repository type of the query request
-	char tempValue[100] ;
+	char tempValue[BUFFER] ;
 	
 	strcpy( tempValue, value ) ;
 	
 	repository = strtok(tempValue , ":" ) ;
 						
-		if( strcmp( "email", repository) == 0 )
-			return 1;
-		else
-			return 0;
+	if( strcmp( "email", repository) == 0 )
+		return 1;
+	else
+		return 0;
 }
 
 
@@ -109,10 +107,10 @@ void getMailPath(char *mailPath, char *value )
 {
 	int doneSearchBox ;
 	FILE *configFile ;		
-	char oneLine[100] ;		
-	char *word ;			
-	char tempValue[100] ;
-	char searchBox[100] = { '\0' } ;
+	char oneLine[BUFFER] ;		
+	char *word, *ptrPath ;			
+	char tempValue[BUFFER] ;
+	char searchBox[BUFFER] = { '\0' } ;
 	int numslash = 1;
    	
 	strcpy( tempValue, value + 6) ;
@@ -127,11 +125,14 @@ void getMailPath(char *mailPath, char *value )
 			doneSearchBox = 0 ;
    			if( ( configFile = fopen( "config.txt", "r" ) ) != NULL )
 			{	
-				while( fgets( oneLine, 100, configFile ) != NULL || !doneSearchBox )
+				
+				while( fgets( oneLine, 500, configFile ) != NULL || !doneSearchBox )
    				{
+   					
    					word = strtok( oneLine, "=" ) ;
 					if( strncmp( "MAILBOX", word, 7 ) == 0 )
     					{
+       						
        						word = strtok( NULL, "\n" ) ;
    						strcpy( searchBox, word ) ;
    						printf( "searchbox is %s \n",searchBox ) ;
@@ -140,22 +141,18 @@ void getMailPath(char *mailPath, char *value )
 	    			}
         			fclose( configFile ) ;
         			strcpy( mailPath, searchBox ) ;
-				strcat( mailPath, tempValue + 1 ) ;
         			
         			break;
   			}
-  			//else
-  				//return NULL;
   			
   		case 3:
-  			strcpy( mailPath, tempValue + 2 ) ;
+  			ptrPath = rindex( tempValue, '/' ) ;
+  			strncpy( mailPath, tempValue + 2, ptrPath - ( tempValue + 2 ) ) ;
   			break;
   			
   		default: puts("Invalid Query");
 			
 	}		
-	
-	//return mailPath;
 }
 
 /************************************************************************
@@ -167,35 +164,38 @@ returns 1 if both 	*
 
 ************************************************************************/
  
-int EMAILidCompare ( char *mailQuery, char *mailHeader
-) 
+int EMAILidCompare ( char *mailQuery, char *mailHeader) 
 {
-	char testHeader[100] = { '\0' } ;
-	char msg[100] = { '\0' } ;
-	char *ptrMsg1, *ptrMsg2 , *id ;
+	char testHeader[BUFFER] = { '\0' } ;
+	char msg[BUFFER] = { '\0' } ;
+	char *ptrMsg1, *ptrMsg2 , *id, *ptrQuery ;
 	int length ;
 	
 	strcpy ( msg, mailHeader ) ;
 		
         id = strtok( msg, ":" );
 
-	if ( strcmp ( "Message-Id", id ) == 0 )
+	if( ( strcmp( "Message-Id", id ) == 0 ) ||
+	    ( strcmp( "Message-ID", id ) == 0 ) ||
+	    ( strcmp( "Message-id", id ) == 0 ) )
 	{
 		ptrMsg1 = strchr ( mailHeader, '<' ) ;
 		ptrMsg2 = strrchr ( mailHeader , '>' ) ;
 		length = ptrMsg2 - ptrMsg1 ;
 	}
 	
-	strncpy ( testHeader, ptrMsg1 +1, length-1 ) ;
-		
-	if ( strcmp ( mailQuery, testHeader ) == 0 )
+	strncpy ( testHeader, ptrMsg1 + 1, length - 1 ) ;
+	
+	ptrQuery = rindex( mailQuery, '/' ) ;	
+	
+	if ( strcmp ( ptrQuery + 1, testHeader ) == 0 )
 	{
-		printf ( "found - %s\n", testHeader ) ;
+		_debug( __FILE__, __LINE__, 3, "found - %s\n", testHeader ) ;
 		return 1 ;
 	}
 	else
 	{
-		printf ( "NOT found - %s\n", testHeader  ) ;
+		_debug( __FILE__, __LINE__, 3, "NOT found - %s\n", testHeader ) ;
 		return 0 ;
 	}
 }
@@ -215,7 +215,7 @@ int EMAILidCompare ( char *mailQuery, char *mailHeader
  
 int EMAILmsgTokenizer( char *mailPath, char *value )
 {
-	int msgTokenizer( char *, char *,  FILE *, char *value ) ;
+	int msgTokenizer( char *, char *, FILE *, char *value ) ;
 	
 	FILE *mailFile ;
 	
@@ -227,8 +227,6 @@ int EMAILmsgTokenizer( char *mailPath, char *value )
 	
 		msgResult = msgTokenizer( fromHeader, msgHeader, mailFile,value ) ;
 
-		//printf( "total messages read: %d\n", msgCount ) ;
-
 		fclose( mailFile ) ;		
 		return msgResult ;
 	}			
@@ -239,27 +237,24 @@ int EMAILmsgTokenizer( char *mailPath, char *value )
 /************************************************************************
  * Function:	msgTokenizer						*
  *									*
- * Description:	reading of every line in the mailbox
- *						to determine each	*
+ * Description:	reading of every line in the mailbox to determine each	*
  *		message boundary					*
  *									*
- *		returns the number of message-ids obtained		*
+ *		returns 1 if message-id is found, else returns 0	*
  *									*
-
-************************************************************************/
+ ***********************************************************************/
  
-int msgTokenizer( char *fromHeader, char *msgHeader, 
-FILE *mailFile, char *value )
+int msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, char *value )
 {
 	char *token ;
-	char oneLine[100] = {'\0'} ;
-	char testLine[100] = {'\0'} ;
-	int msgStage, msgCount, lineNumber, blankLine, fromLine, msgResult ;
-	msgCount = blankLine = fromLine = msgResult = 0 ;
+	char oneLine[BUFFER] = {'\0'} ;
+	char testLine[BUFFER] = {'\0'} ;
+	int msgStage, lineNumber, blankLine, fromLine, msgResult ;
+	blankLine = fromLine = msgResult = 0 ;
 	
 	msgStage = lineNumber = 1 ; // first message is without blank
 		
-	while( fgets( oneLine, 100, mailFile ) != NULL )
+	while( ( fgets( oneLine, 500, mailFile ) != NULL ) && ( !msgResult ) )
 	{
 		strcpy( testLine, oneLine ) ;
 					
@@ -267,7 +262,6 @@ FILE *mailFile, char *value )
 		{
 			case 0 : 	if( ( strlen( testLine ) == 1 ) && ( strcmp( "\n", testLine ) == 0 ) )
 					{
-						//printf( "blank line found...\n" ) ;
 						blankLine = lineNumber ;
 						msgStage++ ;
 					}
@@ -278,36 +272,26 @@ FILE *mailFile, char *value )
 					{
 						fromLine = lineNumber ;
 						if( fromLine - blankLine == 1 )
-						{
-							//printf( "new message...\n" ) ;
 							msgStage++ ;
-							msgCount++ ;
-						}
 						else	
 							msgStage = 0 ;
 					}
 					else
 					{
 						if( ( strlen( testLine ) == 1 ) && ( strcmp( "\n", testLine ) == 0 ) )
-						{
-							//printf( "blank line found...\n" ) ;
 							blankLine = lineNumber ;
-						}
 						else
 							msgStage = 0 ;
 					}
 					break ;
 						
 			case 2 :	token = strtok( testLine , " " ) ;
-					if( strcmp( msgHeader, token ) == 0 )
+					if( ( strcmp( "Message-Id:", token ) == 0 ) ||
+					    ( strcmp( "Message-ID:", token ) == 0 ) ||
+					    ( strcmp( "Message-id:", token ) == 0 ) )
 					{
 						oneLine[ strlen( oneLine ) - 1 ] = '\0' ;
-						
-						// do what you want with the message-ID
-						//printf( "%d. %s\n", msgCount, oneLine ) ;
-						
-						msgResult = EMAILidCompare ( value, oneLine);
-						
+						msgResult = EMAILidCompare ( value, oneLine );
 						msgStage = 0 ;
 					}
 					break ;

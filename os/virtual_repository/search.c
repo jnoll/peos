@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	
 	set_debug(argv[1]);
 
-	setup_fs( ) ;	
+	setup_vr( );	
 	while( 1 )
 		selectLoop( ) ;
 	
@@ -79,7 +79,7 @@ void selectLoop( )
 	}
 	else
 	{
-		_debug( __FILE__, __LINE__, 2, "timed out...." ) ;
+		_debug( __FILE__, __LINE__, 5, "timed out...." ) ;
 		poll_vr( ) ;
 		tempQueries = myQueries ;
 		while( tempQueries != NULL )

@@ -23,15 +23,16 @@ void setup_fs( )
 	repos_ctr ++;
 }
 
-/*void setup_mail( )
+void setup_email( )
 {
 	
-	repos_list[repos_ctr].queryTool = MailqueryTool;
+	repos_list[repos_ctr].queryTool = EMAILqueryTool;
 	repos_list[repos_ctr].name = "email" ;
 	repos_ctr ++;
-}*/
+}
 
 void setup_vr( ) 
 {
 	setup_fs( );
+	setup_email( );
 }

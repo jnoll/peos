@@ -12,19 +12,7 @@
 queryList* EMAILqueryTool( queryList *listpointer );
 
 
-int is_email(char *value);
 
-
-
-void getMailPath(char *mailPath, char *value );
-
-
- 
-int EMAILidCompare ( char *mailQuery, char *mailHeader) ;
-
-
- 
-int EMAILmsgTokenizer( char *mailPath, char *value );
 
 
 
