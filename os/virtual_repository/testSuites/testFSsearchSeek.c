@@ -41,23 +41,7 @@ int main( void )
 	setup_vr( );	
 	call = callback ;
 	
-	sampleSeekFile = fopen ( "FSsearchSeek.dat", "r" ) ;
-	_assert( __FILE__, __LINE__, sampleSeekFile ) ;
-	testSeekQuery = fopen ( "FSsearchSeekQuery.dat", "w" ) ;
-	_assert( __FILE__, __LINE__, testSeekQuery ) ;
-	while ( !feof( sampleSeekFile ) ) 
-	{
-		fgets ( queryString, sizeof ( queryString ), sampleSeekFile ) ;
-		if( strlen( queryString ) )
-		{
-			setTestData( queryString, testSeekQuery ) ;
-			queryString[0] = '\0' ;
-		}
-	}
-	fclose( sampleSeekFile ) ;
-	fclose( testSeekQuery ) ;
-	
-	testInputSeek = fopen ( "FSsearchSeekQuery.dat", "r" ) ;
+	testInputSeek = fopen ( "FSsearchSeek.dat", "r" ) ;
 	_assert( __FILE__, __LINE__, testInputSeek ) ;
 	
 	while ( !feof( testInputSeek ) ) 

@@ -15,10 +15,12 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#define BUFFER_SIZE 1000
+
 query *ftwQuery ;			// will contain the Query data for ftw traversing in getFile function
-char searchFile[100] ;			// the value of the query request
-static char searchPath[100] ;		// the value of SEARCHDIR in the configuration file
-char directoryPath[100] ;		// the path of the local user
+char searchFile[BUFFER_SIZE] ;		// the value of the query request
+static char searchPath[BUFFER_SIZE] ;	// the value of SEARCHDIR in the configuration file
+char directoryPath[BUFFER_SIZE] ;	// the path of the local user
 int doneDirectoryPath = 0 ;		// boolean-like sentinel for the extracting of directoryPath
 
 /************************************************************************
@@ -35,7 +37,7 @@ queryList* FSqueryTool( queryList *listpointer )
 	void getDirectoryPath( ) ;
 	int isFileQuery( char * ) ;
 	
-   	char oneLine[100] ;		// one line from the an opened file
+   	char oneLine[BUFFER_SIZE] ;	// one line from the an opened file
    	char *word ;			// a token during string tokenization
    	struct stat statBuffer ;	// a required arguement in unix stat() function
    	queryList *tempQueries ;	// a pointer to the query list arguement
@@ -49,14 +51,14 @@ queryList* FSqueryTool( queryList *listpointer )
 	{
 		if( isFileQuery( tempQueries -> oneQuery -> myClauses[0].value ) )
 		{
-			char tempPath[100] = {'\0'} ;
+			char tempPath[BUFFER_SIZE] = {'\0'} ;
 			int numslash = 1 ;
    	
 			strcpy( searchFile, ( tempQueries -> oneQuery -> myClauses[0].value ) + 5 ) ;
-			
 			while( strncmp( searchFile + numslash, "/", 1 ) == 0 )
 				numslash++ ;
 		
+			
 			switch( numslash )
 			{
 				case 2: 	strcpy( tempPath, directoryPath ) ;
@@ -72,7 +74,7 @@ queryList* FSqueryTool( queryList *listpointer )
 						}
 						break ;
 
-		  		case 3:		if( strlen( searchFile ) > ( strlen( directoryPath ) + 3 ) )
+		  		case 3:		if( strlen( searchFile ) > 3 )
 						{
 							if( stat( searchFile + 2, &statBuffer ) == 0 )
 							{
@@ -123,7 +125,7 @@ void getSearchPath( )
 {
 	int doneSearchPath ;		// boolean-like sentinel for the extracting of searchPath
 	FILE *configFile ;		// file pointer to the configuration file
-   	char oneLine[100] ;		// one line from the an opened file
+   	char oneLine[BUFFER_SIZE] ;		// one line from the an opened file
    	char *word ;			// a token during string tokenization
    	
    	doneSearchPath = 0 ;
@@ -132,7 +134,7 @@ void getSearchPath( )
    	{
       		if( ( configFile = fopen( "config.txt", "r" ) ) != NULL )
    		{
-      			while( fgets( oneLine, 100, configFile ) != NULL )
+      			while( fgets( oneLine, BUFFER_SIZE, configFile ) != NULL )
    			{
        				word = strtok( oneLine, "=" ) ;
        				_assert( __FILE__, __LINE__, word ) ;
@@ -162,7 +164,7 @@ void getDirectoryPath( )
 {
   	if( !doneDirectoryPath )
   	{
-  		if ( getcwd( directoryPath, 100 ) == NULL )
+  		if ( getcwd( directoryPath, BUFFER_SIZE ) == NULL )
 		{
 			printf( "error getting directory path...\n" ) ;
 			exit( 0 ) ;
@@ -182,7 +184,7 @@ void getDirectoryPath( )
 int getFile( const char *filename, const struct stat *statptr, int flag )
 {
 	char* position ;		// pointer to the requested filename
-	char target[100] ;		// value of the requested filename
+	char target[BUFFER_SIZE] ;		// value of the requested filename
 	int index = 0 ;			// used in determining the postion of the filename
 
 	switch ( flag )

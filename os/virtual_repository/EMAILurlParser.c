@@ -21,6 +21,8 @@ int main(void)
 	
 	getMailPath(mailPath,"email:kljklj///vrepo.c") ;
 	
+	return 0 ;
+	
 }
 
 /************************************************************************

@@ -1,2 +1,2 @@
-SEARCHDIR=.
+SEARCHDIR=/home/cgoh
 MAILBOX=cgoh
