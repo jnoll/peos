@@ -23,7 +23,7 @@ int is_requires_true(int pid, char *act_name)
     int num_resources;
 
     resources = get_resource_list_action_requires(pid,act_name,&num_resources);
-    if ((num_resources == 0) || (strcmp(resources[0].qualifier, "(abstract)") == 0)) {
+    if ((num_resources == 0) || (strcmp(resources[0].qualifier, "abstract") == 0)) {
         return 1;
     }
     else {
