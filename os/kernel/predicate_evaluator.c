@@ -101,7 +101,6 @@ int pe_file_exists(char* filename)
 int pe_byname(char* func_name, char* argument)
 {
 	peos_tcl* interpreter;
-	char* result_str=NULL;
 	char* args=NULL;
 	int return_val=0;
 	char* file_name = (char*)malloc(sizeof(char)*255);
@@ -459,14 +458,6 @@ int pe_perform_predicate_eval(int pid, Tree t)
 					return (pe_isdirempty(pe_get_resval(pid, TREE_ID(t->left->left))) 
 					       == pe_perform_predicate_eval(pid, t->right));
 				else return pe_byname(TREE_ID(t->left->right),pe_get_resval(pid, TREE_ID(t->left->left)));
-			/*
-				if(!strcmp("spellchecked", TREE_ID(t->left->right)) ==
-				pe_perform_predicate_eval(pid, t->right))
-					return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));
-				else if(!strcmp("clean", TREE_ID(t->left->right)) == pe_perform_predicate_eval(pid, t->right))
-					return pe_isdirempty(pe_get_resval(pid, TREE_ID(t->left->left)));
-				else return pe_byname(,pe_get_resval(pid, TREE_ID(t->left->left)));
-			*/
 			}
 
 
@@ -565,11 +556,11 @@ eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_lis
 	    if(!fnd)fprintf(pe_log,"\nn-  - - - - AND treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
 	    if(!fnd)fnd=!fnd;
 #endif
+	    }
                 //eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list,num_resources, rsize, "\0")  ) ? 1 : 0;
 		
 	       // eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
 			      
-	    }
 	   // break;
 	    case OR: {
 #ifdef PE_DEBUG

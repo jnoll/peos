@@ -10,7 +10,7 @@ CFLAGS = -g -I../.. -Wall
 LIBRARY = libpeos.a
 LIBS = $(LIBRARY) ../../pml/libpml.a 
 
-CORE_LIBS = -ltcl -lstdc++ 
+CORE_LIBS = -ltcl
 LDFLAGS = -g -L../../lib
 
 # objects
