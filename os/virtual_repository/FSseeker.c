@@ -58,7 +58,6 @@ queryList* FSqueryTool( queryList *listpointer )
 			while( strncmp( searchFile + numslash, "/", 1 ) == 0 )
 				numslash++ ;
 		
-			
 			switch( numslash )
 			{
 				case 2: 	strcpy( tempPath, directoryPath ) ;

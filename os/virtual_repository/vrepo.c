@@ -54,6 +54,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[0].attribute = strdup( word ) ;
 						numParses++ ;
+						_debug( __FILE__, __LINE__, 2, "Attribute is %s", word ) ;
 					}
 					break ;
 						
@@ -62,6 +63,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[0].operator = strdup( word ) ;
 						numParses++ ;
+						_debug( __FILE__, __LINE__, 2, "Operator is %s", word ) ;
 					}						
 					break ;
 					
@@ -69,6 +71,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 					{
 						newQuery -> myClauses[0].value = strdup( word ) ;
 						numParses++ ;
+						_debug( __FILE__, __LINE__, 2, "Value is %s", word ) ;
 					}
 					break ;
 			//case 3 :	numParses++;
@@ -79,6 +82,7 @@ void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ),
 	
 	if( numParses == 3 )
 	{
+		_debug( __FILE__, __LINE__, 2, "Storing Clause" ) ;
 		newQuery -> callback = cback;
 		newQuery -> data = d ;
 		newQuery -> numFound = 0 ;

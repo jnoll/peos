@@ -3,15 +3,16 @@ CFLAGS = -g -c -I..
 
 OBJECTS = \
 FSseeker.o \
+EMAILseeker.o \
 queryLinkedList.o \
 resultLinkedList.o \
 setup_repositories.o \
 vrepo.o \
 debug.o
 
-VROBJECTS = \
-setup_repositories.o \
-dummy_seekers.o
+#VROBJECTS = \
+#setup_repositories.o \
+#dummy_seekers.o
 
 TESTS = \
 VRsetup \
@@ -42,8 +43,8 @@ test%: test%.o $(OBJECTS)
 	$(CC) -o $@ $< $(OBJECTS) 
 
 # Create a test executable and run the test.
-VR%: VR%.o $(VROBJECTS)
-	$(CC) -o $@ $< $(VROBJECTS) 
+#VR%: VR%.o $(VROBJECTS)
+#	$(CC) -o $@ $< $(VROBJECTS) 
 
 %.o: %.c
 	$(CC) $(CFLAGS) $<
@@ -65,8 +66,8 @@ test:	$(TESTS)
 	testFSsearchEmpty > FSsearchEmptyActualResult.txt
 	diff FSsearchEmptyExpectedResult.txt FSsearchEmptyActualResult.txt
 	
-	VRsetup > VRsetupActualResult.txt
-	diff VRsetupExpectedResult.txt VRsetupActualResult.txt	
+#	VRsetup > VRsetupActualResult.txt
+#	diff VRsetupExpectedResult.txt VRsetupActualResult.txt	
 	
 clean:
 	-rm *.o

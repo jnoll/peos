@@ -23,7 +23,7 @@
  *									*
  * Description:	Taking queries with mail: request and searching for 	*
  *		matching senders in the unix mail system.		*
-************************************************************************/
+ ************************************************************************/
 
 queryList* EMAILqueryTool( queryList *listpointer )
 {
@@ -44,8 +44,7 @@ queryList* EMAILqueryTool( queryList *listpointer )
    	
    	tempQueries = listpointer ;
    	
-   	
-   	while(tempQueries != NULL)
+      	while(tempQueries != NULL)
    	{
 		msgResult = 0;
 		if( is_email( tempQueries -> oneQuery ->myClauses[0].value) )
@@ -61,9 +60,8 @@ queryList* EMAILqueryTool( queryList *listpointer )
 								     tempQueries -> oneQuery -> myClauses[0].value ) ;
 				tempQueries -> oneQuery -> numFound++ ;
 			}
-							
-			tempQueries = ( queryList* ) tempQueries -> link ;
 		}
+		tempQueries = ( queryList* ) tempQueries -> link ;
 	}
 	return listpointer ;
 }
@@ -75,8 +73,7 @@ queryList* EMAILqueryTool( queryList *listpointer )
  *		is to be satisfied by the email repository. If the	*
  *		repository in value specifies "email" the function	*
  *		returns 1 else it returns 0.				*
-
-************************************************************************/
+ ************************************************************************/
 
 int is_email(char *value)
 {
@@ -100,9 +97,8 @@ int is_email(char *value)
  *									*
  * Description:	Takes in a string mailPath(NULL) and the value from the *
  *		query and returns the appropriate mailPath for the	*
- 		repository.						*
-
-************************************************************************/
+ *		repository.						*
+ ************************************************************************/
 
 void getMailPath(char *mailPath, char *value )
 {
@@ -139,7 +135,6 @@ void getMailPath(char *mailPath, char *value )
        						word = strtok( NULL, "\n" ) ;
        						_assert( __FILE__, __LINE__, word ) ;
    						strcpy( searchBox, word ) ;
-   						printf( "searchbox is %s \n",searchBox ) ;
    						doneSearchBox = 1 ;
 					}
 	    			}
@@ -163,11 +158,9 @@ void getMailPath(char *mailPath, char *value )
 /************************************************************************
  * Function:	EMAILidCompare						*
  *									*
- * Description:	Given mail message and mail query,
-returns 1 if both 	*
+ * Description:	Given mail message and mail query, returns 1 if both 	*
  *		matches. Otherwise returns 0.				*
-
-************************************************************************/
+ ************************************************************************/
  
 int EMAILidCompare ( char *mailQuery, char *mailHeader) 
 {
@@ -220,7 +213,7 @@ int EMAILidCompare ( char *mailQuery, char *mailHeader)
  *									*
  *		returns -1 if the mailPath is NOT a valid path		*
  *									*
-************************************************************************/
+ ************************************************************************/
  
 int EMAILmsgTokenizer( char *mailPath, char *value )
 {

@@ -1,2 +1,2 @@
 SEARCHDIR=/home/cgoh
-MAILBOX=/var/spool/mail/msaeed
+MAILBOX=/var/spool/mail/cgoh
