@@ -1,3 +1,8 @@
+/*
+ * PEOSListModel.java 
+ * This program implements list model. 
+ */
+
 import javax.swing.AbstractListModel;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -5,7 +10,7 @@ import java.io.Serializable;
 
 /**
 */
-public class StringListModel
+public class PEOSListModel
 	extends AbstractListModel
 	implements Serializable
 {
@@ -16,39 +21,25 @@ public class StringListModel
 	protected Vector delegate = new Vector();
 
 	// Added for javadoc...
-	/** Constructs a empty <code>StringListModel</code>.
+	/** Constructs a empty <code>PEOSListModel</code>.
 	*/
-	public StringListModel() {
+	public PEOSListModel() {
 	}
 	
 	//
 	// Items property
 	//
 
-    /** Returns an array of the <code>String</code> items in the list.
-    @see #getElementAt
-    @see #setItems
-    */
-	public String[] getItems()
-	{
-	    return (String[])toArray();
-	}
-
     /** Sets the value of the list to the specified <code>String</code> items.
     @param items the new values
     @see #getItems
     */
-	public void setItems(String[] items)
+	public void setItems(Vector items)
 	{
-        Vector newDelegate = new Vector(items.length);
-
-		for(int i = 0; i < items.length; i++)
-			newDelegate.addElement(items[i]);
-
 	    int oldSize = delegate.size();
-	    int newSize = items.length;
+	    int newSize = items.size();
 	    
-		delegate = newDelegate;
+		delegate = items;
 		
     	if (oldSize > newSize)
     	    fireIntervalRemoved(this, newSize, oldSize-1);

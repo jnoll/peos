@@ -1,9 +1,10 @@
 /*
- * This program is modified from DefaultTableModel to disable editing.
+ * PEOSTableModel.java
+ * This program is modified from DefaultTableModel.
  */
+
 import java.io.Serializable;
-import java.util.Vector;
-import java.util.Enumeration;
+import java.util.*;
 import javax.swing.event.TableModelEvent;
 
 public class PEOSTableModel 
@@ -533,20 +534,6 @@ public class PEOSTableModel
     }
 
     /**
-     * Returns true if the cell at <I>row</I> and <I>column</I>
-     * is editable.  Otherwise, the setValueAt() on the cell will not change
-     * the value of that cell.
-     *
-     * @param   row             the row whose value is to be looked up
-     * @param   column          the column whose value is to be looked up
-     * @return                  true if the cell is editable.
-     * @see #setValueAt
-     */
-    public boolean isCellEditable(int row, int column) {
-        return false;
-    }
-
-    /**
      * Returns an attribute value for the cell at <I>row</I>
      * and <I>column</I>.
      *
@@ -579,6 +566,17 @@ public class PEOSTableModel
         // generate notification
         fireTableChanged(new TableModelEvent(this, row, row, column));
     }
+
+// PEOS???
+	public void setItems(Vector items)
+	{
+        dataVector = new Vector(0);
+	}
+
+	public void clear()
+	{
+        dataVector = new Vector(0);
+	}
 
 //
 // Protected Methods

@@ -5,6 +5,7 @@
 import java.io.*;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.*;
 
 public class execSysCommand extends javax.swing.JDialog
 {
@@ -22,48 +23,51 @@ public class execSysCommand extends javax.swing.JDialog
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
 		getContentPane().setLayout(null);
-		setSize(386,384);
+		setSize(436,587);
 		setVisible(false);
+		JScrollPane1.setBorder(bevelBorder1);
 		JScrollPane1.setOpaque(true);
 		getContentPane().add(JScrollPane1);
-		JScrollPane1.getViewport().setFont(new Font("MonoSpaced", Font.PLAIN, 12));
-		JScrollPane1.setBounds(12,120,360,180);
-		JScrollPane1.getViewport().add(JTextArea1);
-		JTextArea1.setFont(new Font("MonoSpaced", Font.PLAIN, 12));
-		JTextArea1.setBounds(0,0,357,177);
+		JScrollPane1.setBounds(16,324,404,204);
 		JTextArea1.setEditable(false);
 		JTextArea1.setWrapStyleWord(true);
+		JTextArea1.setTabSize(4);
 		JTextArea1.setLineWrap(true);
-		JLabel1.setText("Output:");
+		JScrollPane1.getViewport().add(JTextArea1);
+		JTextArea1.setBounds(0,0,400,200);
+		JLabel1.setText("Input/Output:");
 		getContentPane().add(JLabel1);
-		JLabel1.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JLabel1.setBounds(12,96,120,21);
+		JLabel1.setBounds(12,300,84,24);
 		JLabel2.setText("Waiting for finishing the execution...");
 		getContentPane().add(JLabel2);
-		JLabel2.setFont(new Font("MonoSpaced", Font.ITALIC, 12));
-		JLabel2.setBounds(12,312,228,28);
+		JLabel2.setBounds(12,540,228,28);
 		JLabel2.setVisible(false);
 		JButton1.setText("Close");
 		JButton1.setActionCommand("jbutton");
 		JButton1.setMnemonic((int)'C');
+		JButton1.setEnabled(false);
 		getContentPane().add(JButton1);
-		JButton1.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JButton1.setBounds(146,312,94,24);
+		JButton1.setBounds(171,540,94,24);
 		JButton1.setVisible(false);
-		JTextField1.setEnabled(false);
-		getContentPane().add(JTextField1);
-		JTextField1.setFont(new Font("MonoSpaced", Font.PLAIN, 12));
-		JTextField1.setBounds(12,36,360,24);
-		JExecLable.setText("Executing Command:");
+		JExecLable.setText("Executing ...");
 		getContentPane().add(JExecLable);
-		JExecLable.setFont(new Font("MonoSpaced", Font.BOLD, 12));
 		JExecLable.setBounds(12,12,128,24);
 		JButtonEdit.setText("Edit");
 		JButtonEdit.setActionCommand("Edit");
 		getContentPane().add(JButtonEdit);
-		JButtonEdit.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JButtonEdit.setBounds(146,72,94,24);
-		JButton1.setEnabled(false);
+		JButtonEdit.setBounds(171,276,94,24);
+		JScrollPane2.setBorder(bevelBorder1);
+		JScrollPane2.setOpaque(true);
+		getContentPane().add(JScrollPane2);
+		JScrollPane2.setBounds(16,36,404,228);
+		JTextArea2.setEditable(false);
+		JTextArea2.setDoubleBuffered(true);
+//		JTextArea2.setWrapStyleWord(true);
+		JTextArea2.setTabSize(4);
+		JTextArea2.setLineWrap(true);
+		JScrollPane2.getViewport().add(JTextArea2);
+		JTextArea2.setBounds(0,0,400,224);
+		//$$ bevelBorder1.move(0,588);
 		//}}
 	    
 		//{{REGISTER_LISTENERS
@@ -116,10 +120,11 @@ public class execSysCommand extends javax.swing.JDialog
         return retCode;
     }
     
-    public void Exec(String procID, String cmd)
+    public void Exec(String procID, String cmd, String Type)
     {
         setTitle(procID);
-		JTextField1.setText(cmd );
+        JExecLable.setText(new String("Executing " + Type));
+		JTextArea2.setText(cmd );
 		ExecCmd(cmd);
 	}	
     private void ExecCmd(String cmd)
@@ -163,9 +168,11 @@ public class execSysCommand extends javax.swing.JDialog
 	javax.swing.JLabel JLabel1 = new javax.swing.JLabel();
 	javax.swing.JLabel JLabel2 = new javax.swing.JLabel();
 	javax.swing.JButton JButton1 = new javax.swing.JButton();
-	javax.swing.JTextField JTextField1 = new javax.swing.JTextField();
 	javax.swing.JLabel JExecLable = new javax.swing.JLabel();
 	javax.swing.JButton JButtonEdit = new javax.swing.JButton();
+	javax.swing.JScrollPane JScrollPane2 = new javax.swing.JScrollPane();
+	javax.swing.JTextArea JTextArea2 = new javax.swing.JTextArea();
+	javax.swing.border.Border bevelBorder1 = BorderFactory.createLoweredBevelBorder();
 	//}}
 
 
@@ -215,7 +222,7 @@ public class execSysCommand extends javax.swing.JDialog
 
 	void JButtonEdit_actionPerformed(java.awt.event.ActionEvent event)
 	{
-	    JTextField1.setEnabled(bEdit);
+		JTextArea2.setEditable(bEdit);
 	    if (bEdit)
 		{
 		    bEdit = false;
@@ -226,8 +233,8 @@ public class execSysCommand extends javax.swing.JDialog
 		else
 		{
 		    bEdit = true;
+		    ExecCmd(JTextArea2.getText());
 		    JButtonEdit.setText("Edit");
-		    ExecCmd(JTextField1.getText());
 		}
 	}
 }

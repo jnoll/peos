@@ -19,27 +19,26 @@ public class JAboutDialog extends javax.swing.JDialog
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
-		setTitle("JFC Application - About");
 		setModal(true);
+		setTitle("PEOS Enactment Interface - About");
 		getContentPane().setLayout(null);
-		setSize(325,177);
+		setSize(350,177);
 		setVisible(false);
 		okButton.setText("OK");
-		okButton.setActionCommand("OK");
 		okButton.setOpaque(false);
+		okButton.setActionCommand("OK");
 		okButton.setMnemonic((int)'O');
 		getContentPane().add(okButton);
-		okButton.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		okButton.setBounds(137,109,51,25);
+		okButton.setBounds(145,109,60,25);
 		aboutLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		aboutLabel.setText("PEOS Enactment Interface, version 1.0");
+		aboutLabel.setText("PEOS Enactment Interface, version 1.1");
 		getContentPane().add(aboutLabel);
-		aboutLabel.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		aboutLabel.setBounds(27,24,271,24);
+		aboutLabel.setBounds(25,24,300,24);
+		JLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 		JLabel1.setText("Written by Ming Rutar");
 		getContentPane().add(JLabel1);
-		JLabel1.setFont(new Font("MonoSpaced", Font.ITALIC, 12));
-		JLabel1.setBounds(144,60,156,24);
+		JLabel1.setFont(new Font("Dialog", Font.BOLD|Font.ITALIC, 11));
+		JLabel1.setBounds(25,60,300,24);
 		//}}
 
 		//{{REGISTER_LISTENERS

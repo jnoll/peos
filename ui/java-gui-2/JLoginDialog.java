@@ -8,7 +8,7 @@ import javax.swing.*;
 public class JLoginDialog extends javax.swing.JDialog
 {
     public boolean _bCancel;
-    
+
 	public JLoginDialog(Frame parent)
 	{
 		super(parent);
@@ -22,49 +22,38 @@ public class JLoginDialog extends javax.swing.JDialog
 		//{{INIT_CONTROLS
 		setTitle("Login to a PEOS sever");
 		getContentPane().setLayout(null);
-		getContentPane().setFont(new Font("MonoSpaced", Font.PLAIN, 12));
 		setSize(329,263);
 		setVisible(false);
 		JHostLabel.setText("Host Name:");
 		getContentPane().add(JHostLabel);
-		JHostLabel.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JHostLabel.setBounds(36,36,84,24);
+		JHostLabel.setBounds(36,36,94,24);
 		JPortLabel.setText("Port:");
 		getContentPane().add(JPortLabel);
-		JPortLabel.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JPortLabel.setBounds(36,72,84,24);
+		JPortLabel.setBounds(36,72,94,24);
 		JLoginLabel.setText("Login:");
 		getContentPane().add(JLoginLabel);
-		JLoginLabel.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JLoginLabel.setBounds(36,108,84,24);
+		JLoginLabel.setBounds(36,108,94,24);
 		JPasswordLabel.setText("Password:");
 		getContentPane().add(JPasswordLabel);
-		JPasswordLabel.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JPasswordLabel.setBounds(36,144,84,24);
+		JPasswordLabel.setBounds(36,144,94,24);
 		getContentPane().add(JHostTextField);
-		JHostTextField.setFont(new Font("MonoSpaced", Font.PLAIN, 12));
-		JHostTextField.setBounds(120,36,168,24);
+		JHostTextField.setBounds(130,36,168,24);
 		getContentPane().add(JPortTextField);
-		JPortTextField.setFont(new Font("MonoSpaced", Font.PLAIN, 12));
-		JPortTextField.setBounds(120,72,168,24);
+		JPortTextField.setBounds(130,72,168,24);
 		getContentPane().add(JLoginTextField);
-		JLoginTextField.setFont(new Font("MonoSpaced", Font.PLAIN, 12));
-		JLoginTextField.setBounds(120,108,168,24);
+		JLoginTextField.setBounds(130,108,168,24);
 		JCancelButton.setText("Cancel");
 		JCancelButton.setActionCommand("Cancel");
 		JCancelButton.setMnemonic((int)'C');
 		getContentPane().add(JCancelButton);
-		JCancelButton.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JCancelButton.setBounds(182,204,84,24);
+		JCancelButton.setBounds(177,204,90,24);
 		getContentPane().add(JPWPasswordField);
-		JPWPasswordField.setFont(new Font("MonoSpaced", Font.PLAIN, 12));
-		JPWPasswordField.setBounds(120,144,168,24);
+		JPWPasswordField.setBounds(130,144,168,24);
 		JLoginButton.setText("Login");
 		JLoginButton.setActionCommand("Login");
 		JLoginButton.setMnemonic((int)'L');
 		getContentPane().add(JLoginButton);
-		JLoginButton.setFont(new Font("MonoSpaced", Font.BOLD, 12));
-		JLoginButton.setBounds(62,204,84,24);
+		JLoginButton.setBounds(57,204,90,24);
 		//}}
 	    
     
@@ -132,7 +121,6 @@ public class JLoginDialog extends javax.swing.JDialog
 	javax.swing.JButton JLoginButton = new javax.swing.JButton();
 	//}}
 
-
 	class SymAction implements java.awt.event.ActionListener
 	{
 		public void actionPerformed(java.awt.event.ActionEvent event)
@@ -148,16 +136,20 @@ public class JLoginDialog extends javax.swing.JDialog
 	void JLoginButton_actionPerformed(java.awt.event.ActionEvent event)
 	{
 		try {
-/*		    PEOS_GUI myPEOS = (PEOS_GUI)myParent;
-	        if ( myPEOS._PEOSInterface == null)
-		    {
-		        int port = Integer.parseInt(this.JPortTextField.getText());
-        	    myPEOS._PEOSInterface = new PEOS_Interface(this.JHostTextField.getText(), port);
-        	}
-		    myPEOS._PEOSInterface.PEOS_login(this.JLoginTextField.getText(), this.JPWPasswordField.getText());*/
-		    _bCancel = false;
-			// JAboutDialog Hide the JAboutDialog
-			this.setVisible(false);
+			if ((JHostTextField.getText() == null) ||
+				(JPortTextField.getText()== null)	||
+				(JLoginTextField.getText() == null) ||
+				(JPWPasswordField.getPassword() == null))
+			{
+	    		Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "Enter values for all fields.", "Login",JOptionPane.ERROR_MESSAGE);
+			}
+			else
+			{
+				_bCancel = false;
+				// JAboutDialog Hide the JAboutDialog
+				this.setVisible(false);
+			}
 		} catch (NumberFormatException en) {
 			String msg = "Get exception: " + en;
             JOptionPane.showMessageDialog(this, msg, "Number Format",JOptionPane.ERROR_MESSAGE);
@@ -202,22 +194,21 @@ public class JLoginDialog extends javax.swing.JDialog
 
 	String getHost()
 	{
-		return this.JHostTextField.getText();
+		return JHostTextField.getText();
 	}
 
 	int getPort()
 	{
-		return Integer.parseInt(this.JPortTextField.getText());
+		return Integer.parseInt(JPortTextField.getText());
 	}
      
 	String getUsername()
 	{
-		return this.JLoginTextField.getText();
+		return JLoginTextField.getText();
 	}
 	
 	String getPassword()
 	{
-		return new String(this.JPWPasswordField.getPassword());
+		return new String(JPWPasswordField.getPassword());
 	}
-
 }
