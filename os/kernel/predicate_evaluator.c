@@ -21,27 +21,32 @@ int is_requires_true(int pid, char *act_name)
 {
     peos_resource_t *resources;
     int num_resources;
+    int i;
 
     resources = get_resource_list_action_requires(pid,act_name,&num_resources);
-    if ((num_resources == 0) || (strcmp(resources[0].qualifier, "abstract") == 0)) {
+    if (num_resources == 0) {
         return 1;
     }
     else {
         struct stat buf;
-	if(strcmp(resources[0].value,"$$") == 0) return 0;
-	if(stat(resources[0].value, &buf) == -1) {
-	    if(errno == ENOENT) { /* If stat failed because file didn't exist */
-	        return 0;
-	    }
-	    else {
-	        fprintf(stderr, "Required Resource Detection Error for %s\n",resources[0].name);
-		return 0;
+	for(i = 0; i < num_resources; i++)
+	{
+	    if(strcmp(resources[i].qualifier, "abstract") != 0) {
+	        if(strcmp(resources[i].value,"$$") == 0) return 0;
+	        if(stat(resources[i].value, &buf) == -1) {
+	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
+	                return 0;
+	            }
+	            else {
+	                fprintf(stderr, "Required Resource Detection Error for %s\n",resources[i].name);
+		        return 0;
+	            }
+	        }
 	    }
 	}
-        else {
-	    return 1;
-	}
+        return 1;
     }
+     
 }
 
 
@@ -49,26 +54,30 @@ int is_provides_true(int pid, char *act_name)
 {
     peos_resource_t *resources;
     int num_resources;
+    int i;
 
     resources = get_resource_list_action_provides(pid,act_name,&num_resources);
-    if ((num_resources == 0) || (strcmp(resources[0].qualifier, "abstract") == 0)) {
+    if (num_resources == 0) {
         return 1;
     }
     else {
         struct stat buf;
-	if(strcmp(resources[0].value,"$$") == 0) return 0;
-	if(stat(resources[0].value, &buf) == -1) {
-	    if(errno == ENOENT) { /* If stat failed because file didn't exist */
-	        return 0;
-	    }
-	    else {
-	        fprintf(stderr, "Provided Resource Detection Error for %s\n",resources[0].name);
-		return 0;
+	for(i = 0; i < num_resources; i++)
+	{
+	    if(strcmp(resources[i].qualifier, "abstract") != 0) {
+	        if((strcmp(resources[i].value,"$$") == 0) && (strcmp(resources[i].qualifier, "abstract") != 0)) return 0;
+	        if(stat(resources[i].value, &buf) == -1) {
+	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
+	                return 0;
+	            }
+	            else {
+	                fprintf(stderr, "Provided Resource Detection Error for %s\n",resources[i].name);
+		        return 0;
+	            }
+	        }
 	    }
 	}
-        else {
-	    return 1;
-	}
+        return 1;
     }
 }
 

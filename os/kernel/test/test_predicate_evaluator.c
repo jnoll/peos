@@ -9,33 +9,26 @@
 #include "test_util.h"
 
 /* Globals. */
-
+peos_resource_t *global_resources;
+int global_num_resources;
 
 /* Stubs. */
 
 peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int *num_resources)
 {
-    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "resource_file");
     
-    *num_resources = 1;
+    *num_resources = global_num_resources;
 
-    return resources;
+    return global_resources;
 }
     
 
 peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *num_resources)
 {
-    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "resource_file");
      
-    *num_resources = 1;
+    *num_resources = global_num_resources;
 
-    return resources;
+    return global_resources;
 }
 
 
@@ -43,9 +36,20 @@ START_TEST(test_is_provides_true)
 {
     FILE *fptr;
 
+    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
+
+    strcpy(resources[0].name, "resource_0");
+    strcpy(resources[0].value, "resource_file");
+    strcpy(resources[0].qualifier, "abstract");
+
+    global_resources = resources;
+    global_num_resources = 1;
+ 
     fptr = fopen("resource_file", "w");
 
     fail_unless(is_provides_true(0, "some_name") == 1, "is_provides_true failed");
+
+    if(resources) free(resources);
 
     unlink("resource_file");
 }
@@ -56,17 +60,113 @@ START_TEST(test_is_requires_true)
 {
     FILE *fptr;
 
+    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
+
+    strcpy(resources[0].name, "resource_0");
+    strcpy(resources[0].value, "resource_file");
+    strcpy(resources[0].qualifier, "abstract");
+
+    global_resources = resources;
+    global_num_resources = 1;
+
     fptr = fopen("resource_file", "w");
 
     fail_unless(is_requires_true(0, "some_name") == 1, "is_requires_true failed");
+
+    if(resources) free(resources);
 
     unlink("resource_file");
 }
 END_TEST
 	
 
+START_TEST(test_is_requires_true_1)
+{
+    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
 
+    strcpy(resources[0].name, "resource_0");
+    strcpy(resources[0].value, "$$");
+    strcpy(resources[0].qualifier, "abstract");
+
+    global_resources = resources;
+    global_num_resources = 1;
+
+    fail_unless(is_requires_true(0, "some_name") == 1, "is_requires_true failed");
+
+    if(resources) free(resources);
+
+    unlink("resource_file");
+}
+END_TEST
+	
+
+START_TEST(test_is_provides_true_1)
+{
+    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
+
+    strcpy(resources[0].name, "resource_0");
+    strcpy(resources[0].value, "$$");
+    strcpy(resources[0].qualifier, "abstract");
+
+    global_resources = resources;
+    global_num_resources = 1;
+
+    fail_unless(is_provides_true(0, "some_name") == 1, "is_provides_true failed");
+
+    if(resources) free(resources);
+
+    unlink("resource_file");
+}
+END_TEST
+	
     
+START_TEST(test_is_requires_true_2)
+{
+    peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
+
+    strcpy(resources[0].name, "resource_0");
+    strcpy(resources[0].value, "$$");
+    strcpy(resources[0].qualifier, "abstract");
+
+    strcpy(resources[0].name, "resource_0");
+    strcpy(resources[0].value, "$$");
+    strcpy(resources[0].qualifier, "$$");
+
+    global_resources = resources;
+    global_num_resources = 2;
+
+    fail_unless(is_requires_true(0, "some_name") == 0, "is_requires_true 2  failed");
+
+    if(resources) free(resources);
+
+    unlink("resource_file");
+}
+END_TEST
+
+
+START_TEST(test_is_provides_true_2)
+{
+    peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
+
+    strcpy(resources[0].name, "resource_0");
+    strcpy(resources[0].value, "$$");
+    strcpy(resources[0].qualifier, "abstract");
+
+    strcpy(resources[0].name, "resource_0");
+    strcpy(resources[0].value, "$$");
+    strcpy(resources[0].qualifier, "$$");
+
+    global_resources = resources;
+    global_num_resources = 2;
+
+    fail_unless(is_provides_true(0, "some_name") == 0, "is_provides_true 2  failed");
+
+    if(resources) free(resources);
+
+    unlink("resource_file");
+}
+END_TEST
+	
 int
 main(int argc, char *argv[])
 {
@@ -79,10 +179,16 @@ main(int argc, char *argv[])
     tc = tcase_create("is_provides_true");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_is_provides_true);
+    tcase_add_test(tc,test_is_provides_true_1);
+    tcase_add_test(tc,test_is_provides_true_2);
+    
     
     tc = tcase_create("is_requires_true");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_is_requires_true);
+    tcase_add_test(tc,test_is_requires_true_1);
+    tcase_add_test(tc,test_is_requires_true_2);
+    
     
     sr = srunner_create(s);
 
