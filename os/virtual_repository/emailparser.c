@@ -1,19 +1,13 @@
 /************************************************************************
  * Senior Design Project - PEOS Virtual Repository			*
  * Author : TASK4ONE							*
- * Filename : FSseeker.c						*
+ * Filename : emailparser.c						*
  ************************************************************************/
-
 
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
-
-
-
-
-
 
 int main(void)
 {
@@ -28,7 +22,6 @@ int main(void)
 	getMailPath(mailPath,"email:kljklj///vrepo.c") ;
 	
 }
-
 
 /************************************************************************
  * Function:	is_email						*
@@ -110,9 +103,7 @@ char* getMailPath(char *mailPath, char *value )
   			
   		default: puts("Invalid Query");
 			
-	}
-
-		
+	}		
 	
 	return mailPath;
 }
