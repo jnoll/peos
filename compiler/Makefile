@@ -35,6 +35,7 @@ all: compiler
 compiler: $(OBJS) 
 	rm -f $@ 
 	$(CC) -Aa -g -v -o $@ $(OBJS) $(LIBS) $(GDBMLIB) 
+	mv compiler ../bin
 #	lint  *.ln   > lint_list  
  
 clean: 
