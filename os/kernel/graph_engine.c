@@ -11,12 +11,6 @@
 # define FALSE 0
 
 
-# define ACTION 257
-# define BRANCH 259
-# define RENDEZVOUS 288
-# define SELECTION 270
-# define JOIN 287
-# define PROCESS 266
 
 void handle_selection(Node n);
 void mark_successors(Node n, vm_act_state state);
@@ -71,22 +65,29 @@ void sanitize(Graph g)
 Graph makegraph(char *file)
 {
 	filename = file;
-	
 	lineno = 1;
 	yyin = fopen(filename, "r");
-	yyparse();
-	if(yyin)
+	
+	if(yyparse())
 	{
-	fclose (yyin);
-	if(program != NULL)
-	{
-	initialize_graph(program);
-
+	return NULL;
 	}
-	return program;
-	}
-	else
+        else
+	{	
+	  if(yyin)
+	  {
+            fclose (yyin);
+	    if(program != NULL)
+	      {
+	        initialize_graph(program);
+	         return program;
+	      }
+	     else
+		  return NULL;
+	   }
+	   else
 		return NULL;
+	}
 }
 
 	
@@ -155,6 +156,8 @@ Node find_node(Graph g, char *node_name)
 void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources)
 {
 	int i;
+	int rsize = 256;
+	
    if(t)
        {
         if((IS_OP_TREE(t)) && (TREE_OP(t) == DOT))
@@ -169,6 +172,11 @@ void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources
               resource_list[*num_resources].name = TREE_ID(t->left);
 	      resource_list[*num_resources].value = NULL;
 	      *num_resources = *num_resources + 1;
+	      if(*num_resources > rsize)
+	      {
+		      rsize = rsize*2;
+		      realloc(resource_list,rsize);
+	      }
 
 	      }
               return;
@@ -187,6 +195,11 @@ void make_resource_list(Tree t,peos_resource_t *resource_list,int *num_resources
          	 resource_list[*num_resources].name = TREE_ID(t);
 		 resource_list[*num_resources].value = NULL;
 	         *num_resources = *num_resources + 1;
+		 if(*num_resources > rsize)
+		 {
+		    rsize = rsize*2;
+		    realloc(resource_list,rsize);
+		 }
 
 		 }
                  return;

@@ -67,7 +67,7 @@ peos_context_t *peos_get_context(int pid)
 
 int yyparse()
 {
-	return 1;
+	return 0;
 }
 
 START_TEST(test_find_node)
@@ -125,9 +125,8 @@ END_TEST
 START_TEST(test_makegraph_error)
 {
 	char *file = "file";
-	FILE *in = fopen(file, "w");
 	Graph g;
-
+        yyin = fopen(file,"r"); 
 	program = NULL;
         g = makegraph(file);
 	fail_unless(g == NULL, "graph made from file with parse errors.");

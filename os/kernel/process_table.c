@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.8 2003/09/04 08:24:32 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.9 2003/09/05 23:12:47 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -55,14 +55,13 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
 {
     Graph g;
     Node n;
-    int i = 0;
     int num_act = 0;
     int num_nodes = 0;
-    int j = 0;
     int asize = INST_ARRAY_INCR;
+    int osize = INST_ARRAY_INCR;
     peos_action_t *act_array = (peos_action_t *) calloc(asize, sizeof(peos_action_t));
 
-    peos_other_node_t *node_array = (peos_other_node_t *) calloc(asize, sizeof(peos_other_node_t));
+    peos_other_node_t *node_array = (peos_other_node_t *) calloc(osize, sizeof(peos_other_node_t));
     
        if (file [0]!= '\0')
        {
@@ -73,20 +72,28 @@ int load_actions(char *file, peos_action_t **actions, int *num_actions,peos_othe
 	        {
 	  	    if (n -> type == ACTION)
 		    {
-			strcpy(act_array[i].name, n -> name);
-			act_array[i].state = STATE(n);
-			act_array[i].script = n -> script;
+			strcpy(act_array[num_act].name, n -> name);
+			act_array[num_act].state = STATE(n);
+			act_array[num_act].script = n -> script;
 			num_act ++;
-			i++;
+			if(num_act > asize)
+			{
+			  asize = asize*2;
+			  realloc(act_array,asize);
+			}
 		    }
 		    else
 		    {
 		       if((n->type == SELECTION) || (n->type == BRANCH))
 		       {
-                          strcpy(node_array[j].name, n -> name);
-		          node_array[j].state = STATE(n);
+                          strcpy(node_array[num_nodes].name, n -> name);
+		          node_array[num_nodes].state = STATE(n);
 			  num_nodes ++;
-			  j++;
+			  if(num_nodes > osize)
+			  {
+               		    osize = osize*2;
+			    realloc(node_array,osize);
+			  }
 		       }
 		
 		    }

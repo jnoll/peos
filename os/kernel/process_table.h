@@ -18,9 +18,11 @@ typedef struct peos_context_tag {
     int pid;
     int num_actions;
     int num_other_nodes;
+    int num_resources;
     char model[PATH_MAX]; 
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
+    peos_resource_t *resources;
 } peos_context_t;
 
 
