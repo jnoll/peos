@@ -4,7 +4,6 @@
 
 extern void error_msg(char *s);
 extern int peos_abort_action(peos_action_t action);
-extern int *peos_list_instances();
 extern char **peos_list_models(void);
 
 extern int peos_run(char *process, int line);

@@ -7,7 +7,7 @@
 /* Globals. */
 int execute_status = VM_DONE;	/* What execute() should return. */
 peos_context_t process_table[1];
-int num_proc;
+int num_proc = 0;
 peos_context_t *current_process = &(process_table[1]); 
 
 /* Stubs. */

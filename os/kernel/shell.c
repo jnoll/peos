@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: shell.c$
-* Version:      $Id: shell.c,v 1.2 2003/06/29 22:39:14 jnoll Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.3 2003/06/30 17:41:42 jnoll Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
-* Modified:     Sun Jun 29 15:22:49 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Sun Jun 29 23:51:31 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -20,6 +20,7 @@
 #include <readline/history.h>
 #include "vm.h"
 #include "events.h"
+#include "process_table.h"
 
 /* The following mechanism lifted from the GNU readline documentation. */
 typedef struct {
@@ -40,6 +41,11 @@ list_models()
 
 list_instances()
 {
+    int i;
+    char **result = peos_list_instances();
+    for (i = 0; i <= PEOS_MAX_PID; i++) {
+	printf("%d %s\n", i, result[i]);
+    }
 }
 
 list_actions()
