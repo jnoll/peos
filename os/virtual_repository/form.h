@@ -24,12 +24,12 @@ typedef struct
 {
 	int removeTag ;
 	int numClauses ;
+	int *data;
+	int numFound ;
 	struct clause myClauses[10] ;
 	char conjecture[9] ;
 	resultList *results ;
 	void ( *callback )( int, resultList *, int *data ) ;
-	int *data;
-	int numFound ;
 } 	query ;
 
 typedef struct
@@ -42,6 +42,6 @@ struct repos
 {
 	queryList* ( *queryTool )( queryList * );
  	char *name ;
-} repos_list[20]	;
+}	repos_list[20]	;
 
 #endif

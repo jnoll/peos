@@ -9,7 +9,6 @@
 
 queryList *myQueries ;
 int numQueries ;
-//repos repos_list[20] ;
 int repos_ctr ;
 
 #endif

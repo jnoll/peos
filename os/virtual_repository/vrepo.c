@@ -17,94 +17,92 @@
 
 void query_wait( char *queryString, void ( *cback )( int, resultList *, int * ), int *d )
 {
-	bool isValidClauses( struct clause *, int ) ;
+	bool isValidAttribute( char * ) ; 
+	bool isValidOperator( char * ) ; 
+	bool isValidValue( char * ) ;
 	
 	char *word, *toParse ;
-	int i, j ;
+	int numParses, numClauses ;
 	query *newQuery ;
 	
 	newQuery = ( query * ) malloc ( sizeof ( query ) ) ;
-		
-	toParse = strtok( queryString, "\n" ) ;	// from keyboard input, otherwise remove this line...
+	numParses = numClauses = 0 ;
+	word = toParse = NULL ;
 	
-	i = j = 0 ;				// i to keep track of data content, j to keep track of num clauses
-	word = strtok( toParse, " " ) ;
+	toParse = strtok( queryString, "\n" ) ;	// from keyboard input, otherwise remove this line...
+
+	if( toParse != NULL )
+		word = strtok( toParse, " " ) ;
+
 	while( word != NULL )
 	{
-		switch( i )
+		switch( numParses )
 		{
-			case 0 :	newQuery -> myClauses[j].attribute = 
-						(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
-					strcpy( newQuery -> myClauses[j].attribute, word ) ;
+			case 0 :	if (isValidAttribute( word) )
+					{
+						newQuery -> myClauses[0].attribute = strdup( word ) ;
+						numParses++ ;
+					}
+					break ;
+						
+					
+			case 1 :	if( isValidOperator(  word) )
+					{
+						newQuery -> myClauses[0].operator = strdup( word ) ;
+						numParses++ ;
+					}						
 					break ;
 					
-			case 1 :	newQuery -> myClauses[j].operator = 
-						(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
-					strcpy( newQuery -> myClauses[j].operator, word ) ;
-					break ;
-					
-			case 2 :	newQuery -> myClauses[j].value = 
-						(char *) malloc ( strlen( word ) * sizeof( char ) ) ;
-					strcpy( newQuery -> myClauses[j].value, word ) ;
+			case 2 : 	if( isValidValue(  word) )
+					{
+						newQuery -> myClauses[0].value = strdup( word ) ;
+						numParses++ ;
+					}
 					break ;
 		}
 		
-		if( i == 2 )	
-		{
-			i = 0 ;
-			j++ ;
-		}
-		else
-			i++ ;
 		word = strtok( NULL, " " ) ;
 	}
 	
-	if( isValidClauses( newQuery -> myClauses, j ) )
+	if( numParses == 3 )
 	{
-		newQuery -> numClauses = j ;
 		newQuery -> callback = cback;
 		newQuery -> data = d ;
+		newQuery -> numFound = 0 ;
+		newQuery -> removeTag = 0 ;
+		newQuery -> numClauses = numClauses ;
+		newQuery -> results = NULL ;
 		myQueries = addQueryItem( myQueries, newQuery ) ;
+		numParses = 0 ;
 	}
 	else
 	{
-		for( i = 0 ; i < j ; i++ )
+		if( numParses != 0 )
 		{
-			free( newQuery -> myClauses[i].attribute ) ;
-			free( newQuery -> myClauses[i].operator ) ;
-			free( newQuery -> myClauses[i].value ) ;
+			int k ;
+		
+			for( k = 0 ; k < numParses ; k++ )
+			{
+				switch( k )
+				{
+					case 0 :	
+							free( newQuery -> myClauses[0].attribute ) ;
+							break ;
+					
+					case 1 :	free( newQuery -> myClauses[0].operator ) ;
+							break ;
+					
+					case 2 :	free( newQuery -> myClauses[0].value ) ;
+							break ;
+				}
+			}
+		
 			free( newQuery ) ;
+			printf( "invalid query...\n" ) ;
 		}
-		printf( "\ninvalid query...\n" ) ;
-	}			
-}
-
-bool isValidClauses( struct clause *theClauses, int numClauses )
-{
-	bool isValidOperator( char *op ) ; 
-	
-	int i ;
-	bool valid ;	
-	
-	valid = true ;
-	for( i = 0 ; i < numClauses ; i++ )
-	{
-		valid = isValidOperator( theClauses[i].operator ) ;
+		else
+			printf( "empty query...\n" ) ;			
 	}
-	return valid ;
-}
-
-bool isValidOperator( char *op )
-{
-	int i ;
-	char operators[1][2] = { "EQ" } ;
-	
-	for( i = 0 ; i < sizeof(operators) / sizeof(operators[0]) ; i++ )
-	{
-		if( strncmp( operators[i], op, 2 ) == 0 )
-			return true ;
-	}
-	return false ;
 }
 
 void poll_vr( ) 
@@ -114,7 +112,7 @@ void poll_vr( )
 	queryList *tempQueries ;
 	
 	int tag = 0 ;
-	
+
 	if( myQueries != NULL )
 	{
 		myQueries = FSqueryTool( myQueries ) ;
@@ -129,8 +127,6 @@ void poll_vr( )
 				tempQueries -> oneQuery -> callback( tempQueries -> oneQuery -> numFound,
 							             tempQueries -> oneQuery -> results,
 							             tempQueries -> oneQuery -> data ) ;
-			//	printf( "%d record(s) found!\n", tempQueries -> oneQuery -> numFound ) ;
-			//	printResultList( tempQueries -> oneQuery -> results ) ;
 				tempQueries -> oneQuery -> removeTag = 1 ;
 			}
 			tempQueries = ( queryList* ) tempQueries -> link ;
@@ -141,3 +137,37 @@ void poll_vr( )
 	}
 }
 
+
+
+bool isValidAttribute( char *attr )
+{
+	int i ;
+	char attributes[1][2] = { "ID" } ;
+	
+	for( i = 0 ; i < sizeof( attributes ) / sizeof( attributes[0] ) ; i++ )
+	{
+		if( attr == NULL || ( strcmp( attributes[i], attr ) != 0 ) )
+			return false ;
+	}
+	return true ;
+}
+
+bool isValidOperator( char *op )
+{
+	int i ;
+	char operators[1][2] = { "EQ" } ;
+	
+	for( i = 0 ; i < sizeof(operators) / sizeof(operators[0] ) ; i++ )
+	{
+		if( op == NULL || ( strcmp( operators[i], op ) != 0 ) )
+			return false ;
+	}
+	return true ;
+}
+
+bool isValidValue( char *val )
+{
+	if ( val == NULL )
+		return false ;
+	return true ;
+}

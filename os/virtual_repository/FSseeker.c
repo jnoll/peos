@@ -13,37 +13,34 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
-
-static char *path = NULL ;
+ 
 query *ftwQuery ;
-char *ftwValue;
+char searchFile[100];
+static char path[100] ;
 
 queryList* FSqueryTool( queryList *listpointer )
 {
 	int getFile( const char *filename, const struct stat *statptr, int flag ) ;
-	
 	int done ;
 	FILE *configFile ;
-   	char line[100], *word, *rep_type, *temp_value ;
+   	char line[100], *word, *repository ;
    	struct stat statBuffer ;
-   	queryList *theQueries ;
+   	queryList *tempQueries ;
    	
    	done = 0 ;
-
-   	if( path == NULL )
+   	if( !strlen(path) )
    	{
-   		if( (configFile = fopen( "config.txt", "r" )) != NULL )
+      		if( (configFile = fopen( "config.txt", "r" )) != NULL )
    		{
-   			while( fgets( line, 100, configFile ) != NULL)
+      			while( fgets( line, 100, configFile ) != NULL)
    			{
-    				word = strtok( line, "=" ) ;
-    				while( !done )
+       				word = strtok( line, "=" ) ;
+       				while( !done )
     				{
-    					if( strncmp( "SEARCHDIR", word, 9 ) == 0 )
+       					if( strncmp( "SEARCHDIR", word, 9 ) == 0 )
     					{
-    						word = strtok( NULL, "\n" ) ;
-    						path = (char *) malloc ( strlen( word ) * sizeof( char ) ) ;
-						strcpy( path, word ) ;
+       						word = strtok( NULL, "\n" ) ;
+   						strcpy( path, word ) ;
 						done = 1 ;
 					}
 				}
@@ -52,53 +49,36 @@ queryList* FSqueryTool( queryList *listpointer )
   		}
   	}
 
-	theQueries = listpointer ;
-		
-	
-	
-	while( theQueries != NULL )
+	tempQueries = listpointer ;
+
+	while( tempQueries != NULL )
 	{
+		strcpy( searchFile, tempQueries -> oneQuery -> myClauses[0].value ) ;
+			
+		repository = strtok( searchFile , ":" ) ;
 		
-		temp_value =  (char *) malloc ( strlen( theQueries -> oneQuery -> myClauses[0].value ) * sizeof( char ) ) ;
-		strcpy(temp_value, theQueries -> oneQuery -> myClauses[0].value ) ;
-		rep_type = strtok( temp_value , ":" ) ;
-		
-		
-		if( strncmp( "file", rep_type, 4 ) == 0 )
+		if( strncmp( "file", repository, 4 ) == 0 )
 		{
-								
-			strcpy(temp_value, strpbrk(theQueries -> oneQuery -> myClauses[0].value,"/"));
-						
-			if( strchr(temp_value+2, '/' ) != NULL )
+			strcpy( searchFile, strpbrk( tempQueries -> oneQuery -> myClauses[0].value, "/" ) ) ;
+			if( strchr( searchFile + 2, '/' ) != NULL )
 			{
-				if( stat( temp_value+1, &statBuffer ) == 0 )
+				if( stat( searchFile + 1, &statBuffer ) == 0 )
 				{
-					theQueries -> oneQuery -> results = 
-						addResultItem ( theQueries -> oneQuery -> results, 
-								theQueries -> oneQuery -> myClauses[0].value ) ;
-			    		theQueries -> oneQuery -> numFound++ ;
+					tempQueries -> oneQuery -> results = addResultItem ( tempQueries -> oneQuery -> results, 
+											     tempQueries -> oneQuery -> myClauses[0].value ) ;
+			    		tempQueries -> oneQuery -> numFound++ ;
+			    		
 				}
 			}
 			else
 			{
-				ftwQuery = theQueries -> oneQuery ;
-				ftwValue = (char *) malloc ( strlen( temp_value+1 ) * sizeof( char ) );
-				strcpy(ftwValue, temp_value+2 ) ;
-				
-				
-			
+				ftwQuery = tempQueries -> oneQuery ;
+				strcpy(searchFile, searchFile + 2 ) ;
 				ftw( path, getFile, 5 ) ;
-				
-				free(ftwValue);
-				
 			}		
-					
-		}
-		
-		theQueries = ( queryList* ) theQueries -> link ;
-		free(temp_value);
-				
-	} 
+		}		
+		tempQueries = ( queryList* ) tempQueries -> link ;
+	}
 	return listpointer ;	
 }
      
@@ -107,27 +87,25 @@ int getFile( const char *filename, const struct stat *statptr, int flag )
 	char* position ;
 	char target[100] ;
 	int index = 0 ;
-	
+
 	switch ( flag )
 	{
 		case FTW_F : 	position = strrchr(filename, '/' ) ; 
 				index = filename - position; 
-
+				
 				if( index < 0 )
 					index *= -1;
 
     				strcpy( target, filename + index + 1 ) ;
-	    									
-								
-				if( strncmp( ftwValue, target,
-					     strlen( ftwValue) ) == 0 )
+	    											
+				if( strncmp( searchFile, target, strlen( searchFile) ) == 0 )
 				{
-					
 					ftwQuery -> results = addResultItem ( ftwQuery -> results, filename );
 				    	ftwQuery -> numFound++ ;
 				}
 				break ;
 	}
+	
 	return 0 ;
 }
 

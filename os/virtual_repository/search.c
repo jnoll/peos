@@ -23,6 +23,8 @@ int main( void )
 	void selectLoop( )  ;
 	
 	repos_ctr = 0;
+	myQueries = NULL;
+	
 	setup_fs( );	
 	while( 1 )
 		selectLoop( ) ;
@@ -40,6 +42,7 @@ void selectLoop( )
 	char queryString[1000] ;
 	int *d ;
 	queryList *tempQueries ;
+	FILE *testFile ;
 
 	tv.tv_sec = 5 ;
 	tv.tv_usec = 500000 ;
@@ -53,8 +56,26 @@ void selectLoop( )
 	if ( FD_ISSET( STDIN, &readfds ) )
 	{
 		printf( "\nreceiving...\n\n" ) ;		
-		fgets( queryString, sizeof( queryString ), stdin ) ;
-		query_wait( queryString, call, d ) ;
+		fgets( queryString, sizeof( queryString), stdin ) ;
+		if ( strcmp ( "test\n", queryString ) == 0 )
+		{
+			testFile = fopen ( "test.dat", "r" ) ;
+			while ( !feof( testFile ) ) 
+			{
+				fgets ( queryString, sizeof ( queryString ), testFile ) ;
+				if( strlen( queryString ) )
+				{
+					query_wait( queryString, call, d ) ;
+					queryString[0] = '\0' ;	
+				}					
+			}
+			fclose( testFile ) ;
+		}
+		else
+		{
+			query_wait( queryString, call, d ) ;
+			queryString[0] = '\0' ;	
+		}
 		fflush( stdin ) ;
 	}
 	else
@@ -67,14 +88,15 @@ void selectLoop( )
 			printf( "queries seeks %s\n", tempQueries -> oneQuery -> myClauses[0].value ) ;
 			tempQueries = ( queryList * ) tempQueries -> link ;
 		}
+
 	}
 	FD_CLR( STDIN, &readfds ) ;
 }
 
-void callback( int size, resultList *listPointer, int *data )
+void callback( int size, resultList *listpointer, int *data )
 {	
 	printf( "calling back...\n" ) ;
-		printf( "%d record(s) found!\n", size ) ;
-		printResultList( listPointer ) ;
+	printf( "%d record(s) found!\n", size ) ;
+	printResultList( listpointer ) ;
 }
 

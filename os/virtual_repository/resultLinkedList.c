@@ -37,6 +37,7 @@ void clearResultList( resultList *listpointer )
 resultList* removeResultItem( resultList *listpointer )
 {
 	resultList *temp ;
+		
 	temp = ( resultList* ) listpointer -> link ;
 	free( listpointer ) ;
 	return temp ;
@@ -50,11 +51,11 @@ resultList* addResultItem( resultList *listpointer, const char *data )
 	{
 		while( listpointer -> link != NULL )
 			listpointer = ( resultList* ) listpointer -> link ;
-
+		
 		listpointer -> link = ( struct resultList  * ) malloc ( sizeof ( resultList ) ) ;
 		listpointer = ( resultList* ) listpointer -> link ;
 		listpointer -> link = NULL ;
-		listpointer -> oneResult = ( char * ) malloc ( strlen( data ) * sizeof( char ) ) ;
+		listpointer -> oneResult = ( char * ) malloc ( ( strlen( data ) + 1 ) * sizeof( char ) ) ;
 		strcpy( listpointer -> oneResult, data ) ;
 		return lp ;
     	}
@@ -62,7 +63,7 @@ resultList* addResultItem( resultList *listpointer, const char *data )
 	{
 		listpointer = ( resultList* ) malloc ( sizeof ( resultList ) ) ;
 		listpointer -> link = NULL ;
-		listpointer -> oneResult = ( char* ) malloc ( strlen( data ) * sizeof( char ) ) ;
+		listpointer -> oneResult = ( char * ) malloc ( ( strlen( data ) + 1 )  * sizeof( char ) ) ;
 		strcpy( listpointer -> oneResult, data ) ;
 		return listpointer ;
     	}

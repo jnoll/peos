@@ -43,9 +43,6 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
 		listpointer = ( queryList * ) listpointer -> link;
 		listpointer -> link = NULL;
 		listpointer -> oneQuery = ( query* ) data ;
-		listpointer -> oneQuery -> numFound = 0 ;
-		listpointer -> oneQuery -> removeTag = 0 ;
-		listpointer -> oneQuery -> results = NULL ;
 		return lp ;
     	}
 	else
@@ -53,9 +50,6 @@ queryList *addQueryItem( queryList *listpointer, const query *data )
 		listpointer = ( queryList * ) malloc ( sizeof ( queryList ) ) ;
 		listpointer -> link = NULL;
 		listpointer -> oneQuery = ( query* ) data ;
-		listpointer -> oneQuery -> numFound = 0 ;
-		listpointer -> oneQuery -> removeTag = 0 ;
-		listpointer -> oneQuery -> results = NULL ;
 		return listpointer ;
     	}
 }
@@ -64,17 +58,19 @@ queryList *filterQueryList( queryList *listpointer )
 {
 	queryList *previous, *current, *temp ;
 	previous = current = listpointer ;
-	
+
 	while( current != NULL )
 	{
 		if( current -> oneQuery -> removeTag )
 			if( current == listpointer )
 			{
+				
 				listpointer = ( queryList * ) listpointer -> link ;
 				free( current -> oneQuery -> myClauses[0].attribute ) ;
 				free( current -> oneQuery -> myClauses[0].operator ) ;
 				free( current -> oneQuery -> myClauses[0].value ) ;
 				clearResultList( current -> oneQuery -> results ) ;
+				free( current -> oneQuery ) ;
 				free( current ) ;
 				previous = current = listpointer ;
 			}
@@ -85,6 +81,7 @@ queryList *filterQueryList( queryList *listpointer )
 				free( current -> oneQuery -> myClauses[0].operator ) ;
 				free( current -> oneQuery -> myClauses[0].value ) ;
 				clearResultList( current -> oneQuery -> results ) ;
+				free( current -> oneQuery ) ;
 				free( current ) ;
 				current = ( queryList * ) previous -> link ;
 			}
