@@ -129,8 +129,8 @@ void poll_vr( )
 				tempQueries -> oneQuery -> callback( tempQueries -> oneQuery -> numFound,
 							             tempQueries -> oneQuery -> results,
 							             tempQueries -> oneQuery -> data ) ;
-				printf( "%d record(s) found!\n", tempQueries -> oneQuery -> numFound ) ;
-				printResultList( tempQueries -> oneQuery -> results ) ;
+			//	printf( "%d record(s) found!\n", tempQueries -> oneQuery -> numFound ) ;
+			//	printResultList( tempQueries -> oneQuery -> results ) ;
 				tempQueries -> oneQuery -> removeTag = 1 ;
 			}
 			tempQueries = ( queryList* ) tempQueries -> link ;

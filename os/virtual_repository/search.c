@@ -74,5 +74,7 @@ void selectLoop( )
 void callback( int size, resultList *listPointer, int *data )
 {	
 	printf( "calling back...\n" ) ;
+		printf( "%d record(s) found!\n", size ) ;
+		printResultList( listPointer ) ;
 }
 

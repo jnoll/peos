@@ -35,6 +35,15 @@ Valid Operators:
 
 	1) EQ (Equal).
 	
+Valid VALUE:
+
+	1) File system url (file://filename)
+	NOTE: If path is just a filename then the search for the specified file.
+	 
+	2) File system url (file://path)
+	NOTE: Here the path is the complete path for the file. The system will 
+	try to check the existence of the file in the specified path.    
+	
 	
 
 

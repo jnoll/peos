@@ -66,21 +66,13 @@ queryList* FSqueryTool( queryList *listpointer )
 		
 		if( strncmp( "file", rep_type, 4 ) == 0 )
 		{
-			puts(theQueries -> oneQuery -> myClauses[0].value);
-			puts("repository type is file");
-			
-					
+								
 			strcpy(temp_value, strpbrk(theQueries -> oneQuery -> myClauses[0].value,"/"));
-				
-			
-			
+						
 			if( strchr(temp_value+2, '/' ) != NULL )
 			{
-				
-				
 				if( stat( temp_value+1, &statBuffer ) == 0 )
 				{
-					puts("opening by stat");
 					theQueries -> oneQuery -> results = 
 						addResultItem ( theQueries -> oneQuery -> results, 
 								theQueries -> oneQuery -> myClauses[0].value ) ;
@@ -100,14 +92,12 @@ queryList* FSqueryTool( queryList *listpointer )
 				free(ftwValue);
 				
 			}		
-			theQueries = ( queryList* ) theQueries -> link ;
-			
-			
-			
-			
+					
 		}
-		free(temp_value);
 		
+		theQueries = ( queryList* ) theQueries -> link ;
+		free(temp_value);
+				
 	} 
 	return listpointer ;	
 }
@@ -128,13 +118,11 @@ int getFile( const char *filename, const struct stat *statptr, int flag )
 
     				strcpy( target, filename + index + 1 ) ;
 	    									
-				//if( strncmp( ftwQuery -> myClauses[0].value, target,
-				//	     strlen( ftwQuery -> myClauses[0].value ) ) == 0 )
-				
+								
 				if( strncmp( ftwValue, target,
 					     strlen( ftwValue) ) == 0 )
 				{
-					puts("opening by ftw");
+					
 					ftwQuery -> results = addResultItem ( ftwQuery -> results, filename );
 				    	ftwQuery -> numFound++ ;
 				}
