@@ -629,12 +629,16 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		temp_line = current_line;
 		strcpy(output_str,"call set ready ");
 		strcpy(action_str,get_actions(temp_str,element_ptr,FALSE));
-		strcat(output_str,action_str);
+		//strcat(output_str,action_str);
 		strcpy(temp_str,action_str);
 		temp_ptr = strtok(temp_str," ");
 		while (temp_ptr != NULL) {
 			strcpy(temp_str2,temp_ptr);
-			add_to_ready(temp_str2);
+			if (check_for_ready(temp_str2) == -1) {
+				add_to_ready(temp_str2);
+				strcat(output_str,temp_str2);
+				strcat(output_str," ");
+			}
 			temp_ptr = strtok(NULL," ");
 		}
 		if (get_next_action(element_ptr) == NULL)
