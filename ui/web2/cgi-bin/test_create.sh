@@ -3,7 +3,7 @@
 
 create.cgi > output
 
-for i in *.txt
+for i in *.pml
 do
   if !(grep $i output)
   then
