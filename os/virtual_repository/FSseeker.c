@@ -107,6 +107,7 @@ int isFileQuery( char *value )
 	
 	strcpy( searchFile, value ) ;
 	repository = strtok( searchFile , ":" ) ;
+	_assert( __FILE__, __LINE__, repository ) ;	
 					
 	if( ( strcmp( "file", repository ) == 0 ) )
 		return 1 ;

@@ -7,7 +7,7 @@
 #include "form.h"
 #include "variables.h"
 #include "FSseeker.h"
-#include "Mailseeker.h"
+#include "EMAILseeker.h"
 
 /************************************************************************
  * Function:	setup_fs						*

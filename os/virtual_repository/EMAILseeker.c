@@ -86,6 +86,7 @@ int is_email(char *value)
 	strcpy( tempValue, value ) ;
 	
 	repository = strtok(tempValue , ":" ) ;
+	_assert( __FILE__, __LINE__, repository ) ;
 						
 	if( strcmp( "email", repository) == 0 )
 		return 1;
@@ -130,10 +131,13 @@ void getMailPath(char *mailPath, char *value )
    				{
    					
    					word = strtok( oneLine, "=" ) ;
+					_assert( __FILE__, __LINE__, word ) ;
+					
 					if( strncmp( "MAILBOX", word, 7 ) == 0 )
     					{
        						
        						word = strtok( NULL, "\n" ) ;
+       						_assert( __FILE__, __LINE__, word ) ;
    						strcpy( searchBox, word ) ;
    						printf( "searchbox is %s \n",searchBox ) ;
    						doneSearchBox = 1 ;
@@ -147,6 +151,7 @@ void getMailPath(char *mailPath, char *value )
   			
   		case 3:
   			ptrPath = rindex( tempValue, '/' ) ;
+  			_assert( __FILE__, __LINE__, ptrPath ) ;
   			strncpy( mailPath, tempValue + 2, ptrPath - ( tempValue + 2 ) ) ;
   			break;
   			
@@ -174,19 +179,23 @@ int EMAILidCompare ( char *mailQuery, char *mailHeader)
 	strcpy ( msg, mailHeader ) ;
 		
         id = strtok( msg, ":" );
+        _assert( __FILE__, __LINE__, id ) ;        
 
 	if( ( strcmp( "Message-Id", id ) == 0 ) ||
 	    ( strcmp( "Message-ID", id ) == 0 ) ||
 	    ( strcmp( "Message-id", id ) == 0 ) )
 	{
 		ptrMsg1 = strchr ( mailHeader, '<' ) ;
+		_assert( __FILE__, __LINE__, ptrMsg1 ) ; 
 		ptrMsg2 = strrchr ( mailHeader , '>' ) ;
+		_assert( __FILE__, __LINE__, ptrMsg2 ) ; 
 		length = ptrMsg2 - ptrMsg1 ;
 	}
 	
 	strncpy ( testHeader, ptrMsg1 + 1, length - 1 ) ;
-	
-	ptrQuery = rindex( mailQuery, '/' ) ;	
+
+	ptrQuery = rindex( mailQuery, '/' ) ;
+	_assert( __FILE__, __LINE__, ptrQuery ) ; 
 	
 	if ( strcmp ( ptrQuery + 1, testHeader ) == 0 )
 	{
@@ -226,7 +235,7 @@ int EMAILmsgTokenizer( char *mailPath, char *value )
 		char *msgHeader = "Message-Id:" ;
 	
 		msgResult = msgTokenizer( fromHeader, msgHeader, mailFile,value ) ;
-
+			
 		fclose( mailFile ) ;		
 		return msgResult ;
 	}			
@@ -268,6 +277,7 @@ int msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, char *value
 					break ;
 						
 			case 1 :	token = strtok( testLine , " " ) ;
+					_assert( __FILE__, __LINE__, token ) ;
 					if( strcmp( fromHeader, token ) == 0 )
 					{
 						fromLine = lineNumber ;
@@ -286,6 +296,8 @@ int msgTokenizer( char *fromHeader, char *msgHeader, FILE *mailFile, char *value
 					break ;
 						
 			case 2 :	token = strtok( testLine , " " ) ;
+					_assert( __FILE__, __LINE__, token ) ;
+					
 					if( ( strcmp( "Message-Id:", token ) == 0 ) ||
 					    ( strcmp( "Message-ID:", token ) == 0 ) ||
 					    ( strcmp( "Message-id:", token ) == 0 ) )
