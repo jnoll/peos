@@ -3,7 +3,7 @@
  * $ID$
  */
 //#include <kernel/vm.h>
-#include </home/wchu/summer/peos/src/os/kernel/action.h>
+#include <kernel/action.h>
 void
 print_header(char *title)
 {
