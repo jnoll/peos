@@ -139,8 +139,8 @@ START_TEST(test_handle_resource_event_2)
 
     fail_unless(handle_resource_event(0,"act_0",PROVIDES_TRUE) == VM_CONTINUE, "Return Value");
     
-    fail_unless(STATE(act_0) == ACT_DONE, "act_0 not done");
-    fail_unless(STATE(act_1) == ACT_BLOCKED, "act_1 not blocked");
+    fail_unless(STATE(act_0) == ACT_READY, "act_0  done");
+    fail_unless(STATE(act_1) == ACT_NONE, "act_1 not none");
     
 }
 END_TEST
@@ -1175,7 +1175,8 @@ START_TEST(test_set_act_state_graph_abort)
 	sink = make_node("p",ACT_NONE,PROCESS,3);
 	act_0 = make_node("act_0",ACT_RUN,ACTION,1);
 	act_1 = make_node("act_1",ACT_RUN,ACTION,2);
-
+	PID(act_0) = 0;
+	PID(act_1) = 0;
 
 	g -> source = source;
 	g -> sink = sink;
@@ -1185,6 +1186,7 @@ START_TEST(test_set_act_state_graph_abort)
 	act_1 -> next = sink;
 	sink -> next = NULL;
 
+	global_graph = g;
 
     fail_unless(set_act_state_graph(g,"act_0",ACT_ABORT) == VM_CONTINUE, "return value");
     fail_unless(STATE(act_0) == ACT_ABORT, "act 0 state not changed");

@@ -578,7 +578,7 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
 	        return VM_CONTINUE;
 	    }
 	    else {
-	        if((STATE(n) != ACT_READY) && (STATE(n) != ACT_RUN) && (STATE(n) != ACT_PENDING) && (STATE(n) != ACT_SUSPEND)) {
+	        if((STATE(n) != ACT_READY) && (STATE(n) != ACT_RUN) && (STATE(n) != ACT_PENDING) && (STATE(n) != ACT_SUSPEND) && (STATE(n) != ACT_DONE)) {
 		    set_node_state(n, ACT_AVAILABLE);
 		}
 	        return VM_CONTINUE;
@@ -586,9 +586,9 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
         }
         else {
             if(event == PROVIDES_TRUE) {
-	        if((STATE(n) == ACT_READY) || (STATE(n) == ACT_RUN) || (STATE(n) == ACT_PENDING)) {
-	            handle_action_change(pid, n->name, ACT_RUN);
-		    return handle_action_change(pid, n->name, ACT_DONE);
+	        if((STATE(n) == ACT_PENDING)) {
+	            set_node_state(n, ACT_DONE);
+		    return VM_CONTINUE;
 		}
 		else 
 	            return VM_CONTINUE;
@@ -767,7 +767,10 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
              case(ACT_ABORT) : {
 			           Node n = find_node(g,action);
 				   if (n != NULL) {
-				       set_node_state(n, ACT_ABORT);	   
+				       if(STATE(n) == ACT_RUN) {   	   
+				           set_node_state(n, ACT_ABORT);
+			                   handle_resource_change(PID(n));
+				       }		   
 			               return VM_CONTINUE;
 				   }
 				   else
