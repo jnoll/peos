@@ -20,6 +20,9 @@
 
 void handle_selection(Node n);
 void mark_successors(Node n, vm_act_state state);
+void add_iteration_lists(Graph g);
+
+
 
 int  annotate_graph(Graph g, peos_context_t *context)
 {
@@ -82,7 +85,53 @@ Graph makegraph(char *file)
 	else
 		return NULL;
 }
+
 	
+void add_iteration_lists(Graph g)
+{
+	Node node,child,parent,child1,child2;
+	int i,j,k,l;
+
+	MARKED(g -> source) = TRUE;
+
+	for(node = g -> source->next; node != NULL; node = node -> next)
+	{
+          MARKED(node) = TRUE;
+	  
+	  for(i = 0; i < ListSize(node -> predecessors); i++)
+	   {
+	     parent = (Node) ListIndex(node -> predecessors,i);
+	     if (MARKED(parent) == FALSE)
+	     {
+	        for(j=0; j < ListSize(parent -> successors); j++) 
+	        {
+		   child = (Node) ListIndex(parent->successors,j);
+		   if(strcmp(child->name,node->name) != 0)
+		   {
+                     ListPut(ITER_END_NODES(node),child);
+		   }
+		}
+	     }
+	   }
+
+	  for(k = 0; k < ListSize(node -> successors); k++)
+	  {
+            child1 = (Node) ListIndex(node -> successors,k);
+	    if(MARKED(child1) == TRUE)
+	    {
+	      for(l = 0; l < ListSize(node -> successors); l++)
+	      {
+	        child2 = (Node) ListIndex(node -> successors,l);
+		if (MARKED(child2) == FALSE)
+		{
+		  ListPut(ITER_START_NODES(child2),child1);
+		}
+	      }
+	    }
+	  }
+	}
+}
+				
 
 Node find_node(Graph g, char *node_name)
 {
@@ -100,6 +149,49 @@ Node find_node(Graph g, char *node_name)
         return NULL;
 }	
 
+void mark_iter_nodes(Node n)
+{
+	Node iter_start_node,iter_end_node;
+	int i;
+
+	if(STATE(n) == ACT_READY)
+	{
+          for(i = 0; i <  ListSize(ITER_END_NODES(n)); i++)
+            {
+            iter_end_node = (Node) ListIndex(ITER_END_NODES(n),i);
+	    if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION))
+	      {
+	        mark_successors(iter_end_node,ACT_READY);
+	      }
+	   }
+	}
+        else 
+	{
+	if(STATE(n) == ACT_RUN)
+	{
+	  for(i = 0; i < ListSize(ITER_END_NODES(n)); i++)
+	   {
+	    iter_end_node = (Node) ListIndex(ITER_END_NODES(n),i);
+	    if((iter_end_node->type == SELECTION) || (iter_end_node->type == BRANCH) ||(iter_end_node->type == ACTION))
+	       {
+	         mark_successors(iter_end_node,ACT_NONE);
+	       }
+	   }
+           
+	  for(i = 0; i < ListSize(ITER_START_NODES(n)); i++)
+	   {
+	    iter_start_node = (Node) ListIndex(ITER_START_NODES(n),i);
+	    if((iter_start_node->type == SELECTION) || (iter_start_node->type == BRANCH) ||(iter_start_node->type == ACTION))
+	      {
+	       mark_successors(iter_start_node,ACT_NONE);
+	      }
+	   }
+	}
+       }
+}
+
+
+
 void mark_successors(Node n, vm_act_state state)
 {
 	int i;
@@ -107,6 +199,7 @@ void mark_successors(Node n, vm_act_state state)
 	if (n -> type == ACTION)
 	{
 		STATE(n) = state;
+		mark_iter_nodes(n);
 		return;
 	}
 	else
@@ -115,6 +208,7 @@ void mark_successors(Node n, vm_act_state state)
 			if((n->type == BRANCH) || (n->type == SELECTION))
 			{
 				STATE(n) = state;
+				mark_iter_nodes(n);
 				STATE(n->matching) = state;
 			}
 			for(i = 0; i < ListSize(n -> successors); i++)
@@ -207,6 +301,7 @@ int action_run(Graph g, char *act_name)
 	if(n != NULL)
 	{
 		STATE(n) = ACT_RUN;
+		mark_iter_nodes(n);
 		 handle_selection(n);
                  sanitize(g);
 								 
@@ -235,6 +330,7 @@ void handle_selection(Node n)
       if ((parent -> type) == SELECTION)
         {
 	 STATE(parent) = ACT_RUN;
+	 mark_iter_nodes(parent);
          STATE(parent -> matching) = ACT_RUN;	 
          for(j=0; j < ListSize(parent -> successors); j++)                                {
            child = (Node) ListIndex(parent -> successors,j);
@@ -248,6 +344,7 @@ void handle_selection(Node n)
 	  if (parent -> type == BRANCH)
 	  {
 		  STATE(parent) = ACT_RUN;
+		  mark_iter_nodes(parent);
 		  STATE(parent->matching) = ACT_RUN;
 	  }
 										     handle_selection(parent);
@@ -303,8 +400,12 @@ void initialize_graph(Graph g)
 	    n -> data = (void *) malloc (sizeof (struct data));
             MARKED(n) = FALSE;
             STATE(n) = ACT_NONE;
+	    ITER_START_NODES(n) = ListCreate();
+	    ITER_END_NODES(n) = ListCreate();
 	  
 	}
+	add_iteration_lists(g);
+	sanitize(g);
 	mark_successors(g->source->next,ACT_READY);
 }
 
