@@ -1,48 +1,62 @@
 #these lines are for modification.
-images= ${HOME}/peos/src/ui/java-gui/images/
-path= ${HOME}/peos/src/ui/java-gui/bin/peos  
-help= ${HOME}/peos/src/ui/java-gui/help/
-pml= ${HOME}/peos/src/ui/java-gui/testfiles/ 
-XERCES_PATH= ${HOME}/peos/src/ui/java-gui/include/
-JUNIT_PATH= ${HOME}/peos/src/ui/java-gui/include/
-JAVAGUI_JAR= ${HOME}/peos/src/ui/java-gui/include/java-gui.jar
 PEOS_HOME=${HOME}/.peos
+INSTALL_PREFIX=${PEOS_HOME}
+# Path to peos binary.  Only change this if peos is not in users' PATH or
+# you want to use a specific instance of the binary.
+path=peos  
+images=${INSTALL_PREFIX}/images/
+help=${INSTALL_PREFIX}/help/
+pml=${INSTALL_PREFIX}/models/ 
+runpeos=${HOME}/bin/runpeos
+JAVAGUI_JAR=${INSTALL_PREFIX}/java-gui.jar
+
+# these are obsolete.
+XERCES_PATH= ${PWD}/include/
+JUNIT_PATH= ${PWD}/include/
+
 
 #these lines are used by the makefile. Do not modify.
 XERCES_INCLUDE=${XERCES_PATH}/xercesImpl.jar:${XERCES_PATH}/xmlParserAPIs.jar
 JUNIT_INCLUDE=${JUNIT_PATH}/junit.jar
-java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JUNIT_INCLUDE}:${JAVAGUI_JAR}:.
-run_java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JAVAGUI_JAR}:.
+JFLAGS=-classpath ${CLASSPATH}:include/java-gui.jar:.
 
-all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class \
+
+all: test jar script
+
+jar: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class \
 	DisabledPreferencesFactory.class Help.class ActionMap.class LinkedList.class LinkNode.class \
 	SetupPath.class MyFileFilter.class ResourceMap.class SpecLoader.class \
 	ActionViewer.class ActionList.class
 	jar cf java-gui.jar *.class
 	mv java-gui.jar ./include
-disp:
-	java ${java} displayPO
 
-jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.class testSFASJU.class \
+disp:
+	java ${JFLAGS} displayPO
+
+# Run the java gui from working directory.
+run:
+	java -classpath include:${CLASSPATH} -Dpeos.images=./images -Dpeos.path=../../os/kernel/peos -Dpeos.help=./help -Dpeos.pml=./testfiles  PeosApp
+
+test: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.class testSFASJU.class \
 	testPOJU.class testCRJU.class testSpec.class
 
 	rm -f proc_table.dat
 	rm -f proc_table.dat.xml
-	java ${java} -Dpeos.path=${path} testPOJU
+	java ${JFLAGS} -Dpeos.path=${path} testPOJU
 	rm -f proc_table.dat
 	rm -f proc_table.dat.xml
-	java ${java} -Dpeos.path=${path} testLoadJU
-	java ${java} -Dpeos.path=${path} testSFASJU
-	java ${java} -Dpeos.path=${path} testACJU
-	java ${java} -Dpeos.path=${path} testCRJU
-	java ${java} -Dpeos.path=${path} testActionMapJU
-	java ${java} -Dpeos.path=${path} testResourceMapJU
-	java ${java} -Dpeos.path=${path} testSpec
+	java ${JFLAGS} -Dpeos.path=${path} testLoadJU
+	java ${JFLAGS} -Dpeos.path=${path} testSFASJU
+	java ${JFLAGS} -Dpeos.path=${path} testACJU
+	java ${JFLAGS} -Dpeos.path=${path} testCRJU
+	java ${JFLAGS} -Dpeos.path=${path} testActionMapJU
+	java ${JFLAGS} -Dpeos.path=${path} testResourceMapJU
+	java ${JFLAGS} -Dpeos.path=${path} testSpec
 	rm -f proc_table.dat
 	rm -f proc_table.dat.xml
 
 setup: SetupPath.class
-	java ${java} SetupPath
+	java ${JFLAGS} SetupPath
 	xprop -root -remove _MOTIF_DEFAULT_BINDINGS
 
 dist:
@@ -74,6 +88,25 @@ clean:
 	rm -f proc_table*
 	rm -rf include/java-gui.jar
 
+# Note: doesn't uninstall models.
+uninstall: 
+	[ -d ${images} ] && rm -r ${images} 
+	[ -d ${help} ] && rm -r ${help} 
+	[ -f ${INSTALL_PREFIX}/runpeos ] && rm ${INSTALL_PREFIX}/runpeos
+	[ -f ${INSTALL_PREFIX}/java-gui.jar ] && rm ${INSTALL_PREFIX}/java-gui.jar
+
+
+install: script
+	[ -d ${pml} ] || mkdir ${pml} 
+	cp ./testfiles/*.pml ../../models/*.pml ${pml}
+	cp ./runpeos ${runpeos}
+	cp ./include/java-gui.jar ${INSTALL_PREFIX}
+	[ -d $(images) ] || mkdir $(images)
+	cp ./images/*.gif images/*.jpg ${images}
+	[ -d ${help} ] || mkdir ${help} 
+	cp ./help/*.* ${help}
+
+
 script:
 	echo "runApp=0" >runpeos
 	echo "test -w ." >>runpeos
@@ -82,10 +115,10 @@ script:
 	echo "	echo Working directory must have write-permission.">>runpeos
 	echo "	runApp=1;" >>runpeos
 	echo "fi" >>runpeos
-	echo "test -x ${path}" >>runpeos
-	echo 'if test $$? -eq 1' >>runpeos
+	echo "which ${path} > /dev/null" >>runpeos
+	echo "if test $$? -eq 1" >>runpeos
 	echo "then" >>runpeos
-	echo "	echo PEOS does not have execute permissions or does not exist." >>runpeos
+	echo "	echo 'peos' binary does not have execute permissions or does not exist." >>runpeos
 	echo "	runApp=1" >>runpeos
 	echo "fi" >>runpeos
 	echo "test -r ${pml}">>runpeos
@@ -97,9 +130,9 @@ script:
 	echo "then" >>runpeos
 	echo "cd ${PEOS_HOME}" >>runpeos 
 	echo "	xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >>runpeos
-	echo "java ${run_java} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml}  PeosApp" >>runpeos
+	echo "java -classpath $${CLASSPATH}:${JAVAGUI_JAR} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml}  PeosApp" >>runpeos
 	echo "fi" >>runpeos
-	chmod 700 runpeos
+	chmod +x runpeos
 
 %.class : %.java
-	  javac ${java} $<
+	  javac ${JFLAGS} $<

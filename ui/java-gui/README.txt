@@ -1,4 +1,4 @@
-<<Java GUI For PEOS>> README.txt
+<<Java GUI For PEOS>>
 
 This file is intended to help a new user through the setup of the Java-GUI
 Peos application. All intended requirements for the program are listed below,
@@ -18,15 +18,12 @@ email address listed below.
 
 First and foremost, you need to set the following lines in the Makefile.
 
---Lines required at compile time--
-XERCES_PATH
- This is the path to where the Xerces class files are located.
-JUNIT_PATH
- This is the path to where the Junit class files are located. 
 
---Lines required to create runpeos script (make script)--
+--Lines required to create runpeos script and install the product--
 path
- This is the path to the peos binary. Please include the binary in this path
+ This is the path to the peos binary.  If the peos binary is in your
+ (users') PATH, just set this to 'peos'.  Otherwise, provide the full
+ path to the binary.  Example:
  ex: /home/username/peos/bin/peos
 images 
  This is the path for all state and menu icons in the program.
@@ -38,40 +35,49 @@ JAVAGUI_JAR
  This is the path to the compiled java gui jar file created by running "make". 
  After running "make", edit this line for make script to run properly.
 
-The defaults assume you are going to load, compile, and run the program from
-the CVS module directory. If this is the case, the lines do not need to be
-modified. For a machiner-wide install though, these paths will need to be set.
-The following line will need to be run to create a run-script:
+The defaults assume you are going to load, compile, and run the
+program from the the PEOS_HOME directory (~/.peos by default). If this
+is the case, the lines do not need to be modified.  For a site-wide
+install though, these paths will need to be modified to reflect your
+configuration..
 
-% make script
+To create the 'runpeos' script and install the binary and support
+files, type:
+% make install
 
-After you have run the script, assuming the appropriate pathnames have been
+Before you can run the java GUI, you must put xercesImpl.jar and
+xmlParserAPIs.jar in your CLASSPATH environment variable.
+
+After you have done this, assuming the appropriate pathnames have been
 entered, you can run the Java GUI for PEOS.
 
-% ./runpeos
+% runpeos
 
 -[ Verify ] ----------------------------------------------------------
-Make sure that all path names are set properly and that copies of the .pml
-files included in the CVS module are stored in your pml directory.
 
-Path names that are relevent to unit tests:
- XERCES_PATH, path, JUNIT_PATH
- These _must_ be set for the unit tests to compile and run. 
+To run the unit tests, you must have junit.jar in your CLASSPATH (in
+addition to xercesImpl.jar and xmlParserAPIs.jar)
 
 Unit tests must be compiled and run from the base directory for the module.
 
-Running Unit Test:
-% make -s jtest 
+To execute the unit tests, type:
+
+% make test 
 
 
 -[ Running ] ---------------------------------------------------------
-After following the installation instructions above, a script will be created
-and all you have to do is type: 
+To run the java GUI from the source directory, type:
+
+% make run
+
+To run the java GUI from anywhere, follow the installation
+instructions above; a script called 'runpeos' will be created and all
+you have to do is type:
 
 % runpeos
 
 1) Let's get started!
-   A: After typing runPeos.sh, the UI for PEOS will appear onscreen.
+   A: After typing 'runpeos', the UI for PEOS will appear onscreen.
       Load a file by selecting File->Load . A window will pop up 
       asking you to choose a file. Choose the .pml file of choice 
       and it should pop up on the screen.
