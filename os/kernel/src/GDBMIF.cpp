@@ -76,7 +76,8 @@ bool GDBMIF::GetProcessName( const string& modelName,
     return true;
 }
 
-bool GDBMIF::InitProcessState( const string& procName,
+bool GDBMIF::InitProcessState( const string& modelName,
+                               const string& procName,
 			       const string& parentName,
 			       int startPC,
 		               string& errorMsg )
@@ -95,7 +96,10 @@ bool GDBMIF::InitProcessState( const string& procName,
     errorMsg.erase();
 
     /* open model db - This code added on 4/16/00 by DA */
-    /* Need path statement */
+    path  = "model";
+    path += DIRECTORY_SEPARATOR;
+    path += modelName;
+    path += ".gdbm";
     dbfm = gdbm_open( (char*) path.c_str(), 0, GDBM_READER, 0777, 0);
     if ( dbfm == NULL )
     {
@@ -228,7 +232,19 @@ vector<string> GDBMIF::QueryActions( const string& userName, int state )
             continue;
         }
 
-        /* strip .state extension */
+        /* Open process state file */
+        path = userName;
+        path += DIRECTORY_SEPARATOR;
+        path += ent->d_name;
+        dbfs = gdbm_open( (char*) path.c_str(), 0, GDBM_READER, 0777, 0 );
+	if ( dbfs == NULL )
+	{
+            cerr << "\nGDBM::QueryActions: open state db error.\n";
+            cerr << "Could not open " << path << endl;
+            break;
+        }
+
+        /* Determine process name (remove .state extension) */
         proc = ent->d_name;
         int pos =  proc.find_last_of( "." );
         if ( pos != string::npos )
@@ -236,49 +252,22 @@ vector<string> GDBMIF::QueryActions( const string& userName, int state )
 	    proc.erase( pos );
 	}
 
-        path = userName;
-        path += DIRECTORY_SEPARATOR;
-        path += ent->d_name;
-
-        dbfs = gdbm_open( (char*) path.c_str(), 0, GDBM_READER, 0777, 0 );
-        cout << (char*) path.c_str() << endl;
-        
-	if ( dbfs == NULL )
-	{
-            cerr << "GDBM::QueryActions: open state db error.\n" << endl;
-            break;
-        }
-
-        /* strip .state extension */
-        proc = ent->d_name;
-        pos =  proc.find_last_of( "." );
-        if ( pos != string::npos )
-	{
-	    proc.erase( pos );
-	}
-
+        /* Open model */
         path = "model";
         path += DIRECTORY_SEPARATOR;
-        path += ent->d_name;
-        pos =  path.find_last_of( "." );
-        if ( pos != string::npos )
-	{
-	    path.erase( pos );
-	}
-
+        path += proc;
+        /* Remove the .000 extension */
 	pos =  path.find_last_of( "." );
         if ( pos != string::npos )
 	{
 	    path.erase( pos );
 	}
-
         path += ".gdbm";
-
         dbfm = gdbm_open( (char*) path.c_str(), 0, GDBM_READER, 0777, 0 );
-
         if ( dbfm == NULL )
 	{
             cerr << "GDBM::QueryActions: open model db error.\n" << endl;
+            cerr << "Could not open " << path << endl;
             break;
         }
 
@@ -334,7 +323,6 @@ vector<string> GDBMIF::QueryActions( const string& userName, int state )
     };
 
     closedir(dir);
-
     return reply;
 }
 
@@ -433,7 +421,7 @@ vector<string> GDBMIF::ListModels( string& error )
         }
 
         ext[0] = 0;
-        sprintf( msg, "100-%s\n", ent->d_name );
+        sprintf( msg, "%s", ent->d_name );
         ret.push_back( msg );
         ent = readdir( dir );
     };

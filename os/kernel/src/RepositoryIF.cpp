@@ -26,7 +26,8 @@ bool RepositoryIF::GetProcessName( const string& modelName,
     return false;
 }
 
-bool RepositoryIF::InitProcessState( const string& procName,
+bool RepositoryIF::InitProcessState( const string& modelName,
+                                     const string& procName,
 			             const string& parentName,
 			             int startPC,
 		                     string& errorMsg )

@@ -2,15 +2,28 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <gdbm.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#define __USE_XOPEN
+#include <unistd.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <string.h>
+#include <dirent.h>
+#include <pwd.h>
+#include <iostream.h>
+#include <fstream.h>
+#include <vector>
+
 #include "UIMessageHandler.h"
 #include "DataAccessInterface.h"
 #include "RepositoryIF.h"
 #include "ProcessStatusHandler.h"
 #include "GDBMIF.h"
 #include "IPCHandler.h"
-
-#include <sys/stat.h>
-#include <string>
 
 //#define strcasecmp strcmp
 
@@ -65,14 +78,20 @@ bool UIMessageHandler::CreateProcess( const string& modelName, const string& par
     string error;
     string process;
 
-    if ( !dataAccessIF->GetProcessName( modelName, userName, process, error ) )
-    {
+    /* Make sure that user is allowed to create the process */
+    if (!CheckPrivilege(modelName, "create")) {
+        SendMessage("500 - Insufficient privileges to create this process\n");
+        return false;
+    }
+
+    /* Retrieve the next available process name */
+    if (!dataAccessIF->GetProcessName( modelName, userName, process, error)) {
 	SendMessage( error );
 	return false;
     }
 
-    if ( processNames.find( process ) != processNames.end() )
-    {
+    /* Make sure that the process does not already exist */
+    if (processNames.find( process ) != processNames.end()) {
         error = "500 Process with name '";
         error += process;
         error += "' already exists\n";
@@ -80,12 +99,15 @@ bool UIMessageHandler::CreateProcess( const string& modelName, const string& par
         return false;
     }
 
-    if ( !dataAccessIF->InitProcessState( process, parentName, startPC, error ) )
-    {
+    /* Initialize process */
+    if ( !dataAccessIF->InitProcessState( modelName, 
+                                          process, 
+                                          parentName,
+                                          startPC, 
+                                          error)) {
 	SendMessage( error );
 	return false;
     }
-
     processNames.insert( process );
     SendMessage( "100 Create successful.\n" );
     return true;
@@ -94,18 +116,18 @@ bool UIMessageHandler::CreateProcess( const string& modelName, const string& par
 bool UIMessageHandler::SendHelp()
 {
     string msg = "100 \n\r";
-    msg += "100-login <username> <password>\n\r";
-    msg += "100-list\n\r";
-    msg += "100-create <modelname>\n\r";
-    msg += "100-available\n\r";
-    msg += "100-run <proc> <act>\n\r";
-    msg += "100-running\n\r";
-    msg += "100-done <proc> <act>\n\r";
-    msg += "100-suspend <proc> <act>\n\r";
-    msg += "100-abort <proc>\n\r";
-    msg += "100-logout\n\r";
-    msg += "100-exit\n\r";
-    msg += "100-help\n";
+    msg += "100 - login <username> <password>\n\r";
+    msg += "100 - list\n\r";
+    msg += "100 - create <modelname>\n\r";
+    msg += "100 - available\n\r";
+    msg += "100 - run <proc> <act>\n\r";
+    msg += "100 - running\n\r";
+    msg += "100 - done <proc> <act>\n\r";
+    msg += "100 - suspend <proc> <act>\n\r";
+    msg += "100 - abort <proc>\n\r";
+    msg += "100 - logout\n\r";
+    msg += "100 - exit\n\r";
+    msg += "100 - help\n";
 
     return SendMessage( msg );
 }
@@ -114,12 +136,10 @@ bool UIMessageHandler::SendMessage( const string& message )
 {
     string msg( message );
     msg += "\r";
-    if ( send( socket, msg.c_str(), strlen( msg.c_str() ), 0 ) != -1 )
-    {
+    if ( send( socket, msg.c_str(), strlen( msg.c_str() ), 0 ) != -1 ) {
         return true;
     }
-    else
-    {
+    else {
         return false;
     }
 }
@@ -129,23 +149,25 @@ bool UIMessageHandler::ListModels()
     string err;
     vector<string> models = dataAccessIF->ListModels( err );
 
-    if ( models.empty() == true && err.empty() == false )
-    {
+    /* Check if there is an error */
+    if ( models.empty() == true && err.empty() == false ) {
         SendMessage( err );
         return false;
     }
 
+    /* Create model list and send to the user.
+       Include only models that the user is authorized to see. */
     string reply( "100 \n\r" );
-
-    for ( int i = 0; i < models.size(); i++ )
-    {
-        reply += models[i];
-        if ( i < ( models.size() - 1 ) )
-        {
-            reply += "\r";
-        } 
+    for ( int i = 0; i < models.size(); i++ ) {
+        if (CheckPrivilege(models[i], "list")) {
+            reply += "100 - ";
+            reply += models[i];
+            reply += "\n";
+            if (i < (models.size() - 1)) {
+                reply += "\r";
+            }
+        }
     }
-
     SendMessage( reply );
     return true;
 }
@@ -587,62 +609,89 @@ bool UIMessageHandler::DoneAction( const string& procName, const string& actionN
 
 bool UIMessageHandler::Authenticate( const string& uname, const string& passwd )
 {
-#if defined(_WIN32)
-    bool ret = true;
-#else
-    bool ret = false;
+#if !defined(_WIN32)
+    FILE *password_file;
     struct passwd * uinfo;
+    string roleuser;
+    string rolename;
     char pwd[13];
     char salt[2];
 
-    uinfo = getpwnam( uname.c_str() );
+    /* Open the password file */
+    if((password_file = fopen("./peos_passwd", "r")) == NULL) {
+        perror("Could not find password file\n");
+        SendMessage("500 User could not be verified");
+        return false;
+    }
 
-    cout << uname.c_str() << endl;
-
-    if ( uinfo != NULL )
-    {
-        DIR* dir = opendir( uname.c_str() );
-
-        if ( dir == NULL )
-        {
-            int success = mkdir( uname.c_str(), 0777 );
-
-            if ( success < 0 && errno != EEXIST )
-	    {
-                perror( "mkdir call failed" );
-                SendMessage( "500 Making user's working directory error\n" );
-	    }
-	    else
-	    {
-                ret = true; 
-	    }
+    /* Find the user in the password file */
+    do {
+        if((uinfo = fgetpwent(password_file)) == NULL) {
+            SendMessage("500 User could not be verified\n");
+            fclose(password_file);
+            return false;
         }
-        else
-        {
-            closedir( dir );
-            ret = true;
+    } while(strncmp(uinfo->pw_name, uname.c_str(), sizeof(uname.c_str())) != 0);
+    fclose(password_file);    
+
+    /* Check the user's password */
+    salt[0] = uinfo->pw_passwd[0];
+    salt[1] = uinfo->pw_passwd[1];
+    if ( strncmp( uinfo->pw_passwd, crypt( passwd.c_str(), salt ), 13) != 0 ) {
+        SendMessage("500 User authorization failed\n");
+        return false;
+    }
+
+    /* Get the user's roles */
+    roles.clear();
+    rolename = "guest";  /* Everyone gets this role */
+    roles.push_back(rolename);
+    ifstream role_stream("./peos_roles");
+    while (role_stream) {
+        role_stream >> roleuser >> rolename;
+        if (roleuser == uname) {
+            roles.push_back(rolename);
         }
     }
-/* 
-    if ( ret == true )
-    {
-        salt[0] = uinfo->pw_passwd[0];
-        salt[1] = uinfo->pw_passwd[1];
-        
-        cout << uinfo->pw_passwd << endl;
-        cout << crypt(passwd.c_str(), salt);
-	if ( strncmp( uinfo->pw_passwd, crypt( passwd.c_str(), salt ), 13
-) != 0 )
-	{
-            ret = false;
-	}
+    role_stream.close();
+
+    /* Check for user's directory - if it's not there then make it */
+    DIR* dir = opendir( uname.c_str() );
+    if ( dir == NULL ) {
+        int success = mkdir( uname.c_str(), 0777 );
+        if ( success < 0 && errno != EEXIST ) {
+            perror( "mkdir call failed" );
+            SendMessage( "500 Making user's working directory error\n" );
+	      return false;
+        }
     }
-*/
-    if ( ret == true )
-    {
-        userName = uname;
-	password = passwd;
+    else {
+        closedir( dir );
     }
+
+    userName = uname;
+    password = passwd;
+
 #endif
-    return ret;
+    return true;
+}
+
+bool UIMessageHandler::CheckPrivilege(const string& model, const string& action)
+{
+    string role;
+    string privilege;
+    string acl_file = "./model/" + model + ".acl";
+
+    ifstream acl_stream(acl_file.c_str());
+    while (acl_stream) {
+        acl_stream >> role >> privilege;
+        for(list<string>::const_iterator i = roles.begin(); i != roles.end(); i++) {
+            if ( role == *i && privilege == action) {
+                acl_stream.close();
+                return true;
+            }
+        }
+    }
+    acl_stream.close();
+    return false;
 }
