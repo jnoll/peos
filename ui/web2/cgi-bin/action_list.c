@@ -27,6 +27,7 @@ void list_actions()
     peos_action_t *alist;
     int i=0;
     int j;
+    int num_rows=0;
 		                                                                                                     
     char ** result = peos_list_instances();
 
@@ -52,6 +53,7 @@ void list_actions()
 	    if(alist) {
 	        for(j = 0; j < num_actions; j++) {
 		    print_row(i,alist[j].name,act_state_name(alist[j].state));
+		    num_rows++;
 		}
 	    }
 	    i++;
@@ -61,7 +63,7 @@ void list_actions()
     printf("<td style=\"vertical-align: top;\"></td>");
     printf("<td style=\"vertical-align: top;\"></td>");
     printf("<td style=\"vertical-align: top;\"></td>");
-    printf("<td style=\"vertical-align: top;\"><input type=\"Submit\" name=\"Submit\" value=\"Submit Dones\" onclick=\"return validate()\"><br></td></tr>");
+    printf("<td style=\"vertical-align: top;\"><input type=\"Submit\" name=\"Submit\" value=\"Submit Dones\" onclick=\"return validate(%d)\"><br></td></tr>",num_rows);
     printf("<input type=\"hidden\" name=\"process_filename\" value=\"%s\">",process_filename);
     printf("</tbody>");
     printf("</table>");
@@ -107,12 +109,19 @@ int main()
     printf("}\n");
     printf("}\n");
     printf("}\n");
-    printf("function validate() {\n");
+    printf("function validate(numboxes) {\n");
     printf("var i;\n");
     printf("var flag = 0;\n");
-    printf("for (i = 0; i < document.pickform.actions.length; i++) {\n");
+    printf("if(numboxes == 1) {");
+    printf("if(document.pickform.actions.checked == true) {\n");
+    printf("flag = 1;");
+    printf("}");
+    printf("}");
+    printf("else {");
+    printf("for (i = 0; i < numboxes; i++) {\n");
     printf("if (document.pickform.actions[i].checked == true) {\n");
     printf("flag = 1;\n");
+    printf("}\n");
     printf("}\n");
     printf("}\n");
     printf("if (flag == 0) {\n");
