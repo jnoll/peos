@@ -95,12 +95,12 @@ tags:	$(SOURCES)
 	ctags $(SOURCES)
 
 clean:	
-	rm *.o
+	rm -f *.o core.*
 
 
-clobber:	clean
-	rm $(TESTS)
-	rm proc_table* message event.log .depend
+clobber: clean
+	rm -f $(TESTS)
+	rm -f proc_table* message event.log .depend pelog
 
 # Dependencies
 include .depend
