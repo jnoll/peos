@@ -23,11 +23,11 @@ all:
 	[ -d $(APP_CLASS_PATH) ] ||  mkdir $(APP_CLASS_PATH) 
 	cd engineInterface; make all
 	${JAVAC} -d ${APP_CLASS_PATH} -classpath ${JAVA_CLASS_PATH} *.java
-	${JAVAJAR} -cmf manifest.my  PEOS_perform.jar \
-		${APP_CLASS_PATH}/*.class ${MYLIB_CLASS_PATH}/*.class 
+#	${JAVAJAR} -cmf manifest.my  PEOS_perform.jar \
+#		${APP_CLASS_PATH}/*.class ${MYLIB_CLASS_PATH}/*.class 
 
-clean:
-	rm $(MYLIB_CLASS_PATH)/*.class
-	rmdir $(MYLIB_CLASS_PATH)
-	rm ${APP_CLASS_PATH}/*.class
-	rmdir $(APP_CLASS_PATH)	
+#clean:
+#	rm $(MYLIB_CLASS_PATH)/*.class
+#	rmdir $(MYLIB_CLASS_PATH)
+#	rm ${APP_CLASS_PATH}/*.class
+#	rmdir $(APP_CLASS_PATH)	
