@@ -27,6 +27,10 @@ void initialize_graph(Graph g, int pid)
     }
 }
 
+vm_exit_code update_process_state(int pid) 
+{
+    return VM_CONTINUE;
+}
 
 char *act_state_name(vm_act_state s)
 {

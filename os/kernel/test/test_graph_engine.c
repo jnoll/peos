@@ -184,7 +184,7 @@ START_TEST(test_handle_resource_event_3)
 END_TEST
 
 
-START_TEST(test_handle_resource_change_1)
+START_TEST(test_update_process_state_1)
 {
     
     Graph g = (Graph) malloc(sizeof(struct graph));
@@ -224,7 +224,7 @@ START_TEST(test_handle_resource_change_1)
     global_graph = g;
 
     
-    fail_unless(handle_resource_change(0) == VM_CONTINUE, "Return Value");
+    fail_unless(update_process_state(0) == VM_CONTINUE, "Return Value");
     fail_unless(STATE(act_0) == ACT_DONE, "act_0 not done ");
     fail_unless(STATE(act_1) == ACT_READY, "act_1 not ready");
 }
@@ -1343,7 +1343,7 @@ main(int argc, char *argv[])
 
     tc = tcase_create("test handle resource change");
     suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_handle_resource_change_1);
+    tcase_add_test(tc, test_update_process_state_1);
     
     
     tc = tcase_create("initialize graph");

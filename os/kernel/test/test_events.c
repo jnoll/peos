@@ -61,7 +61,7 @@ vm_exit_code handle_action_change(int pid, char *act_name, vm_act_state state)
     return VM_CONTINUE;
 }
 
-vm_exit_code handle_resource_change(int pid)
+vm_exit_code update_process_state(int pid)
 {
     return VM_CONTINUE;
 }

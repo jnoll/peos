@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.42 2004/05/14 00:58:39 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.43 2004/06/19 04:07:29 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -740,6 +740,19 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
         return NULL;
     }
 
+    /* 
+     * update process state 
+     * XXX This update is redundunt if list 
+     * actions is called immediately after a create process, start,
+     * finish, abort or suspend action events.
+     *
+     */ 
+
+    if (update_process_state(pid) == VM_INTERNAL_ERROR) {
+        fprintf(stderr, "System Error: Cannot Update Process state \n");
+	return NULL;
+    }	
+	    
     if(make_node_lists(process_table[pid].process_graph,&actions,&num_act,&other_nodes,&num_other_nodes) == -1) {
         if(save_process_table() < 0) {
             fprintf(stderr, "System Error: Cannot Save Process Table\n");
@@ -751,9 +764,11 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
     for (i = 0; i < num_act; i++) {
 	actions[i].pid = pid;
     }
+    
     for (i = 0; i < num_other_nodes; i++) {
 	other_nodes[i].pid = pid;
     }
+    
     *num_actions = num_act;  
 
     if(save_process_table() < 0) {

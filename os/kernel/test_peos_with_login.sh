@@ -37,14 +37,14 @@ then
   echo
 fi
 
-if !(grep '<action name=\"b\" state=\"NONE\">' test_user.dat.xml > /dev/null)
+if !(grep '<action name=\"b\" state=\"AVAILABLE\">' test_user.dat.xml > /dev/null)
 then
   echo
   echo Failed process creation action b tag.
   echo
 fi
 
-if !(grep '<action name=\"c\" state=\"NONE\">' test_user.dat.xml > /dev/null)
+if !(grep '<action name=\"c\" state=\"AVAILABLE\">' test_user.dat.xml > /dev/null)
 then
   echo
   echo Failed process creation action c tag.
@@ -69,14 +69,14 @@ then
   echo
 fi
 
-if !(grep '<action name=\"b\" state=\"NONE\">' test_user.dat.xml > /dev/null)
+if !(grep '<action name=\"b\" state=\"AVAILABLE\">' test_user.dat.xml > /dev/null)
 then
   echo
   echo Failed start action action b tag.
   echo
 fi
 
-if !(grep '<action name=\"c\" state=\"NONE\">' test_user.dat.xml > /dev/null)
+if !(grep '<action name=\"c\" state=\"AVAILABLE\">' test_user.dat.xml > /dev/null)
 then
   echo
   echo Failed start action action c tag.
@@ -101,14 +101,14 @@ then
   echo
 fi
 
-if !(grep '<action name=\"b\" state=\"NONE\">' test_user.dat.xml > /dev/null)
+if !(grep '<action name=\"b\" state=\"AVAILABLE\">' test_user.dat.xml > /dev/null)
 then
   echo
   echo Failed suspend action action b tag.
   echo
 fi
 
-if !(grep '<action name=\"c\" state=\"NONE\">' test_user.dat.xml > /dev/null)
+if !(grep '<action name=\"c\" state=\"AVAILABLE\">' test_user.dat.xml > /dev/null)
 then
   echo
   echo Failed suspend action action c tag.
@@ -196,28 +196,28 @@ fi
 if !(grep '<process pid=\"1\" model=\"./peos_test.pml\" status=\"2\">' test_user.dat.xml > /dev/null)
 then
   echo
-  echo Failed process creation process tag.
+  echo Failed delete process pid 1 process tag.
   echo
 fi
 
 if !(grep '<action name=\"a\" state=\"READY\">' test_user.dat.xml > /dev/null)
 then
   echo
-  echo Failed process creation action a tag.
+  echo Failed process delete pid 1 action a tag.
   echo
 fi
 
-if !(grep '<action name=\"b\" state=\"NONE\">' test_user.dat.xml > /dev/null)
+if !(grep '<action name=\"b\" state=\"AVAILABLE\">' test_user.dat.xml > /dev/null)
 then
   echo
-  echo Failed process creation action b tag.
+  echo Failed process delete pid 1 action b tag.
   echo
 fi
 
-if !(grep '<action name=\"c\" state=\"NONE\">' test_user.dat.xml > /dev/null)
+if !(grep '<action name=\"c\" state=\"AVAILABLE\">' test_user.dat.xml > /dev/null)
 then
   echo
-  echo Failed process creation action c tag.
+  echo Failed process delete pid 1 action c tag.
   echo
 fi
 

@@ -48,7 +48,7 @@ List super_nodes;
 
 extern vm_exit_code handle_action_change(int pid , char *act_name, vm_act_state); 
 
-extern vm_exit_code handle_resource_change(int pid);
+extern vm_exit_code update_process_state(int pid);
 
 extern void initialize_graph(Graph g, int pid);
 

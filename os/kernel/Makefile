@@ -43,6 +43,7 @@ peos: peos.o $(CORE_OBJS)
 daemon: enactment_daemon.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
 
+
 # Make the kernel library.
 lib: $(LIBRARY)
 

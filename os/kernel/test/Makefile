@@ -22,8 +22,8 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 TESTS = test_resources test_graph test_action test_events test_process test_process_table test_graph_engine test_assertions test_predicate_evaluator
 
 
-all: test kernel_wrapper
-test: unit_tests 
+all: test_list_actions_API test kernel_wrapper 
+test: unit_tests test_list_actions
 suite: unit_tests function accept
 
 unit_tests:  $(TESTS) 
@@ -31,11 +31,18 @@ unit_tests:  $(TESTS)
 	@-for i in $^ ; do $$i -f -q; done
 	@echo "done."
 
+test_list_actions: 
+	test_list_actions_API
+
 function:
 	$(MAKE) -C function_tests 
 
 accept:
 	$(MAKE) -C accept_tests 
+
+
+test_list_actions_API: test_list_actions_API.o $(CORE_OBJS)
+	$(CC) $(LDFLAGS) -g -o $@ $< $(CORE_OBJS) $(LIBS) 
 
 
 test_action: test_action.o $(TEST_OBJS)

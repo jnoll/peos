@@ -648,7 +648,9 @@ vm_act_state set_node_state(Node n, vm_act_state state)
     return state_set;
 }
 	    
-vm_exit_code handle_resource_change(int pid)
+/* this function was earlier called handle_resource_change */
+
+vm_exit_code update_process_state(int pid)
 {
     Graph g;
     Node n;
@@ -770,7 +772,7 @@ vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
 				   if (n != NULL) {
 				       if(STATE(n) == ACT_RUN) {   	   
 					   set_node_state(n, ACT_NONE);    
-			                   handle_resource_change(PID(n));
+			                   update_process_state(PID(n));
 				       }		   
 			               return VM_CONTINUE;
 				   }
