@@ -7,14 +7,6 @@
 
 #include <gdbm.h>
 
-#ifndef TEXTSTR
-#define TEXTSTR "TEXT"
-#endif
-
-#ifndef GDBMSTR
-#define GDBMSTR "GDBM"
-#endif
-
 typedef struct output {
 	GDBM_FILE dbf;
 	FILE *fptr;

@@ -1,13 +1,13 @@
 0 mix_and_prepare type branch children ( mix prepare )
 1 add_ice type action mode manual requires { "ice" "shaker" } provides { "shaker" } agent { "bartender" } script { "add enough ice to shaker so that the gin will just barely cover it." } 
 2 add_vermouth type action mode manual requires { "vermouth" "shaker" } provides { "shaker" } agent { "bartender" } script { "add generous amount of vermouth, swirl in shaker so ice and sides are coated, then discard." } 
-3 add_gin type action mode manual requires { "gin" "shaker" } provides { "shaker" } agent { "bartender" } script { "add appropriate amount of gin (preferably beefeaters), about two ounces per martini." } 
-4 shake type action mode manual requires { "shaker" } provides { "shaker" } agent { "bartender" } script { "shake gently until ingredients are well chilled.  the shaking should not be so violent that it breaks chips off the ice; a vigourous swirling motion can be substituted." } 
+3 add_gin type action mode manual requires { "gin" "shaker" } provides { "shaker" } agent { "bartender" } script { "add appropriate amount of gin (preferably Beefeaters), about two ounces per martini." } 
+4 shake type action mode manual requires { "shaker" } provides { "shaker" } agent { "bartender" } script { "shake gently until ingredients are well chilled.  The shaking should not be so violent that it breaks chips off the ice; a vigourous swirling motion can be substituted." } 
 5 cut_twist type action mode manual 
 6 twist_twis type action mode manual 
 7 wash_olive type action mode manual requires { "olive" } provides { "olive" } agent { "bartender" } script { "if you are not using olives packed in vermouth, wash one or two olives per martini under tap to remove the brine" } 
 8 skewer_olive type action mode manual requires { "olive" "martini-glass" "toothpick" } provides { "martini-glass" } agent { "bartender" } script { "place one or two olives on a toothpick and insert into well chilled martini glass" } 
-9 pour_one type action mode manual requires { "martini-glass" "pitcher" } provides { "martini" } agent { "bartender" } script { "pour an appropriate amount into a prepared martini glass.  appropriate is enough so that all glasses end up with the same amount." } 
+9 pour_one type action mode manual requires { "martini-glass" "pitcher" } provides { "martini" } agent { "bartender" } script { "pour an appropriate amount into a prepared martini glass.  Appropriate is enough so that all glasses end up with the same amount." } 
 10 start
 11 push 0
 12 call fork 26

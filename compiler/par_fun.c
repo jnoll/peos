@@ -119,7 +119,7 @@ int lexical_analyzer()
                   ||in_char==',' ||in_char==':'||in_char==';'
                   ||in_char=='\\'||in_char=='/'||in_char=='+' 
                   ||in_char=='(' ||in_char==')'||in_char=='\t') { 
-                  token_buffer[bb]=tolower(in_char);
+                  token_buffer[bb]=in_char;
                   in_char=fgetc(in_fptr);   bb++;
                   if(bb>=IN_BUF_SIZE) syntax_error(error_message[1]);
               }

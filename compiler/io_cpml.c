@@ -58,7 +58,8 @@ Boolean write_cpml(char* pml_filename, data_dictionary_struct* dictionary_ptr, c
 printf ("new file name is %s\n", filename);
 #endif
 
-    if (strcmp (filetype, TEXT_MODE) == 0) {
+    if ((strcmp (filetype, TEXT_MODE) == 0) || 
+	(strcmp (filetype, CPML_MODE) == 0)) {
     	output.fptr = fopen (filename, "w");
 	if (output.fptr == NULL)
 		printf("opening file %s failed: %s\n",filename,strerror(errno));
@@ -69,10 +70,6 @@ printf ("new file name is %s\n", filename);
 		printf("Failed to create gdbm.\n");
 		return FALSE;
 	}
-    }
-    else {
-	printf("Unknown file type. File type must be either \"TEXT\" or \"GDBM\"\n");
-	return FALSE;
     }
 
     /* get the root element in the data dictionary */
@@ -88,7 +85,8 @@ printf ("new file name is %s\n", filename);
     test_retrieval(output);
     test code end */
 
-    if (strcmp (filetype, TEXT_MODE) == 0)
+    if ((strcmp (filetype, TEXT_MODE) == 0) || 
+	(strcmp (filetype, CPML_MODE) == 0)) 
 	fclose (output.fptr);
     else if (strcmp(filetype,GDBM_MODE) == 0)
 	gdbm_close(output.dbf);
@@ -167,7 +165,8 @@ char* get_actions(char action_str[1024], data_dict_element_struct* element_ptr, 
 		sprintf(action_str,"%s ",name);
 		return action_str;
 	}
-	else if (strcmp(type,"sequence") == 0) {
+	else if ((strcmp(type,"sequence") == 0) ||
+		(strcmp(type,"task") == 0)) {
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		child_element_ptr = data_dict_get_child(child_list_ptr);
 		return get_actions(temp_str,child_element_ptr,FALSE);
@@ -717,8 +716,8 @@ int write_cpml_recursively(OUTPUT_STRUCT output, int current_line,
 		write_cpml_data(current_line,output_str,filetype,output);
 		return current_line+1;
 	}
-	else if (strcmp(type,"sequence") == 0)
-	{
+	else if ((strcmp(type,"sequence") == 0) ||
+		(strcmp(type,"task") == 0)) {
 		/* we basically do nothing except continue down the tree */
 		child_list_ptr = data_dict_get_child_list(element_ptr);
 		while (child_list_ptr != NULL)
@@ -805,42 +804,28 @@ int num_children(data_dict_element_struct* element_ptr)
 
 /******************************************************************************
 ** 
-**  Function/Method Name: create_cpml_filename
-**  Precondition:  Input file name.
-**  Postcondition: Output file name.
-**  Description:   Create output file name.  Replace trailing extention "pml" 
-**                 with "cpml" 
+**  Description:   Create output file name.  Replace trailing extension "pml" 
+**                 with extension derived from the mode.  The input filename 
+**		   should be checked for the existence a pml extension before
+**		   this function is called.
 **
 ******************************************************************************/
 char * create_cpml_filename (char *pml, char *cpml, char* filetype)
 {
 
-    int     i=0;
-    char    *ptr=(char *) NULL;
+    char    *ptr = NULL;
+    char    *ext_ptr;
 
-    i = strlen (pml);
-    if (strcmp(filetype,TEXT_MODE) == 0) {
-   	ptr = (char *) malloc (strlen (pml)+1);
-    	strcpy (ptr, pml);
-    	ptr[i-3] = 't';
-    	ptr[i-2] = 'x';
-    	ptr[i-1] = 't';
-    	ptr[i] = '\0';
-    }
-    else if (strcmp(filetype,GDBM_MODE) == 0) {
-   	ptr = (char *) malloc (strlen (pml)+2);
-    	strcpy (ptr, pml);
-    	ptr[i-3] = 'g';
-    	ptr[i-2] = 'd';
-    	ptr[i-1] = 'b';
-    	ptr[i] = 'm';
-	ptr[i+1] = '\0';	/* OK, because we allocate strlen + 2. */
-    }
-    else {
-	printf("Invalid filetype: %s\n",filetype);
-	return (char*) NULL;
-    }
-
+	ext_ptr = strrchr(pml,'.');
+	ext_ptr++;
+	*ext_ptr = '\0';
+   	ptr = (char *)malloc(strlen(pml) + strlen(filetype) + 1);
+    	strcpy(ptr, pml);
+	if (strcmp(filetype,TEXT_MODE) == 0) {
+	   strcat(ptr,"txt");
+	} else {
+	   strcat(ptr,filetype);
+	}
 
 #if DEBUG == 1
     printf ("\n\ncpml is %s\n", ptr);
@@ -861,6 +846,8 @@ Boolean write_cpml_data(int line_num, char* data_str, char* mode, OUTPUT_STRUCT 
 {
 	if (strcmp(mode,TEXT_MODE) == 0)
 		/* print out line number for readability only */
+		fprintf(output.fptr,"%d %s\n",line_num,data_str);
+	else if (strcmp(mode,CPML_MODE) == 0)
 		fprintf(output.fptr,"%d %s\n",line_num,data_str);
 	else if (strcmp(mode,GDBM_MODE) == 0)
 		store_gdbm_data(output.dbf, line_num, data_str);

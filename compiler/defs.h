@@ -16,14 +16,22 @@ typedef int    Boolean;
 #define TRUE  1
 #endif
 
+#ifndef STOP
+#define STOP 2
+#endif
+
 /* To generate text CPML file. */
 #ifndef TEXT_MODE
-#define TEXT_MODE "TEXT"
+#define TEXT_MODE "text"
+#endif
+
+#ifndef CPML_MODE
+#define CPML_MODE "cpml"
 #endif
 
 /* To generate gdbm CPML file. */
 #ifndef GDBM_MODE
-#define GDBM_MODE "GDBM"
+#define GDBM_MODE "gdbm"
 #endif
 
 #endif	/* End of _DEFS_H_ */
