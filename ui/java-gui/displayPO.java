@@ -377,6 +377,7 @@ public class displayPO{
 	{
 		NodeList nl=root.getChildNodes();
 		Node rr;
+                System.out.println("DFNV");
 		if (getPR(root).equals("No required resources."))
 			return null;
 		for (int i = 0; i<nl.getLength(); i++)
@@ -393,7 +394,7 @@ public class displayPO{
 	{
 		NodeList nl=root.getChildNodes();
 		Node rr;
-		if (getRR(root).equals("No required resources."))
+		if (getPR(root).equals("No provided resources."))
 			return 0;
 		for (int i = 0; i<nl.getLength(); i++)
 		{
