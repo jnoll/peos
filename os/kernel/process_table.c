@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.21 2003/11/14 22:11:04 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.22 2003/11/15 04:21:57 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -119,6 +119,7 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
                     asize = asize + INST_ARRAY_INCR;
                     if ((act_array = realloc(act_array,asize*sizeof(peos_action_t))) == NULL) {
 	                fprintf(stderr, "Too Many Actions\n");
+			free(act_array);
 	                return -1;
 	              }
 		}
@@ -132,6 +133,7 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 		        osize = osize + INST_ARRAY_INCR;
 			if((node_array = realloc(node_array,osize*sizeof(peos_other_node_t))) == NULL) {
 			    fprintf(stderr,"Too many nodes\n");
+			    free(node_array);
 			    return -1;
 			}
 		    }
@@ -144,8 +146,11 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 	*num_other_nodes = num_nodes;
 	return 1;
     }
-    else
+    else {
+        free(act_array);
+	free(node_array);
         return -1;
+    }
 }
 	    
 
@@ -171,15 +176,8 @@ load_context(FILE *in, peos_context_t *context)
 	context->model[0] = '\0';
     }
     if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
-        
-    /* Load  actions first, to initialize context.This is also needed to load the script into the context */
-    if ((start = load_actions(context->model,&(context->process_graph))) >= 0) 
-    {
-    } 
-    else {
-        return 0;
-    }
-	  
+    if ((start = load_actions(context->model,&(context->process_graph))) < 0) return 0; 
+    
     if (fscanf(in, "actions: ") < 0) return 0; 
     
     if (fscanf(in, "%d ", &num_actions) != 1) return 0;
@@ -309,7 +307,6 @@ char **peos_list_instances()
     static char *result[PEOS_MAX_PID+1];
     int i;
     for (i = 0; i <= PEOS_MAX_PID; i++) {
-	if(process_table[i].model[0] == '\0') break;    
         result[i] = process_table[i].model;
     }
     result[i] = NULL;
@@ -353,6 +350,8 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
     int num_act, num_other_nodes, i;
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
+
+    if (process_table[pid].status & (PEOS_DONE | PEOS_NONE | PEOS_ERROR)) return NULL;
 
     if(make_node_lists(process_table[pid].process_graph,&actions,&num_act,&other_nodes,&num_other_nodes) == -1) return NULL;
     

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.17 2003/11/14 19:40:46 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.18 2003/11/15 04:21:57 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -81,7 +81,8 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
         char msg[256];
 	sprintf(msg,"jnoll DONE %s %d",context->model,pid);
 	log_event(msg);
-	delete_entry(context->pid);
+	//delete_entry(context->pid);
+	context -> status = PEOS_DONE; 
 	return exit_status;
     }
     else
@@ -148,7 +149,7 @@ void log_event(char *message)
     FILE *file;
     struct tm *current_info;
     time_t current;
-    char times[20];
+    char times[50];
     
     time(&current);
     current_info = localtime(&current);

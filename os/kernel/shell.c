@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.20 2003/11/10 23:13:51 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.21 2003/11/15 04:21:57 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -20,7 +20,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "events.h"
-//#include "vm.h"
 #include "process_table.h"
 #include "pmlheaders.h"
 #include "graph_engine.h"
@@ -64,16 +63,19 @@ void list_actions()
     char ** result = peos_list_instances();
 	
     printf("process action (status)\n");
-    while((i <= PEOS_MAX_PID) &&  (result[i] != NULL)) {
+    while((i <= PEOS_MAX_PID)) {
 	int num_actions;    
-        alist = peos_list_actions(i,&num_actions);
-	if(alist) {
-	    for(j = 0; j < num_actions; j++) {
-	        printf("%d  %s  %d\n",i,alist[j].name,alist[j].state);
+	if (result[i] != NULL) {
+            alist = peos_list_actions(i,&num_actions);
+	    if(alist) {
+	        for(j = 0; j < num_actions; j++) {
+	            printf("%d  %s  %d\n",i,alist[j].name,alist[j].state);
+	        }
 	    }
+	    i++;
 	}
-	i++;
     }
+        
 }    
 	   
    
