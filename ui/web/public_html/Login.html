@@ -7,11 +7,23 @@
 
 <body background="BackGround.gif" title="User Login">
 Enter Your UserName and Password to Start a Session
-<form action="Commands.html" name="UserLogin" id="UserLogin" target="Commands">
-	<input type="text" name="User" value="UserName" size="16" maxlength="16">
-	<input type="password" name="PassWord" value="Default" size="16" maxlength="16">
+<form action="cgi-bin/login.cgi" method = "POST">
+	User Name: <input type="text" name="username" value="" size="16" maxlength="16"><br>
+	Password: <input type="password" name="password" value="" size="16" maxlength="16"><br>
 	<input type="submit" name="Submit" value="Submit">
 </form>
+
+<Br>
+<Br>
+<Br>
+<FONT color="red">
+<p>NOTE: The interface to the backend server is not working yet.  To see the general 
+functionality of this login page, please enter any user name and a password that is the same as the user name 
+with the number 1, 2, or 3 appended to it.  These numbers are used to simulate different kind of users with
+different kind of allowable operations.
+<p>For example, for the user name of "Bob" the password should be "Bob1", "Bob2", or "Bob3".
+<p><A HREF="mailto:5728-dl@oslab-server.cudenver.edu">Email us</A> if you have any questions</P>
+</FONT>
 
 </body>
 </html>
