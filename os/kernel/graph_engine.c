@@ -223,29 +223,7 @@ void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int
 	{
 	    switch TREE_OP(t) 
 	    {
-	        case DOT: 
-#ifdef NOTUSED		
-	        {
-		    insert_resource(TREE_ID(t->left), &resource_list, num_resources, rsize);
-		    i = 0;	  
-		    while((i < *num_resources) && (strcmp(resource_list[i].name,TREE_ID(t->left))) != 0) 
-		    {	      
-		        i++;
-		    }
-		    if(i == *num_resources) 
-	            {
-	                strcpy(resource_list[*num_resources].name,TREE_ID(t->left));
-	                strcpy(resource_list[*num_resources].value,"\0");
-	                *num_resources = *num_resources + 1;
-	                if(*num_resources > rsize) 
-		        {
-		            rsize = rsize*2;
-		            realloc(resource_list,rsize);
-		        }
-	             }
-		}
-		break;
-#endif
+	    case DOT: 
 	    case EQ: 
 	    case NE:
 	    case GE:
