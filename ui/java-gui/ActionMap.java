@@ -1,4 +1,6 @@
 import org.w3c.dom.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 public class ActionMap{
 	private LinkedList ActionList[] = new LinkedList[11];
 	ActionMap()
@@ -20,6 +22,10 @@ public class ActionMap{
 		ActionList[pid].insertElement(action, offset);
 		return 0;
 	}
+        public String getModelName(int pid)
+        {
+            return ActionList[pid].getHead().getElement().getAttribute("model");
+        }
 	public void UpdateAction(int pid, Element action)
 	{
 		ActionList[pid].updateElement(action);
@@ -44,6 +50,52 @@ public class ActionMap{
 		
 		return count;
 	}
+        public DefaultMutableTreeNode getReadyActionList()
+        {
+            String stateValue;
+            DefaultMutableTreeNode root = 
+                new DefaultMutableTreeNode("Process List");
+            DefaultMutableTreeNode[] pids = 
+                new DefaultMutableTreeNode[11];
+            for (int i=0; i< 11; i++)
+            {
+                if (this.isProcActive(i))
+                {
+                    pids[i] = new DefaultMutableTreeNode(this.getModelName(i));               
+                    root.add(pids[i]);                
+                    LinkNode curr=this.getCurrentLink(i);
+                    this.reset(i);
+                    System.out.println("lalala");
+                    LinkNode probe = this.getCurrentLink(i);
+                
+                    while (probe != null)
+                    {
+                        System.out.print("test");
+                        Element payload = probe.getElement();                    
+                        if ( payload.getAttribute("state") != null )
+                        {
+                            stateValue=payload.getAttribute("state");
+                            if (stateValue.equals("AVAILABLE") 
+                                || stateValue.equals("READY")
+                                || stateValue.equals("RUN"))
+                            {
+                                DefaultMutableTreeNode leaf = 
+                                    new DefaultMutableTreeNode(payload.getAttribute("name"));
+                                pids[i].add(leaf);
+                                System.out.println("wtf mates");
+                            }
+                        }
+                        probe = probe.getNext();
+                    }
+                }
+                
+            }
+            
+            
+            return root;
+            
+            
+        }
 	public boolean[] listActiveProcesses()
 	{
 		boolean[] apList= new boolean[11];

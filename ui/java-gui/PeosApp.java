@@ -32,6 +32,8 @@ public class PeosApp extends JFrame implements ActionListener
 	public int tabPids[] = new int[11];
         public JPanel actionWindow;
 
+        
+        private JTree blah; 
    	public PeosApp() 
 	{
 	        super("Peos Application");
@@ -57,7 +59,7 @@ public class PeosApp extends JFrame implements ActionListener
                //                        screenSize.height - inset*2);
 		menuBar = new JMenuBar();
        		setJMenuBar(createMenuBar());
-                JTextField blah = new JTextField("Hello everyone");
+                blah = new JTree(outline.getActions().getReadyActionList());
                 actionWindow.add(blah);
 		tabbedPane = new JTabbedPane();
 		getContentPane().add(createToolBar(),BorderLayout.PAGE_START);
@@ -194,10 +196,13 @@ public class PeosApp extends JFrame implements ActionListener
                     switchView.setActionCommand("ProcessMode");
                     //getContentPane().setVisible(false);
                     getContentPane().remove(tabbedPane);
-                    
+                    actionWindow.remove(blah);
+                    blah = new JTree(outline.getActions().getReadyActionList());
+                    actionWindow.add(blah);
                     actionWindow.setLayout(new GridLayout(1,1));
                     getContentPane().add(actionWindow, BorderLayout.CENTER);
                     deleteB.setEnabled(false);
+                    
                     show();
                     
                     actionWindow.setVisible(true);
@@ -223,7 +228,7 @@ public class PeosApp extends JFrame implements ActionListener
 			if (getNumCurrActive() >= 11)
 			{
    	                 	 JOptionPane.showMessageDialog(getContentPane(),
-                                	 "Please delete some processes before trying to delete again.",
+                                	 "Please delete some processes before trying to load again.",
                                     	 "Process Overload",
 	                                 JOptionPane.ERROR_MESSAGE);	
 			}

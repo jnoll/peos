@@ -78,7 +78,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		tree = new JTree(info);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		
-
+                map.reset(pidNum);
 		n = map.getNextActionDetails(pidNum);
 	
 		String currentPage = n.getElement().getAttribute("name");
@@ -391,7 +391,9 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                         {
                             outline.bindResource(resourceToBind[i],values[i],pidNum);
                         }
-                        // if not all resources are set, action will not be started
+                        
+                        // if not all resources are set, action will not be started                        
+                        map.getActionByName(pidNum,currActionName);
                         if ( outline.doesStartNeedValue(map.getCurrentAction(pidNum)) == 0 )                            
                             outline.start(map.getCurrentAction(pidNum), pidNum);						
 				
@@ -451,10 +453,13 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                     {                    
                         outline.bindResource(resourceToBind[i],values[i],pidNum);                        
                     }
+                
+                 
+                    map.getActionByName(pidNum,currActionName);                 
+                    if ( outline.doesFinishNeedValue(map.getCurrentAction(pidNum)) == 0 )
+                        outline.finish(map.getCurrentAction(pidNum),pidNum);		                     
+                    map.getActionByName(pidNum,currActionName);
                     
-                 if ( outline.doesFinishNeedValue(map.getCurrentAction(pidNum)) == 0 )
-                    outline.finish(map.getCurrentAction(pidNum),pidNum);		
-                 map.getActionByName(pidNum,currActionName);		
                  LinkNode n = map.getCurrentLink(pidNum);
                  String currentPage = n.getElement().getAttribute("name");
                  createTextPane(n,currentPage);			
