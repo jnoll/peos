@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "vm.h"
+#include "action.h"
 #include "process.h"
 #include "events.h"
 #include "test_util.h"
@@ -28,6 +28,16 @@ char *find_model_file(char *model)
     return TEST_PROC_NAME;
 }
 
+void log_event(char *msg)
+{
+    return;
+}
+
+
+char *get_script(int pid, char *action_name)
+{
+    return "script";
+}
 
 peos_resource_t *get_resource_list(char *model, int *num_res)
 {
@@ -112,51 +122,14 @@ END_TEST
 START_TEST(test_run_process)
 {
     char *model = "test.pml";
-    int nbytes,abytes;
-    FILE *file;
-    char expected[BUFSIZ],actual[BUFSIZ];
     peos_resource_t *resources;
     int num_resources;
-    char times[20];
-    struct tm *current_info;
-    time_t current;
 
-       
-    time(&current);
-    current_info = localtime(&current);
-    current = mktime(current_info);
-    strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
-    file = fopen("expected_event.log", "a");
-    fprintf(file, "%s jnoll start %s %d\n", times, model, 1);
-    fclose(file);
-    
-    mark_point();
-    
-    file = fopen("expected_event.log","r");
-    memset(expected,0,BUFSIZ);
-    nbytes = fread(expected,sizeof(char),BUFSIZ,file);
-    fclose(file);
-    mark_point();
-			    
-   
     /* Pre: Because load_actions() and find_model_file are stubs,
      * there are no actual pre conditions.
      */
-    
 	fail_unless(peos_run(model,resources, num_resources) != 0, 
 		    "failed to create instance");
-	
-	file = fopen("event.log", "r");
-	memset(actual,0,BUFSIZ);
-	abytes = fread(actual,sizeof(char),BUFSIZ,file);
-	fail_unless(abytes == nbytes, "file size");
-	fclose(file);
-	mark_point();
-
-	fail_unless(strcmp(actual,expected) == 0, "event.log differs");
-	unlink("event.log");
-	unlink("expected_event.log");
-
 }
 END_TEST
 
@@ -177,7 +150,7 @@ main(int argc, char *argv[])
 
 
 
-    tc = tcase_create("run");
+   tc = tcase_create("run");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_run_process);
 

@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "vm.h"
+#include "action.h"
 #include "process.h"
 #include "process_table.h"
 #include "events.h"
@@ -157,7 +157,7 @@ START_TEST(test_action_done)
     sink -> next = NULL;
     
     
-    fail_unless(action_done(g,"act_0") == 1,"return value");
+    fail_unless(action_done(g,"act_0") == VM_CONTINUE,"return value");
     fail_unless(STATE(source) != ACT_DONE, "source done");
     fail_unless(STATE(sink) != ACT_DONE, "sink done");
     fail_unless(STATE(act_0) == ACT_DONE,"action not done");
@@ -712,25 +712,28 @@ END_TEST
 START_TEST(test_annotate_graph)
 {
 	int i;
+	int num_actions,num_other_nodes;
+	peos_action_t *actions;
+	peos_other_node_t *other_nodes;
+	
 	Graph g = (Graph) malloc (sizeof (struct graph));
 	Node source,sink,act_0,act_1,sel,branch,join,rendezvous;
-	peos_context_t *context = &(process_table[0]);
-	context->num_actions = 2;
-	context->actions = (peos_action_t *) calloc(context->num_actions, sizeof(peos_action_t));
+	num_actions = 2;
+	actions = (peos_action_t *) calloc(num_actions, sizeof(peos_action_t));
 
-	for(i = 0; i < context->num_actions ; i++)
+	for(i = 0; i < num_actions ; i++)
 	{
-		sprintf(context->actions[i].name,"act_%d",i);
-		context->actions[i].state = ACT_RUN;
+		sprintf(actions[i].name,"act_%d",i);
+		actions[i].state = ACT_RUN;
 	}
 
-        context->num_other_nodes = 2;
-        context->other_nodes = (peos_other_node_t *) calloc(context->num_other_nodes, sizeof(peos_other_node_t));
+        num_other_nodes = 2;
+        other_nodes = (peos_other_node_t *) calloc(num_other_nodes, sizeof(peos_other_node_t));
                                                                        
-          sprintf(context->other_nodes[0].name,"sel");
-	  sprintf(context->other_nodes[1].name,"br");
-          context->other_nodes[0].state = ACT_RUN;
-	  context->other_nodes[1].state = ACT_READY;
+          sprintf(other_nodes[0].name,"sel");
+	  sprintf(other_nodes[1].name,"br");
+          other_nodes[0].state = ACT_RUN;
+	  other_nodes[1].state = ACT_READY;
      
 	source = make_node("p",ACT_NONE,PROCESS,0);
 	sink = make_node("p",ACT_NONE,PROCESS,0);
@@ -755,7 +758,7 @@ START_TEST(test_annotate_graph)
 	sel -> matching = join;
 	branch -> matching = rendezvous;
 
-	fail_unless(annotate_graph(g,context) == 1, "return value");
+	fail_unless(annotate_graph(g,actions,num_actions,other_nodes,num_other_nodes) == 1, "return value");
 	fail_unless(STATE(act_0) == ACT_RUN, "act 0 state not run");
 	fail_unless(STATE(act_1) == ACT_RUN, "act 1 state not run");
 	fail_unless(STATE(sel) == ACT_RUN, "sel not run");
@@ -767,100 +770,6 @@ START_TEST(test_annotate_graph)
 END_TEST
 
 
-
-START_TEST(test_update_context)
-{
-	int i;
-	int nbytes,abytes;
-        FILE *file;
-        char expected[BUFSIZ],actual[BUFSIZ];
-        char times[20];
-        struct tm *current_info;
-        time_t current;
-				    
-	Graph g = (Graph) malloc (sizeof (struct graph));
-	Node source,sink,act_0,act_1,sel,branch,join,rendezvous;
-	peos_context_t *context = &(process_table[0]);
-
-	strcpy(context->model,"test.pml");
-	context->pid = 1;
-	context -> status = PEOS_READY;
-	context -> num_actions = 2;
-	context -> actions = (peos_action_t *) calloc(context->num_actions, sizeof(peos_action_t));
-
-	for(i = 0; i < 2 ; i++)
-	{
-		sprintf(context->actions[i].name,"act_%d",i);
-		context->actions[i].state = ACT_NONE;
-	}
-
-	context->num_other_nodes = 2;
-        context->other_nodes = (peos_other_node_t *) calloc(context->num_other_nodes, sizeof(peos_other_node_t));
-                                                                    
-        sprintf(context->other_nodes[0].name,"sel");
-        sprintf(context->other_nodes[1].name,"br");
-        context->other_nodes[0].state = ACT_NONE;
-        context->other_nodes[1].state = ACT_NONE;
-                                                          
-	source = make_node("p",ACT_DONE,PROCESS,0);
-        sink = make_node("p",ACT_DONE,PROCESS,0);
-        act_0 = make_node("act_0",ACT_RUN,ACTION,0);
-        act_1 = make_node("act_1",ACT_RUN,ACTION,0);
-        sel = make_node("sel",ACT_RUN,SELECTION,0);
-        join = make_node("sel",ACT_RUN,JOIN,0);
-        branch = make_node("br",ACT_READY,BRANCH,0);
-        rendezvous = make_node("br",ACT_READY,RENDEZVOUS,0);
-
-        g -> source = source;
-        g -> sink = sink;
-        source -> next = act_0;
-        act_0 -> next = act_1;
-        act_1 -> next = branch;
-        branch -> next = sel;
-        sel -> next = rendezvous;
-        rendezvous -> next = join;
-        join -> next = sink;
-        sink -> next = NULL;
-        sel -> matching = join;
-        branch -> matching = rendezvous;
-
-	time(&current);
-        current_info = localtime(&current);
-        current = mktime(current_info);
-        strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
-        file = fopen("expected_event.log", "a");
-        fprintf(file, "%s jnoll end test.pml %d\n", times, 1);
-        fclose(file);
-                                                                        
-        mark_point();
-                                                                             
-        file = fopen("expected_event.log","r");
-        memset(expected,0,BUFSIZ);
-        nbytes = fread(expected,sizeof(char),BUFSIZ,file);
-        fclose(file);
-        mark_point();
-							
-	
-        fail_unless(update_context(g,context) == 1, "return value");
-	fail_unless(context -> status == PEOS_DONE, "status not peos_done");
-	fail_unless(context->actions[0].state == ACT_RUN, "act 0 state not run");
-	fail_unless(context->actions[1].state == ACT_RUN, "act 1 state not run");
-	fail_unless(context->other_nodes[0].state == ACT_RUN, "sel state not run");
-	fail_unless(context->other_nodes[1].state == ACT_READY, "br state not ready");
-
-	file = fopen("event.log", "r");
-        memset(actual,0,BUFSIZ);
-        abytes = fread(actual,sizeof(char),BUFSIZ,file);
-        fail_unless(abytes == nbytes, "file size");
-        fclose(file);
-        mark_point();
-		                                                                         
-        fail_unless(strcmp(actual,expected) == 0, "event.log differs");
-        unlink("event.log");
-        unlink("expected_event.log");
-
-}
-END_TEST
 
 
 START_TEST(test_set_act_state_graph_ready)
@@ -883,7 +792,7 @@ START_TEST(test_set_act_state_graph_ready)
 	sink -> next = NULL;
 
 
-    fail_unless(set_act_state_graph(g,"act_0",ACT_READY) == 1, "return value");
+    fail_unless(set_act_state_graph(g,"act_0",ACT_READY) == VM_CONTINUE, "return value");
     fail_unless(STATE(act_0) == ACT_READY, "act 0 state not changed");
 
 }
@@ -911,7 +820,7 @@ START_TEST(test_set_act_state_graph_suspend)
 
 
 
-    fail_unless(set_act_state_graph(g,"act_0",ACT_SUSPEND) == 1, "return value");
+    fail_unless(set_act_state_graph(g,"act_0",ACT_SUSPEND) == VM_CONTINUE, "return value");
     fail_unless(STATE(act_0) == ACT_SUSPEND, "act 0 state not changed");
 
 }
@@ -938,7 +847,7 @@ START_TEST(test_set_act_state_graph_none)
 	sink -> next = NULL;
 
 
-    fail_unless(set_act_state_graph(g,"act_0",ACT_NONE) == 1, "return value");
+    fail_unless(set_act_state_graph(g,"act_0",ACT_NONE) == VM_CONTINUE, "return value");
     fail_unless(STATE(act_0) == ACT_NONE, "act 0 state not changed");
 
 }
@@ -966,7 +875,7 @@ START_TEST(test_set_act_state_graph_abort)
 	sink -> next = NULL;
 
 
-    fail_unless(set_act_state_graph(g,"act_0",ACT_ABORT) == 1, "return value");
+    fail_unless(set_act_state_graph(g,"act_0",ACT_ABORT) == VM_CONTINUE, "return value");
     fail_unless(STATE(act_0) == ACT_ABORT, "act 0 state not changed");
 
 }
@@ -992,7 +901,7 @@ START_TEST(test_set_act_state_graph_new)
 	sink -> next = NULL;
 
 
-    fail_unless(set_act_state_graph(g,"act_0",ACT_NEW) == 1, "return value");
+    fail_unless(set_act_state_graph(g,"act_0",ACT_NEW) == VM_CONTINUE, "return value");
     fail_unless(STATE(act_0) == ACT_NEW, "act 0 state not changed");
 
 }
@@ -1060,10 +969,6 @@ main(int argc, char *argv[])
     tc = tcase_create("annotate graph");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_annotate_graph);
-
-    tc = tcase_create("update context");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_update_context);
 
     tc = tcase_create("set act state graph");
     suite_add_tcase(s,tc);

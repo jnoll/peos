@@ -15,11 +15,11 @@ peos_context_t process_table[PEOS_MAX_PID+1];
 /* Stubs. */
 
 
-int stub_load_actions(char *file, peos_action_t **, int *,peos_other_node_t **,int *num_other_nodes,Graph *process_graph);
+int stub_load_actions(char *file,Graph *process_graph);
 
 vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state state)
 {
-	return VM_DONE;
+	return VM_CONTINUE;
 }
 	
 
@@ -52,9 +52,9 @@ return resources;
   
 
 
-int load_actions(char *file, peos_action_t **actions, int *num_actions, peos_other_node_t **other_nodes, int *num_other_nodes,Graph *process_graph)
+int load_actions(char *file, Graph *process_graph)
 {
-    return stub_load_actions(file, actions, num_actions,other_nodes,num_other_nodes,process_graph);
+    return stub_load_actions(file, process_graph);
 }
 
 
@@ -122,54 +122,57 @@ START_TEST(test_find_model_file)
 }
 END_TEST
 
+/*
 START_TEST(test_handle_action_change_run)
 {
-
   int nbytes,abytes;
   FILE *file;
   char expected[BUFSIZ],actual[BUFSIZ];
   char times[20];
   struct tm *current_info;
   time_t current;
+  char msg[256];
 
   time(&current);
   current_info = localtime(&current);
   current = mktime(current_info);
   strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
   file = fopen("expected_event.log", "a");
-  fprintf(file, "%s jnoll RUN act_0 1 resource(s): a, b\n", times);
+  strcpy(msg,"jnoll RUN act_0 1");
+  fprintf(file, "%s %s\n", times,msg);
   fclose(file);
-								                                                                                     
-  mark_point();
-									                                                                                 
+                                                                                  mark_point();
+									                                                                             
   file = fopen("expected_event.log","r");
   memset(expected,0,BUFSIZ);
   nbytes = fread(expected,sizeof(char),BUFSIZ,file);
   fclose(file);
   mark_point();
-                                                                                              fail_unless(handle_action_change(1,"act_0",ACT_RUN) == VM_DONE, "failed to change act state");
-											      file = fopen("event.log", "r");
-											     memset(actual,0,BUFSIZ);
-   abytes = fread(actual,sizeof(char),BUFSIZ,file);
-   fail_unless(abytes == nbytes, "file size");
-   fclose(file);
-   mark_point();
-
-    fail_unless(strcmp(actual,expected) == 0, "event.log differs");
-   unlink("expected_event.log");
-   unlink("event.log");
+                                                                                  fail_unless(handle_action_change(1,"act_0",ACT_RUN) == VM_CONTINUE, "failed to change act state");
+  file = fopen("event.log", "r");
+  memset(actual,0,BUFSIZ);
+  abytes = fread(actual,sizeof(char),BUFSIZ,file);
+  fail_unless(abytes == nbytes, "file size");
+  fclose(file);
+  mark_point();
+  fprintf(stderr,"\n%s%s",actual,expected);
+  
+   
+  
+  fail_unless(strcmp(actual,expected) == 0, "event.log differs");
+  // unlink("expected_event.log");
+  // unlink("event.log");
 
 }
 END_TEST
-										     
-
+*/									     
 
 
 /* This is really a silly test, since create instance just calls functions 
    mostly from process_table.c. */
 START_TEST(test_create_instance)
 {
-    int pid, i;
+    int pid;
     char *model = "test_sample_1.pml";
     peos_context_t *context;
     
@@ -178,79 +181,59 @@ START_TEST(test_create_instance)
 
     memset(process_table, 0, PEOS_MAX_PID + 1);
 
-    fail_unless((pid = peos_create_instance(model,resources,num_resources)) == 0, 
-		"failed to create instance");
+   fail_unless((pid = peos_create_instance(model,resources,num_resources)) == 0, "failed to create instance");
     context = &(process_table[0]);
+    fail_unless(context->process_graph != NULL,"graph null");
     fail_unless(context->status == PEOS_READY, "process status");
-    fail_unless(context->actions != NULL, "actions null");
-    fail_unless(context->num_actions == 2, "num_actions wrong");
     fail_unless(context->num_resources == 2,"num_resources wrong");
     fail_unless(context->resources != NULL,"resources null");
-  //  strcpy(context->actions[1].name,"act_1");
-    for (i = 0; i < context->num_actions; i++) {
-	char buf[256];
-	sprintf(buf, "act_%d", i);
-	fail_unless(strcmp(context->actions[i].name, buf) == 0, "act name");
-	fail_unless(context->actions[i].pid == pid, "act pid");
-    }
 }
 END_TEST
 
 
-/* Try to create an instance of a non-existent model. */
-START_TEST(test_create_instance_noexist)
+START_TEST(test_log_event)
 {
-    char *model = "no";
-    peos_resource_t *resources;
-    int num_resources;
+  int nbytes,abytes;
+  FILE *file;
+  char expected[BUFSIZ],actual[BUFSIZ];
+  char times[20];
+  struct tm *current_info;
+  time_t current;
+  char msg[256];
 
-    fail_unless(peos_create_instance(model,resources,num_resources) == -1,
-		"created from non-existent model.");
+  time(&current);
+  current_info = localtime(&current);
+  current = mktime(current_info);
+  strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
+  file = fopen("expected_event.log", "a");
+  strcpy(msg,"jnoll RUN act_0 1");
+  fprintf(file, "%s %s\n", times,msg);
+  fclose(file);
+                                                                          mark_point();
+									  file = fopen("expected_event.log","r");
+  memset(expected,0,BUFSIZ);
+  nbytes = fread(expected,sizeof(char),BUFSIZ,file);
+  fclose(file);
+  mark_point();
+  
+  /* action */
+  log_event(msg);
+
+  /* post */
+  file = fopen("event.log", "r");
+  memset(actual,0,BUFSIZ);
+  abytes = fread(actual,sizeof(char),BUFSIZ,file);
+  fail_unless(abytes == nbytes, "file size");
+  fclose(file);
+  mark_point();
+   
+  fail_unless(strcmp(actual,expected) == 0, "event.log differs");
+   unlink("expected_event.log");
+   unlink("event.log");
+
 }
 END_TEST
 
-void setup_get_field_test(int act_num, char *script)
-{
-    /* Pre: a process is loaded; some action is RUNNING,
-     * the process is waiting for the action to become DONE.
-     */
-    peos_context_t *context = &process_table[0];
-    context->num_actions = 10;
-    context->actions = make_actions(context->num_actions, ACT_NONE);
-    context->actions[act_num].script = script;
-}
-
-/* Action field accessor. */
-START_TEST(test_get_field_first)
-{
-    char *expected = "This is the script.", *actual;
-    setup_get_field_test(0, expected);
-    actual = get_field(0, "act_0", ACT_SCRIPT);
-    fail_unless(strcmp(actual, expected) == 0, "script contents");
-}
-END_TEST
-
-/* Action field accessor. */
-START_TEST(test_get_field_last)
-{
-    char *expected = "This is the script.", *actual;
-    setup_get_field_test(9, expected);
-    actual = get_field(0, "act_9", ACT_SCRIPT);
-    fail_unless(strcmp(actual, expected) == 0, "script contents");
-}
-END_TEST
-
-/* Action field accessor. */
-START_TEST(test_get_field_none)
-{
-    char *expected = "This is the script.", *actual;
-    setup_get_field_test(9, expected);
-    actual = get_field(0, "No_action", ACT_SCRIPT);
-    fail_unless(actual == NULL, "script contents");
-}
-END_TEST
-
-
 int
 main(int argc, char *argv[])
 {
@@ -262,25 +245,23 @@ main(int argc, char *argv[])
     parse_args(argc, argv);
 
     tc = tcase_create("io");
+    suite_add_tcase(s,tc);
     tcase_add_test(tc, test_find_model_file_default);
     tcase_add_test(tc, test_find_model_file);
 
     tc = tcase_create("create_instance");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_create_instance);
-    tcase_add_test(tc, test_create_instance_noexist);
 
-    tc = tcase_create("handle action change");
+  /*  tc = tcase_create("handle action change");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_handle_action_change_run);
+*/
 
-
-    
-    tc = tcase_create("action accessors");
+    tc = tcase_create("log_event");
     suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_get_field_first);
-    tcase_add_test(tc, test_get_field_last);
-    tcase_add_test(tc, test_get_field_none);
+    tcase_add_test(tc, test_log_event);
+
 
     sr = srunner_create(s);
 

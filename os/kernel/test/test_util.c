@@ -6,15 +6,17 @@
 #include "process.h"
 #include "test_util.h"
 #include "action.h"
-#include "vm.h"
 #include "graph_engine.h"
 
 /* Test control flags. */
 
 int fork_status = CK_NOFORK;
 int verbosity = CK_NORMAL;
-/* Utility functions. */
 
+
+/* forward declarations */
+
+Graph stub_makegraph(char *file);
 
 Tree make_tree(char *sval,int ival, Tree left, Tree right)
 {
@@ -85,24 +87,10 @@ void free_actions(peos_action_t *actions, int size)
 }
 
 
-int stub_load_actions(char *file, peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes, int *num_other_nodes,Graph *process_graph)
+int stub_load_actions(char *file, Graph *process_graph)
 {
-	peos_action_t *act_array = (peos_action_t *) calloc(2,sizeof(peos_action_t));
-	peos_other_node_t *nodes_array = (peos_other_node_t *) calloc(1,sizeof(peos_other_node_t));
-	
-        if(strcmp(file,"no") == 0) return -1; 
-	strcpy(act_array[0].name,"act_0");
-	strcpy(act_array[1].name,"act_1");
-        act_array[0].state = ACT_NONE;
-        act_array[1].state = ACT_NONE;	
-	strcpy(nodes_array[0].name,"sel");
-	nodes_array[0].state = ACT_NONE;
-	*actions = act_array;
-	*other_nodes = nodes_array; 
-	
-        *num_other_nodes = 1;	
-
-        *num_actions = 2;	
+	*process_graph = (Graph) stub_makegraph("some file");
+	 
 	return 1;
         
 }

@@ -1,7 +1,6 @@
 #include <check.h>
 #include <stdlib.h>
 #include <unistd.h>		/* unlink() */
-#include "vm.h"
 #include "action.h"
 #include "test_util.h"
 

@@ -1,7 +1,7 @@
 /*****************************************************************
  * File:        events.c
- * Author:      Tingjun Wen
- * Date:        7/19/99
+ * Author:      Jigar Shah
+ * Last Modified : 11/9/03        
  * Description: Event handling functions.
  *****************************************************************/   
 
@@ -12,21 +12,15 @@
 #include <string.h>
 #include <assert.h>
 #include <time.h>
-#include "vm.h"
 #include "process.h"
 #include "events.h"
 #include "graph_engine.h"
 
 
 
-
-
-/* Global variables. */
-
 /* Forward declarations. */
 extern char *find_model_file(char *model);
 
-
 
 void error_msg(char *s) 
 {
@@ -73,7 +67,7 @@ char **peos_list_models()
 }
 
 
-int peos_set_action_state(int pid,char *action, vm_act_state state)
+vm_exit_code peos_set_action_state(int pid,char *action, vm_act_state state)
 {
     switch(state) {
         case ACT_READY : return handle_action_change(pid,action,ACT_READY);
@@ -89,7 +83,7 @@ int peos_set_action_state(int pid,char *action, vm_act_state state)
 			 break;
 	default : {
 	              fprintf(stderr,"\nInvalid Action State\n");
-		      return -1;
+		      return VM_ERROR;
 		  }
     }
 }
@@ -119,15 +113,20 @@ peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
     return get_resource_list(model_file,num_resources);
 }
 
+char *peos_get_script(int pid, char *act_name)
+{
+    return get_script(pid,act_name);
+}
+    
+
 
 int peos_run(char *process, peos_resource_t *resources,int num_resources)
 {
     int pid;
-    char *model_file = find_model_file(process), times[20];
-    FILE *file;
-    struct tm *current_info;
-    time_t current;
-
+    char msg[256];
+    
+    char *model_file = find_model_file(process);
+   
 
     if (model_file == NULL) {
         fprintf(stderr, "peos_run: can't find model file for process %s\n",process);
@@ -137,13 +136,8 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
     // this is the only change in peos_run
     pid = peos_create_instance(model_file,resources,num_resources);
 
-    time(&current);
-    current_info = localtime(&current);
-    current = mktime(current_info);
-    strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
-    file = fopen("event.log", "a");
-    fprintf(file, "%s jnoll start %s %d\n", times, model_file, pid);
-    fclose(file);
+    sprintf(msg, " jnoll start %s %d\n", model_file, pid);
+    log_event(msg);
     
     if (pid >= 0) {  
         return pid;

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "vm.h"
+//#include "vm.h"
+#include "process.h"
 #include "action.h"
 
 

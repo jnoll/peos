@@ -19,11 +19,15 @@ Graph makegraph(char *file)
    return stub_makegraph(file);
 }
 
-int annotate_graph(Graph g, peos_context_t *context)
+int annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other_node_t *other_nodes, int num_other_nodes)
 {
     return 1;
 }
 
+char *get_script_graph(Graph g, char *act_name)
+{
+    return "script";
+}
 
 void GraphDestroy(Graph g)
 {
@@ -60,16 +64,11 @@ START_TEST(test_load_actions)
     /* Pre: a model exists. */
     /* Action. */
     
-  
-	  s = load_actions("test_sample_1.pml", &(context->actions),&(context->num_actions),&(context->other_nodes),&(context->num_other_nodes),&(context->process_graph));
+ 
+    s = load_actions("some file",&(context->process_graph));
  
   /* Post: model loaded - each entry matches a line in the file. */
     fail_unless(s == 1,"return value");	  
-    fail_unless(context->num_actions == 2, "num_actions wrong");
-    fail_unless(strcmp(context->actions[0].name,"act_0") == 0, "action name wrong");
-    fail_unless(strcmp(context->actions[1].name,"act_1") == 0, "action name wrong");
-    fail_unless(context->num_other_nodes == 1, "num_other_nodes wrong");
-    fail_unless(strcmp(context->other_nodes[0].name,"sel") == 0, "sel name wrong");
     fail_unless(context->process_graph != NULL,"Process graph null");
 
 }
@@ -128,6 +127,9 @@ START_TEST(test_save_proc_table)
     int i, j, nbytes, abytes;
     char expected[BUFSIZ], actual[BUFSIZ];
     FILE *f;
+    int t_num_actions,t_num_other_nodes;
+    peos_action_t *t_actions;
+    peos_other_node_t *t_other_nodes;
 
     /* Pre: process table initialized. */
     peos_context_t *context = &(process_table[0]);
@@ -135,28 +137,29 @@ START_TEST(test_save_proc_table)
     f = fopen("expected_proc_table.dat", "w");
     for (j = 0; j < PEOS_MAX_PID+1; j++) {
 	context = &(process_table[j]);
+	context->process_graph = (Graph) stub_makegraph("some file");
 	sprintf(context->model, "test.pml");
 	fprintf(f, "pid: %d\nmodel: %s\n", j, context->model);
 	context->status = PEOS_RUNNING;
 	fprintf(f, "status: %d\n", context->status);
-	context->num_actions = 3;
+	t_num_actions = 2;
 	fprintf(f, "actions: "); 
-	fprintf(f, "%d ", context->num_actions);
-	context->actions = (peos_action_t *)calloc(context->num_actions, sizeof(peos_action_t));
-	for (i = 0; i < context->num_actions; i++) {
-	    strcpy(context->actions[i].name, "an_action");
-	    context->actions[i].state = ACT_NONE;
-	    fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
+	fprintf(f, "%d ",t_num_actions);
+	t_actions = (peos_action_t *)calloc(t_num_actions, sizeof(peos_action_t));
+	for (i = 0; i < t_num_actions; i++) {
+	    sprintf(t_actions[i].name, "act_%d",i);
+	    t_actions[i].state = ACT_NONE;
+	    fprintf(f, " %s %d", t_actions[i].name, t_actions[i].state); 
 	}
         fprintf(f, "\n");
-        context->num_other_nodes = 3;
+        t_num_other_nodes = 1;
         fprintf(f, "other_nodes: ");
-	fprintf(f, "%d ", context->num_other_nodes);
-	context->other_nodes = (peos_other_node_t *)calloc(context->num_other_nodes, sizeof(peos_other_node_t));
-	for (i = 0; i < context->num_other_nodes; i++) {
-	    strcpy(context->other_nodes[i].name, "some_other_node");
-	    context->other_nodes[i].state = ACT_NONE;
-	   fprintf(f, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
+	fprintf(f, "%d ", t_num_other_nodes);
+	t_other_nodes = (peos_other_node_t *)calloc(t_num_other_nodes, sizeof(peos_other_node_t));
+	for (i = 0; i < t_num_other_nodes; i++) {
+	    strcpy(t_other_nodes[i].name, "sel");
+	    t_other_nodes[i].state = ACT_NONE;
+	   fprintf(f, " %s %d", t_other_nodes[i].name, t_other_nodes[i].state);
 	}
 
         fprintf(f, "\n");
@@ -207,6 +210,9 @@ START_TEST(test_load_proc_table)
     char  *model = "test_sample_5.pml";
     peos_context_t ctx;
     FILE *f;
+    int num_actions,num_other_nodes;
+    peos_action_t *actions;
+    peos_other_node_t *other_nodes;
 
     /* Pre: saved process table file. */
     peos_context_t *context = &(ctx);
@@ -217,33 +223,32 @@ START_TEST(test_load_proc_table)
 	fprintf(f, "pid: %d\nmodel: %s\n", j, context->model);
 	context->status = PEOS_RUNNING;
 	fprintf(f, "status: %d\n", context->status);
-	context->num_actions = 2;
+	num_actions = 2;
 	fprintf(f, "actions: "); 
-	fprintf(f, "%d ", context->num_actions);
-	context->actions = (peos_action_t *)calloc(context->num_actions, sizeof(peos_action_t));
-	for (i = 0; i < context->num_actions; i++) {
-	    sprintf(context->actions[i].name, "act_%d", i);
-	    context->actions[i].state = ACT_NONE;
-	    context->actions[i].script = "test script";
-	    fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
+	fprintf(f, "%d ", num_actions);
+	actions = (peos_action_t *)calloc(num_actions, sizeof(peos_action_t));
+	for (i = 0; i < num_actions; i++) {
+	    sprintf(actions[i].name, "act_%d", i);
+	    actions[i].state = ACT_NONE;
+	    actions[i].script = "test script";
+	    fprintf(f, " %s %d", actions[i].name, actions[i].state); 
 	}
 
         
 	fprintf(f,"\n");
 
-	context->num_other_nodes = 1;
+	num_other_nodes = 1;
         fprintf(f, "other_nodes: ");
-        fprintf(f, "%d ", context->num_other_nodes);
-        context->other_nodes = (peos_other_node_t *)calloc(context->num_other_nodes, sizeof(peos_other_node_t));
-        for (i = 0; i < context->num_other_nodes; i++) {
-            sprintf(context->other_nodes[i].name, "sel");
-            context->other_nodes[i].state = ACT_NONE;
-            fprintf(f, " %s %d", context->other_nodes[i].name, context->other_nodes[i].state);
+        fprintf(f, "%d ", num_other_nodes);
+        other_nodes = (peos_other_node_t *)calloc(num_other_nodes, sizeof(peos_other_node_t));
+        for (i = 0; i < num_other_nodes; i++) {
+            sprintf(other_nodes[i].name, "sel");
+            other_nodes[i].state = ACT_NONE;
+            fprintf(f, " %s %d", other_nodes[i].name, other_nodes[i].state);
         }
 	
-
 	fprintf(f,"\n");
-	
+
         context->num_resources = 2;
         fprintf(f, "resources: ");
         fprintf(f, "%d ", context->num_resources);
@@ -276,25 +281,8 @@ START_TEST(test_load_proc_table)
 	fail_unless(context->pid == j, "pid");
 	fail_unless(strcmp(context->model, model) == 0, "model name");
 	fail_unless(context->status == PEOS_RUNNING, "process status");
-	fail_unless(context->num_actions == 2, "num actions");
+	fail_unless(context->process_graph != NULL, "process graph null");	
 	
-	fail_unless(strcmp(context->actions[0].name,"act_0") == 0, "action name wrong");
-	fail_unless(strcmp(context->actions[1].name,"act_1") == 0, "action name wrong");
-	
-	fail_unless(context->num_other_nodes == 1,"num_other_nodes_wrong");
-	fail_unless(strcmp(context->other_nodes[0].name,"sel") == 0, "sel name wrong");
-	
-	for (i = 0; i < context->num_actions; i++) {
-	    fail_unless(context->actions[i].pid == j, "action pid");
-	    fail_unless(context->actions[i].state == ACT_NONE, "act state");
-	    fail_unless(strcmp(context->actions[i].script, "test script") == 0, "act script");
-	}
-
-	for (i=0; i < context->num_other_nodes;i++) {
-		fail_unless(context->other_nodes[i].pid == j, "other_nodes pid");
-		fail_unless(context->other_nodes[i].state == ACT_NONE, "other node state");
-	}
-
 	for (i=0; i < context->num_resources;i++) {
           fail_unless(context->resources[i].pid == j, "resources pid");
 	  fail_unless(strcmp(context->resources[i].name,"some_resource") == 0, "resource name");
@@ -308,116 +296,26 @@ START_TEST(test_load_proc_table)
 END_TEST
 
 
-void setup_list_actions()
-{
-    int i;
-
-    for (i = 0; i <= PEOS_MAX_PID; i++) {
-	process_table[i].actions = make_actions(10, ACT_NONE);
-	process_table[i].num_actions = 10;
-    }
-}
-
-void teardown_list_actions()
-{
-    int i;
-    for (i = 0; i <= PEOS_MAX_PID; i++) {
-	free(process_table[i].actions);
-    }
-}
-
 START_TEST(test_list_actions_0)
 {
-    peos_action_t **acts = 0;
-    int i;
+    int num_actions;
+    peos_action_t *actions;
+    
+    process_table[0].process_graph = (Graph) stub_makegraph("some file");
 
-    /* Empty result. */
-    /*  Pre: process table is initialized. */
+    actions = peos_list_actions(0,&num_actions);
 
-    /* Action. */
-    acts = peos_list_actions(ACT_READY);
-
-    /* Post: list of actions in READY state. */
-    for (i = 0; acts[i]; i++) {
-	fail_unless(acts[i]->state == ACT_READY, NULL);
-    }
-
-    fail_unless(i == 0, "action count wrong (there aren't any)"); 
-    free(acts);
+    fail_unless(actions != NULL,"actions null");
+    fail_unless(num_actions == 2, "num_actions wrong");
+    fail_unless(strcmp(actions[0].name,"act_0") == 0, "act_0 name wrong");
+    fail_unless(actions[0].state == ACT_NONE, "act_0 state wrong");
+    fail_unless(strcmp(actions[1].name,"act_1") == 0, "act_1 name wrong"); 
+    fail_unless(actions[1].state == ACT_NONE, "act_1 state wrong");
+   
+    free(actions);
 }
 END_TEST
 
-START_TEST(test_list_actions_1)
-{
-    peos_action_t **acts = 0;
-    int i;
-
-    /* One ready, at beginning. */
-    /* Pre: action list is initialized. */
-    for (i = 0; i <= PEOS_MAX_PID; i++) {
-	process_table[i].actions[0].state = ACT_READY;
-    }
-
-    /* Action. */
-    acts = peos_list_actions(ACT_READY);
-
-    /* Post: one action in READY state. */
-    for (i = 0; acts[i]; i++) {
-	fail_unless(acts[i]->state == ACT_READY, NULL);
-    }
-    fail_unless(i == (1 * (PEOS_MAX_PID + 1)), "action count wrong");
-    free(acts);
-
-}
-END_TEST
-
-START_TEST(test_list_actions_2)
-{
-    peos_action_t **acts = 0;
-    int i;
-
-    /* Two ready, beginning and end. */
-    /* Pre: action list is initialized. */
-    for (i = 0; i <= PEOS_MAX_PID; i++) {
-	process_table[i].actions[0].state = ACT_READY;
-	process_table[i].actions[9].state = ACT_READY;
-    }
-
-    /* Action. */
-    acts = peos_list_actions(ACT_READY);
-
-    /* Post: two actions in READY state. */
-    for (i = 0; acts[i]; i++) {
-	fail_unless(acts[i]->state == ACT_READY, NULL);
-    }
-    fail_unless(i == (2 * (PEOS_MAX_PID + 1)), "action count wrong");
-    free(acts);
-}
-END_TEST
-
-START_TEST(test_list_actions_3)
-{
-    peos_action_t **acts = 0;
-    int i;
-
-    /* Three ready, including middle. */
-    /* Pre: action list is initialized. */
-    for (i = 0; i <= PEOS_MAX_PID; i++) {
-	process_table[i].actions[0].state = ACT_READY;
-	process_table[i].actions[5].state = ACT_READY;
-	process_table[i].actions[9].state = ACT_READY;
-    }
-    /* Action. */
-    acts = peos_list_actions(ACT_READY);
-
-    /* Post: three actions in READY state. */
-    for (i = 0; acts[i]; i++) {
-	fail_unless(acts[i]->state == ACT_READY, NULL);
-    }
-    fail_unless(i == (3 * (PEOS_MAX_PID + 1)), "action count wrong");
-    free(acts);
-}
-END_TEST
 
 /* Sets up a full table. */
 void setup_find_free_entry()
@@ -545,12 +443,7 @@ main(int argc, char *argv[])
 
     tc = tcase_create("list actions");
     suite_add_tcase(s, tc);
-    tcase_add_unchecked_fixture(tc, setup_list_actions,
-			      teardown_list_actions);
     tcase_add_test(tc, test_list_actions_0);
-    tcase_add_test(tc, test_list_actions_1);
-    tcase_add_test(tc, test_list_actions_2);
-    tcase_add_test(tc, test_list_actions_3);
 
     tc = tcase_create("find free entry");
     suite_add_tcase(s, tc);

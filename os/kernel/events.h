@@ -21,7 +21,7 @@ extern int peos_run(char *process,peos_resource_t *resources,int num_resources);
  * parameters are the process id, name of the action and the state 
  */
 
-extern int peos_set_action_state(int pid,char *act_name,vm_act_state state);
+extern vm_exit_code peos_set_action_state(int pid,char *act_name,vm_act_state state);
 
 /* 
  * This function is used to retrieve the list of resources associated with an 

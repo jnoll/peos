@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.19 2003/11/07 02:44:12 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.20 2003/11/10 23:13:51 jshah1 Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -20,7 +20,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "events.h"
-#include "vm.h"
+//#include "vm.h"
 #include "process_table.h"
 #include "pmlheaders.h"
 #include "graph_engine.h"
@@ -55,81 +55,28 @@ void list_instances()
     }
 }
 
-void print_action(peos_action_t *action, char *state) 
-{
-    peos_resource_t *resources;
-    int num_resources;
-    int i;
-
-    peos_resource_t  *resources_req,*resources_pro;  
-    int num_req_resources,num_pro_resources;
-
-    resources = (peos_resource_t *) peos_get_resource_list_action(action->pid,action->name,&num_resources);
-
-/* get the required resources */    
-    resources_req = (peos_resource_t *) peos_get_resource_list_action_requires(action -> pid,action -> name,&num_req_resources);
-
-
-/* get the provided resources */    
-    resources_pro = (peos_resource_t *) peos_get_resource_list_action_provides(action->pid, action -> name, &num_pro_resources);
-
-   
-    printf("  %2d    %-6s (%s) %s  resources:", action->pid, action->name, state, action->script ? action->script : "no script");
-     
-    if(num_resources == 0) printf("no resources");
-    for(i = 0; i < num_resources; i++) {
-        printf(" %s='%s'", resources[i].name, resources[i].value);
-	if(i != num_resources-1) {
-	    printf(",");
-	}
-    }
-    printf("\n");
-
-/* print the required resources */    
-    printf("Required Resources: ");
-    if(num_req_resources == 0) printf("no resources required");
-    for(i = 0; i < num_req_resources; i++) {
-        printf(" %s",resources_req[i].name);
-        if(i != num_req_resources-1) printf(",");
-    }
-    printf("\n");
-
-/* print the provided resources */      
-    printf("Provided Resources: ");
-    if(num_pro_resources == 0) printf("no resources provided");
-    for(i = 0; i < num_pro_resources; i++) {
-        printf(" %s",resources_pro[i].name);
-        if(i != num_pro_resources-1) printf(",");
-    }
-    printf("\n");
-    
-}
-
-
 void list_actions()
 {
-    peos_action_t **alist;
-    int i;
+    peos_action_t *alist;
+    int i=0;
+    int j;
+    
+    char ** result = peos_list_instances();
+	
     printf("process action (status)\n");
-    alist = peos_list_actions(ACT_RUN);
-    if (alist && alist[0]) {
-        for (i = 0; alist[i]; i++) {
-	    print_action(alist[i], "active");
+    while((i <= PEOS_MAX_PID) &&  (result[i] != NULL)) {
+	int num_actions;    
+        alist = peos_list_actions(i,&num_actions);
+	if(alist) {
+	    for(j = 0; j < num_actions; j++) {
+	        printf("%d  %s  %d\n",i,alist[j].name,alist[j].state);
+	    }
 	}
+	i++;
     }
-    alist = peos_list_actions(ACT_SUSPEND);
-    if (alist && alist[0]) {
-        for (i = 0; alist[i]; i++) {
-	    print_action(alist[i], "suspended");
-	}
-    }
-    alist = peos_list_actions(ACT_READY);
-    if (alist && alist[0]) {
-	for (i = 0; alist[i]; i++) {
-	    print_action(alist[i], "ready");
-	}
-    }
-}
+}    
+	   
+   
 
 void list(int argc, char *argv[])    
 {
@@ -245,15 +192,16 @@ void run_action(int argc, char *argv[])
 	printf("process executed an illegal instruction and has been terminated\n");
     } 
     else {
-	script = (char *) get_field(pid, action, ACT_SCRIPT);
+	script = (char *) peos_get_script(pid, action);
 	if (script) {
 	    printf(script);
 	    printf("\n");
 	} 
 	else {
-	    printf("(no script)\n");
+	    printf("Error : Script Not Found");	
 	}
     }
+            
 }
 
 void finish_action(int argc, char *argv[])

@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process.c$
-* Version:      $Id: process.c,v 1.14 2003/11/07 02:44:12 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process.c,v 1.15 2003/11/10 23:13:51 jshah1 Exp $ ($Name:  $)
 * Description:  Functions for manipulating process instances.
 * Author:       Jigar Shah & John Noll, Santa Clara University
 * Created:      Sat Feb  8 20:55:52 2003
@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "vm.h"
 #include "process.h"
 #include "events.h"
 #include "graph_engine.h"
@@ -31,7 +30,7 @@
 
 /* Forward declarations. */
 extern peos_context_t *find_free_entry();
-extern int load_actions(char *file,peos_action_t **actions, int *num_actions,peos_other_node_t **other_nodes, int *num_other_nodes,Graph *process_graph);
+extern int load_actions(char *file,Graph *process_graph);
 
 
 
@@ -66,56 +65,26 @@ char *act_state_name(vm_act_state state)
       }
 }
 
-char *get_field(int pid, char *act, peos_field_t field)
-{
-    peos_context_t *context = peos_get_context(pid);
-    peos_action_t *p;
-    for (p = context->actions; p - context->actions < context->num_actions; p++)      {
-        if (strcmp(p->name, act) == 0) {
-            switch(field) {
-                case ACT_SCRIPT:
-	              return p->script;
-	              break;
-	        default: 
-	              return NULL;
-	              break;
-            }
-	}
-    }
-    return NULL;
-}
-
-
 vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
 {
-    FILE *file;
-    struct tm *current_info;
-    time_t current;
-    char times[20], *this_state;
-    peos_resource_t *resources;
-    int num_resources;
-    int i;
-    resources = (peos_resource_t *) peos_get_resource_list_action(pid,action,&num_resources);
-
-    if(resources == NULL) {
-        fprintf(stderr,"Error in Retrieving Resources\n");
-        return VM_INTERNAL_ERROR;
-    }
+    char message[256];
+    char *this_state;
+    vm_exit_code exit_status;
+   
     this_state = act_state_name(state);
-    time(&current);
-    current_info = localtime(&current);
-    current = mktime(current_info);
-    strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
-    file = fopen("event.log", "a");
-    fprintf(file, "%s jnoll %s %s %d resource(s):", times, this_state, action,pid);
-    if(num_resources == 0) fprintf(file," no resources");
-    for(i = 0; i < num_resources; i++) {
-        fprintf(file," %s",resources[i].name);
-        if(i != num_resources-1) fprintf(file,",");
+    sprintf(message, "jnoll %s %s %d ", this_state, action,pid);
+    log_event(message);
+    
+    exit_status =  handle_action_change_graph(pid,action,state); 
+    if (exit_status == VM_DONE) {
+        char msg[256];
+	sprintf(msg,"jnoll DONE %s %d",action,pid);
+	log_event(msg);
+	return exit_status;
     }
-    fprintf(file,"\n");
-    fclose(file);
-    return handle_action_change_graph(pid,action,state); 
+    else
+        return exit_status;
+	    
 }
 
 
@@ -157,19 +126,12 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
         return -1;
     }
 
-    if ((start = load_actions(model_file,&(context->actions), 
-				   &(context->num_actions),&(context->other_nodes),&(context->num_other_nodes),&(context->process_graph))) >= 0) {
-        int i, pid = peos_get_pid(context);
+    if ((start = load_actions(model_file,&(context->process_graph))) >= 0) {
+        int  pid = peos_get_pid(context);
         strcpy(context->model, model_file);
         context->status = PEOS_READY;
-        for (i = 0; i < context->num_actions; i++) {
-            context->actions[i].pid = pid;
-        }
-
-        for (i = 0; i < context->num_other_nodes; i++) {
-            context->other_nodes[i].pid = pid;
-        }
-	    // stick the resources into the context
+	    
+	// stick the resources into the context
         context->num_resources = num_resources;
         context -> resources = resources;
    
@@ -178,6 +140,24 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
     
     return -1;
 }
+
+void log_event(char *message)
+{
+    FILE *file;
+    struct tm *current_info;
+    time_t current;
+    char times[20];
+    
+    time(&current);
+    current_info = localtime(&current);
+    current = mktime(current_info);
+    strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
+    file = fopen("event.log", "a");
+    fprintf(file, "%s %s\n", times,message);
+    fclose(file);
+}
+		    
+
 
 
 #ifdef UNIT_TEST

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "vm.h"
+//#include "vm.h"
+#include "process.h"
 #include "action.h"
 #include "pmlheaders.h"
 #include "process_table.h"
@@ -18,27 +19,26 @@ void mark_successors(Node n, vm_act_state state);
 void add_iteration_lists(Graph g);
 
 
-int  annotate_graph(Graph g, peos_context_t *context)
+int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other_node_t *other_nodes, int num_other_nodes)
 {
     int i;
     Node node;
                                                                       
     for(node = g -> source; node != NULL; node = node -> next) {
         if (node -> type == ACTION) {
-            STATE(node) = get_act_state(node -> name,context -> actions, context->num_actions);
+            STATE(node) = get_act_state(node -> name,actions,num_actions);
 	}
 	else {
 	    if((node->type == SELECTION) || (node->type == BRANCH)) {
-	        for(i=0;i < context->num_other_nodes; i++) {
-	            if (strcmp(node->name,context->other_nodes[i].name)==0) {
-	                STATE(node) = context->other_nodes[i].state;
-	                STATE(node->matching) = context->other_nodes[i].state;
+	        for(i=0;i < num_other_nodes; i++) {
+	            if (strcmp(node->name,other_nodes[i].name)==0) {
+	                STATE(node) = other_nodes[i].state;
+	                STATE(node->matching) = other_nodes[i].state;
 	            }
 	        }
 	     }
 	 }
     }
-
 	
     return 1;   
 }
@@ -557,7 +557,7 @@ void handle_selection(Node n)
     return;
 }
 					
-int action_done(Graph g, char *act_name)
+vm_exit_code action_done(Graph g, char *act_name)
 {
     Node n;
     Node child;
@@ -585,9 +585,26 @@ int action_done(Graph g, char *act_name)
     }
     else {
         fprintf(stderr, "Error in action_done");
-	return -1;
+	return VM_INTERNAL_ERROR;
     }
-    return 1;
+    if(STATE(g->source) == ACT_DONE) {
+        return VM_DONE;
+    }
+    else
+        return VM_CONTINUE;
+ 
+}
+
+char *get_script_graph(Graph g, char *action_name)
+{
+    Node n;
+    n = find_node(g,action_name);
+    if (n == NULL) {
+        fprintf(stderr,"\n Error : get_script action node not found\n");
+        return NULL;
+    }	
+    else
+        return(n -> script ? n -> script : "(no script)");
 }
 
 void initialize_graph(Graph g)
@@ -621,100 +638,88 @@ void initialize_graph(Graph g)
 vm_exit_code handle_action_change_graph(int pid, char *action, vm_act_state state)
 {
     Graph g;
+    vm_exit_code exit_status;
     
     peos_context_t *context = peos_get_context(pid);
-    char *model_file;
-	                                                                                            
-    model_file = context->model;
-//    g = makegraph(model_file);
+
     g = context -> process_graph;
     if(g == NULL) {
-        fprintf(stderr,"Handle Action Error: Unable to build graph");
+        fprintf(stderr,"Handle Action Error: Unable to find graph");
         return VM_INTERNAL_ERROR;
     }
-    if(annotate_graph(g,context) < 0) {
-        fprintf(stderr, "Handle Action Error: Unable to annotate graph");
-        return VM_INTERNAL_ERROR;
-    }
-    if(set_act_state_graph(g,action,state) < 0) {
+    exit_status = set_act_state_graph(g,action,state);
+    if(exit_status == VM_INTERNAL_ERROR) {  
         fprintf(stderr, "Handle Action Error: Unable to change action state");
-        return VM_INTERNAL_ERROR;
+        return exit_status;
     }
-    if(update_context(g,context) < 0) {
-        fprintf(stderr,"Handle Action Error: Unable to update context");
-        return VM_INTERNAL_ERROR;
-    }
-                                                               
-    return VM_DONE;
+                                                                
+    return exit_status;
 }
 
 
-int set_act_state_graph(Graph g, char *action, vm_act_state state)
+vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
 {
 	switch(state)
 	{
        	    case(ACT_DONE) :  {
-			          if(action_done(g,action) > 0) 
-				  return 1;
-				  else 
-				      return -1;
+			          return action_done(g,action); 
 			      }
-	     		      
+				     		      
 	    case(ACT_READY) : {
 			          Node n = find_node(g,action);
 				  if (n!=NULL) {
 				      STATE(n) = ACT_READY;
-				      return 1;
+				      return VM_CONTINUE;
 				  }
 				  else 
-				      return -1;
+				      return VM_INTERNAL_ERROR;
 		               }
 				  
 	     case(ACT_RUN) :   {
 	                           if(action_run(g,action) >  0)
-				       return 1;
+				       return VM_CONTINUE;
 				   else
-				       return -1; 
+				       return VM_INTERNAL_ERROR; 
 			       }
 
              case(ACT_NONE) :  {
 			           Node n = find_node(g,action);
 				   if (n != NULL) {
 			               STATE(n) = ACT_NONE;	 
-		                       return 1;
+		                       return VM_CONTINUE;
 				   }
 				   else
-				       return -1;
+				       return VM_INTERNAL_ERROR;
 	                        }
  
             case(ACT_SUSPEND) : {
 	                            Node n = find_node(g,action);
 				    if (n != NULL) {
 				        STATE(n) = ACT_SUSPEND;
-				        return 1;
+				        return VM_CONTINUE;
 				    }
 				    else
-				        return -1;
+				        return VM_INTERNAL_ERROR;
 				}
 			         
              case(ACT_ABORT) : {
 			           Node n = find_node(g,action);
 				   if (n != NULL) {
 			               STATE(n) = ACT_ABORT;	 
-	                               return 1;
+	                               return VM_CONTINUE;
 				   }
 				   else
-				       return -1;
+				       return VM_INTERNAL_ERROR;
 	                        }
                
               case(ACT_NEW) :   {
 				    Node n = find_node(g,action);
 				    if (n != NULL) {
 				        STATE(n) = ACT_NEW;
-				        return 1;
+				        return VM_CONTINUE;
 				    }
 				    else
-				        return -1;
+				        return VM_INTERNAL_ERROR;
 					 
                                  }
                 
@@ -725,50 +730,6 @@ int set_act_state_graph(Graph g, char *action, vm_act_state state)
 	}
 	
 }
-
-int update_context(Graph g, peos_context_t *context)
-{
-    int i;
-    Node n;
-    FILE *file;
-    struct tm *current_info;
-    time_t current;
-    char times[20];
-		    
-                                      
-    for(n = g -> source -> next; n!= NULL; n = n -> next) {
-        if(n -> type == ACTION) {
-            if (set_act_state(n -> name, STATE(n), context -> actions, context -> num_actions) < 0) {
-                return -1;
-            }
-        }
-        else {
-            if((n->type == SELECTION) || (n->type == BRANCH)) {
-                for(i=0;i < context->num_other_nodes; i++) {
-                    if (strcmp(n->name,context->other_nodes[i].name)==0) {
-                        context->other_nodes[i].state = STATE(n);
-                    }
-                 }
-            }
-	    else {
-	        if(n->type == PROCESS) {
-		    if (STATE(n) == ACT_DONE) {
-		        time(&current);
-                        current_info = localtime(&current);
-			current = mktime(current_info);
-			strftime(times,25,"%b %d %Y %H:%M",localtime(&current));
-			file = fopen("event.log", "a");
-		        fprintf(file, "%s jnoll end %s %d\n", times, context->model,context->pid);
-			fclose(file);
-			context -> status = PEOS_DONE;
-		    }
-		}
-	    }
-	}
-    }
-    return 1;
-}
-			
 # ifdef UNIT_TEST
 #include "test_graph_engine.c"
 #endif
