@@ -236,6 +236,9 @@ char* pe_get_resval(int pid,char* resource_name)
 int pe_perform_predicate_eval(int pid, Tree t)
 {
 	int res= 0;
+#ifdef PE_DEBUG
+	fprintf(stderr, "------------- pe_perform_predicate_eval \n");
+#endif
 	if (IS_ID_TREE(t)){
 		if(strlen(TREE_ID(t))>0)
 			if (TREE_ID(t)[0]=='\"') {
@@ -260,19 +263,38 @@ int pe_perform_predicate_eval(int pid, Tree t)
 				
 			}
 		return pe_file_exists(pe_get_resval(pid, TREE_ID(t)));
-	}else if(TREE_OP(t) >= EQ && TREE_OP(t) <= GT){    
-		if(TREE_OP(t->left) == DOT && TREE_OP(t->right) == DOT){
-			if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->right->right))){
- 				return pe_file_exists(pe_get_resval(pid, TREE_ID(t))) && pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
+	}else if (IS_OP_TREE(t)){
+#ifdef PE_DEBUG
+			fprintf(stderr, "[Op tree] %d (%d) (%d)\n", TREE_OP(t),TREE_OP(t->left),TREE_OP(t->right));
+#endif	
+		if (TREE_OP(t) >= EQ && TREE_OP(t) <= GT){    
+	#ifdef PE_DEBUG
+				fprintf(stderr, "EQ-GT %d\n", TREE_OP(t));
+	#endif
+			if(TREE_OP(t->left) == DOT && TREE_OP(t->right) == DOT){
+				if(!strcmp("timestamp", TREE_ID(t->left->right)) && !strcmp("timestamp", TREE_ID(t->right->right))){
+					return pe_file_exists(pe_get_resval(pid, TREE_ID(t))) && pe_timestamp(pe_get_resval(pid, TREE_ID(t->left->left)), pe_get_resval(pid, TREE_ID(t->right->left)));
+				}
 			}
+			else if(TREE_OP(t->left) == DOT){
+				if(!strcmp("spellchecked", TREE_ID(t->left->right)) ==
+				pe_perform_predicate_eval(pid, t->right))
+					return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));	
+			}
+
 		}
-		else if(TREE_OP(t->left) == DOT){
-			if(!strcmp("spellchecked", TREE_ID(t->left->right)) ==
-			   pe_perform_predicate_eval(pid, t->right))
- 				return pe_spellcheck(pe_get_resval(pid, TREE_ID(t->left->left)));	
+		else if ( (TREE_OP(t) >= OR && TREE_OP(t) <= AND)
+			){
+#ifdef PE_DEBUG
+			fprintf(stderr, "OR-AND\n");
+#endif
+			return (pe_perform_predicate_eval(pid,t->left) && 			
+				pe_perform_predicate_eval(pid,t->right));
 		}
+#ifdef PE_DEBUG
+		else fprintf(stderr, "Nothing\n");
+#endif
 	}
-	
 	return 1;
 }
 	
@@ -355,11 +377,15 @@ eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_lis
 	    case OR: {
 #ifdef PE_DEBUG
 	    if(!fnd)printf("\nn-  - - - - OR treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
+	    if(IS_OP_TREE(t)) printf ("%d=%d=NE, %d=%d=EQ\n", TREE_OP(t->left), NE , TREE_OP(t->right), EQ);
+	    
 	    if(!fnd)fnd=!fnd;
 #endif
-                eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
+		eval_result = (eval_result && pe_perform_predicate_eval(pid, t) ) ? 1 : 0;
+		//break;
+                //eval_result = (eval_result && pe_make_resource_list(pid, t->left, &resource_list,num_resources, rsize, "\0") ) ? 1 : 0;
 		
-	        eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list,num_resources, rsize, "\0")) ? 1 : 0;
+	        //eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_list,num_resources, rsize, "\0")) ? 1 : 0;
 			      
 	    }
             break;		      
