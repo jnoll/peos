@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.28 2003/12/04 18:29:09 jshah1 Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.29 2003/12/04 23:39:21 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -331,7 +331,6 @@ int load_proc_table(char *file)
     
     int fd;
    
-
     fd = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (fd < 0) {
         fprintf(stderr, "Cannot Get Process Table File Descriptor\n");
@@ -352,12 +351,11 @@ int load_proc_table(char *file)
 	status = 0;
 	while (load_context(in, &process_table[num_proc]))
 	    num_proc++;
-	release_lock(fd);
-	close(fd);
-	fclose(in);
-
+     /* fclose(in); */
+	/* XXX This is an issue here. If I close the file stream or the file descriptor, I loose the lock on the file. So right now this will result in some open descriptors. Potential solution is to use a global descriptor, which can be closed from save_proc_table */
     }
     else {
+	fprintf(stderr, "Error in getting file pointer for load process table");
         release_lock(fd);
 	close(fd);
     }
@@ -417,6 +415,7 @@ save_proc_table(char *file)
 	exit(EXIT_FAILURE);
     }
 
+/* setting the lock again will replace the old lock we have */    
     if(get_lock(fd) < 0) {
         fprintf(stderr, "Cannot Obtain Process Table File Lock\n");
 	exit(EXIT_FAILURE);
@@ -431,10 +430,12 @@ save_proc_table(char *file)
 	}
 	release_lock(fd);
 	close(fd);
-	fclose(out);
+        fclose(out);
     }
-    else
-         fprintf(stderr, "File Pointer Error: %s \n", strerror(errno));
+    else {
+        fprintf(stderr, "File Pointer Error: %s \n", strerror(errno));
+	return -1;
+    }
     return 0;
 }
 
@@ -453,6 +454,12 @@ char **peos_list_instances()
         result[i] = process_table[i].model;
     }
     result[i] = NULL;
+  
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
     return result;
 }
 
@@ -511,6 +518,12 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
 	other_nodes[i].pid = pid;
     }
     *num_actions = num_act;  
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+    
     return actions;
 }
 

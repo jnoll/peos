@@ -124,40 +124,69 @@ vm_exit_code peos_notify(int pid, char *action, peos_event event)
 
 peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
 {
+    peos_resource_t *resources;
 	
     if(load_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Load Process Table\n");
 	exit(EXIT_FAILURE);
     }
     
-    return get_resource_list_action(pid,name,num_resources);
+    resources =  get_resource_list_action(pid,name,num_resources);
+
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return resources;
 }
 
 
 peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *num__req_resources)
 {
+    peos_resource_t *resources;	
 
     if(load_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Load Process Table\n");
 	exit(EXIT_FAILURE);
     }
-    return get_resource_list_action_requires(pid,name,num__req_resources);
+    
+    resources = get_resource_list_action_requires(pid,name,num__req_resources);
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return resources;
 }
 
 
 peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *num_pro_resources)
 {
+    peos_resource_t *resources;
 	
     if(load_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Load Process Table\n");
 	exit(EXIT_FAILURE);
     }
-    return get_resource_list_action_provides(pid,name,num_pro_resources);
+    
+    resources =  get_resource_list_action_provides(pid,name,num_pro_resources);
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return resources;
 }
+
 
 
 peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
 {
+    peos_resource_t *resources;	
     char *model_file = find_model_file(model);
 
     if(load_process_table() < 0) {
@@ -166,17 +195,35 @@ peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
     }
     
     
-    return get_resource_list(model_file,num_resources);
+    resources =  get_resource_list(model_file,num_resources);
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return resources;
+
 }
 
 char *peos_get_script(int pid, char *act_name)
 {
+    char *script;	
 
     if(load_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Load Process Table\n");
 	exit(EXIT_FAILURE);
     }
-    return get_script(pid,act_name);
+    
+    script = get_script(pid,act_name);
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return script;
+
 }
     
 
