@@ -79,7 +79,7 @@ public class testSFASJU extends TestCase{
 		//	return false;
 		test.abort(testElem,0);
                 testElem = testAM.getActionByName(0,"Fill_hours");
-		assertTrue(testElem.getAttribute("state").equals("AVAILABLE"));
+		assertTrue(testElem.getAttribute("state").equals("NONE"));
 		//if (!testElem.getAttribute("state").equals("NONE"))
 		//	return false;
 		//return true;

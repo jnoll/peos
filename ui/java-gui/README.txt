@@ -10,44 +10,45 @@ To install the software, carefully follow the instructions below.
 - Linux Workstation
 - Xerces 2.6.2 
 
--[ Build ] -----------------------------------------------------------
+-[ Installation ] -----------------------------------------------------------
 
-% cd peos
-% make
-% make setup
+First and foremost, you need to set the following lines in the Makefile.
+images
+path
+help
+pml
+XERCES_PATH
+JUNIT_PATH
+JAVAGUI_JAR
 
-make setup is required for the program to work. This sets the path of PEOS
-which is necessary for many methods in our PEOS interface to run. If the 
-program does not seem to be running correctly, it is likely you did not 
-enter a proper path for PEOS. 
+The defaults assume you are going to load, compile, and run the program from
+the CVS module directory. If this is the case, the lines do not need to be
+modified. For a server-wide install though, these paths will need to be set
+and the following line will need to be run:
 
-Example: 
+% make script
 
-% make -s setup
-% Please enter pathname for PEOS.
-% /home/jshah1/bin/peos
+After you have run the script, assuming the appropriate pathnames have been
+entered, you can run the Java gui for PEOS.
 
-Note that it is required to enter the path including the executable.
-
-* Occasionally, this program will spit out some garbage when it checks
-  the availability of the peos executable. Please ignore.
+% ./runpeos
 
 -[ Verify ] ----------------------------------------------------------
-(Make sure to run "make setup" before you attempt the unit tests.)
+Make sure that all path names are set properly and that copies of the .pml
+files included in the CVS module are stored in your pml directory. 
+
+Unit tests must be compiled and run in a directory with all the source .java
+files. 
+
 Unit Test:
-% make -s test 
+% make -s jtest 
 
-
-If the above option displays:
-displayPO: Pass: 9 Fail: 0
-LoadProcess Pass: 3 Fail: 0
-Buttons pass: 7 fail: 0
-ActionMap pass: 6 fail: 0
-
-The program has been verified and passes all unit tests.
+All tests should pass OK. No failures should be reported.
 
 
 -[ Running ] ---------------------------------------------------------
+After following the installation instructions above, a script will be created
+and all you have to do is type: 
 
 % runpeos
 
@@ -112,9 +113,7 @@ The program has been verified and passes all unit tests.
 
 1)
   Q: When I try to load an application, nothing happens!
-  A: Make sure you typed "make setup" before running runPeos.sh! If
-     you have done this, odds are you did not enter a proper path.
-     Verify the PEOS path and use runPeos.sh again.
+  A: Make sure all paths are set appropriately and re-run make script. 
 
   
  
@@ -125,8 +124,3 @@ Please direct any inquiries to:
 
 	Steve Beeby
 	Email: shinobi@club-vette.com
-
-	Gloria Chang
-	Email: gwchang@scu.edu	
-
-

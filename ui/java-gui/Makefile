@@ -6,7 +6,8 @@ XERCES_PATH=./include/
 XERCES_INCLUDE=${XERCES_PATH}/xercesImpl.jar:${XERCES_PATH}/xmlParserAPIs.jar
 JUNIT_PATH=./include/
 JUNIT_INCLUDE=${JUNIT_PATH}/junit.jar
-java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JUNIT_INCLUDE}:.
+JAVAGUI_JAR=./include/java-gui.jar
+java=-classpath ${CLASSPATH}:${XERCES_INCLUDE}:${JUNIT_INCLUDE}:${JAVAGUI_JAR}
 
 
 all: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class DisabledPreferencesFactory.class Help.class
@@ -59,8 +60,8 @@ clean:
 	rm -f proc_table*
 
 script: 
-	echo "xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >run_peos
-	echo "java ${java} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} PeosApp" >>run_peos
+	echo "xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >runpeos
+	echo "java ${java} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} PeosApp" >>runpeos
 
 %.class : %.java
 	  javac ${java} $<
