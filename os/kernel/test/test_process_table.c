@@ -50,6 +50,9 @@ END_TEST
 START_TEST(test_get_lock)
 {
     struct flock lck,lck1;
+    int get_lock_status = 0;
+
+    FILE *old_stderr;
 
     int fd,fd1;
 
@@ -65,7 +68,13 @@ START_TEST(test_get_lock)
     fd = open("some_file", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     fcntl(fd, F_SETLK, &lck);
 
-    
+  /* redirect stderr to suppress lock error messages. */
+    if (verbosity != CK_VERBOSE) {
+        old_stderr = stderr;
+        stderr = fopen("/dev/null", "w");
+    }
+	
+  
     switch(pid=fork()) {
             case -1: fprintf(stderr, "Cannot Complete Tests\n");
                      exit(-1);
@@ -77,7 +86,14 @@ START_TEST(test_get_lock)
 		     lck1.l_len = 0; 
 		
                      fd1 = open("some_file", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-		     fail_unless(get_lock(fd1) == -1, "Access to Locked file");
+		     get_lock_status = get_lock(fd1);
+
+		      /* restore stderr. */
+		     if (verbosity != CK_VERBOSE) {
+		         fclose(stderr);
+		         stderr = old_stderr;
+		     }
+		     fail_unless(get_lock_status == -1, "Access to Locked file");
 		     fail_unless((errno == EAGAIN || errno == EACCES), "Invalid Error code");
                      exit(3); 
             default: died= wait(&status); // this is the code the parent runs 

@@ -204,14 +204,15 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
     sprintf(msg, " jnoll start %s %d", model_file, pid);
     log_event(msg);
     
+    if(save_process_table() < 0) {
+        fprintf(stderr,"System Error: Cannot Save Process Table\n");
+        exit(EXIT_FAILURE);
+    }
+      
     if (pid >= 0) {  
-	    
-        if(save_process_table() < 0) {
-            fprintf(stderr,"System Error: Cannot Save Process Table\n");
-	    exit(EXIT_FAILURE);
-        }
         return pid;
-    } 
+    }
+
     else {
 	fprintf(stderr, "peos_run: can't run process %s\n",process);
 	return -1;
