@@ -53,6 +53,7 @@ Node make_node(char *name, vm_act_state state, int type,int order)
      n -> data = (void *) malloc (sizeof (struct data));
      n->name = name;
      STATE(n) = state;
+     RESOURCE_STATE(n) = REQUIRES_TRUE;
      n->type = type;
      n -> predecessors = NULL;
      n -> successors = NULL;

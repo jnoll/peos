@@ -652,7 +652,82 @@ START_TEST(test_initialize_graph)
 END_TEST
 
 
+START_TEST(test_set_node_state_ready)
+{
+ 
+   Node n = make_node("act",ACT_NONE,ACTION,0);
 
+   RESOURCE_STATE(n) = REQUIRES_TRUE;
+
+   fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
+   fail_unless(STATE(n) == ACT_READY, "act not ready");
+}
+END_TEST
+		   
+
+START_TEST(test_set_node_state_ready_1)
+{
+ 
+   Node n = make_node("act",ACT_NONE,ACTION,0);
+
+   RESOURCE_STATE(n) = PROVIDES_TRUE;
+
+   fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
+   fail_unless(STATE(n) == ACT_READY, "act not ready");
+}
+END_TEST
+   
+
+START_TEST(test_set_node_state_ready_2)
+{
+ 
+   Node n = make_node("act",ACT_NONE,ACTION,0);
+
+   RESOURCE_STATE(n) = REQUIRES_FALSE;
+
+   fail_unless(set_node_state(n, ACT_READY) == ACT_BLOCKED, "return value");
+   fail_unless(STATE(n) == ACT_BLOCKED, "act not blocked");
+}
+END_TEST
+
+
+START_TEST(test_set_node_state_done)
+{
+ 
+   Node n = make_node("act",ACT_NONE,ACTION,0);
+
+   RESOURCE_STATE(n) = PROVIDES_TRUE;
+
+   fail_unless(set_node_state(n, ACT_DONE) == ACT_DONE, "return value");
+   fail_unless(STATE(n) == ACT_DONE, "act not done");
+}
+END_TEST
+
+
+START_TEST(test_set_node_state_done_1)
+{
+ 
+   Node n = make_node("act",ACT_NONE,ACTION,0);
+
+   RESOURCE_STATE(n) = REQUIRES_TRUE;
+
+   fail_unless(set_node_state(n, ACT_DONE) == ACT_PENDING, "return value");
+   fail_unless(STATE(n) == ACT_PENDING, "act not pending");
+}
+END_TEST
+
+
+START_TEST(test_set_node_state_none)
+{
+ 
+   Node n = make_node("act",ACT_READY,ACTION,0);
+
+   RESOURCE_STATE(n) = REQUIRES_TRUE;
+
+   fail_unless(set_node_state(n, ACT_NONE) == ACT_NONE, "return value");
+   fail_unless(STATE(n) == ACT_NONE, "act not none");
+}
+END_TEST
 
 
 START_TEST(test_set_act_state_graph_ready)
@@ -832,6 +907,20 @@ main(int argc, char *argv[])
     tc = tcase_create("make_iter_nodes");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_mark_iter_nodes);
+
+    tc = tcase_create("test node state");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc, test_set_node_state_ready);
+    tcase_add_test(tc, test_set_node_state_ready_1);
+    tcase_add_test(tc, test_set_node_state_ready_2);
+    tcase_add_test(tc, test_set_node_state_done);
+    tcase_add_test(tc, test_set_node_state_done_1);
+    tcase_add_test(tc, test_set_node_state_none);
+    
+    
+
+
+    
     
     tc = tcase_create("initialize graph");
     suite_add_tcase(s,tc);
