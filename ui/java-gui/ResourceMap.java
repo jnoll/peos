@@ -7,9 +7,12 @@ public class ResourceMap{
 			ResourceList[i] = new LinkedList();
 	}
 	public int DeleteProcess(int pid)
-	{
-		ResourceList[pid].killList();
-		return 0;
+	{	
+		if(pid >= 0 && pid <= 10) {
+			ResourceList[pid].killList();
+			return 0;
+		}	
+		return 1;
 	}
 	public int AddResource(int pid, Element resource, int offset)
 	{

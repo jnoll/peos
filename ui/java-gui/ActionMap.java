@@ -8,9 +8,13 @@ public class ActionMap{
 	}
 	public int DeleteProcess(int pid)
 	{
-		ActionList[pid].killList();
-		return 0;
+		if(pid >= 0 && pid <= 10) {
+			ActionList[pid].killList();
+			return 0;
+		} else return 1;	
+		
 	}
+	
 	public int AddAction(int pid, Element action, int offset)
 	{
 		ActionList[pid].insertElement(action, offset);
