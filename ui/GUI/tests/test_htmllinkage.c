@@ -5,8 +5,8 @@
 #include <gtkhtml/gtkhtml.h>
 #include <gtkhtml/gtkhtml-stream.h>
 #include <gtk/gtk.h>
+#include <check.h>
 #include "parse.h"
-#include "/home/jmontana/include/check.h"
 #include "glo.h"
 #include "test_util.h"
 #include "set_globals.h"

@@ -1,0 +1,3747 @@
+callbacks.o: callbacks.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h callbacks.h engine.h glo.h \
+  parse.h /usr/include/libxml2/libxml/parser.h \
+  /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h global_error.h interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h support.h tree.h html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h viewmenu.h \
+  deletemenu.h notebook.h
+deletemenu.o: deletemenu.c deletemenu.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h tree.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h glo.h html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h engine.h interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h callbacks.h global_error.h \
+  support.h viewmenu.h notebook.h
+engine.o: engine.c engine.h glo.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h
+global_error.o: global_error.c global_error.h
+glo.o: glo.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h glo.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h
+html.o: html.c /usr/include/gnome-1.0/libgnome/gnome-url.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h html.h \
+  /usr/include/gconf/1/gconf/gconf.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h glo.h engine.h htmllinkage.h
+htmllinkage.o: htmllinkage.c htmllinkage.h \
+  /usr/include/gconf/1/gconf/gconf.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h glo.h
+interface.o: interface.c interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h callbacks.h engine.h glo.h \
+  parse.h /usr/include/libxml2/libxml/parser.h \
+  /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h global_error.h support.h tree.h \
+  html.h /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h viewmenu.h \
+  deletemenu.h notebook.h
+notebook.o: notebook.c notebook.h glo.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h callbacks.h engine.h \
+  global_error.h tree.h html.h /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h support.h viewmenu.h deletemenu.h \
+  ctrlimages.h ../image/foward.xpm ../image/backward.xpm
+parse.o: parse.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h glo.h htmllinkage.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h
+set_globals.o: set_globals.c set_globals.h glo.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h
+set_test.o: set_test.c /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h glo.h test_util.h \
+  /home/jnoll/include/check.h set_globals.h set_test.h
+support.o: support.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h support.h
+test_engine.o: test_engine.c /home/jnoll/include/check.h engine.h glo.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h
+test_htmllinkage.o: test_htmllinkage.c /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h \
+  /home/jnoll/include/check.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h glo.h test_util.h set_globals.h \
+  set_test.h
+test_util.o: test_util.c test_util.h /home/jnoll/include/check.h
+text.o: text.c text.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h glo.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h
+tree.o: tree.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h tree.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h glo.h html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h engine.h interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h callbacks.h global_error.h \
+  support.h viewmenu.h deletemenu.h notebook.h treeimages.h \
+  ../image/ok.xpm ../image/cancel.xpm ../image/folder.xpm \
+  ../image/pend.xpm ../image/stop.xpm ../image/none.xpm ../image/run.xpm \
+  ../image/avail.xpm ../image/ready.xpm
+viewmenu.o: viewmenu.c viewmenu.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h glo.h tree.h html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h engine.h interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h callbacks.h global_error.h \
+  support.h deletemenu.h notebook.h
+interface.o: ../interface.c ../interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../callbacks.h ../engine.h \
+  ../glo.h ../parse.h /usr/include/libxml2/libxml/parser.h \
+  /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../global_error.h ../support.h \
+  ../tree.h ../html.h /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h ../viewmenu.h \
+  ../deletemenu.h ../notebook.h
+callbacks.o: ../callbacks.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../callbacks.h ../engine.h \
+  ../glo.h ../parse.h /usr/include/libxml2/libxml/parser.h \
+  /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../global_error.h ../interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h ../support.h ../tree.h ../html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h ../viewmenu.h \
+  ../deletemenu.h ../notebook.h
+engine.o: ../engine.c ../engine.h ../glo.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h
+glo.o: ../glo.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../glo.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h
+parse.o: ../parse.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../glo.h ../htmllinkage.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h
+tree.o: ../tree.c /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../tree.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../glo.h ../html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h ../engine.h \
+  ../interface.h /usr/include/gtk-1.2/gdk/gdkkeysyms.h ../callbacks.h \
+  ../global_error.h ../support.h ../viewmenu.h ../deletemenu.h \
+  ../notebook.h ../treeimages.h ../image/ok.xpm ../image/cancel.xpm \
+  ../image/folder.xpm ../image/pend.xpm ../image/stop.xpm \
+  ../image/none.xpm ../image/run.xpm ../image/avail.xpm \
+  ../image/ready.xpm
+html.o: ../html.c /usr/include/gnome-1.0/libgnome/gnome-url.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h ../html.h \
+  /usr/include/gconf/1/gconf/gconf.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../glo.h ../engine.h \
+  ../htmllinkage.h
+viewmenu.o: ../viewmenu.c ../viewmenu.h /usr/include/gtk-1.2/gtk/gtk.h \
+  /usr/include/gtk-1.2/gdk/gdk.h /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/glib-1.2/glib.h /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../glo.h ../tree.h ../html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h ../engine.h \
+  ../interface.h /usr/include/gtk-1.2/gdk/gdkkeysyms.h ../callbacks.h \
+  ../global_error.h ../support.h ../deletemenu.h ../notebook.h
+global_error.o: ../global_error.c ../global_error.h
+htmllinkage.o: ../htmllinkage.c ../htmllinkage.h \
+  /usr/include/gconf/1/gconf/gconf.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../glo.h
+notebook.o: ../notebook.c ../notebook.h ../glo.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../callbacks.h ../engine.h \
+  ../global_error.h ../tree.h ../html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h ../interface.h \
+  /usr/include/gtk-1.2/gdk/gdkkeysyms.h ../support.h ../viewmenu.h \
+  ../deletemenu.h ../ctrlimages.h ../image/foward.xpm \
+  ../image/backward.xpm
+deletemenu.o: ../deletemenu.c ../deletemenu.h \
+  /usr/include/gtk-1.2/gtk/gtk.h /usr/include/gtk-1.2/gdk/gdk.h \
+  /usr/include/gtk-1.2/gdk/gdktypes.h /usr/include/glib-1.2/glib.h \
+  /usr/lib/glib/include/glibconfig.h \
+  /usr/include/gtk-1.2/gdk/gdkcursors.h /usr/include/gtk-1.2/gdk/gdkrgb.h \
+  /usr/include/gtk-1.2/gtk/gtkaccelgroup.h \
+  /usr/include/gtk-1.2/gtk/gtkobject.h /usr/include/gtk-1.2/gtk/gtkarg.h \
+  /usr/include/gtk-1.2/gtk/gtktypeutils.h \
+  /usr/include/gtk-1.2/gtk/gtktypebuiltins.h \
+  /usr/include/gtk-1.2/gtk/gtkenums.h /usr/include/gtk-1.2/gtk/gtkdebug.h \
+  /usr/include/gtk-1.2/gtk/gtkaccellabel.h \
+  /usr/include/gtk-1.2/gtk/gtklabel.h /usr/include/gtk-1.2/gtk/gtkmisc.h \
+  /usr/include/gtk-1.2/gtk/gtkwidget.h \
+  /usr/include/gtk-1.2/gtk/gtkadjustment.h \
+  /usr/include/gtk-1.2/gtk/gtkdata.h /usr/include/gtk-1.2/gtk/gtkstyle.h \
+  /usr/include/gtk-1.2/gtk/gtkalignment.h \
+  /usr/include/gtk-1.2/gtk/gtkbin.h \
+  /usr/include/gtk-1.2/gtk/gtkcontainer.h \
+  /usr/include/gtk-1.2/gtk/gtkaspectframe.h \
+  /usr/include/gtk-1.2/gtk/gtkframe.h /usr/include/gtk-1.2/gtk/gtkarrow.h \
+  /usr/include/gtk-1.2/gtk/gtkbindings.h \
+  /usr/include/gtk-1.2/gtk/gtkbox.h /usr/include/gtk-1.2/gtk/gtkbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcalendar.h \
+  /usr/include/gtk-1.2/gtk/gtksignal.h \
+  /usr/include/gtk-1.2/gtk/gtkmarshal.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckbutton.h \
+  /usr/include/gtk-1.2/gtk/gtktogglebutton.h \
+  /usr/include/gtk-1.2/gtk/gtkcheckmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkitem.h /usr/include/gtk-1.2/gtk/gtkclist.h \
+  /usr/include/gtk-1.2/gtk/gtkhscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkrange.h \
+  /usr/include/gtk-1.2/gtk/gtkvscrollbar.h \
+  /usr/include/gtk-1.2/gtk/gtkcolorsel.h \
+  /usr/include/gtk-1.2/gtk/gtkwindow.h /usr/include/gtk-1.2/gtk/gtkvbox.h \
+  /usr/include/gtk-1.2/gtk/gtkpreview.h \
+  /usr/include/gtk-1.2/gtk/gtkentry.h \
+  /usr/include/gtk-1.2/gtk/gtkeditable.h \
+  /usr/include/gtk-1.2/gtk/gtkhbox.h /usr/include/gtk-1.2/gtk/gtkmain.h \
+  /usr/include/gtk-1.2/gtk/gtkscale.h \
+  /usr/include/gtk-1.2/gtk/gtkhscale.h \
+  /usr/include/gtk-1.2/gtk/gtktable.h \
+  /usr/include/gtk-1.2/gtk/gtkeventbox.h \
+  /usr/include/gtk-1.2/gtk/gtkcombo.h \
+  /usr/include/gtk-1.2/gtk/gtkcompat.h \
+  /usr/include/gtk-1.2/gtk/gtkctree.h /usr/include/gtk-1.2/gtk/gtkcurve.h \
+  /usr/include/gtk-1.2/gtk/gtkdrawingarea.h \
+  /usr/include/gtk-1.2/gtk/gtkdialog.h /usr/include/gtk-1.2/gtk/gtkdnd.h \
+  /usr/include/gtk-1.2/gtk/gtkselection.h \
+  /usr/include/gtk-1.2/gtk/gtkfeatures.h \
+  /usr/include/gtk-1.2/gtk/gtkfilesel.h \
+  /usr/include/gtk-1.2/gtk/gtkfixed.h \
+  /usr/include/gtk-1.2/gtk/gtkfontsel.h \
+  /usr/include/gtk-1.2/gtk/gtknotebook.h \
+  /usr/include/gtk-1.2/gtk/gtkgamma.h /usr/include/gtk-1.2/gtk/gtkgc.h \
+  /usr/include/gtk-1.2/gtk/gtkhandlebox.h \
+  /usr/include/gtk-1.2/gtk/gtkhbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkhpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkhruler.h \
+  /usr/include/gtk-1.2/gtk/gtkruler.h \
+  /usr/include/gtk-1.2/gtk/gtkhseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkseparator.h \
+  /usr/include/gtk-1.2/gtk/gtkimage.h \
+  /usr/include/gtk-1.2/gtk/gtkinputdialog.h \
+  /usr/include/gtk-1.2/gtk/gtkitemfactory.h \
+  /usr/include/gtk-1.2/gtk/gtkmenufactory.h \
+  /usr/include/gtk-1.2/gtk/gtklayout.h /usr/include/gtk-1.2/gtk/gtklist.h \
+  /usr/include/gtk-1.2/gtk/gtklistitem.h \
+  /usr/include/gtk-1.2/gtk/gtkmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkmenushell.h \
+  /usr/include/gtk-1.2/gtk/gtkmenubar.h \
+  /usr/include/gtk-1.2/gtk/gtkoptionmenu.h \
+  /usr/include/gtk-1.2/gtk/gtkpacker.h \
+  /usr/include/gtk-1.2/gtk/gtkpixmap.h /usr/include/gtk-1.2/gtk/gtkplug.h \
+  /usr/include/gtk-1.2/gtk/gtkprogress.h \
+  /usr/include/gtk-1.2/gtk/gtkprogressbar.h \
+  /usr/include/gtk-1.2/gtk/gtkradiobutton.h \
+  /usr/include/gtk-1.2/gtk/gtkradiomenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtkrc.h \
+  /usr/include/gtk-1.2/gtk/gtkscrolledwindow.h \
+  /usr/include/gtk-1.2/gtk/gtkviewport.h \
+  /usr/include/gtk-1.2/gtk/gtksocket.h \
+  /usr/include/gtk-1.2/gtk/gtkspinbutton.h \
+  /usr/include/gtk-1.2/gtk/gtkstatusbar.h \
+  /usr/include/gtk-1.2/gtk/gtktearoffmenuitem.h \
+  /usr/include/gtk-1.2/gtk/gtktext.h /usr/include/gtk-1.2/gtk/gtkthemes.h \
+  /usr/include/gtk-1.2/gtk/gtktipsquery.h \
+  /usr/include/gtk-1.2/gtk/gtktoolbar.h \
+  /usr/include/gtk-1.2/gtk/gtktooltips.h \
+  /usr/include/gtk-1.2/gtk/gtktree.h \
+  /usr/include/gtk-1.2/gtk/gtktreeitem.h \
+  /usr/include/gtk-1.2/gtk/gtkvbbox.h \
+  /usr/include/gtk-1.2/gtk/gtkvpaned.h \
+  /usr/include/gtk-1.2/gtk/gtkvruler.h \
+  /usr/include/gtk-1.2/gtk/gtkvscale.h \
+  /usr/include/gtk-1.2/gtk/gtkvseparator.h ../tree.h ../parse.h \
+  /usr/include/libxml2/libxml/parser.h /usr/include/libxml2/libxml/tree.h \
+  /usr/include/libxml2/libxml/xmlversion.h \
+  /usr/include/libxml2/libxml/xmlregexp.h \
+  /usr/include/libxml2/libxml/valid.h /usr/include/libxml2/libxml/list.h \
+  /usr/include/libxml2/libxml/xmlautomata.h \
+  /usr/include/libxml2/libxml/entities.h \
+  /usr/include/libxml2/libxml/encoding.h \
+  /usr/include/libxml2/libxml/xmlIO.h \
+  /usr/include/libxml2/libxml/globals.h \
+  /usr/include/libxml2/libxml/xmlerror.h \
+  /usr/include/libxml2/libxml/SAX.h /usr/include/libxml2/libxml/xlink.h \
+  /usr/include/libxml2/libxml/xmlmemory.h \
+  /usr/include/libxml2/libxml/threads.h ../glo.h ../html.h \
+  /usr/include/gconf/1/gconf/gconf.h \
+  /usr/include/gconf/1/gconf/gconf-schema.h \
+  /usr/include/gconf/1/gconf/gconf-value.h \
+  /usr/include/gconf/1/gconf/gconf-error.h \
+  /usr/include/gconf/1/gconf/gconf-glib-public.h \
+  /usr/include/gconf/1/gconf/gconf-engine.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml.h \
+  /usr/include/gnome-1.0/libgnome/gnome-paper.h \
+  /usr/include/gnome-1.0/libgnome/gnome-defs.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf.h \
+  /usr/include/gdk-pixbuf-1.0/gdk-pixbuf/gdk-pixbuf-features.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-printer.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-font-face.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_rect.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_bpath.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_point.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_pathcode.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-text.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-glyphlist.h \
+  /usr/include/gnome-1.0/libart_lgpl/art_vpath.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-master.h \
+  /usr/include/gnome-1.0/libgnomeprint/gnome-print-dialog.h \
+  /usr/include/gnome-1.0/libgnomeui/gnome-dialog.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-types.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-enums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmltypes.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/htmlenums.h \
+  /usr/include/gtkhtml-1.1/gtkhtml/gtkhtml-stream.h ../engine.h \
+  ../interface.h /usr/include/gtk-1.2/gdk/gdkkeysyms.h ../callbacks.h \
+  ../global_error.h ../support.h ../viewmenu.h ../notebook.h
