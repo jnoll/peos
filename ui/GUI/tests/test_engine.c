@@ -119,7 +119,11 @@ START_TEST(tgetPath)
   unsigned i = 0, tok_count = 0;      
 
   rtn_val = getPath();
+  
+#ifdef DEBUG  
   printf(" rtn_val = %s \n", rtn_val);
+#endif
+
   if(rtn_val == NULL) {
   	fail("Error. Unable to locate peos executable.");
   }
