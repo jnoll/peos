@@ -8,10 +8,20 @@
 #include <PalmOS.h>
 #include "PalmPEOS.h"
 #include "PalmUI.h"
+#include "PalmEngine.h"
 
 char old_msg[512];
 int timesheet_action_counter = 0; /* *ugly* hard-wiring of timesheet */
 
+
+static void drawProcessList (UInt16 itemNum, RectangleType *bounds, Char **itemsText)
+{
+  WinDrawChars(processListItems[itemNum],
+		StrLen(processListItems[itemNum]),
+		bounds->topLeft.x,
+		bounds->topLeft.y);
+}
+  
 void sendUI(char new_msg[])
 {
   WinEraseChars(old_msg, StrLen(old_msg), 10, 60);  
@@ -24,8 +34,9 @@ static Boolean AppHandleEvent(EventPtr eventP)
   UInt16 formId;
   Boolean handled = false;
   FormType *frmP;
-
-  if (eventP->eType == frmLoadEvent) {
+  ListType *lstP;
+  
+if (eventP->eType == frmLoadEvent) {
       // Initialize and activate the form resource.
       formId = eventP->data.frmLoad.formID;
       frmP = FrmInitForm(formId);
@@ -34,10 +45,59 @@ static Boolean AppHandleEvent(EventPtr eventP)
   } else if (eventP->eType == frmOpenEvent) {
     //Load the form resource.
     frmP = FrmGetActiveForm();
+
+    formId = eventP->data.frmOpen.formID;
+    //if its the SelectProcessForm, need to populate list
+    if (formId == SelectProcessForm) {
+	FormType *activeForm;
+	int numChoices = 0;
+	int current = 0;
+	processNode init = listModels();
+	processNode *currentNode;
+	
+	activeForm = FrmGetActiveForm();
+        lstP = FrmGetObjectPtr(activeForm, FrmGetObjectIndex(activeForm, ProcessList));
+	// Set list draw function
+	LstSetDrawFunction(lstP, drawProcessList);
+
+	//fill array of process to list
+	currentNode = MemHandleLock(init.Next);
+	StrCopy(processListItems[current],currentNode->process);
+	MemHandleFree(currentNode->Next);
+	MemHandleUnlock(init.Next);
+	MemHandleFree(init.Next);
+	
+	numChoices = 1;
+	LstSetListChoices(lstP, NULL, numChoices);
+		
+    }
+    // if its the RunActionForm display the process name 
+	 
     FrmDrawForm(frmP);
     
+    if (formId == RunActionForm) {
+		char process[15];
+		processNode init = loadProcess("timesheet");
+		processNode *currentNode;
+		currentNode = MemHandleLock(init.Next);
+		StrCopy(process,currentNode->process);
+		MemHandleFree(currentNode->Next);
+		MemHandleUnlock(init.Next);
+		MemHandleFree(init.Next);
+		WinDrawChars(process,StrLen(process),10,15);
+     }   
     handled = true;
-  } else if (eventP->eType == ctlSelectEvent) {
+  } else if (eventP->eType == lstSelectEvent) {
+      //diplay process that user selected
+      FormType *activeForm;
+      int selection; //store user's selection
+
+      activeForm = FrmGetActiveForm();
+      lstP = FrmGetObjectPtr(activeForm, FrmGetObjectIndex(activeForm, ProcessList));
+      selection = LstGetSelection(lstP);
+      if (selection == 0) 
+		FrmGotoForm(RunActionForm);     
+  }  else if (eventP->eType == ctlSelectEvent) {
     if (eventP->data.ctlEnter.controlID == RunButton) {
       /*WinDrawChars("Run button pressed", StrLen("Run button pressed"), 40, 100);
 	WinEraseChars("Done button pressed", StrLen("Done button pressed"), 40, 100);*/
@@ -96,8 +156,10 @@ static Boolean AppHandleEvent(EventPtr eventP)
       }/* switch */
       
       ++timesheet_action_counter;
+    } else if (eventP->data.ctlEnter.controlID == ListProcessesButton) {
+	handled = true;
+	FrmGotoForm(SelectProcessForm);
     }
-    
     handled = true;
   } else if (eventP->eType == appStopEvent) {
     // Unload the form resource.
@@ -117,7 +179,7 @@ UInt32 PilotMain(UInt16 cmd, MemPtr cmdPBP, UInt16 launchFlags)
   switch (cmd) {
   case sysAppLaunchCmdNormalLaunch:
     
-    FrmGotoForm(RunActionForm);
+    FrmGotoForm(SelectProcessForm);
     
     do {
       UInt16 MenuError;

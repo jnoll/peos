@@ -4,6 +4,8 @@
  * Date: 11/1/02
  */
 
+char processListItems[10][15];
+
 /* takes a string, displays it on the
  * Palm's screen
  * **NOTE: event handler is responsible for
