@@ -12,6 +12,7 @@
 #include "../rsc/AppResources.h"
 #include "StartedProcesses.h"
 #include "AvailProcesses.h"
+#include "CurrentProcess.h"
 
 
 #define appFileCreator			'STRT'
@@ -146,22 +147,29 @@ static Boolean AppHandleEvent(EventType* pEvent)
 		// active form is called by FrmHandleEvent each time is receives an
 		// event.
 		switch (formId) {
-			//moving this case statement to the top of the switch statement
-			//helped resolve the bus error problem....why??? i dont know!
-			case StartedProcessesForm:
-				FrmSetEventHandler (pForm, StartedProcessHandler);
-			
+				
 			case MainForm:
 				FrmSetEventHandler(pForm, MainFormHandler);
 				break;
-		
+						
 			case AvailableProcessesForm:
 				FrmSetEventHandler (pForm, AvailableProcessesHandler);
 				break;	
-				
+			
+			case StartedProcessesForm:
+				FrmSetEventHandler (pForm, StartedProcessHandler);
+				break;
+							
 			case CurrentProcessForm:
 				FrmSetEventHandler (pForm, CurrentProcessHandler);
+				break;
+			
+			case CurrentActionForm:
+				FrmSetEventHandler (pForm, CurrentActionHandler);
+				break;
+				
 			default:
+				ErrFatalDisplay("Invalid Form Load Event");
 				break;
 		}
 		handled = true;

@@ -16,21 +16,25 @@
 
 
 
-
+#define StartedProcessesForm						1500
 #define AvailableProcessesForm						1200							
 #define AvailableProcessesList						1001
 
 
 
-#define StartedProcessesForm						1500
+
 #define StartedProcessesList						1503
 
 #define CurrentProcessForm							1400
 #define ActionsList									1403
-#define ActionButton							1401
+#define ActionButton								1401
 #define PreviousActionButton						1402
 #define CurrentProcessLabel							1404
 #define CurrentProcessFormMenuBar						1600
+#define AvailableProcessesMenuBar						1700
+#define StartedProcessesMenuBar							1800
+#define CurrentActionForm								1900
+#define CurrentActionFormMenuBar						2000
 
 //	Resource: tFRM 1100
 #define AboutForm                                 1100	//(Left Origin = 2, Top Origin = 2, Width = 156, Height = 156, Usable = 1, Modal = 1, Save Behind = 1, Help ID = 0, Menu Bar ID = 0, Default Button ID = 0)

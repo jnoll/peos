@@ -19,18 +19,26 @@ all:
 	
 	
 	
-	$(CC) -DPALM -O0 -g -fexceptions -UNDEBUG  $(INCLUDE) $(PEOSINC) $(LIB) -Wall -c   ../src/AppMain.c ../src/AvailProcesses.c ../src/StartedProcesses.c
-
+	$(CC) -DPALM -O0 -g -fexceptions -UNDEBUG  $(INCLUDE) $(PEOSINC) $(LIB) -Wall -c   ../src/AppMain.c ../src/AvailProcesses.c ../src/StartedProcesses.c ../src/CurrentProcess.c
+	pilrc -ro -allowEditID -q ../rsc/AppResources.rcp palmpeos.ro
+	m68k-palmos-multigen palmpeos.def
+	m68k-palmos-gcc -c palmpeos-sections.s
+	m68k-palmos-gcc -Xlinker -M -Xlinker --cref -g AppMain.o  AvailProcesses.o \
+		StartedProcesses.o CurrentProcess.o palmpeos-sections.o \
+		../../../os/palm/stdio.o ../../../os/kernel/libpeos.a \
+		../../../pml/libpml.a -o palmpeos palmpeos-sections.ld \
+		2> palmpeos.map
+	build-prc palmpeos.def -o palmpeos.prc -n PalmPeos -c plmp palmpeos.ro palmpeos
 #	$(CC) -c -D__PALMOS__=0x05000000 $(INCLUDE) -O0 -g -fexceptions -UNDEBUG -Wall -palmos5r4 -o palmpeos  *.o
 
-	m68k-palmos-obj-res palmpeos.o
+#	m68k-palmos-obj-res palmpeos.o
 	
-	$(PILRC) ../rsc/AppResources.rcp 
+#	$(PILRC) ../rsc/AppResources.rcp 
 
-	$(PRC)  -c 'STRT' -n PalmPEOS -o palmpeos.prc -t appl *.grc *.bin
+#	$(PRC)  -c 'STRT' -n PalmPEOS -o palmpeos.prc -t appl *.grc *.bin
 
 
 clean:  
-	rm -rf *.prc *.grc *.o *.bin
+	rm -rf *.prc *.grc *.o *.bin rm *.s rm *.ro
 	
 

@@ -6,6 +6,7 @@
 #include <StringMgr.h>
 //#include <Clipboard.h>
 
+
 char * selection;
 
 /*static void AvailProcessListDraw (ListType * list, RectangleType * bounds)
@@ -19,119 +20,19 @@ char * selection;
 }
 */
 
-Boolean CurrentProcessHandler (EventType* pEvent)
-{
-	Boolean 	handled = false;
-	FormType* 	pForm;
-	ControlType* ctl;
-	ListType *	list;
-	RectangleType theRect;
-
-	
-	//MemHandle text;
-	
-	switch (pEvent->eType)
-	{
-	case frmOpenEvent:		
-		//form opened - display first action of the process that was selected
-		//in the AvailableProcessesForm or StartedProcessesForm
-		pForm = FrmGetActiveForm();
-		FrmDrawForm(pForm);
-		
-		//for testing purposes only!!! - see if we can use global variable set in different form
-		ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, PreviousActionButton));
-		CtlSetLabel (ctl, selection);
-		//end test
-		FrmCopyTitle (pForm, selection);
-				
-		//end test	
-		handled = true;
-		break;
-	
-	case menuEvent:
-		switch (pEvent->data.menu.itemID)
-		{
-		case 1601:
-			pForm = FrmInitForm(1100);
-			FrmDoDialog(pForm);					// Display the About Box.
-			FrmDeleteForm(pForm);
-			handled = true;
-			break;
-		case 1602:
-			pForm = FrmInitForm (MainForm);
-			FrmGotoForm (MainForm);
-			FrmDeleteForm (pForm);
-			handled=true;
-			break;
-		//available processes form
-		case 1603:
-			pForm = FrmInitForm(AvailableProcessesForm);			
-			FrmGotoForm (AvailableProcessesForm);
-			FrmDeleteForm(pForm);
-			handled = true;
-			break;
-		//started processes form
-		case 1604:
-			pForm = FrmInitForm(1500);	
-			FrmGotoForm (1500);
-			FrmDeleteForm(pForm);
-			handled = true;
-			break;
-		default: break;
-		}
-
-	case lstSelectEvent:
-		//remember selection
-		pForm = FrmGetActiveForm();
-		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));
-		selection = LstGetSelectionText (list, LstGetSelection (list));
-			
-		ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1402));
-		CtlSetLabel (ctl, selection);	
-		break;
-		
-	case ctlSelectEvent:
-			switch (pEvent->data.ctlSelect.controlID)
-			{
-			case ActionButton:  //to to specific action view
-				pForm = FrmGetActiveForm();
-				list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));
-				if (LstGetSelection (list)==noListSelection)
-				{
-					FrmCustomAlert (CheckSelection, "an action", NULL, NULL);	
-				}
-				else 
-				{
-					//replace with code that switches to current action form
-					/*pForm = FrmInitForm(CurrentProcessForm);			
-					FrmGotoForm (CurrentProcessForm);
-					FrmDeleteForm(pForm);
-					handled = true;
-					*/
-				}
-				break;
-			}
-			break;
-	default: break;
-	}
-	
-return handled;	
-	
-}
-
-
 char ** list_models (UInt16 * size)
 {
 	UInt16 i;
 	char ** list;
-	char ** listElements2 = (char**) malloc (4*2);
+	char ** listElements2 = (char**) malloc (4*3);
 	(char*) listElements2 [0] = "process1";
-	(char*) listElements2 [1] = NULL;
+	(char*) listElements2 [1] = "process2";
+	(char*) listElements2 [2] = NULL;
 	list = listElements2;
 	
 	
 	//malloc last element to null
-	//char ** list = peos_list_models ();
+	// char ** list = peos_list_models ();
 	for (i=0; list[i]; i++)
 	{
 		*size=i;
@@ -157,6 +58,32 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 		
 	
 		switch (pEvent->eType) {
+		case menuEvent:
+			
+			switch (pEvent->data.menu.itemID)
+			{
+			case 1701:
+				pForm = FrmInitForm(1100);
+				FrmDoDialog(pForm);					// Display the About Box.
+				FrmDeleteForm(pForm);
+				handled = true;
+				break;
+			case 1702:
+				pForm = FrmInitForm (MainForm);
+				FrmGotoForm (MainForm);
+				FrmDeleteForm (pForm);
+				handled=true;
+				break;
+		//started processes form
+			case 1703:
+				pForm = FrmInitForm(1500);	
+				FrmGotoForm (1500);
+				FrmDeleteForm(pForm);
+				handled = true;
+				break;
+			default: break;
+			}
+			
 		case lstSelectEvent:
 			//remember selection
 			pForm = FrmGetActiveForm();
@@ -183,7 +110,7 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 				if (LstGetSelection (list)==noListSelection)
 				{
 					//alert
-					FrmCustomAlert (CheckSelection, "a process", NULL, NULL);	
+					FrmCustomAlert (CheckSelection, "an available process", NULL, NULL);	
 				}
 				else 
 				{
@@ -219,7 +146,7 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 			break;
 		
 		case frmCloseEvent:
-			
+			//MemPtrFree((MemPtr) FldGetTextPtr(fieldPtr));
 			//free (listElements2[0]);
 			//free (listElements2[1]);
 			//free (listElements2);
