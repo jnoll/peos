@@ -253,17 +253,23 @@ int modelcount = 0;
 		fprintf(LOG,"	WebUI: list<br>\n");
 	}
 
+        ret_value = add_message(ret_value,"<ul >");
+
 	do {
 		response = engineresponse(s);
 		if (response == NULL) return(NULL);
 		tempcont = response->cont;
 		if (response->cont == 1) {
+                        ret_value = add_message(ret_value,"<li>");
 			modelcount++;
 			ret_value = add_message(ret_value,response->value);
-			ret_value = add_message(ret_value,"<br>\n");
+			ret_value = add_message(ret_value,"\n");
 		}
 		freeresponse(response);
 	} while(response->cont == 1);
+
+        ret_value = add_message(ret_value,"</ul>\n");
+
 	if (modelcount == 0) ret_value = add_message(ret_value,"None.<br>\n<br>\n");
 	return(ret_value);
 }
