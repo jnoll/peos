@@ -57,7 +57,7 @@ proc nested {inner outer num_act iterations fill_proc_table shell} {
 proc follows {first second num_act iterations fill_proc_table shell} {
     global act
     set act 0
-    set fname ${first}-in-${second}-${iterations}-${num_act}
+    set fname ${first}-${second}-${iterations}-${num_act}
     if {$fill_proc_table} {
 	append fname "-fill"
     }

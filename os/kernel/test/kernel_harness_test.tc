@@ -1,6 +1,6 @@
 # example of a test case.  Uses all valid options.
 shell: ../shell
 model: simple.pml
-actions: act_1 
+actions: act_1 act_2
 iterations: 1
 

@@ -34,6 +34,7 @@ proc read_tc {tc_name} {
 		#puts stderr "A comment: $line"
 		continue
 	    }
+
 	    default {
 		set var [string trimright $field ":"]
 		upvar $var $var
@@ -52,7 +53,7 @@ proc trace {level msg} {
 
 proc error_msg {op act} {
     global expect_out
-    puts "FAILURE: while performing '$op' on '$act': $expect_out(buffer)"
+    puts "FAILURE: while performing '$op' on '$act': $expect_out(0,string)"
     exit
 }
 
@@ -105,6 +106,39 @@ proc list_expect {act state} {
     expect "\n> \n"
 }
 
+proc done_expect {model} {
+    send "actions\n"
+    expect {
+	-re "\n\[ \]*\[0-9\]+\[ \]+\[A-Za-z0-9_\]+\[ \]+.*\n> " {
+	    error_msg done_expect "not done"
+	}
+
+	-re "status\[) \n\r\]*\n> " {
+	    trace 1 "$model completed successfully."
+	}
+
+	timeout {
+	    error_msg done_expect timeout
+	}
+    }
+}
+
+proc run_proc {actions} {
+    foreach act $actions {
+	# Look for act to be ready.
+	list_expect $act ready
+
+	# Perform act.
+	act_expect do $act
+
+	# Look for act to be active.
+	list_expect $act active
+
+	# Finish act.
+	act_expect done $act
+    }
+}
+
 
 # defaults
 set verbosity 0
@@ -137,6 +171,7 @@ expect "\n> \n"
 
 if {[info exists fill_proc_table]} {
     set full 0
+    # Fill process table.
     while {!$full} {
 	send "create $model\n"
 	expect {
@@ -148,34 +183,20 @@ if {[info exists fill_proc_table]} {
 	}
 	expect "\n> \n"
     }
-} else {
-    create_expect $model
+    # Run a process to completion, to create space for one more.
+    run_proc $actions
 }
+
 
 for {set i 0} {$i < $iterations} {incr i} {
-    foreach act $actions {
-	# Look for act to be ready.
-	list_expect $act ready
-
-	# Perform act.
-	act_expect do $act
-
-	# Look for act to be active.
-	list_expect $act active
-
-	# Finish act.
-	act_expect done $act
-    }
-
-    # Create another instance.
     create_expect $model
+    run_proc $actions
 }
+
+done_expect $model
+
+
 send "quit\n"
 expect "Exiting"
 log_user 1
 puts "done."
-
-
-
-
-

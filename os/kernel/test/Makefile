@@ -1,6 +1,6 @@
 # compiler:
 PMLC = ../../../compiler/pmlc
-CC = gcc -g
+CC = gcc
 
 CFLAGS = -g -Wall -I. -I.. -I../../.. -I/home/jnoll/include
 # keep track of dependencies automatically
