@@ -6,7 +6,7 @@
 #include "vm.h"
 #include "process.h"
 #include "test_util.h"
-
+#include "action.h"
 
 /* Test control flags. */
 
@@ -49,8 +49,54 @@ char *p1[] = {
     "call error",
     NULL
 };
-
+int p1_PC = 0;
+int p1_num_act = 0;
 int p1_size = sizeof(p1);
+
+/* This is the text of simple.cpml. */
+char *test_proc[] = {
+    "act_0 type action mode manual requires { a } provides { a }",
+    "act_1 type action mode manual requires { a } provides { a }",
+    "act_2 type action mode manual requires { a } provides { a }",
+    "start",
+    "call select &&id==$a",
+    "pop",
+    "call set ready a",
+    "jzero 35",
+    "pop",
+    "call wait done a",
+    "jzero 35",
+    "pop",
+    "call select &&id==$a",
+    "pop ",
+    "call select &&id==$a",
+    "pop" ,
+    "call set ready b",
+    "jzero 35",
+    "pop",
+    "call wait done b",
+    "jzero 35",
+    "pop",
+    "call select &&id==$a",
+    "pop",
+    "call select &&id==$a",
+    "pop",
+    "call set ready c",
+    "jzero 35",
+    "pop",
+    "call wait done c",
+    "jzero 35",
+    "pop",
+    "call select &&id==$a",
+    "pop",
+    "end",
+    "call error",
+    NULL
+};
+
+int test_proc_PC = 3;
+int test_proc_num_act = 3;
+int test_proc_size = sizeof(p1);
 
 char *p_nostart[] = {
     "0 type action mode manual requires { a } provides { a }",
@@ -645,12 +691,9 @@ peos_action_t *make_actions(int size, vm_act_state state)
     int i;
     peos_action_t *actions = (peos_action_t *)calloc(size, sizeof(peos_action_t));
     for (i = 0; i < size; i++) {
-	char buf[256];
-
-	sprintf(buf, "act_%d", i);
-	actions[i].name[0] = '\0';
-	strcpy(actions[i].name, buf);
+	sprintf(actions[i].name, "act_%d", i);
 	actions[i].state = state;
+	actions[i].pid = -1;
     }
     return actions;
 }
@@ -682,6 +725,29 @@ setup_context(vm_context_t *context, int pc, int sp, int accum, int num_var, cha
     }
     context->variables[i].name[0] = '\0';
     context->num_variables = i;
+}
+
+
+int stub_load_instructions(char *file, char ***inst, int *num_inst,
+			 peos_action_t **actions, int *num_actions)
+{
+    if (strcmp(file, "p1.txt") == 0 
+	|| strcmp(file, "test.txt") == 0
+	|| strcmp(file, "test.cpml") == 0
+	|| strcmp(file, "p1.cpml") == 0) {
+	*inst = test_proc;
+	*num_inst = test_proc_size;
+	*actions = make_actions(test_proc_num_act, ACT_NONE); 
+	*num_actions = test_proc_num_act;
+	return test_proc_PC;
+    }
+
+    return -1;
+}
+
+int stub_init_context(vm_context_t *context, int pc)
+{
+    return context->num_inst;
 }
 
 

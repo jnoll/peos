@@ -15,8 +15,10 @@
 #include "process.h"
 #include "events.h"
 
-/* Global variabless. */
+/* Global variables. */
 
+/* Forward declarations. */
+extern char *find_model_file(char *model);
 
 void error_msg(char *s) 
 {
@@ -61,33 +63,33 @@ char **peos_list_models()
     return result;
 }
 
-int peos_set_ready(char *action)
+int peos_set_ready(int pid, char *action)
 {
-    return handle_action_change(action, ACT_READY);
+    return handle_action_change(pid, action, ACT_READY);
 }
 
 /*
  * Set action state to 'running.'
  */
-int peos_run_action(char *action)
+int peos_run_action(int pid, char *action)
 {
-    return handle_action_change(action, ACT_RUN);
+    return handle_action_change(pid, action, ACT_RUN);
 }
 
 /*
  * Set action state to 'suspended'.
  */
-int peos_suspend_action(char *action)
+int peos_suspend_action(int pid, char *action)
 {
-    return handle_action_change(action, ACT_SUSPEND);
+    return handle_action_change(pid, action, ACT_SUSPEND);
 }
 
 /*
  * Set action state to 'done', awaken any waiting processes.
  */
-vm_exit_code peos_finish_action(char *action)
+vm_exit_code peos_finish_action(int pid, char *action)
 {
-    return handle_action_change(action, ACT_DONE);
+    return handle_action_change(pid, action, ACT_DONE);
 }
 
 /*
@@ -103,13 +105,24 @@ int peos_abort_action(peos_action_t action)
 int peos_run(char *process, int line)
 {
     vm_exit_code status;
-    int pid = peos_create_instance(process);
+    int pid;
+    char *model_file = find_model_file(process);
+    if (model_file == NULL) {
+	fprintf(stderr, "peos_run: can't find model file for process %s\n",
+		process);
+	return -1;
+    }
+
+    pid = peos_create_instance(model_file);
     
     if (pid >= 0 
 	&& (status = peos_resume(pid)) != VM_ERROR 
 	&& status != VM_INTERNAL_ERROR) {
 	return pid;
     } else {
+	fprintf(stderr, "peos_run: can't run process %s\n",
+		process);
+	return -1;
 	return -1;
     }
 

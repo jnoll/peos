@@ -8,8 +8,8 @@ extern char **peos_list_models(void);
 
 extern int peos_run(char *process, int line);
 
-extern int peos_set_ready(char *act);
-extern int peos_run_action(char * action);
-extern vm_exit_code peos_finish_action(char * action);
-extern int peos_suspend_action(char *act);
+extern int peos_set_ready(int pid, char *act);
+extern int peos_run_action(int pid, char * action);
+extern vm_exit_code peos_finish_action(int pid, char * action);
+extern int peos_suspend_action(int pid, char *act);
 #endif

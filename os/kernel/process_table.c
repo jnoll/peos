@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.3 2003/07/02 19:22:19 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.4 2003/07/04 08:12:56 jnoll Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Wed Jul  2 12:09:46 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Thu Jul  3 21:39:27 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -18,16 +18,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "process_table.h"
 /* Globals. */
-
 peos_context_t process_table[PEOS_MAX_PID+1];
-int num_proc = 0;
 int cur_pid = -1;		/* Initially, start below proc table. */
-peos_context_t *current_process = &(process_table[0]);
 
 /* Forward declarations. */
-char *find_model_file(char *model);
 
 
 /* 
@@ -36,7 +33,7 @@ char *find_model_file(char *model);
  */
 int peos_get_pid(peos_context_t *context)
 {
-    int pid = process_table - context;
+    int pid = context- process_table;
     return pid >=0 && pid <= PEOS_MAX_PID ? pid : -1;
 }
 
@@ -132,12 +129,13 @@ int load_instructions(char *file, char ***inst, int *num_inst,
 int
 load_context(FILE *in, peos_context_t *context)
 {
-    int pid, i, start;
-    char *model_file;
-    if (fscanf(in, "pid: %d\nmodel: %s\n", &pid, context->model) != 2) return 0;
+    int i, start;
+
+    if (fscanf(in, "pid: %d\nmodel: %s\n", &context->pid, context->model) != 2) return 0;
+    if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
+
     /* Load instructions and actions first, to initialize context. */
-    model_file = find_model_file(context->model);
-    if ((start = load_instructions(model_file, 
+    if ((start = load_instructions(context->model,
 				   &(context->vm_context.inst_array), 
 				   &(context->vm_context.num_inst),
 				   &(context->actions), 
@@ -188,6 +186,7 @@ load_context(FILE *in, peos_context_t *context)
 	    free(context->actions);
 	    return 0; 
 	}
+	context->actions[i].pid = context->pid;
     }
     if (fscanf(in, "\n\n") < 0) return 0; 
 
@@ -196,18 +195,18 @@ return 1;
 
 int load_proc_table(char *file)
 {
-    int cur, status = -1;
+    int i, status = -1;
     FILE *in = fopen(file, "r");
-    num_proc = 0;
-    current_process = &(process_table[0]);
+    int num_proc = 0;
+
+    for (i = 0; i <= PEOS_MAX_PID; i++) {
+	process_table[i].status = PEOS_NONE;
+    }
+
     if (in) {
+	status = 0;
 	while (load_context(in, &process_table[num_proc]))
 	    num_proc++;
-	if ((fscanf(in, "current_process: %d", &cur) == 1)
-	    && cur >= 0 && cur <= PEOS_MAX_PID) {
-	    current_process = &(process_table[cur]);
-	    status = 0;
-	}
 	fclose(in);
     }
     return status;
@@ -219,6 +218,7 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     int i;
 
     fprintf(out, "pid: %d\nmodel: %s\n", pid, context->model);
+    fprintf(out, "status: %d\n", context->status);
     fprintf(out, "PC: %d\nSP: %d\nA: %d\n", context->vm_context.PC, 
 	    context->vm_context.SP, context->vm_context.A);
     fprintf(out, "stack:");
@@ -263,7 +263,6 @@ save_proc_table(char *file)
 	for (i = 0; i <= PEOS_MAX_PID; i++) {
 	    save_context(i, &(process_table[i]), out);
 	}
-	fprintf(out, "current_process: %d\n", peos_get_pid(current_process));
 	fclose(out);
     }
     return 0;
@@ -291,36 +290,6 @@ char **peos_list_instances()
     return p;
 }
 
-char *find_model_file(char *model)
-{
-    char *ext, model_file[BUFSIZ];
-    char *model_dir;
-    FILE *f;
-
-    model_dir = getenv("COMPILER_DIR");
-    if (model_dir == NULL) {
-	model_dir = ".";
-    }
-
-    sprintf(model_file, "%s/", model_dir);
-
-    ext = strrchr(model, '.');
-    if (ext != NULL) {
-	strncat(model_file, model, ext - model);
-    } else {
-	strncat(model_file, model, strlen(model));
-    }
-
-    /* XXX should look for .cpml also. */
-    strcat(model_file, ".txt");
-    if ((f = fopen(model_file, "r"))) {
-	fclose(f);
-	return strdup(model_file);
-    } else {
-	return NULL;
-    }
-}
-
 int delete_entry(int pid)
 {
     peos_context_t *context;
@@ -341,7 +310,6 @@ int delete_entry(int pid)
 	context->vm_context.A = -1;
 	context->vm_context.SP = -1;
 	context->model[0] = '\0';
-	num_proc--;
 
 	return 1;
 
@@ -352,33 +320,39 @@ int delete_entry(int pid)
 
 peos_context_t *find_free_entry()
 {
-    return current_process;	/* XXX This is a single threaded system now. */
+    int i;
+    for (i = 0; i < PEOS_MAX_PID + 1; i++) {
+	process_status_t status = process_table[i].status;
+	if (status & (PEOS_NONE|PEOS_DONE|PEOS_ERROR)) {
+	    return &(process_table[i]);	
+	}
+    }
+    return NULL;
 }
 
-int peos_create_instance(char *model)
+peos_action_t **peos_list_actions(vm_act_state state)
 {
-    int start = -1;
-    char *model_file;
-    peos_context_t *context;
+    int i, num, size = INST_ARRAY_INCR;
 
-    model_file = find_model_file(model);
+    peos_action_t *p, **result;
 
-    if ((context = find_free_entry()) == NULL) {
-	return -1;
+    result = (peos_action_t **)calloc(INST_ARRAY_INCR, sizeof(peos_action_t*));
+
+    for (i = 0, num = 0; i <= PEOS_MAX_PID; i++) {
+	for (p = process_table[i].actions; 
+	     p - process_table[i].actions < process_table[i].num_actions; p++) 
+	    {
+		if (p->state == state) {
+		    if (num == size) {
+			size += INST_ARRAY_INCR;
+			result = (peos_action_t **)realloc(result, size * sizeof(peos_action_t *));
+		    }
+		    result[num++] = p;
+		}
+	    }
     }
-
-    if ((start = load_instructions(model_file, 
-				   &(context->vm_context.inst_array), 
-				   &(context->vm_context.num_inst),
-				   &(context->actions), 
-				   &(context->num_actions))) >= 0) 
-	{
-	    init_context(&(context->vm_context), start);
-	    strcpy(context->model, model);
-	    num_proc = 1;	/* XXX single threaded only. */
-	    return (context - process_table); 
-	}
-    return -1;
+    result[num] = NULL;
+    return result;
 }
 
 

@@ -25,7 +25,7 @@ SOURCES = $(wildcard *.c) $(addprefix ../, $(CORE_OBJS:.o=.c))
 TESTS = test_vm test_action test_process test_events test_process_table
 #test_assertions
 
-all: test driver vm_harness
+all: test  vm_harness #driver
 
 test:  $(TESTS) 
 	-for i in $^ ; do $$i -f; done

@@ -31,15 +31,14 @@ SOURCES = $(OBJS:.o=.c)
 all: test shell
 
 # Compile the program
-PMLServer: $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) -g
-
 shell: shell.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) -lreadline -lhistory -ltermcap
 
+# Unit tests.
 test: $(CORE_OBJS)
 	$(MAKE) -C test 
 
+# Programming aids.
 xref:
 	ctags -x $(SOURCES) > $@
 

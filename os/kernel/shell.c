@@ -2,11 +2,11 @@
 *****************************************************************************
 *
 * File:         $RCSFile: shell.c$
-* Version:      $Id: shell.c,v 1.3 2003/06/30 17:41:42 jnoll Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.4 2003/07/04 08:12:56 jnoll Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
-* Modified:     Sun Jun 29 23:51:31 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Fri Jul  4 00:58:36 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -41,41 +41,53 @@ list_models()
 
 list_instances()
 {
-    int i;
-    char **result = peos_list_instances();
+    int i, n;
+    char ** result = peos_list_instances(result);
     for (i = 0; i <= PEOS_MAX_PID; i++) {
 	printf("%d %s\n", i, result[i]);
     }
 }
 
+print_action(peos_action_t *action, char *state) 
+{
+    printf("  %2d    %-6s (%s)\n", action->pid, action->name, state);
+}
+
 list_actions()
 {
-    peos_action_t *alist;
+    peos_action_t **alist;
     int i;
-
+    printf("process action (status)\n");
     alist = peos_list_actions(ACT_RUN);
-    if (alist && alist[0].name[0]) {
-	for (i = 0; alist[i].name[0]; i++) {
-	    printf("%s (active)\n", alist[i].name);
+    if (alist && alist[0]) {
+	for (i = 0; alist[i]; i++) {
+	    print_action(alist[i], "active");
 	}
     }
     alist = peos_list_actions(ACT_SUSPEND);
-    if (alist && alist[0].name[0]) {
-	for (i = 0; alist[i].name[0]; i++) {
-	    printf("%s (suspended)\n", alist[i].name);
+    if (alist && alist[0]) {
+	for (i = 0; alist[i]; i++) {
+	    print_action(alist[i], "suspended");
 	}
     }
     alist = peos_list_actions(ACT_READY);
-    if (alist && alist[0].name[0]) {
-	for (i = 0; alist[i].name[0]; i++) {
-	    printf("%s (ready)\n", alist[i].name);
+    if (alist && alist[0]) {
+	for (i = 0; alist[i]; i++) {
+	    print_action(alist[i], "ready");
 	}
     }
 }
 
-list(char *line)    
+list(int argc, char *argv[])    
 {
-    char *type = strtok(line, " \t\n");
+    char *type;
+
+    if (argc < 2) {
+	printf("usage: %s models|processes|actions\n", argv[0]);
+	return;
+    }
+    type = argv[1];
+
     if (strncmp(type, "m", strlen("m")) == 0) {
 	list_models();
     } else if (strncmp(type, "p", strlen("p")) == 0) {
@@ -87,10 +99,17 @@ list(char *line)
     }
 }
 
-create_process(char *model)
+create_process(int argc, char *argv[])
 {
     int pid;
+    char *model;
 
+    if (argc < 2) {
+	printf("usage: %s model\n", argv[0]);
+	return;
+    }
+
+    model = argv[1];
     printf("Executing %s:\n", model);
     if ((pid = peos_run(model, 0)) < 0) {
 	error_msg("couldn't create process");
@@ -99,19 +118,43 @@ create_process(char *model)
     }
 }
 
-run_action(char *action)
+run_action(int argc, char *argv[])
 {
+    char *action, *pid_string;
+    int pid; 
     vm_exit_code status;
+
+    if (argc < 3) {
+	printf("usage: %s pid action\n", argv[0]);
+	return;
+    }
+
+    pid = atoi(argv[1]);
+    action = argv[2];
     printf("Performing action %s\n", action);
-    if ((status = peos_run_action(action)) == VM_ERROR 
+    if ((status = peos_run_action(pid, action)) == VM_ERROR 
 	|| status == VM_INTERNAL_ERROR) {
 	printf("process executed an illegal instruction and has been terminated\n");
     }
 }
 
-finish_action(char *action)
+finish_action(int argc, char *argv[])
 {
-    peos_finish_action(action);
+    char *action, *pid_string;
+    int pid; 
+    vm_exit_code status;
+
+    if (argc < 3) {
+	printf("usage: %s pid action\n", argv[0]);
+	return;
+    }
+    pid = atoi(argv[1]);
+    action = argv[2];
+    printf("Performing action %s\n", action);
+    if ((status = peos_finish_action(pid, action)) == VM_ERROR 
+	|| status == VM_INTERNAL_ERROR) {
+	printf("process executed an illegal instruction and has been terminated\n");
+    }
 }
 
 quit()
@@ -161,11 +204,40 @@ print_commands ()
     printf("\n");
 }
 
+/* taken from parse.c, from Matt Strathmann and Ryan Becker's COEN 174
+   project; original author unknown. */
+
+int parse_line(char *buf, char **argv) 
+{
+    int argc = 0;
+
+        /* strip out initial whitespace */
+    while (*buf && isspace(*buf))
+        buf++;
+
+        /* find each argument, null terminate, and place ptr into argv array */
+    while (*buf) {
+        *argv++ = buf;
+        argc++;
+
+        while (*buf && !isspace(*buf))
+            buf++;
+
+        if (*buf) *buf++ = '\0';
+
+            /* skip whitespace between arguments */
+        while (*buf && isspace(*buf)) buf++;
+    }
+    *argv = (char *) 0;
+    return argc;
+}
+
 int
 main(int argc, char *argv[])
 {
-    int i;
+    int i, arg_c;
     char *cmd, *line = NULL;
+    char *arg_v[256];
     COMMAND *cmd_func;
 
     load_proc_table("proc_table.dat");
@@ -184,12 +256,13 @@ main(int argc, char *argv[])
 	if (line && *line) {
 	    add_history (line);
 	}
-	cmd = strtok(line, " \t\n");
+	arg_c = parse_line(line, arg_v);
+	cmd = arg_v[0];
 	if (!(cmd_func = find_command(cmd))) {
 	    printf("no such command\n");
 	    print_commands();
 	} else {
-	(*(cmd_func->impl))(line + strlen(cmd) + 1);
+	(*(cmd_func->impl))(arg_c, arg_v);
 	}
     }    
 }

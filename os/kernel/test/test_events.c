@@ -20,45 +20,14 @@ int handle_action_result = VM_DONE;
 int resume_result = VM_DONE;
 
 /* Stubs. */
-#ifdef NOTUSED
-int load_instructions(char *file, char ***inst, int *num_inst,
-			 peos_action_t **actions, int *num_actions)
-{
-    char buf[BUFSIZ];
-
-    sprintf(buf, "%s/p1.txt", instance_dir);
-    if (strcmp(file, buf) == 0) {
-	*inst = p1;
-	*num_inst = p1_size;
-	return 1;
-    }
-    return 0;
-}
-
-int init_context(vm_context_t *context)
-{
-    return context->num_inst;
-}
-
-/* 
- * Only the file name is actually looked at.  The contents are never
- * examined, so nothing really needs to be saved.
- */
-int save_context(vm_context_t *c, peos_action_t *a, int n, char *file)
-{
-    FILE *f = fopen(file, "w");
-    if (f) {
-	fprintf(f, "%s\n", "0 start");
-	return fclose(f);
-    }
-    return -1;
-}
-
-
-#endif
 int peos_resume(int pid)
 {
     return resume_result;
+}
+
+char *find_model_file(char *model)
+{
+    return TEST_PROC_NAME;
 }
 
 int peos_create_instance(char *model)
@@ -66,7 +35,7 @@ int peos_create_instance(char *model)
     return create_instance_result;
 }
 
-vm_exit_code handle_action_change(char *act, vm_act_state state) 
+vm_exit_code handle_action_change(int pid, char *act, vm_act_state state) 
 {
     return handle_action_result;
 }
@@ -118,27 +87,17 @@ END_TEST
 
 START_TEST(test_run_process)
 {
-    char *model = "p1", *instance_dir = "test_instances";
-    char cmd[BUFSIZ];
+    char *model = "p1";
     int i;
 
-    /* Pre: model file exists, PEOS_DIR set.  Because
-     * load_instructions() is a stub, the model file doesn't actually
-     * have to exist.  The instances dir does have to exist, however,
-     * because the contents will be searched.
+    /* Pre: Because load_instructions() and find_model_file are stubs,
+     * there are no actual pre conditions.
      */
-
-    mkdir("test_instances", S_IRUSR|S_IWUSR|S_IXUSR);
-    setenv("PEOS_DIR", instance_dir, 1);
-    setenv("COMPILER_DIR", instance_dir, 1);
     
     for (i = 0; i < 10; i++) {
 	fail_unless(peos_run(model, 0) != 0, 
 		    "failed to create instance");
     }
-
-    sprintf(cmd, "rm -r %s", instance_dir);
-    system(cmd);
 }
 END_TEST
 

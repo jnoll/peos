@@ -3,70 +3,28 @@
 #include <sys/types.h>		/* mkdir() */
 #include <check.h>
 #include "process_table.h"
+
+#define PROCESS_TABLE
 #include "test_util.h"
 
 /* Globals. */
-char *instance_dir = NULL;
-
-/* Look for model file in current dir. */
-START_TEST(test_find_model_file_default)
+/* NONE! */
+
+START_TEST(test_get_pid)
 {
-    char *model_file, *model= "model.txt", buf[BUFSIZ];
-    FILE *f;
-
-    /* Pre: model file exists. */
-    unsetenv("PEOS_DIR");
-    unsetenv("COMPILER_DIR");
-    f = fopen(model, "w");
-    if (f) {
-	fprintf(f, "I am the example model file.\n");
-	fclose(f);
-    } else {
-	fail("open expected.txt failed");
-    }
-    
-    /* Action: find it. */
-    model_file = find_model_file(model);
-
-    /* Post: model file found. */
-    fail_unless(model_file != NULL,
-		"find_model_file failed");
-    sprintf(buf, "./%s", model);
-    fail_unless(strcmp(model_file, buf) == 0,
-		"actual model_file not correct");
-    free(model_file);
-    unlink("model.txt");
+    int pid;
+    peos_context_t *context = &(process_table[0]);
+    pid = peos_get_pid(context);
+    fail_unless(pid == 0, "pid");
 }
 END_TEST
 
-/* Look for model file in COMPILER_DIR */
-START_TEST(test_find_model_file)
+START_TEST(test_get_pid_last)
 {
-    char *model_file, *model= "model.txt", buf[BUFSIZ];
-    FILE *f;
-
-    /* Pre: model file exists. */
-    setenv("COMPILER_DIR", ".", 1);
-    setenv("PEOS_DIR", ".", 1);
-
-    f = fopen(model, "w");
-    if (f) {
-	fprintf(f, "I am the example model file.\n");
-	fclose(f);
-    } else {
-	fail("open expected.txt failed");
-    }
-    
-    /* Action: find it. */
-    model_file = find_model_file(model);
-    /* Post: model file found. */
-    fail_unless(model_file != NULL,
-		"find_model_file failed");
-    sprintf(buf, "./%s", model);
-    fail_unless(strcmp(model_file, buf) == 0,
-		"actual model_file not correct");
-    free(model_file);
-    unlink("model.txt");
+    int pid;
+    peos_context_t *context = &(process_table[PEOS_MAX_PID]);
+    pid = peos_get_pid(context);
+    fail_unless(pid == PEOS_MAX_PID, "pid");
 }
 END_TEST
 
@@ -118,66 +76,77 @@ END_TEST
 
 START_TEST(test_save_proc_table)
 {
-    int i,  pid = 0;
+    int i, j, nbytes, abytes;
     char expected[BUFSIZ], actual[BUFSIZ];
     FILE *f;
+
     /* Pre: process table initialized. */
     peos_context_t *context = &(process_table[0]);
 
     f = fopen("expected_proc_table.dat", "w");
-    sprintf(context->model, "test");
-    fprintf(f, "pid: %d\nmodel: %s\n", pid, context->model);
-    init_context(&(context->vm_context), 1);
-    fprintf(f, "PC: %d\nSP: %d\nA: %d\n", context->vm_context.PC, 
-	    context->vm_context.SP, context->vm_context.A);
-    fprintf(f, "stack:");
-    for (i = 0; i < MAX_STACK_SIZE; i++) {
-	context->vm_context.stack[i] = 9;
-	fprintf(f, " %d", context->vm_context.stack[i]);
-    }
-    fprintf(f, "\n");
-    context->vm_context.num_variables = 3;
-    fprintf(f, "variables: ");
-    fprintf(f, "%d ", context->vm_context.num_variables);
-    context->vm_context.variables = (vm_vbinding_t *)calloc(context->vm_context.num_variables, sizeof(vm_vbinding_t));
+    for (j = 0; j < PEOS_MAX_PID+1; j++) {
+	context = &(process_table[j]);
+	sprintf(context->model, "test.cpml");
+	fprintf(f, "pid: %d\nmodel: %s\n", j, context->model);
+	context->status = PEOS_RUNNING;
+	fprintf(f, "status: %d\n", context->status);
 
-    for (i = 0; i < context->vm_context.num_variables; i++) {
-	sprintf(context->vm_context.variables[i].name, "var");
-	context->vm_context.variables[i].value = 8;
-	fprintf(f, " %s %d", context->vm_context.variables[i].name,
-		context->vm_context.variables[i].value);
-    }
-    fprintf(f, "\n");
-    fprintf(f, "parameters:");
-    context->vm_context.parameters.call = VM_SET;
-    fprintf(f, " %d", context->vm_context.parameters.call);
-    context->vm_context.parameters.act.state = ACT_READY;
-    fprintf(f, " %d", context->vm_context.parameters.act.state);
+	init_context(&(context->vm_context), 1);
+	fprintf(f, "PC: %d\nSP: %d\nA: %d\n", context->vm_context.PC, 
+		context->vm_context.SP, context->vm_context.A);
 
-    context->vm_context.parameters.act.num_act = 3;
-    fprintf(f, " %d", context->vm_context.parameters.act.num_act);
-    for (i = 0; i < context->vm_context.parameters.act.num_act; i++) {
-	sprintf(context->vm_context.parameters.act.actions[i], "an_action_param");
-	fprintf(f, " %s", context->vm_context.parameters.act.actions[i]);
+	fprintf(f, "stack:");
+	for (i = 0; i < MAX_STACK_SIZE; i++) {
+	    context->vm_context.stack[i] = 9;
+	    fprintf(f, " %d", context->vm_context.stack[i]);
+	}
+	fprintf(f, "\n");
+
+	context->vm_context.num_variables = 3;
+	fprintf(f, "variables: ");
+	fprintf(f, "%d ", context->vm_context.num_variables);
+	context->vm_context.variables = (vm_vbinding_t *)calloc(context->vm_context.num_variables, sizeof(vm_vbinding_t));
+
+	for (i = 0; i < context->vm_context.num_variables; i++) {
+	    sprintf(context->vm_context.variables[i].name, "var");
+	    context->vm_context.variables[i].value = 8;
+	    fprintf(f, " %s %d", context->vm_context.variables[i].name,
+		    context->vm_context.variables[i].value);
+	}
+	fprintf(f, "\n");
+
+	fprintf(f, "parameters:");
+	context->vm_context.parameters.call = VM_SET;
+	fprintf(f, " %d", context->vm_context.parameters.call);
+	context->vm_context.parameters.act.state = ACT_READY;
+	fprintf(f, " %d", context->vm_context.parameters.act.state);
+
+	context->vm_context.parameters.act.num_act = 3;
+	fprintf(f, " %d", context->vm_context.parameters.act.num_act);
+	for (i = 0; i < context->vm_context.parameters.act.num_act; i++) {
+	    sprintf(context->vm_context.parameters.act.actions[i], "an_action_param");
+	    fprintf(f, " %s", context->vm_context.parameters.act.actions[i]);
+	}
+	fprintf(f, "\n"); 
+
+	context->num_actions = 3;
+	fprintf(f, "actions: "); 
+	fprintf(f, "%d ", context->num_actions);
+	context->actions = (peos_action_t *)calloc(context->num_actions, sizeof(peos_action_t));
+	for (i = 0; i < context->num_actions; i++) {
+	    strcpy(context->actions[i].name, "an_action");
+	    context->actions[i].state = ACT_NONE;
+	    fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
+	}
+	fprintf(f, "\n\n"); 
     }
-    fprintf(f, "\n"); 
-    context->num_actions = 3;
-    fprintf(f, "actions: "); 
-    fprintf(f, "%d ", context->num_actions);
-    context->actions = (peos_action_t *)calloc(context->num_actions, sizeof(peos_action_t));
-    for (i = 0; i < context->num_actions; i++) {
-	strcpy(context->actions[i].name, "an_action");
-	context->actions[i].state = ACT_NONE;
-	fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
-    }
-    fprintf(f, "\n\n"); 
-    fprintf(f, "current_process: 0\n");
     fclose(f);
-    num_proc = 1;
+
     mark_point();
 
     f = fopen("expected_proc_table.dat", "r");
-    fgets(expected, BUFSIZ, f);
+    memset(expected, 0, BUFSIZ);
+    nbytes = fread(expected, sizeof(char), BUFSIZ, f);
     fclose(f);
     mark_point();
 
@@ -187,24 +156,27 @@ START_TEST(test_save_proc_table)
 
     /* Post: process table file exists and contains proc table. */
     f = fopen("proc_table.dat", "r");
-    fgets(actual, BUFSIZ, f);
+    memset(actual, 0, BUFSIZ);
+    abytes = fread(actual, sizeof(char), BUFSIZ, f);
+    fail_unless(abytes == nbytes, "file size");
     fclose(f);
     mark_point();
+
     fail_unless (strcmp(actual, expected) == 0, "proc table contents differ");
-    unlink("proc_table.dat");
-    unlink("expected_proc_table.dat");
+/*    unlink("proc_table.dat");
+      unlink("expected_proc_table.dat");*/
 }
 END_TEST
 
 
 START_TEST(test_load_proc_table) 
 {
-    int i,  pid = 0;
-    char expected[BUFSIZ], actual[BUFSIZ];
+    int i, j;
+    char  *model = "test.cpml";
     peos_context_t ctx;
     FILE *f;
     char *p_txt = \
-"0 an_action0 type action mode manual requires { a } provides { a }\n\
+	"0 an_action0 type action mode manual requires { a } provides { a }\n\
 1 an_action1 type action mode manual requires { a } provides { a }\n\
 2 an_action2 type action mode manual requires { a } provides { a }\n\
 3 start\n\
@@ -214,56 +186,61 @@ START_TEST(test_load_proc_table)
     peos_context_t *context = &(ctx);
 
     f = fopen("proc_table.dat", "w");
-    sprintf(context->model, "test");
-    fprintf(f, "pid: %d\nmodel: %s\n", pid, context->model);
-    init_context(&(context->vm_context), 3);
-    fprintf(f, "PC: %d\nSP: %d\nA: %d\n", context->vm_context.PC, 
-	    context->vm_context.SP, context->vm_context.A);
-    fprintf(f, "stack:");
-    for (i = 0; i < MAX_STACK_SIZE; i++) {
-	context->vm_context.stack[i] = 9;
-	fprintf(f, " %d", context->vm_context.stack[i]);
-    }
-    fprintf(f, "\n");
-    context->vm_context.num_variables = 3;
-    fprintf(f, "variables: ");
-    fprintf(f, "%d ", context->vm_context.num_variables);
-    context->vm_context.variables = (vm_vbinding_t *)calloc(context->vm_context.num_variables, sizeof(vm_vbinding_t));
+    for (j = 0; j <= PEOS_MAX_PID; j++) {
+	sprintf(context->model, model);
+	fprintf(f, "pid: %d\nmodel: %s\n", j, context->model);
+	context->status = PEOS_RUNNING;
+	fprintf(f, "status: %d\n", context->status);
+	init_context(&(context->vm_context), 3);
+	fprintf(f, "PC: %d\nSP: %d\nA: %d\n", context->vm_context.PC, 
+		context->vm_context.SP, context->vm_context.A);
+	fprintf(f, "stack:");
+	for (i = 0; i < MAX_STACK_SIZE; i++) {
+	    context->vm_context.stack[i] = 9;
+	    fprintf(f, " %d", context->vm_context.stack[i]);
+	}
+	fprintf(f, "\n");
+	context->vm_context.num_variables = 3;
+	fprintf(f, "variables: ");
+	fprintf(f, "%d ", context->vm_context.num_variables);
+	context->vm_context.variables = (vm_vbinding_t *)calloc(context->vm_context.num_variables, sizeof(vm_vbinding_t));
 
-    for (i = 0; i < context->vm_context.num_variables; i++) {
-	sprintf(context->vm_context.variables[i].name, "var");
-	context->vm_context.variables[i].value = 8;
-	fprintf(f, " %s %d", context->vm_context.variables[i].name,
-		context->vm_context.variables[i].value);
-    }
-    fprintf(f, "\n");
-    fprintf(f, "parameters:");
-    context->vm_context.parameters.call = VM_SET;
-    fprintf(f, " %d", context->vm_context.parameters.call);
-    context->vm_context.parameters.act.state = ACT_READY;
-    fprintf(f, " %d", context->vm_context.parameters.act.state);
+	for (i = 0; i < context->vm_context.num_variables; i++) {
+	    sprintf(context->vm_context.variables[i].name, "var");
+	    context->vm_context.variables[i].value = 8;
+	    fprintf(f, " %s %d", context->vm_context.variables[i].name,
+		    context->vm_context.variables[i].value);
+	}
+	fprintf(f, "\n");
+	fprintf(f, "parameters:");
+	context->vm_context.parameters.call = VM_SET;
+	fprintf(f, " %d", context->vm_context.parameters.call);
+	context->vm_context.parameters.act.state = ACT_READY;
+	fprintf(f, " %d", context->vm_context.parameters.act.state);
 
-    context->vm_context.parameters.act.num_act = 3;
-    fprintf(f, " %d", context->vm_context.parameters.act.num_act);
-    for (i = 0; i < context->vm_context.parameters.act.num_act; i++) {
-	sprintf(context->vm_context.parameters.act.actions[i], 
-		"an_action%d", i);
-	fprintf(f, " %s", context->vm_context.parameters.act.actions[i]);
+	context->vm_context.parameters.act.num_act = 3;
+	fprintf(f, " %d", context->vm_context.parameters.act.num_act);
+	for (i = 0; i < context->vm_context.parameters.act.num_act; i++) {
+	    sprintf(context->vm_context.parameters.act.actions[i], 
+		    "an_action%d", i);
+	    fprintf(f, " %s", context->vm_context.parameters.act.actions[i]);
+	}
+	fprintf(f, "\n"); 
+
+	context->num_actions = 3;
+	fprintf(f, "actions: "); 
+	fprintf(f, "%d ", context->num_actions);
+	context->actions = (peos_action_t *)calloc(context->num_actions, sizeof(peos_action_t));
+	for (i = 0; i < context->num_actions; i++) {
+	    sprintf(context->actions[i].name, "an_action%d", i);
+	    context->actions[i].state = ACT_NONE;
+	    fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
+	}
+	fprintf(f, "\n\n"); 
     }
-    fprintf(f, "\n"); 
-    context->num_actions = 3;
-    fprintf(f, "actions: "); 
-    fprintf(f, "%d ", context->num_actions);
-    context->actions = (peos_action_t *)calloc(context->num_actions, sizeof(peos_action_t));
-    for (i = 0; i < context->num_actions; i++) {
-	sprintf(context->actions[i].name, "an_action%d", i);
-	context->actions[i].state = ACT_NONE;
-	fprintf(f, " %s %d", context->actions[i].name, context->actions[i].state); 
-    }
-    fprintf(f, "\n\n"); 
-    fprintf(f, "current_process: 0\n");
     fclose(f);
     mark_point();
+
     memset(process_table, 0, (PEOS_MAX_PID+1) * sizeof(peos_context_t));
     mark_point();
 
@@ -278,34 +255,38 @@ START_TEST(test_load_proc_table)
 
     /* Post: process table reflects file contents; other globals
        initialized. */
-    fail_unless(strcmp(context->model, "test") == 0, "model name");
-    fail_unless(context->vm_context.PC == 3, "PC");
-    fail_unless(context->vm_context.SP == 0, "SP");
-    fail_unless(context->vm_context.A == -1, "A");
-    for (i = 0; i < MAX_STACK_SIZE; i++) {
-	fail_unless(context->vm_context.stack[i] == 9, "stack");
-    }
-    fail_unless(context->vm_context.num_variables == 3, "num var");
-    for (i = 0; i < context->vm_context.num_variables; i++) {
-	fail_unless(strcmp(context->vm_context.variables[i].name, "var") == 0,
-		    "var name");
-	fail_unless(context->vm_context.variables[i].value == 8, "var value");
-    }
-    fail_unless(context->vm_context.parameters.call == VM_SET, "param call");
-    fail_unless(context->vm_context.parameters.act.state == ACT_READY, "param act state");
-    fail_unless(context->vm_context.parameters.act.num_act == 3, "param num act");
-    for (i = 0; i < context->vm_context.parameters.act.num_act; i++) {
-	fail_unless(strncmp(context->vm_context.parameters.act.actions[i], "an_action", strlen("an_action")) == 0, "param act name");
+    for (j = 0; j <= PEOS_MAX_PID; j++) {
+	context = &(process_table[j]);
+	fail_unless(context->pid == j, "pid");
+	fail_unless(strcmp(context->model, model) == 0, "model name");
+	fail_unless(context->status == PEOS_RUNNING, "process status");
+	fail_unless(context->vm_context.PC == 3, "PC");
+	fail_unless(context->vm_context.SP == 0, "SP");
+	fail_unless(context->vm_context.A == -1, "A");
+	for (i = 0; i < MAX_STACK_SIZE; i++) {
+	    fail_unless(context->vm_context.stack[i] == 9, "stack");
+	}
+	fail_unless(context->vm_context.num_variables == 3, "num var");
+	for (i = 0; i < context->vm_context.num_variables; i++) {
+	    fail_unless(strcmp(context->vm_context.variables[i].name, "var") == 0,
+			"var name");
+	    fail_unless(context->vm_context.variables[i].value == 8, "var value");
+	}
+	fail_unless(context->vm_context.parameters.call == VM_SET, "param call");
+	fail_unless(context->vm_context.parameters.act.state == ACT_READY, "param act state");
+	fail_unless(context->vm_context.parameters.act.num_act == 3, "param num act");
+	for (i = 0; i < context->vm_context.parameters.act.num_act; i++) {
+	    fail_unless(strncmp(context->vm_context.parameters.act.actions[i], "an_action", strlen("an_action")) == 0, "param act name");
+	}
+
+	fail_unless(context->num_actions == 3, "num actions");
+	for (i = 0; i < context->num_actions; i++) {
+	    fail_unless(strncmp(context->actions[i].name, "an_action", strlen("an_action")) == 0, "act name");
+	    fail_unless(context->actions[i].pid == j, "action pid");
+	    fail_unless(context->actions[i].state == ACT_NONE, "act state");
+	}
     }
 
-    fail_unless(context->num_actions == 3, "num actions");
-    for (i = 0; i < context->num_actions; i++) {
-	fail_unless(strncmp(context->actions[i].name, "an_action", strlen("an_action")) == 0, "act name");
-	fail_unless(context->actions[i].state == ACT_NONE, "act state");
-    }
-    fail_unless(strcmp(actual, expected) == 0, "proc table contents differ");
-    fail_unless(current_process == &(process_table[0]), "current process wrong");
-    fail_unless(num_proc == 1, "num_proc wrong");
     unlink("proc_table.dat");
 }
 END_TEST
@@ -327,69 +308,210 @@ START_TEST(test_init_context)
 }
 END_TEST
 
-void
-setup_create_instance()
+void setup_list_actions()
 {
-    char cmd[BUFSIZ];
-    FILE *model;
-    instance_dir = "test_instances";
+    int i;
 
-    sprintf(cmd, "[-d %s] && rm -r %s", instance_dir, instance_dir);
-
-    /* Pre: model file exists, PEOS_DIR set. */
-
-    mkdir(instance_dir, S_IRUSR|S_IWUSR|S_IXUSR);
-    setenv("PEOS_DIR", instance_dir, 1);
-    setenv("COMPILER_DIR", "test_instances", 1);
-    sprintf(cmd, "%s/%s", instance_dir, "big.txt");
-    if ((model = fopen(cmd, "w")) != NULL) {
-	fprintf(model, "%s", big_txt);
-	fclose(model);
-    }
-}
-
-void
-teardown_create_instance()
-{
-    char cmd[BUFSIZ];
-    unsetenv("PEOS_DIR");
-    unsetenv("COMPILER_DIR");
-    sprintf(cmd, "rm -r %s", instance_dir);
-    system(cmd);
-}
-
-
-START_TEST(test_create_instance)
-{
-    int i, pid;
-    char *model = "big";
-    peos_context_t *context;
-
-    memset(process_table, 0, PEOS_MAX_PID + 1);
-    num_proc = 0;
     for (i = 0; i <= PEOS_MAX_PID; i++) {
-	fail_unless((pid = peos_create_instance(model)) == i, 
-		    "failed to create instance");
-	context = &(process_table[i]);
-	fail_unless(context->vm_context.PC == 49, "PC wrong");
-	fail_unless(context->vm_context.inst_array != NULL, "inst_array null");
-	fail_unless(context->vm_context.num_inst == 542, "num_inst wrong");
-	fail_unless(context->vm_context.A == -1, "A wrong");
-	fail_unless(context->vm_context.SP == 0, "SP wrong");
-	fail_unless(context->vm_context.stack[0] == 0, "");
-	fail_unless(context->actions != NULL, "actions null");
-	fail_unless(context->num_actions == 49, "num_actions wrong");
+	process_table[i].actions = make_actions(10, ACT_NONE);
+	process_table[i].num_actions = 10;
     }
+}
+
+void teardown_list_actions()
+{
+    int i;
+    for (i = 0; i <= PEOS_MAX_PID; i++) {
+	free(process_table[i].actions);
+    }
+}
+
+START_TEST(test_list_actions_0)
+{
+    peos_action_t **acts = 0;
+    int i;
+
+    /* Empty result. */
+    /*  Pre: process table is initialized. */
+
+    /* Action. */
+    acts = peos_list_actions(ACT_READY);
+
+    /* Post: list of actions in READY state. */
+    for (i = 0; acts[i]; i++) {
+	fail_unless(acts[i]->state == ACT_READY, NULL);
+    }
+
+    fail_unless(i == 0, "action count wrong (there aren't any)"); 
+    free(acts);
 }
 END_TEST
 
-/* Try to create an instance of a non-existent model. */
-START_TEST(test_create_instance_noexist)
+START_TEST(test_list_actions_1)
 {
-    char *model = "no";
+    peos_action_t **acts = 0;
+    int i;
 
-    fail_unless(peos_create_instance(model) == -1,
-		"created from non-existent model.");
+    /* One ready, at beginning. */
+    /* Pre: action list is initialized. */
+    for (i = 0; i <= PEOS_MAX_PID; i++) {
+	process_table[i].actions[0].state = ACT_READY;
+    }
+
+    /* Action. */
+    acts = peos_list_actions(ACT_READY);
+
+    /* Post: one action in READY state. */
+    for (i = 0; acts[i]; i++) {
+	fail_unless(acts[i]->state == ACT_READY, NULL);
+    }
+    fail_unless(i == (1 * (PEOS_MAX_PID + 1)), "action count wrong");
+    free(acts);
+
+}
+END_TEST
+
+START_TEST(test_list_actions_2)
+{
+    peos_action_t **acts = 0;
+    int i;
+
+    /* Two ready, beginning and end. */
+    /* Pre: action list is initialized. */
+    for (i = 0; i <= PEOS_MAX_PID; i++) {
+	process_table[i].actions[0].state = ACT_READY;
+	process_table[i].actions[9].state = ACT_READY;
+    }
+
+    /* Action. */
+    acts = peos_list_actions(ACT_READY);
+
+    /* Post: two actions in READY state. */
+    for (i = 0; acts[i]; i++) {
+	fail_unless(acts[i]->state == ACT_READY, NULL);
+    }
+    fail_unless(i == (2 * (PEOS_MAX_PID + 1)), "action count wrong");
+    free(acts);
+}
+END_TEST
+
+START_TEST(test_list_actions_3)
+{
+    peos_action_t **acts = 0;
+    int i;
+
+    /* Three ready, including middle. */
+    /* Pre: action list is initialized. */
+    for (i = 0; i <= PEOS_MAX_PID; i++) {
+	process_table[i].actions[0].state = ACT_READY;
+	process_table[i].actions[5].state = ACT_READY;
+	process_table[i].actions[9].state = ACT_READY;
+    }
+    /* Action. */
+    acts = peos_list_actions(ACT_READY);
+
+    /* Post: three actions in READY state. */
+    for (i = 0; acts[i]; i++) {
+	fail_unless(acts[i]->state == ACT_READY, NULL);
+    }
+    fail_unless(i == (3 * (PEOS_MAX_PID + 1)), "action count wrong");
+    free(acts);
+}
+END_TEST
+
+/* Sets up a full table. */
+void setup_find_free_entry()
+{
+    int i;
+
+    for (i = 0; i < PEOS_MAX_PID + 1; i++) {
+	process_table[i].status = PEOS_RUNNING;
+    }
+}
+
+
+START_TEST(test_find_free_entry)
+{
+    int i;
+    peos_context_t *context; 
+    /* Pre: an empty process table. */
+    for (i = 0; i < PEOS_MAX_PID + 1; i++) {
+	process_table[i].status = PEOS_NONE;
+    }
+    context = find_free_entry();
+
+    /* Post: first entry is returned. */
+    fail_unless(context == &(process_table[0]), "wrong context returned");
+}
+END_TEST
+
+START_TEST(test_find_free_entry_full)
+{
+    peos_context_t *context; 
+    /* Pre: an full process table. */
+    setup_find_free_entry();
+    context = find_free_entry();
+
+    /* Post: first entry is returned. */
+    fail_unless(context == NULL, "full: wrong context returned");
+}
+END_TEST
+
+START_TEST(test_find_free_entry_full2)
+{
+    int i;
+    peos_context_t *context; 
+    /* Pre: an full process table. */
+    for (i = 0; i < PEOS_MAX_PID + 1; i++) {
+	process_table[i].status = PEOS_READY;
+    }
+    context = find_free_entry();
+
+    /* Post: first entry is returned. */
+    fail_unless(context == NULL, "full2: wrong context returned");
+}
+END_TEST
+
+
+START_TEST(test_find_free_entry_first)
+{
+    peos_context_t *context; 
+    /* Pre: an full process table. */
+    setup_find_free_entry();
+    process_table[0].status = PEOS_NONE;
+
+    context = find_free_entry();
+
+    /* Post: first entry is returned. */
+    fail_unless(context == &(process_table[0]), "first: wrong context returned");
+}
+END_TEST
+
+START_TEST(test_find_free_entry_last)
+{
+    peos_context_t *context; 
+    /* Pre: an full process table. */
+    setup_find_free_entry();
+    process_table[PEOS_MAX_PID].status = PEOS_NONE;
+
+    context = find_free_entry();
+
+    /* Post: first entry is returned. */
+    fail_unless(context == &(process_table[PEOS_MAX_PID]), "last: wrong context returned");
+}
+END_TEST
+
+START_TEST(test_find_free_entry_middle)
+{
+    peos_context_t *context; 
+    /* Pre: an full process table. */
+    setup_find_free_entry();
+    process_table[PEOS_MAX_PID/2].status = PEOS_NONE;
+
+    context = find_free_entry();
+
+    /* Post: first entry is returned. */
+    fail_unless(context == &(process_table[PEOS_MAX_PID/2]), "middle: wrong context returned");
 }
 END_TEST
 
@@ -400,28 +522,42 @@ main(int argc, char *argv[])
     int nf;
     SRunner *sr;
     Suite *s = suite_create("process_table");
-    TCase *tc = tcase_create("io");
+    TCase *tc;
 
     parse_args(argc, argv);
 
+    tc = tcase_create("get pid");
     suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_get_pid);
+    tcase_add_test(tc, test_get_pid_last);
 
-    tcase_add_test(tc, test_find_model_file_default);
-    tcase_add_test(tc, test_find_model_file);
+    tc = tcase_create("table io");
+    suite_add_tcase(s, tc);
     tcase_add_test(tc, test_load_instructions);
-    tcase_add_test(tc, test_save_proc_table);
     tcase_add_test(tc, test_load_proc_table);
+    tcase_add_test(tc, test_save_proc_table);
 
-    tc = tcase_create("context");
+    tc = tcase_create("init context");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_init_context);
 
-    tc = tcase_create("create_instance");
+    tc = tcase_create("list actions");
     suite_add_tcase(s, tc);
-    tcase_add_unchecked_fixture(tc, setup_create_instance,
-			      teardown_create_instance);
-    tcase_add_test(tc, test_create_instance);
-    tcase_add_test(tc, test_create_instance_noexist);
+    tcase_add_unchecked_fixture(tc, setup_list_actions,
+			      teardown_list_actions);
+    tcase_add_test(tc, test_list_actions_0);
+    tcase_add_test(tc, test_list_actions_1);
+    tcase_add_test(tc, test_list_actions_2);
+    tcase_add_test(tc, test_list_actions_3);
+
+    tc = tcase_create("find free entry");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_find_free_entry);
+    tcase_add_test(tc, test_find_free_entry_full);
+    tcase_add_test(tc, test_find_free_entry_full2);
+    tcase_add_test(tc, test_find_free_entry_first);
+    tcase_add_test(tc, test_find_free_entry_last);
+    tcase_add_test(tc, test_find_free_entry_middle);
 
     sr = srunner_create(s);
 
