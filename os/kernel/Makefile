@@ -36,6 +36,7 @@ all: test shell lib
 
 peos: peos.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) 
+	test_peos.sh
 
 
 daemon: enactment_daemon.o $(CORE_OBJS)
