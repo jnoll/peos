@@ -45,14 +45,21 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                 
 		pidNum = pNum;
 		//Create nodes
-		DefaultMutableTreeNode info = dispOutline(xmlFilename);
-
+		DefaultMutableTreeNode info = dispOutline(xmlFilename);                
 		map = outline.getActions();
 		map.reset(pidNum); 
 		LinkNode n = map.getCurrentLink(pidNum);
-		
+                		
 		tabName = n.getElement().getAttribute("model");
-		
+		String specName=SpecLoader.getSpecFileName(tabName);
+                int specLoad=SpecLoader.LoadSpecFile(specName,outline,pidNum);
+                if (specLoad==0)
+                    System.out.println("Pid " + pidNum 
+                        +": Associated spec file loaded!");              
+                else if (specLoad==1)
+                    System.out.println("Pid " + pidNum 
+                        +": Associated spec file does not exist.");
+                
 		//Create tree that allows one selection at a time
 		tree = new JTree(info);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -61,7 +68,7 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		n = map.getNextActionDetails(pidNum);
 	
 		String currentPage = n.getElement().getAttribute("name");
-
+                
 		map.setToFirstAction(pidNum);
 		
 		//Set corresponding status icons to leaf nodes
@@ -335,21 +342,27 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		{
 			Object[] options = {"OK", "Cancel"};
                         String[] resourceToBind=outline.getRRName(map.getCurrentAction(pidNum));
+                        String[] values=new String[resourceToBind.length];
                         for (int i=0; i<resourceToBind.length; i++)
                         {
                             String inputValue = (String)JOptionPane.showInputDialog(
 				     this,"Enter/Edit required Files\n" + resourceToBind[i] + ":",
 				     "Submit Start Action", 
 				     JOptionPane.PLAIN_MESSAGE);
-                            if (inputValue == null)
-				return;
+                            if (inputValue == null || inputValue.equals(""))
+                            {
+				return;                                
+                            }                            
                             if ((inputValue!=null)&&(inputValue.length()>0)) 
                             { 
 				System.out.println("You Entered : " + inputValue);
-                                outline.bindResource(resourceToBind[i], inputValue,pidNum);
                             }
+                            values[i]=inputValue;
+                        }                       
+                        for (int i=0; i<values.length;i++)
+                        {
+                            outline.bindResource(resourceToBind[i],values[i],pidNum);
                         }
-                        
                         // if not all resources are set, action will not be started
                         if ( outline.doesStartNeedValue(map.getCurrentAction(pidNum)) == 0 )                            
                             outline.start(map.getCurrentAction(pidNum), pidNum);						
@@ -379,21 +392,27 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
                 {
 	                
                     String[] resourceToBind=outline.getPRName(map.getCurrentAction(pidNum));
+                    String[] values=new String[resourceToBind.length];
                     for (int i=0; i<resourceToBind.length; i++)
                     {
                         String inputValue = (String)JOptionPane.showInputDialog(
                                 this,"Enter/Edit required Files\n" + resourceToBind[i] + ":",
-				"Submit Start Action", 
+				"Submit Finish Action", 
 				JOptionPane.PLAIN_MESSAGE);
-                        if (inputValue == null)
+                        if (inputValue == null || inputValue.equals(""))
                             return;                            
                         if ((inputValue!=null)&&(inputValue.length()>0)) { 				
-                            System.out.println("You Entered : " + inputValue);                                
-                            outline.bindResource(resourceToBind[i], inputValue,pidNum);                                                        
-                        }                        
+                            System.out.println("You Entered : " + inputValue);                                                            
+                        }                                            
+                        values[i]=inputValue;
+                    }                       
+                    
+                    for (int i=0; i<values.length;i++)                    
+                    {                    
+                        outline.bindResource(resourceToBind[i],values[i],pidNum);                        
                     }
-                  
-                 //if ( outline.doesFinishNeedValue(map.getCurrentAction(pidNum)) == 0 )
+                    
+                 if ( outline.doesFinishNeedValue(map.getCurrentAction(pidNum)) == 0 )
                     outline.finish(map.getCurrentAction(pidNum),pidNum);		
                  map.getActionByName(pidNum,currActionName);		
                  LinkNode n = map.getCurrentLink(pidNum);
