@@ -1,5 +1,5 @@
-ID EQ file:///testDirectory/testfile1.c
-ID EQ file:///testDirectory/testfile3.c
+ID EQ file:///testDir/testfile1.c
+ID EQ file:///testDir/testfile3.c
 ID EQ file://FSsearchEnd2End.dat
 ID EQ file://testFSsearchEnd2End.c
 ID EQ file://testFSsearchEmpty.c
