@@ -13,6 +13,7 @@
 
 char *process_filename = NULL;
 
+
 void print_row(int pid, char *name, char *state)
 {
     printf("  <tr>\n");
@@ -35,6 +36,7 @@ void print_row(int pid, char *name, char *state)
 void list_actions()
 {
     peos_action_t *alist;
+    peos_action_t *tempalist;
     int i=0;
     int j;
     int num_rows=0;
@@ -53,6 +55,14 @@ void list_actions()
     while((i <= PEOS_MAX_PID)) {
         int num_actions;
 	if (result[i] != NULL) {
+	    int temp_num_actions;	
+	    tempalist = peos_list_actions(i,&temp_num_actions);	
+	    if(tempalist) {
+                if(peos_notify(i, "dummy_action", PEOS_EVENT_RESOURCE_CHANGE) == VM_INTERNAL_ERROR) {
+	            fprintf(stderr, "Error in notifying resource change event\n");
+	            exit(EXIT_FAILURE);
+	        }
+	    }
 	    alist = peos_list_actions(i,&num_actions);
 	    if(alist) {
 	        for(j = 0; j < num_actions; j++) {
@@ -103,7 +113,7 @@ int main()
 	    if(enc_loginname[i] == '/') enc_loginname[i] = '_';
 	    if(enc_loginname[i] == '.') enc_loginname[i] = '-';
         }
-        process_filename = (char *) malloc((strlen(enc_loginname) + strlen(".dat")) * sizeof(char));
+        process_filename = (char *) malloc((strlen(enc_loginname) + strlen(".dat") +1) * sizeof(char));
         strcpy(process_filename, enc_loginname);
         strcat(process_filename, ".dat"); 
     }
@@ -155,6 +165,7 @@ int main()
     printf("//  </script>\n");
 
     print_noscript();
+
 
     list_actions();
     print_createprocess_link(process_filename);
