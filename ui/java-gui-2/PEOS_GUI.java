@@ -21,7 +21,7 @@ public class PEOS_GUI extends javax.swing.JFrame
     private String          lastProcProperty;
 
 	final static Object[] tableColNames = {"Status", "Process ID", "Task ID"};
-	final static String[] retListNames = {"available", "running","done", "error"};
+	final static String[] retListNames = {"available", "running","finished", "error"};
 
 	public PEOS_GUI()
 	{
@@ -402,8 +402,7 @@ public class PEOS_GUI extends javax.swing.JFrame
 		}
 		catch (Exception e)
 		{
-			String msg = "Get exception: " + e;
-			JOptionPane.showMessageDialog(this, msg, "While Login",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, "While Login",JOptionPane.ERROR_MESSAGE);
 		    bRet = false;    
 		}
 		finally
