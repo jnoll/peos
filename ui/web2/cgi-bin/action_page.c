@@ -103,30 +103,44 @@ int main()
 void get_script(int pid, char *action)
 {
   char *script;
+  int i;
   
   load_proc_table("proc_table.dat");
   script = (char *) get_field(pid, action, ACT_SCRIPT);
   save_proc_table("proc_table.dat");
   if(script) {
-    printf("<p>%s</p>\n", script);
-  }
-  else {
-    printf("No Script\n");
+    for(i=0; i<30; i++){
+      if(script[i] == '\0' || script[i] == '\n')
+        break;
+      if(script[i] == '\"') continue; /* Don't display quotes. */
+        printf("%c",script[i]);
+    }	
+    printf("<br>\n");
+  } 
+  else{
+    printf("No Script<br>\n");
   }
 }
 
 void print_resources(int pid, char *action)
 {
-  int i, num_resources;
+  int i, j, num_resources;
   peos_resource_t *resources;
   
   load_proc_table("proc_table.dat");
   resources = (peos_resource_t *) get_resource_list_action(pid, action, &num_resources);
 
-  for(i=0; i<num_resources; i++){
-    printf("%s", resources[i].name);
-    if(i != num_resources-1)
-      printf(", ");
-  }
-  printf("\n");
+  if(resources){
+    for(i=0; i<num_resources; i++){
+      for(j=0; ; j++){
+        if(resources[i].name[j] == '\0' || resources[i].name[j] == '\n')
+	  break;
+        if(resources[i].name[j] == '\"') continue; /* Don't display quotes. */
+          printf("%c",resources[i].name[j]);
+      }	
+        if(i != num_resources-1)
+          printf(", ");
+    } 
+  } 
+  printf("<br>\n");
 }
