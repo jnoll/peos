@@ -23,8 +23,10 @@ struct _action_page {
     char **action_list;
     int total_actions;
     char *state;
-    _resource *reqd_resources;
-    _resource *prov_resources;
+    _resource **reqd_resources;
+    int total_reqd_resources;
+    _resource **prov_resources;
+    int total_prov_resources;
     char *script;
 };
 

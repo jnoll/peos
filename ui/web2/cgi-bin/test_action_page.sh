@@ -74,7 +74,7 @@ then
   echo; echo "Script value missing"
 fi
 
-rm output
+#rm output
 rm dfZRuitU82fEY.dat*
 echo "done"
 

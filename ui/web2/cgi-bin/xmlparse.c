@@ -27,10 +27,42 @@ struct _action_page {
     char **action_list;
     int total_actions;
     char *state;
-    _resource *reqd_resources;
-    _resource *prov_resources;
+    _resource **reqd_resources;
+    int total_reqd_resources;
+    _resource **prov_resources;
+    int total_prov_resources;
     char *script;
 };
+
+void get_first_active_action_details(xmlNode *node, _process_list *proct)
+{
+    char *action_state, *action_name;
+
+    node = node->xmlChildrenNode;
+    while (node) {
+	if (!xmlStrcmp(node->name, (const xmlChar *)"action")) {
+	    if (proct->first_action_name == NULL) {
+		action_name = xmlGetProp(node, "name");
+		proct->first_action_name = (char *) malloc((strlen(action_name) + 1) * sizeof(char));
+		strcpy(proct->first_action_name, action_name);
+	    }
+	    if (proct->active_action_name == NULL) {
+		action_state = xmlGetProp(node, "state");
+		if (!xmlStrcmp(action_state, (const xmlChar *)"READY")) {
+		    action_name = xmlGetProp(node, "name");
+		    proct->active_action_name = (char *) malloc((strlen(action_name) + 1) * sizeof(char));
+		    strcpy(proct->active_action_name, action_name);
+		}
+	    }
+	} else if (!xmlStrcmp(node->name, (const xmlChar *)"iteration") ||
+			!xmlStrcmp(node->name, (const xmlChar *)"selection") ||
+			!xmlStrcmp(node->name, (const xmlChar *)"sequence") ||
+			!xmlStrcmp(node->name, (const xmlChar *)"branch")) {
+	    get_first_active_action_details(node, proct);
+	}
+	node = node->next;
+    }
+}
 
 _process_list *get_proc_details(xmlNode *node)
 {
@@ -52,25 +84,7 @@ _process_list *get_proc_details(xmlNode *node)
     proct->name[i] = '\0';
     proct->first_action_name = NULL;
     proct->active_action_name = NULL;
-    node = node->xmlChildrenNode;
-    while ((node) && (lbreak == 1)) {
-	if ((!xmlStrcmp(node->name, (const xmlChar *)"action"))) {
-	    if (first == 0) {
-		action_name = xmlGetProp(node, "name");
-		proct->first_action_name = (char *) malloc((strlen(action_name) + 1) * sizeof(char));
-		strcpy(proct->first_action_name, action_name);
-		first++;
-	    }
-	    action_state = xmlGetProp(node, "state");
-	    if (!xmlStrcmp(action_state, (const xmlChar *)"READY")) {
-		action_name = xmlGetProp(node, "name");
-		proct->active_action_name = (char *) malloc((strlen(action_name) + 1) * sizeof(char));
-		strcpy(proct->active_action_name, action_name);
-		lbreak = 0;
-	    }
-	}
-	node = node->next;
-    }
+    get_first_active_action_details(node, proct);
     proct->next = NULL;
     return proct;
 }
@@ -92,41 +106,45 @@ void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *a
 		apage->state = (char *) malloc((strlen(tstate) + 1) * sizeof(char));
 		strcpy(apage->state, tstate);
 		inner = node->xmlChildrenNode;
-		apage->reqd_resources = NULL;
-		apage->prov_resources = NULL;
+		apage->reqd_resources[apage->total_reqd_resources] = NULL;
+		apage->prov_resources[apage->total_prov_resources] = NULL;
 		while (inner) {
 		    if (!xmlStrcmp(inner->name, (const xmlChar *)"script")) {
 			tscript = xmlNodeListGetString(doc, inner->xmlChildrenNode, 1);
 			apage->script = (char *) malloc((strlen(tscript) + 1) * sizeof(char));
 			strcpy(apage->script, tscript);
 		    } else if (!xmlStrcmp(inner->name, (const xmlChar *)"req_resource")) {
-			apage->reqd_resources = (_resource *) malloc(sizeof(_resource));
+			apage->reqd_resources[apage->total_reqd_resources] =
+					(_resource *) malloc(sizeof(_resource));
 			tstr = xmlGetProp(inner, "name");
-			apage->reqd_resources->name =
+			apage->reqd_resources[apage->total_reqd_resources]->name =
 				(char *) malloc((strlen(tstr) + 1) * sizeof(char));
-			strcpy(apage->reqd_resources->name, tstr);
+			strcpy(apage->reqd_resources[apage->total_reqd_resources]->name, tstr);
 			tstr = xmlGetProp(inner, "value");
-			apage->reqd_resources->value =
+			apage->reqd_resources[apage->total_reqd_resources]->value =
 				(char *) malloc((strlen(tstr) + 1) * sizeof(char));
-			strcpy(apage->reqd_resources->value, tstr);
+			strcpy(apage->reqd_resources[apage->total_reqd_resources]->value, tstr);
 			tstr = xmlGetProp(inner, "qualifier");
-			apage->reqd_resources->qualifier =
+			apage->reqd_resources[apage->total_reqd_resources]->qualifier =
 				(char *) malloc((strlen(tstr) + 1) * sizeof(char));
-			strcpy(apage->reqd_resources->qualifier, tstr);
+			strcpy(apage->reqd_resources[apage->total_reqd_resources]->qualifier, tstr);
+			apage->total_reqd_resources++;
 		    } else if (!xmlStrcmp(inner->name, (const xmlChar *)"prov_resource")) {
-			apage->prov_resources = (_resource *) malloc(sizeof(_resource));
+			apage->prov_resources[apage->total_prov_resources] =
+					(_resource *) malloc(sizeof(_resource));
 			tstr = xmlGetProp(inner, "name");
-			apage->prov_resources->name =
+			apage->prov_resources[apage->total_prov_resources]->name =
 				(char *) malloc((strlen(tstr) + 1) * sizeof(char));
-			strcpy(apage->prov_resources->name, tstr);
+			strcpy(apage->prov_resources[apage->total_prov_resources]->name, tstr);
 			tstr = xmlGetProp(inner, "value");
-			apage->prov_resources->value =
+			apage->prov_resources[apage->total_prov_resources]->value =
 				(char *) malloc((strlen(tstr) + 1) * sizeof(char));
-			strcpy(apage->prov_resources->value, tstr);
+			strcpy(apage->prov_resources[apage->total_prov_resources]->value, tstr);
 			tstr = xmlGetProp(inner, "qualifier");
-			apage->prov_resources->qualifier =
+			apage->prov_resources[apage->total_prov_resources]->qualifier =
 				(char *) malloc((strlen(tstr) + 1) * sizeof(char));
-			strcpy(apage->prov_resources->qualifier, tstr);
+			strcpy(apage->prov_resources[apage->total_prov_resources]->qualifier, tstr);
+			apage->total_prov_resources++;
 		    }
 		    inner = inner->next;
 		}
@@ -158,6 +176,8 @@ void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *a
 	    strcpy(apage->action_list[apage->total_actions], temp2);
 	    apage->total_actions++;
 	} else if (!xmlStrcmp(node->name, (const xmlChar *)"sequence")) {
+	    create_action_list(doc, node, apage, act_name);
+	} else if (!xmlStrcmp(node->name, (const xmlChar *)"branch")) {
 	    create_action_list(doc, node, apage, act_name);
 	}
 	node = node->next;
@@ -199,6 +219,10 @@ _action_page *get_action_page_details(char *filename, int pid, char *act_name)
 		apage->model = (char *) malloc((strlen(tmodel) + 1) * sizeof(char));
 		strcpy(apage->model, tmodel);
 		apage->action_list = (char **) malloc(sizeof(char *) * 50);
+		apage->reqd_resources = (_resource **) malloc(sizeof(_resource *) * 10);
+		apage->total_reqd_resources = 0;
+		apage->prov_resources = (_resource **) malloc(sizeof(_resource *) * 10);
+		apage->total_prov_resources = 0;
 		create_action_list(doc, cur, apage, act_name);
 	    }
 	}
@@ -252,3 +276,41 @@ _process_list *get_processes_list(char *filename)
 
     return plist;
 }
+/*
+int main()
+{
+    int i = 0;
+    _action_page *ap = get_action_page_details("/webpages/vkhandel/PEOS/cgi-bin/dfZRuitU82fEY.dat.xml", 1, "add_ice");
+    if (ap) {
+        printf("Name of the model: %s (PID = %d)\n", ap->model, ap->pid);
+        printf("Toral actions: %d\n", ap->total_actions);
+        for (i = 0; i < ap->total_actions; i++)
+        {
+             printf("Action #%d: %s\n", i+1, ap->action_list[i]);
+        }
+        printf("State of selected action: %s\n", ap->state);
+	printf("Required resources(%d): ", ap->total_reqd_resources);
+	for (i = 0; i < ap->total_reqd_resources; i++) {
+	    printf("%s = %s", ap->reqd_resources[i]->name, ap->reqd_resources[i]->value);
+	    if (i < (ap->total_reqd_resources-1)) {
+		printf(", ");
+	    }
+	}
+	if (ap->total_reqd_resources == 0) {
+	    printf("No resources required\n");
+	}
+	printf("\nProvided resources(%d): ", ap->total_prov_resources);
+	for (i = 0; i < ap->total_prov_resources; i++) {
+	    printf("%s = %s", ap->prov_resources[i]->name, ap->prov_resources[i]->value);
+	    if (i < (ap->total_prov_resources-1)) {
+		printf(", ");
+	    }
+	}
+	if (ap->total_prov_resources == 0) {
+	    printf("No resources provided\n");
+	}
+        printf("Script: %s\n", ap->script);
+
+    }
+    return 0;
+}*/

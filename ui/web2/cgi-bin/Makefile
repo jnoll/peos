@@ -26,8 +26,9 @@ OBJECTS = html.o \
 TESTS = test_active_processes.sh \
 	test_create_process.sh \
 	test_action_page.sh \
+	test_action_event.sh
 
-CGI = active_processes.cgi create_process.cgi action_page.cgi
+CGI = active_processes.cgi create_process.cgi action_page.cgi action_event.cgi bind_resources.cgi
 SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)
 
 PML = test_action.pml readme.pml cvs_add_dir.pml
