@@ -10,6 +10,7 @@
  ************************************************************************/
 
 #include "form.h"
+#include "debug.h"
 #include "variables.h"
 #include "vrepo.h"
 #include "setup_repositories.h"
@@ -41,7 +42,9 @@ int main( void )
 	call = callback ;
 
 	sampleFile = fopen ( "FSsearchEnd2End.dat", "r" ) ;
+	_assert( __FILE__, __LINE__, sampleFile ) ;
 	testQuery = fopen ( "FSsearchEnd2EndQuery.dat", "w" ) ;
+	_assert( __FILE__, __LINE__, testQuery ) ;
 	while ( !feof( sampleFile ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), sampleFile ) ;
@@ -55,7 +58,9 @@ int main( void )
 	fclose( testQuery ) ;	
 	
 	expectedResultFile = fopen ( "FSsearchEnd2EndExpectedResult.txt", "w" ) ;
+	_assert( __FILE__, __LINE__, expectedResultFile ) ;
 	testFile = fopen ( "FSsearchEnd2EndQuery.dat", "r" ) ;
+	_assert( __FILE__, __LINE__, testFile ) ;	
 	while ( !feof( testFile ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), testFile ) ;
@@ -69,6 +74,7 @@ int main( void )
 	fclose( expectedResultFile ) ;	
 	
 	testInput = fopen ( "FSsearchEnd2EndQuery.dat", "r" ) ;
+	_assert( __FILE__, __LINE__, testInput ) ;
 	while ( !feof( testInput ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), testInput ) ;
@@ -101,6 +107,7 @@ void setExpectedResult ( char *queryString, FILE *expectedResultFile )
 	if ( strstr( queryString, "file://" ) != NULL ) 
 	{
 		pValue = strpbrk( tempQuery, ":" ) ;
+		_assert( __FILE__, __LINE__, pValue ) ;
 		strcpy( testString, pValue - 4 ) ;
 		strcat( testString, "\n" ) ;
 		fwrite( testString, sizeof( char ), strlen( testString ), expectedResultFile ) ;
@@ -108,6 +115,7 @@ void setExpectedResult ( char *queryString, FILE *expectedResultFile )
 	/*else
 	{
 		pValue = strrchr( tempQuery, ' ' ) ;
+		_assert( __FILE__, __LINE__, pValue ) ;
 		strcat( testString, "./" ) ;
 		strcat( testString, pValue + 1 ) ;
 	}*/
@@ -132,10 +140,12 @@ void setTestData ( char *queryString, FILE *testQuery )
 		else
 		{
 			token = strtok( tempQuery, ":" ) ;
+			_assert( __FILE__, __LINE__, token  ) ;
 			strcat( testString, token ) ;
 			strcat( testString, "://" ) ;
 			strcat( testString, cwd ) ;
 			value = strpbrk( queryString, ":" ) ;
+			_assert( __FILE__, __LINE__, value  ) ;
 			strcat( testString, value + 3 ) ;
 		}
 	}

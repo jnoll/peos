@@ -10,6 +10,7 @@
  ************************************************************************/
 
 #include "form.h"
+#include "debug.h"
 #include "variables.h"
 #include "vrepo.h"
 #include "setup_repositories.h"
@@ -40,10 +41,12 @@ int main( void )
 	call = callback ;
 	
 	FSexpectedResultEmptyFile = fopen ( "FSsearchEmptyExpectedResult.txt", "w" ) ;
+	_assert( __FILE__, __LINE__, FSexpectedResultEmptyFile ) ;
 	setEmptyResult( 5, FSexpectedResultEmptyFile ) ;
 	fclose( FSexpectedResultEmptyFile ) ;	
 	
 	testInputEmpty = fopen ( "FSsearchEmpty.dat", "r" ) ;
+	_assert( __FILE__, __LINE__, testInputEmpty ) ;
 	while ( !feof( testInputEmpty ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), testInputEmpty ) ;

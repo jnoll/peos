@@ -10,6 +10,7 @@
  ************************************************************************/
 
 #include "form.h"
+#include "debug.h"
 #include "variables.h"
 #include "vrepo.h"
 #include "setup_repositories.h"
@@ -41,7 +42,9 @@ int main( void )
 	call = callback ;
 	
 	sampleSeekFile = fopen ( "FSsearchSeek.dat", "r" ) ;
+	_assert( __FILE__, __LINE__, sampleSeekFile ) ;
 	testSeekQuery = fopen ( "FSsearchSeekQuery.dat", "w" ) ;
+	_assert( __FILE__, __LINE__, testSeekQuery ) ;
 	while ( !feof( sampleSeekFile ) ) 
 	{
 		fgets ( queryString, sizeof ( queryString ), sampleSeekFile ) ;
@@ -55,6 +58,7 @@ int main( void )
 	fclose( testSeekQuery ) ;
 	
 	testInputSeek = fopen ( "FSsearchSeekQuery.dat", "r" ) ;
+	_assert( __FILE__, __LINE__, testInputSeek ) ;
 	
 	while ( !feof( testInputSeek ) ) 
 	{
@@ -71,6 +75,7 @@ int main( void )
 	poll_vr( ) ;
 
 	expectedResultSeekFile = fopen ( "FSsearchSeekExpectedResult.txt", "w" ) ;	
+	_assert( __FILE__, __LINE__, expectedResultSeekFile ) ;
 	
 	tempQueries = myQueries ;
 	while( tempQueries != NULL )
@@ -116,10 +121,12 @@ void setTestData ( char *queryString, FILE *testQuery )
 		else
 		{
 			token = strtok( tempQuery, ":" ) ;
+			_assert( __FILE__, __LINE__, token ) ;
 			strcat( testString, token ) ;
 			strcat( testString, "://" ) ;
 			strcat( testString, cwd ) ;
 			value = strpbrk( queryString, ":" ) ;
+			_assert( __FILE__, __LINE__, value ) ;
 			strcat( testString, value + 3 ) ;
 		}
 	}
