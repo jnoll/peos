@@ -22,7 +22,7 @@ runPeos (char *cmd)
   }
 
   /* form the command with >message 2>&1 on the end */
-  size = strlen(cmd) + sizeof(" >message 2>&1") + 1;
+  size = strlen(cmd) + strlen(" >message 2>&1") + 1;
   shell_cmd = malloc(size+1);
   if (shell_cmd == NULL) {
 	/* XXX - panic here about malloc failure */
@@ -65,7 +65,7 @@ peos_in_dir(char *dirname)
     }
 
     /* form $PWD/peos */
-    size = strlen(dirname) + sizeof(SLASH_PEOS) + 1;
+    size = strlen(dirname) + strlen(SLASH_PEOS) + 1;
     peos = (char *) malloc((size_t) size);
     if (peos == NULL) {
 	perror("malloc of dirname/peos failed");
