@@ -53,13 +53,25 @@ public class ProcessContent extends JSplitPane implements TreeSelectionListener,
 		tabName = n.getElement().getAttribute("model");
 		String specName=SpecLoader.getSpecFileName(tabName);
                 int specLoad=SpecLoader.LoadSpecFile(specName,outline,pidNum);
+                
+                //SpecLoad possibilities
                 if (specLoad==0)
                     System.out.println("Pid " + pidNum 
                         +": Associated spec file loaded!");              
                 else if (specLoad==1)
                     System.out.println("Pid " + pidNum 
                         +": Associated spec file does not exist.");
-                
+                else if (specLoad==3)
+                    JOptionPane.showMessageDialog(this,
+                                    "Spec file does not seem to have correct "
+                                    +"formatting.\n" 
+                                    +"Please check file for any errors.\n\n"
+                                    +tabName,
+                                    "PID:" + pNum,
+                                    JOptionPane.PLAIN_MESSAGE);
+                else if (specLoad==4)
+                    System.out.println("Reloading PID "+ pidNum);
+                                    
 		//Create tree that allows one selection at a time
 		tree = new JTree(info);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);

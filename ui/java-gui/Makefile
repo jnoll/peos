@@ -36,6 +36,8 @@ jtest: testLoadJU.class testActionMapJU.class testResourceMapJU.class testACJU.c
 	java ${java} -Dpeos.path=${path} testActionMapJU
 	java ${java} -Dpeos.path=${path} testResourceMapJU
 	java ${java} -Dpeos.path=${path} testSpec
+	rm -f proc_table.dat
+	rm -f proc_table.dat.xml
 
 setup: SetupPath.class
 	java ${java} SetupPath

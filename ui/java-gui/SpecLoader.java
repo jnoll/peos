@@ -37,6 +37,9 @@ public class SpecLoader {
     * @return An error code. Returns 1 if file does not exist or is not readable.
      *        Returns 2 if an exception is thrown. Returns 3 if a line does not 
      *        follow the appropriate format. Returns 0 on successful completion. 
+     *        Returns 4 when the program is already loaded into memory. 
+     *        (Helpful for reloading the program so preset values are 
+     *        not overwritten.)
     */
     public static int LoadSpecFile(String path, displayPO dpo, int pidNum)      
     {
@@ -51,7 +54,9 @@ public class SpecLoader {
             int lineCount=0;
             reader.mark(65536);
             while (reader.readLine() != null)
+            {                
                 lineCount++;            
+            }
             
             String[][] pairs= new String[lineCount][5];          
             
@@ -59,16 +64,25 @@ public class SpecLoader {
             int count=0;
 
             while ((line=reader.readLine()) !=null)
-            {       
-                colonCount=0;
+            {                       
+                colonCount=0;            
                 for (int i = 0; i<line.length(); i++)
                 {
                     if (line.charAt(i) == ':')
                         colonCount++;
                     if (colonCount > 1)
                         return 3;
-                }                
+                }
                 pairs[count]=line.split(":");                                
+                
+                if (count==0)
+                {               
+                    ResourceMap rm=dpo.getResources();
+                    String currentVal=dpo.getResValue(rm.getResource(pairs[count][0],pidNum));
+                    if (currentVal.equals(pairs[count][1]))
+                        return 4;
+                }
+                
                 count++;
             }
             
