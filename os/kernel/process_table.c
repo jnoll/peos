@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.32 2004/01/16 06:49:16 jnoll Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.33 2004/02/02 22:58:49 jshah1 Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -33,6 +33,8 @@
 /* Globals. */
 peos_context_t process_table[PEOS_MAX_PID+1];
 int cur_pid = -1;		/* Initially, start below proc table. */
+
+int filedes;
 
 
 /* 
@@ -342,20 +344,20 @@ int load_proc_table(char *file)
 
     int num_proc = 0;
     
-    int fd;
+    
    
-    fd = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    if (fd < 0) {
+    filedes = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    if (filedes < 0) {
         fprintf(stderr, "Cannot Get Process Table File Descriptor\n");
 	exit(EXIT_FAILURE);
     }
     
-    if(get_lock(fd) < 0) {
+    if(get_lock(filedes) < 0) {
         fprintf(stderr, "Cannot Obtain Process Table File Lock\n");
 	exit(EXIT_FAILURE);
     }
     
-    in = fdopen(fd, "r+");
+    in = fdopen(filedes, "r+");
    
     for (i = 0; i <= PEOS_MAX_PID; i++) {
 	process_table[i].status = PEOS_NONE;
@@ -365,12 +367,12 @@ int load_proc_table(char *file)
 	while (load_context(in, &process_table[num_proc]))
 	    num_proc++;
      /* fclose(in); */
-	/* XXX This is an issue here. If I close the file stream or the file descriptor, I loose the lock on the file. So right now this will result in some open descriptors. Potential solution is to use a global descriptor, which can be closed from save_proc_table */
+	/* XXX This is an issue here. If I close the file stream or the file descriptor, I loose the lock on the file. So right now this will result in some open file streams. */
     }
     else {
 	fprintf(stderr, "Error in getting file pointer for load process table");
-        release_lock(fd);
-	close(fd);
+        release_lock(filedes);
+	close(filedes);
     }
     return status;
 }
@@ -419,34 +421,20 @@ save_proc_table(char *file)
     int i;
     FILE *out; 
 
-    int fd;
-        
-    fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-    
-    if (fd < 0) {
-        fprintf(stderr, "Cannot Get File Descriptor\n");
-	exit(EXIT_FAILURE);
-    }
-
-/* setting the lock again will replace the old lock we have */    
-    if(get_lock(fd) < 0) {
-        fprintf(stderr, "Cannot Obtain Process Table File Lock\n");
-	exit(EXIT_FAILURE);
-    }
-    
-   /*   out = fdopen(fd, "w");   XXX Why doesn't this work ? XXX */
     out = fopen(file, "w");
    
     if (out) {
         for (i = 0; i <= PEOS_MAX_PID; i++) {
 	    save_context(i, &(process_table[i]), out);
 	}
-	release_lock(fd);
-	close(fd);
-        fclose(out);
+	release_lock(filedes);
+	fclose(out);
+	close(filedes);
     }
     else {
         fprintf(stderr, "File Pointer Error: %s \n", strerror(errno));
+	release_lock(filedes);
+	close(filedes);
 	return -1;
     }
     return 0;
