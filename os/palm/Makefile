@@ -1,6 +1,5 @@
 PalmPEOS.prc: code0000.PalmPEOS.grc tFRM03e8.bin
 	build-prc  PalmPEOS.prc "PalmPEOS" IP02 *.grc *.bin
-	cp *.prc "C:\Program Files\Palm\Add-on\Mark"
 
 tFRM03e8.bin: PalmPEOS.rcp PalmPEOS.h
 	pilrc PalmPEOS.rcp 
