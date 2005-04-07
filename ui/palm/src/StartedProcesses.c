@@ -90,11 +90,11 @@ Boolean StartedProcessHandler (EventType * pEvent)
 		break;
 		
 	case ctlSelectEvent:
+		pForm = FrmGetActiveForm();
+		list2 = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, StartedProcessesList));
 		switch (pEvent->data.ctlSelect.controlID)
 		{
-		case 1301:  //create and go to process
-			pForm = FrmGetActiveForm();
-			list2 = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, StartedProcessesList));
+		case 1301:  //resume started process
 			if (LstGetSelection (list2)==noListSelection)
 			{
 				//alert
@@ -107,9 +107,29 @@ Boolean StartedProcessHandler (EventType * pEvent)
 				FrmDeleteForm(pForm);
 				handled = true;
 			}
-				break;
+			break;
+		//
+		//
+		case 1311: // delete started process
+			if (LstGetSelection (list2)==noListSelection)
+			{
+				//alert
+				FrmCustomAlert (CheckSelection, "a started process", NULL, NULL);	
+			}
+			else 
+			{
+				pForm = FrmInitForm(MainForm);	
+				//retrieve pid somehow before		
+				//then call peos_delete_process_instance
+				//peos_delete_process_instance(pid);
+				FrmGotoForm (MainForm);
+				FrmDeleteForm(pForm);
+				handled = true;
 			}
 			break;
+	
+		}
+		break;
 		
 		default:
 			break;
