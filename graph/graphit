@@ -1,0 +1,33 @@
+#!/bin/sh
+
+while getopts dfmgv c ; do
+    case $c in
+	d)
+	DOM_FLAG=-d
+	;;
+	f)
+	FLOW_FLAG=-f
+	;;
+	m)
+	MATCH_FLAG=-m
+	;;
+	g|v)
+	GV=yes
+	;;
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
+while [ $# -gt 0 ] ; do
+    BASENAME=`basename $1 .pml`
+    PML_FILE=${BASENAME}.pml
+    DOT_FILE=${BASENAME}.dot
+    PS_FILE=${BASENAME}.ps
+    traverse ${DOM_FLAG} ${FLOW_FLAG} ${MATCH_FLAG} $PML_FILE > $DOT_FILE
+    dot -Tps $DOT_FILE > $PS_FILE
+#    [ -f $DOT_FILE ] && rm $DOT_FILE
+    [ -z "${GV}" ] || gv $PS_FILE
+    shift
+done
+
