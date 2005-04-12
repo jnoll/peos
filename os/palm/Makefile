@@ -1,3 +1,6 @@
+all:
+	m68k-palmos-gcc -I/usr/m68k-palmos -c -g stdio.c
+
 PalmPEOS.prc: code0000.PalmPEOS.grc tFRM03e8.bin
 	build-prc  PalmPEOS.prc "PalmPEOS" IP02 *.grc *.bin
 

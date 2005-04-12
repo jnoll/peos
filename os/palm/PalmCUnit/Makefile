@@ -38,9 +38,10 @@ FRAMEWORKOBJS = \
 # your client code that it is being tested (for inclusion of mock objects, 
 # etc.)
 CFLAGS = -g -Wall -W -Wno-unused -Wno-switch -Wno-sign-compare -DPALM $(INC_PATH)
-LIBS = -lPalmOSGlue -lgcc ../stdio.o \
+LIBS = -lPalmOSGlue -lgcc \
 	../../kernel/libpeos.a \
-	../../../pml/libpml.a  
+	../../../pml/libpml.a  \
+	../stdio.o 
 
 LDFLAGS = -g
 

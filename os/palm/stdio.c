@@ -1,5 +1,6 @@
 
 #include "stdio.h"
+#include <PalmOS.h>
 
 Err * err;
 
@@ -7,7 +8,7 @@ Err * err;
 
 UInt32 cut_mode(const char*str)
 {
-	if (strcmp(str,"r") == 0)
+/*	if (strcmp(str,"r") == 0)
 		return fileModeReadOnly;
 	if (strcmp(str,"w+") == 0)
 		return fileModeReadWrite;
@@ -15,6 +16,8 @@ UInt32 cut_mode(const char*str)
 		return fileModeUpdate;
 	if (strcmp(str, "a+") ==0)
 		return fileModeAppend;
+*/
+	return 0;
 }
 
 FILE * fopen(const char *name, const char *mode_str)
@@ -47,11 +50,11 @@ char* strdup(char*string)
 
 }
 
-char getc(FILE* stream)
+int getc(FILE* stream)
 {
-	char oneByte;
-	fread(&oneByte,1,1, stream);
-	return oneByte; 	
+	int oneByte, retValue;
+	retValue=fread(&oneByte,1,1, stream);
+	return retValue == 0 ? EOF : oneByte; 	
 }
 
 Int32  fwrite(const  void  *ptr,  Int32  size,  Int32  nmemb,  FILE * stream)
@@ -69,9 +72,15 @@ Int32 fread(void *ptr, size_t size, size_t nmemb, FILE* stream)
 	{
 		for(i=0; i<nmemb; i++)
 		{
+			if (stream->recordBuf[stream->place] == '\200')
+				break;
+			if (stream->recordBuf[stream->place] == '\0')
+				break;
+
 			((char*)ptr)[i]=(stream->recordBuf[stream->place]);
 			stream->place++; //increment place in file
 		}	
+		return i == 0 ? 0 : i ;
 	}	
 //	return FileRead(*stream, ptr, size, nmemb, err);
 }
@@ -79,7 +88,7 @@ Int32 fread(void *ptr, size_t size, size_t nmemb, FILE* stream)
 Int32 ferror(FILE* stream)
 {
 //	*err = FileError (*stream);
-	return -1;
+	return 0;
 }
 
 Int32 fclose(FILE * stream)

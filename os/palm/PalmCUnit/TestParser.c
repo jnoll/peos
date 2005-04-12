@@ -4,8 +4,9 @@
  *   counter_XXX, rcounter_XXX
  */
 
-//#include "counter.h"
+#include "TestDB.h"
 #include <stdio.h>
+
 #include <events.h>
 #include <pml/list.h>
 #include <pml/graph.h>
@@ -15,7 +16,6 @@
 #include <action.h>
 #include <resources.h>
 
-#include "TestDB.h"
 
 extern void initialize_suite();
 extern void terminate_suite();
@@ -79,7 +79,7 @@ static void test_load()
 	int num_resources=-1;
 	peos_resource_t *resources;
 	char *model;
-	model = strdup("timesheet");
+	model = strdup("simple");
 	resources = get_resource_list(model, &num_resources);
 	ASSERT_STR_EQUAL(model, find_model_file(model));
 	free(model);
@@ -100,6 +100,12 @@ static void test_fread()
 	output[7]='\0';
 	ASSERT_STR_EQUAL("process", output);
 }
+static void test_makegraph()
+{
+	Graph *g=makegraph("simple");
+	ASSERT_MSG("G is null", g != NULL);
+
+}
 static void test_ListCreate()
 {
         x = ListCreate();
@@ -108,6 +114,7 @@ static void test_ListCreate()
 
 static void test_TreeCreate()
 {
+	//printf("Testing Tree Create-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 	peos = TreeCreate(TreeCreate(NULL,NULL,"Steve",1),
 			TreeCreate(NULL, NULL, "Ark",2),
 				"John",0);
@@ -156,6 +163,7 @@ void initialize_suite() {
   TestGroup* group;
 
   group = add_test_group("CUnit", initializeCUnitGroup, terminateCUnitGroup, initializeCUnitTest, terminateCUnitTest);
+//  add_test_case(group, "MakeGraph", test_makegraph);
   add_test_case(group, "strdup", test_Strdup);
   add_test_case(group, "ListCreate", test_ListCreate);
   add_test_case(group, "ListAdd", test_ListAdd);

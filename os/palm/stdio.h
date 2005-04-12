@@ -25,9 +25,10 @@ void doNothing();
 
 #include <include/stdio.h>
 //#include <FileStream.h>
-#include <PalmOS.h>
+//#include <PalmOS.h>
 //#include <PalmTypes.h>
 //#include <SystemPublic.h>
+#include <DataMgr.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -46,9 +47,9 @@ struct file{
 UInt32 cut_mode(const char*);
 FILE * fopen(const char*, const char*);
 char* strdup(char*s);
-char getc(FILE *);
+int getc(FILE *);
 Int32  fwrite(const  void*,  Int32,  Int32,  FILE *);
 Int32 fread(void *, size_t, size_t, FILE *);
-Int32 ferror(FILE *);
-Int32 fclose(FILE *);
+Int32 ferror(FILE *) ;
+Int32 fclose(FILE *) ;
 #endif
