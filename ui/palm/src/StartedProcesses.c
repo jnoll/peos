@@ -6,6 +6,8 @@
 //#include <process_table.h>
 #ifdef STUB
 #include "StubKernel.h"
+#else
+#include <process_table.h>
 #endif
 
 extern char * selection;

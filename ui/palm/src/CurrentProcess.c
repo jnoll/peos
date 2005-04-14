@@ -4,6 +4,13 @@
 #include <stdlib.h>
 #include <StringMgr.h>
 //#include <Clipboard.h>
+
+#ifdef STUB
+#else
+#include <events.h>
+#include <process_table.h>
+#endif
+
 extern char * selection;
 char * actionSelection;
 peos_action_t * currentActions;
