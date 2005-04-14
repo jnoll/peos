@@ -69,7 +69,7 @@ static void test_peos_list_models(){
 	ret=peos_list_models(); 
 	ASSERT_MSG("peos_list_models() returns null", ret!=NULL);
 	
-	ASSERT_STR_EQUAL("AddressDB", ret[0]);
+	ASSERT_STR_EQUAL("simple", ret[0]);
 }
 
 static void test_load()
