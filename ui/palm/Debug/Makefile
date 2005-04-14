@@ -4,7 +4,8 @@ CC = m68k-palmos-gcc
 PRC = build-prc
 INCLUDE = -I/usr/m68k-palmos
 #C:/Program Files/PalmSource/Palm OS Developer Suite/PalmOSTools/include/stlport
-PEOSINC = -I"../../../os/kernel"  -I"../../../os/palm"   -I"../../.."
+STDIO_ORIG = -I/usr/m68k-palmos
+PEOSINC = -I"../../../os/kernel"  -I"../../../os/palm"   -I"../../.." ${STDIO_ORIG}
 LIB = -l ../../../os/kernel/libpeos.a -l ../../../pml/libpml.a
 
 #STUBINC = -I"./StubKernel.h"
