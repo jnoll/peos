@@ -7,7 +7,7 @@ INCLUDE = -I/usr/m68k-palmos
 PEOSINC = -I"../../../os/kernel"  -I"../../../os/palm"   -I"../../.."
 LIB = -l ../../../os/kernel/libpeos.a -l ../../../pml/libpml.a
 
-STUBINC = -I"./StubKernel.h"
+#STUBINC = -I"./StubKernel.h"
 STUBLIB = -l ./stubkernel.a
 
 #cd ../../../pml
@@ -38,7 +38,7 @@ stub:
 	m68k-palmos-ar cru stubkernel.a ./StubKernel.o
 	m68k-palmos-ranlib stubkernel.a || true
 	
-	$(CC) -DPALM -O0 -g -fexceptions -UNDEBUG  $(INCLUDE) $(STUBINC) $(STUBLIB) -Wall -c   \
+	$(CC) -DPALM -DSTUB -O0 -g -fexceptions -UNDEBUG  $(INCLUDE) $(STUBLIB) -Wall -c   \
 	../src/AppMain.c ../src/AvailProcesses.c ../src/StartedProcesses.c ../src/CurrentProcess.c
 	pilrc -ro -allowEditID -q ../rsc/AppResources.rcp palmpeos.ro
 	m68k-palmos-gcc -Xlinker -M -Xlinker --cref -g AppMain.o  AvailProcesses.o \

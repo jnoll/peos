@@ -4,6 +4,9 @@
 #include <string.h>
 //#include <events.h>
 //#include <process_table.h>
+#ifdef STUB
+#include "StubKernel.h"
+#endif
 
 extern char * selection;
 

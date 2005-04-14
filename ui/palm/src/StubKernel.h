@@ -1,5 +1,6 @@
 #ifndef _STUBKERNEL_H
 #define _STUBKERNEL_H
+
 #include <PalmOS.h>
 //NOT SURE OF I NEED ALL OF THESE STRUCTS
 typedef enum {
