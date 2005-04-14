@@ -1,6 +1,8 @@
 #include "CurrentProcess.h"
-//#include "StubKernel.h"
 #include "../rsc/AppResources.h"
+#ifdef STUB
+#include "StubKernel.h"
+#endif
 #include <stdlib.h>
 #include <StringMgr.h>
 //#include <Clipboard.h>
@@ -45,7 +47,7 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 	ListType *	list;
 	int currentPid;
 
-	RectangleType theRect;
+	//RectangleType theRect;
 	
 	char ** listElements2;
 
@@ -152,7 +154,6 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	FormType* 	pForm;
 	FieldType *fieldPtr;
 	//only used for movable code chunks	MemHandle mem;
-	char * actionScript;
 	char * script;
 	char * script2;
 	int currentActionNumber = itemSelected;
@@ -166,18 +167,15 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			FrmCopyTitle (pForm, actionSelection);
 			
 			//testing purposes - stub out
-			script = (char *) MemPtrNew(1+StrLen(currentActions[itemSelected].script));
-			StrCopy(script, currentActions[itemSelected].script);
+			script = (char *) MemPtrNew(1+StrLen (currentActions[currentActionNumber].script));
+			StrCopy(script, currentActions[currentActionNumber].script);
 			
 			//end testing
-			//actionScript = (char *) MemPtrNew(1+StrLen(script));
-			//StrCopy(actionScript, script);
    		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 		    FldFreeMemory(fieldPtr);  // initialize everything, just in case.
-		    FldSetMaxChars(fieldPtr, StrLen(actionScript));
+		    FldSetMaxChars(fieldPtr, StrLen(script));
 	        FldSetTextPtr(fieldPtr, script);
 		    FldRecalculateField(fieldPtr, true);
-			
 			FrmDrawForm(pForm);		
 			handled = true;
 			break;
@@ -238,8 +236,8 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					else
 					{
 					FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
-					script2 = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].name));
-					StrCopy(script2, currentActions[currentActionNumber].name);
+					script2 = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
+					StrCopy(script2, currentActions[currentActionNumber].script);
 
 		   		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 				    FldFreeMemory(fieldPtr);  // clear the field from prev data
@@ -256,25 +254,25 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					{
 						//delete the process
 						//go back to available processes form
-						pForm = FrmInitForm(AvailableProcessesForm);			
-						FrmGotoForm (AvailableProcessesForm);
+						pForm = FrmInitForm(CurrentProcessForm);			
+						FrmGotoForm (CurrentProcessForm);
 						FrmDeleteForm(pForm);
 						handled = true;
 					}
 					else
 					{
 						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
-						script2 = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].name));
-						StrCopy(script2, currentActions[currentActionNumber].name);
+						script2 = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
+						StrCopy(script2, currentActions[currentActionNumber].script);
 				
 				   		fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 					    FldFreeMemory(fieldPtr);  // clear the field from prev data
 					    FldSetMaxChars(fieldPtr, StrLen(script2));
 	    			    FldSetTextPtr(fieldPtr, script2);
 					    FldRecalculateField(fieldPtr, true);
-					}					    
-				    
+					}					    	
 				    //peos notify changes state to finish if its last action
+				    //dont worry abt this yet...........
 					break;
 					
 				default: break;
@@ -283,7 +281,6 @@ Boolean CurrentActionHandler (EventType* pEvent)
 		
 		case frmCloseEvent:
 			 pForm = FrmGetActiveForm();
-      
 		      // Free the buffer we allocated for this field and gave 
 		      // it as a pointer. This is only OK since we know the field
 		      // is about to be destroyed, and because we know it is 

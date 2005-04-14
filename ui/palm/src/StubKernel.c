@@ -33,12 +33,16 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
 {
 	peos_action_t * currentActions;
 	//TEST: create our own peos_action_t
-	currentActions = (peos_action_t *) calloc(2, sizeof(peos_action_t));
+	currentActions = (peos_action_t *) malloc(2 * sizeof(peos_action_t));
 	strcpy (currentActions[0].name, "action1test");
-	currentActions[0].script="blablabla";
+	//currentActions[0].script = strdup( "blablabla");
+	currentActions[0].script = (char*) malloc (sizeof (char) * (StrLen ("blabla")+1));
+	StrCopy (currentActions[0].script, "blabla");
 	currentActions[0].pid=1;
 	strcpy (currentActions[1].name, "action2test");
-	currentActions[1].script="blablabla2";
+	currentActions[1].script = (char*) malloc (sizeof (char) * (StrLen ("blablabla")+1));
+	StrCopy (currentActions[1].script, "blablabla");
+	//currentActions[1].script = strdup( "blablabla");
 	currentActions[1].pid=1;		
 	*num_actions=2;
 	return currentActions;

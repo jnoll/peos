@@ -1,7 +1,9 @@
 //Available processes
 //
 #include "AvailProcesses.h"
+#ifdef STUB
 #include "StubKernel.h"
+#endif
 #include "../rsc/AppResources.h"
 #include <stdlib.h>
 #include <StringMgr.h>
