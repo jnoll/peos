@@ -172,6 +172,7 @@ void initialize_suite() {
   add_test_case(group, "TreeDelete", test_TreeDelete);
   add_test_case(group, "ListModels", test_peos_list_models);
   add_test_case(group, "FileRead", test_fread);
+  add_test_case(group, "GraphCreate", test_makegraph);
   add_test_case(group, "LoadProcess", test_load);
 }
 
