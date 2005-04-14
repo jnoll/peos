@@ -35,18 +35,25 @@ void error_msg(char *s)
 
 
 #ifdef PALM
+
+/*
+	The variant of peos_list_models for PalmOS lists all databases which have the type field set to "peos", case sensitive.
+*/
 char **peos_list_models()
 {
 	LocalID db_id;
 	char **list;
+	char type[4];
 	char nameP[33]; //fixed size
 	Int16 i,dbc;
-	UInt32 creator;
-
+	Int16 numPML;
+	
 	dbc = DmNumDatabases(0);
 	if (dbc == 0)
 		return NULL;
-	/* need to use palm memhandles*/
+
+	numPML=0;
+	
 	list = malloc( (dbc +1) * sizeof(char *));
 
 	for (i=0; i< dbc; i++) /* scan through all DB */
@@ -54,12 +61,16 @@ char **peos_list_models()
 		db_id = DmGetDatabase(0,i); 
 		
 		/* get database name info*/
-		DmDatabaseInfo(0,db_id,nameP, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL/*type*/,NULL);
-		list[i]=malloc(sizeof(nameP));
-		list[i]=strdup(nameP);		
+		DmDatabaseInfo(0,db_id,nameP, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, (UInt32 *)&type /* type */,NULL);
+		if (strcmp(type, "peos\0") == 0)
+		{
+			list[numPML]=malloc(sizeof(nameP));
+			list[numPML]=strdup(nameP);		
+			numPML++;
+		}
 	}
-	list[i]=NULL;
-//	return NULL;
+	list[numPML] = NULL;
+
 	return list; 
 }
 #else
