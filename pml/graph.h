@@ -49,14 +49,14 @@ extern Graph GraphCreate (
     Node		/* source */,
     Node		/* sink   */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern void GraphDestroy (
 # ifdef ANSI_PROTOTYPES
     Graph		/* graph */
 # endif
-) ;
+)  KRNL_SECTION;
 
 
 extern void GraphInsert (
@@ -64,7 +64,7 @@ extern void GraphInsert (
     Graph		/* outer */,
     Graph		/* inner */
 # endif
-) ;
+)  KRNL_SECTION;
 
 
 extern void GraphLink (
@@ -72,7 +72,7 @@ extern void GraphLink (
     Graph		/* predecessor */,
     Graph		/* successor   */
 # endif
-) ;
+)  KRNL_SECTION;
 
 
 extern Node NodeCreate (
@@ -81,7 +81,7 @@ extern Node NodeCreate (
     int			/* type */,
     int			/* line */
 # endif
-) ;
+)  KRNL_SECTION;
 
 
 extern void NodeLink (
@@ -89,7 +89,7 @@ extern void NodeLink (
     Node		/* predecessor */,
     Node		/* successor   */
 # endif
-) ;
+)  KRNL_SECTION;
 
 END_PROTOTYPES
 

@@ -12,9 +12,9 @@
 # include <pml/tokens.h>
 # include <pml/scanner.h>
 #ifdef PALM
-#include <PalmTypes.h>
+//#include <PalmTypes.h>
 #include <SystemPublic.h>
-#include <FileStream.h>
+//#include <FileStream.h>
 #endif
 
 /* Public variable definitions */
@@ -156,7 +156,6 @@ void yyerror (message)
     fprintf (stderr, "%s:%d: %s at ", filename, lineno, message);
     fprintf (stderr, "%s\n", *yytext > 0 ? yytext : "end of input");
 }
-
 
 /************************************************************************
  * Function:	yywrap							*

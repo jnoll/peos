@@ -25,7 +25,6 @@ extern void yyerror (
 # endif
 ) INIT_SECTION ;
 
-
 extern int yylex (
 # ifdef ANSI_PROTOTYPES
     void		/* none */

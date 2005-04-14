@@ -19,6 +19,12 @@ typedef char *String;
 #define INIT_SECTION
 #endif
 
+#ifdef PALM
+#define KRNL_SECTION __attribute__ ((section ("krnl")))
+#else
+#define KRNL_SECTION
+#endif
+
 # if defined (__cplusplus)
 # define BEGIN_PROTOTYPES extern "C" {
 # define END_PROTOTYPES }
