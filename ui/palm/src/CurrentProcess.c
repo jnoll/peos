@@ -1,4 +1,5 @@
 #include "CurrentProcess.h"
+//#include "StubKernel.h"
 #include "../rsc/AppResources.h"
 #include <stdlib.h>
 #include <StringMgr.h>
