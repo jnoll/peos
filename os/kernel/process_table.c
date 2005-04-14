@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.54 2005/02/28 07:23:52 sbeeby Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.55 2005/04/14 06:47:16 sbeeby Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -419,7 +419,19 @@ load_context(FILE *in, peos_context_t *context)
     if (num_other_nodes) free(other_nodes); 
     return 1;
 }
+#endif
 
+#ifdef PALM
+void load_proc_table()
+{
+	int i;
+	
+	for (i = 0; i <= PEOS_MAX_PID; i++) {
+		process_table[i].status = PEOS_NONE;
+	}
+}
+
+#else
 int load_proc_table(char *file)
 {   
     int i, status = -1;

@@ -7,6 +7,12 @@
 
 #define RESOURCE_FIELD_LENGTH (256)
 
+#ifdef PALM
+#define STRING_MAX 30
+#else
+#define STRING_MAX 256
+#endif
+
 typedef enum {
     VM_DONE = 0, VM_ERROR, VM_INTERNAL_ERROR, VM_SYSCALL, VM_CONTINUE
 } vm_exit_code;
@@ -46,9 +52,9 @@ typedef struct {
 
 typedef struct {
 	int pid;
-	char name[256];
-	char value[256];
-	char qualifier[256];
+	char name[STRING_MAX];
+	char value[STRING_MAX];
+	char qualifier[STRING_MAX];
 } peos_resource_t;
 
 

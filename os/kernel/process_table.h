@@ -9,9 +9,6 @@
 
 #ifdef PALM
 #define PATH_MAX 256
-#define PROC_SECTION  // __attribute__ ((section ("proc")))
-#else
-#define PROC_SECTION 
 #endif
 
 #ifdef UNIT_TEST
@@ -50,7 +47,7 @@ extern void set_process_table_filename(char *filename) ;
 char *get_script(int pid, char *act_name) ;
 int peos_get_pid(peos_context_t *context) ;
 peos_context_t *peos_get_context(int pid) ;
-int peos_create_instance(char *model,peos_resource_t *resources,int num_resources) INIT_SECTION ; 
+int peos_create_instance(char *model,peos_resource_t *resources,int num_resources); //INIT_SECTION ; 
 char **peos_list_instances() ;
 peos_action_t *peos_list_actions(int pid, int *num_actions) ;
 

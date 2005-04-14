@@ -255,7 +255,12 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
  */
 peos_resource_t *get_resource_list(char *model, int *total_resources)
 {
+#ifndef PALM
     int rsize = 256;
+#else
+    int rsize=15;
+#endif;
+
     Graph g;
     Node n;
     int num_resources = 0;
