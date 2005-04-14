@@ -4,8 +4,6 @@
 #include "../rsc/AppResources.h"
 #include <stdlib.h>
 #include <StringMgr.h>
-//#include <Clipboard.h>
-
 
 char * selection;
 
@@ -22,29 +20,27 @@ char * selection;
 
 char ** list_models (UInt16 * size)
 {
-	UInt16 i;
-	char ** list;
-	char ** listElements2 = (char**) malloc (4*3);
+	UInt16 i;	
+	//get the list of available processes that can be created 
+	char ** list = (char**) peos_list_models ();
+	/*char ** listElements2 = (char**) malloc (4*3);
 	(char*) listElements2 [0] = "process1";
 	(char*) listElements2 [1] = "process2";
-	(char*) listElements2 [2] = NULL;
-	list = listElements2;
-	
-	
 	//malloc last element to null
-	// char ** list = peos_list_models ();
+	(char*) listElements2 [2] = NULL;
+	list = listElements2;*/
 	for (i=0; list[i]; i++)
 	{
 		*size=i;
 	}
 	*size = i;
 	
-	if (i==10000)
-		peos_list_models();
-	
+	//if (i==10000)
+	//	peos_list_models();
+	//return list of process models, size of list is already updated 
 	return list;
+	//return listElements2;
 }
-
 
 Boolean AvailableProcessesHandler (EventType* pEvent)
 {
@@ -92,14 +88,7 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 			
 			ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1201));
 			CtlSetLabel (ctl, selection);	
-			break;
-			
-			
-		/*case lstSelectEvent:
-			ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1201));
-			CtlSetLabel (ctl, selection);			
-			break;
-			*/
+			break;	
 					
 		case ctlSelectEvent:
 			switch (pEvent->data.ctlSelect.controlID)
@@ -126,19 +115,11 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 		case frmOpenEvent:	
 			pForm = FrmGetActiveForm();
 			list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1001));
-
-			//test 1:
-			/*listElements2 = (char**) malloc (4*2);
-			(char*) listElements2 [0] = "process1";
-			(char*) listElements2 [1] = "proc";
-			numChoices = ( 8 / sizeof (listElements2[0]));
-			*/
-			//test2:  real
+			//pass numChoices to update, get list of Elements		
 			listElements2 = list_models (&numChoices);
-			
+			//populate the list
 			LstSetListChoices (list, listElements2, numChoices);
 			LstSetSelection (list, -1);
-
 			//this may be a useful function later on
 			//SysFormPointerArrayToStrings (listElements2, 1)
 			FrmDrawForm(pForm);
@@ -156,7 +137,5 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 		default:
 			break;
 	}
-	
-	//free (listElements2);
 	return handled;	
 }

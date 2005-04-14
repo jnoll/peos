@@ -5,33 +5,30 @@
 //#include <Clipboard.h>
 extern char * selection;
 char * actionSelection;
-//function extrats names of actions from the array of peos_action_t structs 
+peos_action_t * currentActions;
+int itemSelected;
+int numActions;
+
+//extracts names of actions from the array of peos_action_t structs 
 //and puts those names into char** array which can be later displayed as items in the list
+//arguments: peos_action_t array, number of actions
+//returns: char** aray of action names
 char ** list_actions (peos_action_t * currentActions, int numActions)
 {
 	UInt16 i;
-	char ** list;
-	char ** listElements = (char**) malloc (4*3);
-	(char*) listElements [0] = "act1";
-	(char*) listElements [1] = "act2";
-	(char*) listElements [2] = NULL;
-	//list = listElements;
-	
+	char ** list;	
 
-	//HERE:
-	//write the code that would take peos_action_t * and convert it to char **
-	//malloc last element to null
-	// char ** list = peos_list_models ();
-	list = (char**) malloc (numActions*256);
+	//take peos_action_t * and convert it to char **
+	list = (char**) malloc (numActions*4);
 	for (i=0; i<numActions; i++) 
 	{
+		(char*) list[i]=(char*) malloc (256);
 		(char*) list[i]=currentActions[i].name;
 	}
 	return list;
-	//return listElements;
 }
-
-
+//
+//
 Boolean CurrentProcessHandler (EventType* pEvent)
 {
 	Boolean 	handled = false;
@@ -39,9 +36,9 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 	ControlType* ctl;
 	ListType *	list;
 	int currentPid;
-	int numActions;
+
 	RectangleType theRect;
-	peos_action_t * currentActions;
+	
 	char ** listElements2;
 
 	switch (pEvent->eType)
@@ -52,24 +49,16 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		pForm = FrmGetActiveForm();		
 		FrmCopyTitle (pForm, selection);
 		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));				
-		//create process - for now pass NULL to resources, and 0 for number of resources
-		currentPid =  0; //peos_create_instance (selection, NULL, 0);
-		//use returned pid to display list of actions	
-		//currentActions = peos_list_actions (currentPid, &numActions);
-		//TEST: create our own peos_action_t
-		currentActions = (peos_action_t *) calloc(2, sizeof(peos_action_t));
-		strcpy (currentActions[0].name, "action1test");
-		currentActions[0].script="blablabla";
-		currentActions[0].pid=currentPid;
-		strcpy (currentActions[1].name, "action2test");
-		currentActions[1].script="blablabla2";
-		currentActions[1].pid=currentPid;		
-		numActions=2;
-		
+		//CREATE process - for now pass NULL to resources, and 0 for number of resources
+		currentPid =  peos_run (selection, NULL, 0);
+		//use returned pid to DISPLAY list of actions
+		//also pass numActions to be updated
+		currentActions = (peos_action_t *) peos_list_actions (currentPid, &numActions);
+		//get a char** array of action names
 		listElements2 = list_actions (currentActions, numActions);
+		//populate the list with action names
 		LstSetListChoices (list, listElements2, numActions);
 		LstSetSelection (list, -1);
-			
 		FrmDrawForm(pForm);		
 		handled = true;
 		break;
@@ -110,8 +99,9 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		//remember selection
 		pForm = FrmGetActiveForm();
 		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));
+		itemSelected = LstGetSelection (list);
 		actionSelection = LstGetSelectionText (list, LstGetSelection (list));
-			
+		
 		ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionButton));
 		CtlSetLabel (ctl, actionSelection);	
 		break;
@@ -153,10 +143,11 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	Boolean 	handled = false;
 	FormType* 	pForm;
 	FieldType *fieldPtr;
-	MemHandle mem;
+	//only used for movable code chunks	MemHandle mem;
 	char * actionScript;
 	char * script;
 	char * script2;
+	int currentActionNumber = itemSelected;
 
 	
 	
@@ -167,19 +158,17 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			FrmCopyTitle (pForm, actionSelection);
 			
 			//testing purposes - stub out
-			script = (char *) MemPtrNew(1+StrLen("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaddddddddddddddddddddddddd"));
-			StrCopy(script, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaddddddddddddddddddddddddd");
+			script = (char *) MemPtrNew(1+StrLen(currentActions[itemSelected].script));
+			StrCopy(script, currentActions[itemSelected].script);
 			
 			//end testing
-			actionScript = (char *) MemPtrNew(1+StrLen(script));
-			StrCopy(actionScript, script);
+			//actionScript = (char *) MemPtrNew(1+StrLen(script));
+			//StrCopy(actionScript, script);
    		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 		    FldFreeMemory(fieldPtr);  // initialize everything, just in case.
 		    FldSetMaxChars(fieldPtr, StrLen(actionScript));
-	        FldSetTextPtr(fieldPtr, actionScript);
+	        FldSetTextPtr(fieldPtr, script);
 		    FldRecalculateField(fieldPtr, true);
-			
-			
 			
 			FrmDrawForm(pForm);		
 			handled = true;
@@ -229,29 +218,55 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			switch (pEvent->data.ctlSelect.controlID)
 			{
 				case 1902: //prev
-					FrmCopyTitle (pForm, "prevAction");	
-					script2 = (char *) MemPtrNew(1+StrLen("cccccccccccccccccccccccccccccccccc"));
-					StrCopy(script2, "cccccccccccccccccccccccccccccccccc");
-			
+					currentActionNumber--;
+					//if moved back before the first action - go back to list of actions
+					if (currentActionNumber<0)
+					{
+						pForm = FrmInitForm (CurrentProcessForm);
+						FrmGotoForm (CurrentProcessForm);
+						FrmDeleteForm (pForm);
+						handled = true;
+					}
+					else
+					{
+					FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
+					script2 = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].name));
+					StrCopy(script2, currentActions[currentActionNumber].name);
 
 		   		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 				    FldFreeMemory(fieldPtr);  // clear the field from prev data
 				    FldSetMaxChars(fieldPtr, StrLen(script2));
 	    		    FldSetTextPtr(fieldPtr, script2);
 				    FldRecalculateField(fieldPtr, true);					
+					}
 					break;
 				
 				case 1903: //next
-					FrmCopyTitle (pForm, "nextAction");	
-					script2 = (char *) MemPtrNew(1+StrLen("cccccccccccccccccccccccccccccccccc"));
-					StrCopy(script2, "cccccccccccccccccccccccccccccccccc");
-			
-		
-		   		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
-				    FldFreeMemory(fieldPtr);  // clear the field from prev data
-				    FldSetMaxChars(fieldPtr, StrLen(script2));
-	    		    FldSetTextPtr(fieldPtr, script2);
-				    FldRecalculateField(fieldPtr, true);
+					currentActionNumber++;
+					//if incremented beyond the last action
+					if (currentActionNumber>=numActions)
+					{
+						//delete the process
+						//go back to available processes form
+						pForm = FrmInitForm(AvailableProcessesForm);			
+						FrmGotoForm (AvailableProcessesForm);
+						FrmDeleteForm(pForm);
+						handled = true;
+					}
+					else
+					{
+						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
+						script2 = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].name));
+						StrCopy(script2, currentActions[currentActionNumber].name);
+				
+				   		fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
+					    FldFreeMemory(fieldPtr);  // clear the field from prev data
+					    FldSetMaxChars(fieldPtr, StrLen(script2));
+	    			    FldSetTextPtr(fieldPtr, script2);
+					    FldRecalculateField(fieldPtr, true);
+					}					    
+				    
+				    //peos notify changes state to finish if its last action
 					break;
 					
 				default: break;

@@ -2,8 +2,8 @@
 #include "../rsc/AppResources.h"
 #include <stdlib.h>
 #include <string.h>
-#include <events.h>
-#include <process_table.h>
+//#include <events.h>
+//#include <process_table.h>
 
 extern char * selection;
 
@@ -18,7 +18,7 @@ char ** list_instances (UInt16 * size)
 	*/
 	
 	//malloc last element to null
-	char ** list = peos_list_instances ();
+	char ** list = (char**) peos_list_instances ();
 	for (i=0; list[i]; i++)
 	{
 		*size=i;
