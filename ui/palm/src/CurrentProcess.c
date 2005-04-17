@@ -18,7 +18,7 @@ char * actionSelection;
 peos_action_t * currentActions;
 int itemSelected;
 int numActions;
-
+int currentActionNumber;
 //extracts names of actions from the array of peos_action_t structs 
 //and puts those names into char** array which can be later displayed as items in the list
 //arguments: peos_action_t array, number of actions
@@ -110,6 +110,7 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		pForm = FrmGetActiveForm();
 		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));
 		itemSelected = LstGetSelection (list);
+		currentActionNumber = itemSelected;
 		actionSelection = LstGetSelectionText (list, LstGetSelection (list));
 		
 		ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionButton));
@@ -156,8 +157,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	//only used for movable code chunks	MemHandle mem;
 	char * script;
 	char * script2;
-	int currentActionNumber = itemSelected;
-
+	
 	
 	
 	switch (pEvent->eType)

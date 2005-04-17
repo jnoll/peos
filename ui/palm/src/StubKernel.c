@@ -5,6 +5,7 @@
 //stub for peos_list_models
 //arguments: void
 //retursn: array of process model strings
+//peos list instances
 char **peos_list_models ( )
 {
 	char ** listElements2 = (char**) malloc (sizeof(char*)*2);
@@ -51,11 +52,11 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
 //stub for peos_list_instances
 //arguments: none
 //returns: list of started process instances
+//kernel tested
 char **peos_list_instances()
 {
 	static char *result[10+1];
     int i;
-    
     
     for (i = 0; i <= 10; i++) {
         result[i] = "test";//process_table[i].model;
