@@ -3,6 +3,8 @@
 #include "AvailProcesses.h"
 #ifdef STUB
 #include "StubKernel.h"
+#else
+#include <events.h>
 #endif
 #include "../rsc/AppResources.h"
 #include <stdlib.h>

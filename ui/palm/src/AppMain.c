@@ -13,7 +13,7 @@
 #include "StartedProcesses.h"
 #include "AvailProcesses.h"
 #include "CurrentProcess.h"
-
+#include <process_table.h>
 
 #define appFileCreator			'STRT'
 #define appVersionNum			0x01
@@ -276,6 +276,11 @@ static void AppEventLoop(void)
 UInt32 PilotMain(UInt16 cmd, MemPtr cmdPBP, UInt16 launchFlags)
 {
 	Err error = errNone;
+
+#ifndef STUB
+	load_proc_table();
+	 //proc table needs to be initialized unless this is a stub build
+#endif
 
 	switch (cmd) {
 		case sysAppLaunchCmdNormalLaunch:
