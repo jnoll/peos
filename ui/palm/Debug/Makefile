@@ -18,7 +18,7 @@ STUBLIB = -l ./stubkernel.a
 	#cd ../../ui/palm/Debug
 
 build:
-	$(CC) -DPALM -O0 -g -fexceptions -UNDEBUG  $(INCLUDE) $(PEOSINC) $(LIB) -Wall -c   ../src/AppMain.c ../src/AvailProcesses.c ../src/StartedProcesses.c ../src/CurrentProcess.c
+	$(CC) -DPALM -O0 -g -fexceptions -UNDEBUG  $(INCLUDE) $(PEOSINC) -Wall -c   ../src/AppMain.c ../src/AvailProcesses.c ../src/StartedProcesses.c ../src/CurrentProcess.c
 	pilrc -ro -allowEditID -q ../rsc/AppResources.rcp palmpeos.ro
 	m68k-palmos-multigen palmpeos.def
 	m68k-palmos-gcc -c palmpeos-sections.s
