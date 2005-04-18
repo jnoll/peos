@@ -34,18 +34,34 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
 {
 	peos_action_t * currentActions;
 	//TEST: create our own peos_action_t
-	currentActions = (peos_action_t *) malloc(2 * sizeof(peos_action_t));
+	currentActions = (peos_action_t *) malloc(5 * sizeof(peos_action_t));
+	
 	strcpy (currentActions[0].name, "action1test");
-	//currentActions[0].script = strdup( "blablabla");
 	currentActions[0].script = (char*) malloc (sizeof (char) * (StrLen ("blabla")+1));
 	StrCopy (currentActions[0].script, "blabla");
 	currentActions[0].pid=1;
+
 	strcpy (currentActions[1].name, "action2test");
 	currentActions[1].script = (char*) malloc (sizeof (char) * (StrLen ("blablabla")+1));
 	StrCopy (currentActions[1].script, "blablabla");
-	//currentActions[1].script = strdup( "blablabla");
 	currentActions[1].pid=1;		
-	*num_actions=2;
+	
+	strcpy (currentActions[2].name, "action3test");
+	currentActions[2].script = (char *) malloc (sizeof (char) * (StrLen ("go visit your mama")+1));
+	StrCopy (currentActions[2].script, "go visit your mama");
+	currentActions[2].pid=1;	
+	
+	strcpy (currentActions[3].name, "action4test");
+	currentActions[3].script = (char *) malloc (sizeof (char) * (StrLen ("go visit your mama")+1));
+	StrCopy (currentActions[3].script, "go visit your mama");
+	currentActions[3].pid=1;			
+	
+	strcpy (currentActions[4].name, "action5test");
+	currentActions[4].script = (char *) malloc (sizeof (char) * (StrLen ("go visit your mama")+1));
+	StrCopy (currentActions[4].script, "go visit your mama");
+	currentActions[4].pid=1;		
+	
+	*num_actions=5;
 	return currentActions;
 }
 //

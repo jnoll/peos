@@ -13,7 +13,10 @@
 #include "StartedProcesses.h"
 #include "AvailProcesses.h"
 #include "CurrentProcess.h"
+#ifndef STUB
 #include <process_table.h>
+#endif
+
 
 #define appFileCreator			'STRT'
 #define appVersionNum			0x01

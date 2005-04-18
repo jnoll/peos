@@ -156,7 +156,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	FieldType *fieldPtr;
 	//only used for movable code chunks	MemHandle mem;
 	char * script;
-	char * script2;
+	//char * script2;
 	
 	
 	
@@ -236,13 +236,14 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					else
 					{
 					FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
-					script2 = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
-					StrCopy(script2, currentActions[currentActionNumber].script);
+					//if (script!=NULL) MemPtrFree (script);
+					script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
+					StrCopy(script, currentActions[currentActionNumber].script);
 
 		   		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 				    FldFreeMemory(fieldPtr);  // clear the field from prev data
-				    FldSetMaxChars(fieldPtr, StrLen(script2));
-	    		    FldSetTextPtr(fieldPtr, script2);
+				    FldSetMaxChars(fieldPtr, StrLen(script));
+	    		    FldSetTextPtr(fieldPtr, script);
 				    FldRecalculateField(fieldPtr, true);					
 					}
 					break;
@@ -262,13 +263,14 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					else
 					{
 						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
-						script2 = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
-						StrCopy(script2, currentActions[currentActionNumber].script);
+						//if (script!=NULL) MemPtrFree (script);
+						script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
+						StrCopy(script, currentActions[currentActionNumber].script);
 				
 				   		fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 					    FldFreeMemory(fieldPtr);  // clear the field from prev data
-					    FldSetMaxChars(fieldPtr, StrLen(script2));
-	    			    FldSetTextPtr(fieldPtr, script2);
+					    FldSetMaxChars(fieldPtr, StrLen(script));
+	    			    FldSetTextPtr(fieldPtr, script);
 					    FldRecalculateField(fieldPtr, true);
 					}					    	
 				    //peos notify changes state to finish if its last action
