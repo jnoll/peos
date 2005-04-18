@@ -109,7 +109,7 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 				}
 				else 
 				{
-					currentPid = peos_run (selection, NULL, 0);
+					currentPid = peos_create_instance (selection, NULL, 0);
 					pForm = FrmInitForm(CurrentProcessForm);			
 					FrmGotoForm (CurrentProcessForm);
 					FrmDeleteForm(pForm);

@@ -22,7 +22,7 @@ char **peos_list_models ( )
 //stub for peos_run
 //arguments: process model, reources, number of resources
 //returns: pid of created process instance
-int peos_run (char *process, peos_resource_t * resources, int num_resources)
+int peos_create_instance (char *process, peos_resource_t * resources, int num_resources)
 {
 	return 1;
 }
