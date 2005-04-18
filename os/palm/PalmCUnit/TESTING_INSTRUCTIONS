@@ -1,0 +1,7 @@
+1. Makefile requires PalmCUnit package files. (add URL later)
+2. Install pdb files in specific order:
+	1. timesheet.pdb
+	2. simple.pdb
+   Otherwise, one of the tests for peos_list_models will fail. 
+
+

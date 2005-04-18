@@ -8,10 +8,10 @@
 #include <stdio.h>
 
 #include <events.h>
+#include <pml/features.h>
 #include <pml/list.h>
 #include <pml/graph.h>
 #include <pml/tree.h>
-#include <pml/features.h>
 #include "segments.h"
 #include <action.h>
 #include <resources.h>
@@ -164,6 +164,21 @@ static void test_Node()
 	ASSERT_INT16_EQUAL(1, myNode->type);
 	ASSERT_INT32_EQUAL(1, myNode->line);	
 }
+
+static void test_ListActions()
+{
+	int num_actions;
+	peos_action_t *actions;
+
+	actions = peos_list_actions(0, &num_actions);
+	ASSERT_INT32_EQUAL(5, num_actions);
+	ASSERT_STR_EQUAL("Fill_name", actions[0].name);
+	ASSERT_STR_EQUAL("Fill_hours", actions[1].name);
+	ASSERT_STR_EQUAL("Fill_total_hours", actions[2].name);
+	ASSERT_STR_EQUAL("Sign_and_date", actions[3].name);
+	ASSERT_STR_EQUAL("Turn_it_in", actions[4].name);
+	
+}
 /*-----------------------------*/
  
 void initialize_suite() {
@@ -180,6 +195,8 @@ void initialize_suite() {
   add_test_case(group, "FileRead", test_fread);
   add_test_case(group, "GraphCreate", test_makegraph);
   add_test_case(group, "LoadProcess", test_load);
+  add_test_case(group, "LoadProcess", test_load);
+  add_test_case(group, "ListActions", test_ListActions);
 }
 
 void terminate_suite() {
