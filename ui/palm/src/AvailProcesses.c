@@ -11,6 +11,7 @@
 #include <StringMgr.h>
 
 char * selection;
+int currentPid;
 
 /*static void AvailProcessListDraw (ListType * list, RectangleType * bounds)
 {
@@ -108,6 +109,7 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 				}
 				else 
 				{
+					currentPid = peos_run (selection, NULL, 0);
 					pForm = FrmInitForm(CurrentProcessForm);			
 					FrmGotoForm (CurrentProcessForm);
 					FrmDeleteForm(pForm);
