@@ -64,7 +64,7 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));				
 		//CREATE process - for now pass NULL to resources, and 0 for number of resources
 		if (fromNextForm!=1) currentPid =  peos_run (selection, NULL, 0);
-		else fromNextForm=1;
+		else if (fromNextForm==1) fromNextForm=0;
 		//use returned pid to DISPLAY list of actions
 		//also pass numActions to be updated
 		currentActions = (peos_action_t *) peos_list_actions (currentPid, &numActions);
