@@ -19,6 +19,9 @@ peos_action_t * currentActions;
 int itemSelected;
 int numActions;
 int currentActionNumber;
+int currentPid;
+
+int fromNextForm;
 //extracts names of actions from the array of peos_action_t structs 
 //and puts those names into char** array which can be later displayed as items in the list
 //arguments: peos_action_t array, number of actions
@@ -45,7 +48,7 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 	FormType* 	pForm;
 	ControlType* ctl;
 	ListType *	list;
-	int currentPid;
+
 
 	//RectangleType theRect;
 	
@@ -60,7 +63,8 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		FrmCopyTitle (pForm, selection);
 		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));				
 		//CREATE process - for now pass NULL to resources, and 0 for number of resources
-		currentPid =  peos_run (selection, NULL, 0);
+		if (fromNextForm!=1) currentPid =  peos_run (selection, NULL, 0);
+		else fromNextForm=1;
 		//use returned pid to DISPLAY list of actions
 		//also pass numActions to be updated
 		currentActions = (peos_action_t *) peos_list_actions (currentPid, &numActions);
@@ -210,6 +214,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				handled = true;
 				break;
 			case 2005:
+				fromNextForm = 1;
 				pForm = FrmInitForm (CurrentProcessForm);
 				FrmGotoForm (CurrentProcessForm);
 				FrmDeleteForm (pForm);
