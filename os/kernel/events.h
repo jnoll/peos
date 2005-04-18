@@ -7,7 +7,7 @@
 extern void error_msg(char *s);
 
 /* This function lists all the models (.pml files). */
-extern char **peos_list_models(void) ;
+extern char **peos_list_models(void) KRNL_SECTION;
 
 /* 
  * This function creates a process instance. Paraneters passed are name of the

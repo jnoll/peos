@@ -8,7 +8,7 @@
 #define RESOURCE_FIELD_LENGTH (256)
 
 #ifdef PALM
-#define STRING_MAX 30
+#define STRING_MAX 32
 #else
 #define STRING_MAX 256
 #endif
@@ -35,7 +35,7 @@ typedef enum {
 /* action list */
 typedef struct {
     int pid;			/* Owning process. */
-    char name[256];
+    char name[STRING_MAX];
     char *script;
     vm_act_state state;
 } peos_action_t;
@@ -44,7 +44,7 @@ typedef struct {
 
 typedef struct {
 	int pid;
-	char name[256];
+	char name[STRING_MAX];
 	vm_act_state state;
 } peos_other_node_t;
 

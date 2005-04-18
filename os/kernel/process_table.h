@@ -47,8 +47,8 @@ extern void set_process_table_filename(char *filename) ;
 char *get_script(int pid, char *act_name) ;
 int peos_get_pid(peos_context_t *context) ;
 peos_context_t *peos_get_context(int pid) ;
-int peos_create_instance(char *model,peos_resource_t *resources,int num_resources); //INIT_SECTION ; 
-char **peos_list_instances() ;
+int peos_create_instance(char *model,peos_resource_t *resources,int num_resources) INIT_SECTION ; 
+char **peos_list_instances() KRNL_SECTION ;
 peos_action_t *peos_list_actions(int pid, int *num_actions) ;
 
 
@@ -59,6 +59,8 @@ int set_resource_binding(int pid, char *resource_name, char *resource_value) ;
 char *get_resource_binding(int pid, char *resource_name) ;
 
 char *get_resource_qualifier(int pid, char *resource_name) ;
+
+void load_proc_table() ;
 
 #ifndef PALM
 int load_process_table();

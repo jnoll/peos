@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.55 2005/04/14 06:47:16 sbeeby Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.56 2005/04/18 01:38:16 sbeeby Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -239,7 +239,6 @@ char *get_resource_qualifier(int pid, char *resource_name)
 /* XXX remove this - it's just as easy to use the graph directly. */
 int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_other_node_t **other_nodes, int *num_other_nodes)
 { 
-#ifndef PALM
     Node n;
     int num_act = 0;
     int num_nodes = 0;
@@ -292,9 +291,7 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
 	free(node_array);
         return -1;
     }
-#else
 return 0;
-#endif
 }
 	    
 
