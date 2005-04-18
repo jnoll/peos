@@ -7,9 +7,9 @@
 
 # ifndef GRAPH_H
 # define GRAPH_H
+# include <pml/features.h>
 # include <pml/list.h>
 # include <pml/tree.h>
-# include <pml/features.h>
 
 /* Type and variable declarations */
 

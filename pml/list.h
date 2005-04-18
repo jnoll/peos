@@ -25,35 +25,35 @@ extern List ListConcat (
     List		/* head */,
     List		/* tail */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern List ListCopy (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern List ListCreate (
 # ifdef ANSI_PROTOTYPES
     void		/* none */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern void ListDestroy (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern Item ListGet (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern Item ListIndex (
@@ -61,7 +61,7 @@ extern Item ListIndex (
     List		/* list  */,
     int			/* index */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern Item ListInsert (
@@ -70,21 +70,21 @@ extern Item ListInsert (
     int			/* index */,
     Item		/* item  */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern Item ListPop (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern Item ListPull (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern Item ListPush (
@@ -92,7 +92,7 @@ extern Item ListPush (
     List		/* list */,
     Item		/* item */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern Item ListPut (
@@ -100,14 +100,14 @@ extern Item ListPut (
     List		/* list */,
     Item		/* item */
 # endif
-) ;
+) KRNL_SECTION ;
 
 
 extern int ListSize (
 # ifdef ANSI_PROTOTYPES
     List		/* list */
 # endif
-) ;
+) KRNL_SECTION ;
 
 END_PROTOTYPES
 
