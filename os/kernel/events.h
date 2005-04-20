@@ -14,7 +14,7 @@ extern char **peos_list_models(void) KRNL_SECTION;
  *  process, the resource list (list containing the name value pair of resources * associated with that process) and number of resources. 
  *
  */
-extern int peos_run(char *process,peos_resource_t *resources,int num_resources) ;
+extern int peos_run(char *process,peos_resource_t *resources,int num_resources) KRNL_SECTION ;
 
 /* 
  * This function is used to notify the kernel of various events for a given 
@@ -74,7 +74,7 @@ extern peos_resource_t *peos_get_resource_list_context(int pid, int *num_resourc
 
 extern char *peos_get_script(int pid, char *act_name) ;
 	
-int peos_delete_process_instance(int pid) ;
+int peos_delete_process_instance(int pid) KRNL_SECTION;
 
 int peos_set_resource_binding(int pid, char *resource_name, char *value) ;
 

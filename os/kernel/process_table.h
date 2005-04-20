@@ -49,7 +49,7 @@ int peos_get_pid(peos_context_t *context) ;
 peos_context_t *peos_get_context(int pid) ;
 int peos_create_instance(char *model,peos_resource_t *resources,int num_resources) INIT_SECTION ; 
 char **peos_list_instances() KRNL_SECTION ;
-peos_action_t *peos_list_actions(int pid, int *num_actions) ;
+peos_action_t *peos_list_actions(int pid, int *num_actions) KRNL_SECTION;
 
 
 void peos_set_process_table_file(char *file_name) ;
