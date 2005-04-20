@@ -99,6 +99,20 @@ static void test_load()
 	free(model);
 
 }
+
+static void test_Delete()
+{
+	int i;
+	char **processes;
+
+	processes=peos_list_instances();
+	ASSERT_STR_EQUAL("timesheet", processes[1]);
+	peos_delete_process_instance(1);
+	processes=peos_list_instances();
+	ASSERT_STR_EQUAL("", processes[1]);
+}
+
+
 static void test_fread()
 {
 	char *output=malloc(10);
@@ -177,6 +191,7 @@ static void test_ListActions()
 	ASSERT_STR_EQUAL("Fill_total_hours", actions[2].name);
 	ASSERT_STR_EQUAL("Sign_and_date", actions[3].name);
 	ASSERT_STR_EQUAL("Turn_it_in", actions[4].name);
+	ASSERT_STR_EQUAL("\"Fill in total hours\"", actions[2].script);
 	
 }
 /*-----------------------------*/
@@ -197,6 +212,7 @@ void initialize_suite() {
   add_test_case(group, "LoadProcess", test_load);
   add_test_case(group, "LoadProcess", test_load);
   add_test_case(group, "ListActions", test_ListActions);
+  add_test_case(group, "DeleteInstance", test_Delete);
 }
 
 void terminate_suite() {
