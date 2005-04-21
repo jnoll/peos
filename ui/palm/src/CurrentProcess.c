@@ -170,6 +170,9 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			pForm = FrmGetActiveForm();		
 			FrmCopyTitle (pForm, actionSelection);
 			
+			if (currentActionNumber==0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
+			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
+			
 			//testing purposes - stub out
 			script = (char *) MemPtrNew(1+StrLen (currentActions[currentActionNumber].script));
 			StrCopy(script, currentActions[currentActionNumber].script);
@@ -231,18 +234,23 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				case 1902: //prev
 					currentActionNumber--;
 					//if moved back before the first action - go back to list of actions
-					if (currentActionNumber<0)
+					/*if (currentActionNumber<0)
 					{
-						currentActionNumber++;
-						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
-						/*pForm = FrmInitForm (CurrentProcessForm);
+						//currentActionNumber++;
+						//FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
+						pForm = FrmInitForm (CurrentProcessForm);
 						FrmGotoForm (CurrentProcessForm);
 						FrmDeleteForm (pForm);
-						handled = true;*/
+						handled = true;
 					}
 					else
-					{
-						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
+					{*/
+						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);
+						if (currentActionNumber<=0) 
+						{
+							//currentActionNumber++;
+							FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));	
+						}
 						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
 						//if (script!=NULL) MemPtrFree (script);
 						script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
@@ -253,24 +261,29 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				    	FldSetMaxChars(fieldPtr, StrLen(script));
 		    		    FldSetTextPtr(fieldPtr, script);
 					    FldRecalculateField(fieldPtr, true);					
-					}
+					//}
 					break;
 				
 				case 1903: //next
 					currentActionNumber++;
 					//if incremented beyond the last action
-					if (currentActionNumber>=numActions)
+					/*if (currentActionNumber>=numActions)
 					{
-						currentActionNumber--;
-						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
-						/*pForm = FrmInitForm(CurrentProcessForm);			
+						//currentActionNumber--;
+						//FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
+						pForm = FrmInitForm(CurrentProcessForm);			
 						FrmGotoForm (CurrentProcessForm);
 						FrmDeleteForm(pForm);
-						handled = true;*/
+						handled = true;
 					}
 					else
-					{
+					{*/
 						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
+						if (currentActionNumber>=(numActions-1))
+						{
+							//currentActionNumber--;
+							FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
+						}
 						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
 						//if (script!=NULL) MemPtrFree (script);
 						script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
@@ -281,7 +294,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					    FldSetMaxChars(fieldPtr, StrLen(script));
 	    			    FldSetTextPtr(fieldPtr, script);
 					    FldRecalculateField(fieldPtr, true);
-					}					    	
+					//}					    	
 				    //peos notify changes state to finish if its last action
 				    //dont worry abt this yet...........
 					break;
