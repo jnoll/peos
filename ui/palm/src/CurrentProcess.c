@@ -168,14 +168,18 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	{
 		case frmOpenEvent:
 			pForm = FrmGetActiveForm();		
-			FrmCopyTitle (pForm, actionSelection);
+			//FrmSetTitle (pForm, actionSelection);
 			
 			if (currentActionNumber==0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
 			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
 			
 			//testing purposes - stub out
-			script = (char *) MemPtrNew(1+StrLen (currentActions[currentActionNumber].script));
-			StrCopy(script, currentActions[currentActionNumber].script);
+			script = (char *) MemPtrNew(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name));
+			StrCat (script, "Name: ");
+			StrCat (script, currentActions[currentActionNumber].name);
+			StrCat (script, "\n");
+			StrCat (script, "Script: ");
+			StrCat (script, currentActions[currentActionNumber].script);
 			
 			//end testing
    		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
@@ -245,7 +249,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					}
 					else
 					{*/
-						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);
+						//FrmSetTitle (pForm, currentActions[currentActionNumber].name);
 						if (currentActionNumber<=0) 
 						{
 							//currentActionNumber++;
@@ -253,9 +257,13 @@ Boolean CurrentActionHandler (EventType* pEvent)
 						}
 						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
 						//if (script!=NULL) MemPtrFree (script);
-						script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
-						StrCopy(script, currentActions[currentActionNumber].script);
-
+						script = (char *) MemPtrNew(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name));
+						StrCat (script, "Name: ");
+						StrCat (script, currentActions[currentActionNumber].name);
+						StrCat (script, "\n");
+						StrCat (script, "Script: ");
+						StrCat (script, currentActions[currentActionNumber].script);
+						
 		   			    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 					    FldFreeMemory(fieldPtr);  // clear the field from prev data
 				    	FldSetMaxChars(fieldPtr, StrLen(script));
@@ -278,7 +286,8 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					}
 					else
 					{*/
-						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
+					//changed to formsettitle from formcopytitle
+						//FrmSetTitle (pForm, currentActions[currentActionNumber].name);	
 						if (currentActionNumber>=(numActions-1))
 						{
 							//currentActionNumber--;
@@ -286,8 +295,12 @@ Boolean CurrentActionHandler (EventType* pEvent)
 						}
 						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
 						//if (script!=NULL) MemPtrFree (script);
-						script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
-						StrCopy(script, currentActions[currentActionNumber].script);
+						script = (char *) MemPtrNew(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name));
+						StrCat (script, "Name: ");
+						StrCat (script, currentActions[currentActionNumber].name);
+						StrCat (script, "\n");
+						StrCat (script, "Script: ");
+						StrCat (script, currentActions[currentActionNumber].script);
 				
 				   		fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 					    FldFreeMemory(fieldPtr);  // clear the field from prev data
