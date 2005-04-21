@@ -48,6 +48,6 @@ stub:
 	build-prc -o palmpeos.prc -n PalmPeos -c plmp palmpeos.ro palmpeos
 
 clean:  
-	rm -rf *.prc *.grc *.o *.bin rm *.s rm *.ro
+	rm -rf *.prc *.grc *.o *.bin rm *.s rm *.ro *.ld *.a
 	
 

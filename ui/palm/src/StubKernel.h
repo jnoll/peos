@@ -47,8 +47,9 @@ typedef struct {
 
 
 extern char **peos_list_models(void);
-extern int peos_run (char *process,peos_resource_t *resources,int num_resources) ;
+extern int peos_create_instance (char *process,peos_resource_t *resources,int num_resources) ;
 peos_action_t *peos_list_actions(int pid, int *num_actions);
 char **peos_list_instances() ;
+int peos_delete_process_instance(int pid) ;
 
 #endif

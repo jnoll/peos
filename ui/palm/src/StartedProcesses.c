@@ -11,6 +11,7 @@
 #endif
 
 extern char * selection;
+extern int currentPid;
 
 char ** list_instances (UInt16 * size)
 {
@@ -99,7 +100,8 @@ Boolean StartedProcessHandler (EventType * pEvent)
 		list2 = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, StartedProcessesList));
 		switch (pEvent->data.ctlSelect.controlID)
 		{
-		case 1301:  //resume started process
+		//RESUME started process
+		case 1301:  
 			if (LstGetSelection (list2)==noListSelection)
 			{
 				//alert
@@ -107,6 +109,7 @@ Boolean StartedProcessHandler (EventType * pEvent)
 			}
 			else 
 			{
+				currentPid = LstGetSelection (list2);
 				pForm = FrmInitForm(CurrentProcessForm);			
 				FrmGotoForm (CurrentProcessForm);
 				FrmDeleteForm(pForm);
@@ -114,22 +117,36 @@ Boolean StartedProcessHandler (EventType * pEvent)
 			}
 			break;
 		//
-		//
-		case 1311: // delete started process
+		//DELETE started process
+		case 1311:
+			//if nothing selected, display alert 
 			if (LstGetSelection (list2)==noListSelection)
 			{
 				//alert
 				FrmCustomAlert (CheckSelection, "a started process", NULL, NULL);	
 			}
+			//if process selected
 			else 
 			{
-				pForm = FrmInitForm(MainForm);	
-				//retrieve pid somehow before		
-				//then call peos_delete_process_instance
-				//peos_delete_process_instance(pid);
-				FrmGotoForm (MainForm);
-				FrmDeleteForm(pForm);
-				handled = true;
+				//confirm ALERT comes up
+				//if pressed ok
+				if (FrmCustomAlert (ConfirmDelete, NULL, NULL, NULL)==0)
+				{
+					pForm = FrmInitForm(MainForm);	
+					//!!!!!!!!!!! VERY IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!
+					//make assumption that pid's come in order in the returned array, 
+					//hence the same as order of items in the list
+					currentPid = LstGetSelection (list2);
+					peos_delete_process_instance(currentPid);
+					FrmGotoForm (MainForm);
+					FrmDeleteForm(pForm);
+					handled = true;
+				}
+				//pressed cancel
+				else
+				{
+				}
+					
 			}
 			break;
 	

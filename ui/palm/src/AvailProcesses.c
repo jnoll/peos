@@ -11,7 +11,7 @@
 #include <StringMgr.h>
 
 char * selection;
-int currentPid;
+extern int currentPid;
 
 /*static void AvailProcessListDraw (ListType * list, RectangleType * bounds)
 {

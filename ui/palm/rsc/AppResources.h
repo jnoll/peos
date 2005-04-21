@@ -47,6 +47,7 @@
 
 
 #define	CheckSelection							1020
+#define ConfirmDelete							1021
 
 //	Resource: Talt 1001
 #define RomIncompatibleAlert                      1001

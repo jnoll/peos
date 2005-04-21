@@ -19,7 +19,7 @@ peos_action_t * currentActions;
 int itemSelected;
 int numActions;
 int currentActionNumber;
-extern int currentPid;
+int currentPid;
 
 int fromNextForm;
 //extracts names of actions from the array of peos_action_t structs 
