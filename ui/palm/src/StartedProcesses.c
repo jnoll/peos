@@ -2,8 +2,6 @@
 #include "../rsc/AppResources.h"
 #include <stdlib.h>
 #include <string.h>
-//#include <events.h>
-//#include <process_table.h>
 #ifdef STUB
 #include "StubKernel.h"
 #else
@@ -139,27 +137,19 @@ Boolean StartedProcessHandler (EventType * pEvent)
 					currentPid = LstGetSelection (list2);
 					peos_delete_process_instance(currentPid);
 					
-					//change from MainForm to AvailableProcessesForm
-					pForm = FrmInitForm(AvailableProcessesForm);	
-					FrmGotoForm (AvailableProcessesForm);
+					pForm = FrmInitForm(MainForm);	
+					FrmGotoForm (MainForm);
 					FrmDeleteForm(pForm);
 					handled = true;
-					break;
 				}
 				//pressed cancel
-				else
-				{
-				}
-					
+				else { }					
 			}
 			break;
-	
 		}
 		break;
 		
-		default:
-			break;
-	}
-	
+		default: break;
+	}	
 	return handled;
 }

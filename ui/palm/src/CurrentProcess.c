@@ -5,7 +5,7 @@
 #endif
 #include <stdlib.h>
 #include <StringMgr.h>
-//#include <Clipboard.h>
+#include <Form.h>
 
 #ifdef STUB
 #else
@@ -233,23 +233,25 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					//if moved back before the first action - go back to list of actions
 					if (currentActionNumber<0)
 					{
-						pForm = FrmInitForm (CurrentProcessForm);
+						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
+						/*pForm = FrmInitForm (CurrentProcessForm);
 						FrmGotoForm (CurrentProcessForm);
 						FrmDeleteForm (pForm);
-						handled = true;
+						handled = true;*/
 					}
 					else
 					{
-					FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
-					//if (script!=NULL) MemPtrFree (script);
-					script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
-					StrCopy(script, currentActions[currentActionNumber].script);
+						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
+						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
+						//if (script!=NULL) MemPtrFree (script);
+						script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
+						StrCopy(script, currentActions[currentActionNumber].script);
 
-		   		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
-				    FldFreeMemory(fieldPtr);  // clear the field from prev data
-				    FldSetMaxChars(fieldPtr, StrLen(script));
-	    		    FldSetTextPtr(fieldPtr, script);
-				    FldRecalculateField(fieldPtr, true);					
+		   			    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
+					    FldFreeMemory(fieldPtr);  // clear the field from prev data
+				    	FldSetMaxChars(fieldPtr, StrLen(script));
+		    		    FldSetTextPtr(fieldPtr, script);
+					    FldRecalculateField(fieldPtr, true);					
 					}
 					break;
 				
@@ -258,16 +260,16 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					//if incremented beyond the last action
 					if (currentActionNumber>=numActions)
 					{
-						//delete the process
-						//go back to available processes form
-						pForm = FrmInitForm(CurrentProcessForm);			
+						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
+						/*pForm = FrmInitForm(CurrentProcessForm);			
 						FrmGotoForm (CurrentProcessForm);
 						FrmDeleteForm(pForm);
-						handled = true;
+						handled = true;*/
 					}
 					else
 					{
 						FrmCopyTitle (pForm, currentActions[currentActionNumber].name);	
+						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
 						//if (script!=NULL) MemPtrFree (script);
 						script = (char *) MemPtrNew(1+StrLen(currentActions[currentActionNumber].script));
 						StrCopy(script, currentActions[currentActionNumber].script);
