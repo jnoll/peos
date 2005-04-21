@@ -132,15 +132,18 @@ Boolean StartedProcessHandler (EventType * pEvent)
 				//if pressed ok
 				if (FrmCustomAlert (ConfirmDelete, NULL, NULL, NULL)==0)
 				{
-					pForm = FrmInitForm(MainForm);	
 					//!!!!!!!!!!! VERY IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!
 					//make assumption that pid's come in order in the returned array, 
 					//hence the same as order of items in the list
 					currentPid = LstGetSelection (list2);
 					peos_delete_process_instance(currentPid);
-					FrmGotoForm (MainForm);
+					
+					//change from MainForm to AvailableProcessesForm
+					pForm = FrmInitForm(AvailableProcessesForm);	
+					FrmGotoForm (AvailableProcessesForm);
 					FrmDeleteForm(pForm);
 					handled = true;
+					break;
 				}
 				//pressed cancel
 				else
