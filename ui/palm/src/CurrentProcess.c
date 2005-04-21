@@ -160,6 +160,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	FieldType *fieldPtr;
 	//only used for movable code chunks	MemHandle mem;
 	char * script;
+	UInt32 stringSize, i;
 	//char * script2;
 	
 	
@@ -174,7 +175,11 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
 			
 			//testing purposes - stub out
-			script = (char *) MemPtrNew(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name));
+			script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
+			for (i=0; i < stringSize; i++)
+			{
+				script[i]='\0';
+			}
 			StrCat (script, "Name: ");
 			StrCat (script, currentActions[currentActionNumber].name);
 			StrCat (script, "\n");
@@ -257,7 +262,11 @@ Boolean CurrentActionHandler (EventType* pEvent)
 						}
 						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
 						//if (script!=NULL) MemPtrFree (script);
-						script = (char *) MemPtrNew(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name));
+						script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
+						for (i=0; i < stringSize; i++)
+						{
+							script[i]='\0';
+						}
 						StrCat (script, "Name: ");
 						StrCat (script, currentActions[currentActionNumber].name);
 						StrCat (script, "\n");
@@ -295,7 +304,11 @@ Boolean CurrentActionHandler (EventType* pEvent)
 						}
 						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
 						//if (script!=NULL) MemPtrFree (script);
-						script = (char *) MemPtrNew(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name));
+						script = (char *) MemPtrNew(stringSize =(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
+						for (i=0; i < stringSize; i++)
+						{
+							script[i]='\0';
+						}
 						StrCat (script, "Name: ");
 						StrCat (script, currentActions[currentActionNumber].name);
 						StrCat (script, "\n");
