@@ -233,6 +233,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					//if moved back before the first action - go back to list of actions
 					if (currentActionNumber<0)
 					{
+						currentActionNumber++;
 						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
 						/*pForm = FrmInitForm (CurrentProcessForm);
 						FrmGotoForm (CurrentProcessForm);
@@ -260,6 +261,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					//if incremented beyond the last action
 					if (currentActionNumber>=numActions)
 					{
+						currentActionNumber--;
 						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
 						/*pForm = FrmInitForm(CurrentProcessForm);			
 						FrmGotoForm (CurrentProcessForm);
