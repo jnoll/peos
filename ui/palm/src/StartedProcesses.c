@@ -8,6 +8,7 @@
 #include "StubKernel.h"
 #else
 #include <process_table.h> 
+#include <events.h>
 #endif
 
 extern char * selection;
