@@ -8,6 +8,7 @@
 #include <process_table.h> 
 #include <events.h>
 #endif
+#include <SoundMgr.h>
 
 extern char * selection;
 extern int currentPid;
@@ -41,7 +42,7 @@ Boolean StartedProcessHandler (EventType * pEvent)
 {
 	Boolean 	handled = false;
 	FormType * 	pForm;
-	ControlType* ctl;
+	//ControlType* ctl;
 	ListType *	list2;
 	UInt16 numChoices=0;
 	char ** listElements2;
@@ -89,9 +90,10 @@ Boolean StartedProcessHandler (EventType * pEvent)
 		pForm = FrmGetActiveForm();
 		list2 = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, StartedProcessesList));
 		selection = LstGetSelectionText (list2, LstGetSelection (list2));
-			
-		ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1301));
-		CtlSetLabel (ctl, selection);	
+		
+		//change text in control button if you want to:
+		//ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1301));
+		//CtlSetLabel (ctl, selection);	
 		break;
 		
 	case ctlSelectEvent:
@@ -104,6 +106,7 @@ Boolean StartedProcessHandler (EventType * pEvent)
 			if (LstGetSelection (list2)==noListSelection)
 			{
 				//alert
+				SndPlaySystemSound (sndError);
 				FrmCustomAlert (CheckSelection, "a started process", NULL, NULL);	
 			}
 			else 
@@ -122,6 +125,7 @@ Boolean StartedProcessHandler (EventType * pEvent)
 			if (LstGetSelection (list2)==noListSelection)
 			{
 				//alert
+				SndPlaySystemSound (sndError);
 				FrmCustomAlert (CheckSelection, "a started process", NULL, NULL);	
 			}
 			//if process selected

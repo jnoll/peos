@@ -99,3 +99,18 @@ int peos_delete_process_instance(int pid)
 {
 	return 0;	
 }
+
+
+/*vm_exit_code peos_notify(int pid, char *action, peos_event event) 
+{	
+}*/
+
+int set_act_state(char *act, vm_act_state state, peos_action_t *actions, int num_actions)
+{
+	
+}
+
+vm_act_state get_act_state(char *act, peos_action_t *actions, int num_actions)
+{
+	
+}

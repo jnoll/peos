@@ -53,7 +53,7 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 	Boolean 	handled = false;
 	FormType* 	pForm;
 	ListType*   list;
-	ControlType* ctl;
+	//ControlType* ctl;
 	UInt16 numChoices=0;
 	char ** listElements2;
 	
@@ -92,8 +92,9 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 			list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1001));
 			selection = LstGetSelectionText (list, LstGetSelection (list));
 			
-			ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1201));
-			CtlSetLabel (ctl, selection);	
+			//change text in control button if you want to:
+			//ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 1201));
+			//CtlSetLabel (ctl, selection);	
 			break;	
 					
 		case ctlSelectEvent:
@@ -105,6 +106,7 @@ Boolean AvailableProcessesHandler (EventType* pEvent)
 				if (LstGetSelection (list)==noListSelection)
 				{
 					//alert
+					
 					FrmCustomAlert (CheckSelection, "an available process", NULL, NULL);	
 				}
 				else 

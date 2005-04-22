@@ -199,131 +199,100 @@ Boolean CurrentActionHandler (EventType* pEvent)
 		case menuEvent:
 			switch (pEvent->data.menu.itemID)
 			{
-			case 2001:
+				case 2001:
 				pForm = FrmInitForm(1100);
 				FrmDoDialog(pForm);					// Display the About Box.
 				FrmDeleteForm(pForm);
 				handled = true;
 				break;
-			case 2002:
+				case 2002:
 				pForm = FrmInitForm (MainForm);
 				FrmGotoForm (MainForm);
 				FrmDeleteForm (pForm);
 				handled=true;
 				break;
-			//available processes form
-			case 2003:
+				//available processes form
+				case 2003:
 				pForm = FrmInitForm(AvailableProcessesForm);			
 				FrmGotoForm (AvailableProcessesForm);
 				FrmDeleteForm(pForm);
 				handled = true;
 				break;
-			//started processes form
-			case 2004:
+				//started processes form
+				case 2004:
 				pForm = FrmInitForm(1500);	
 				FrmGotoForm (1500);
 				FrmDeleteForm(pForm);
 				handled = true;
 				break;
-			case 2005:
+				case 2005:
 				fromNextForm = 1;
 				pForm = FrmInitForm (CurrentProcessForm);
 				FrmGotoForm (CurrentProcessForm);
 				FrmDeleteForm (pForm);
 				handled = true;
 				break;
-			default: break;
-		}
+				default: break;
+			}
 			break;
 			
 		case ctlSelectEvent:
 			pForm = FrmGetActiveForm();	
 			switch (pEvent->data.ctlSelect.controlID)
 			{
-				case 1902: //prev
+				case 1902: //PREV
 					currentActionNumber--;
-					//if moved back before the first action - go back to list of actions
-					/*if (currentActionNumber<0)
-					{
-						//currentActionNumber++;
-						//FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
-						pForm = FrmInitForm (CurrentProcessForm);
-						FrmGotoForm (CurrentProcessForm);
-						FrmDeleteForm (pForm);
-						handled = true;
-					}
-					else
-					{*/
-						//FrmSetTitle (pForm, currentActions[currentActionNumber].name);
-						if (currentActionNumber<=0) 
-						{
-							//currentActionNumber++;
-							FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));	
-						}
-						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
-						//if (script!=NULL) MemPtrFree (script);
-						script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
-						for (i=0; i < stringSize; i++)
-						{
-							script[i]='\0';
-						}
-						StrCat (script, "Name: ");
-						StrCat (script, currentActions[currentActionNumber].name);
-						StrCat (script, "\n");
-						StrCat (script, "Script: ");
-						StrCat (script, currentActions[currentActionNumber].script);
-						
-		   			    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
-					    FldFreeMemory(fieldPtr);  // clear the field from prev data
-				    	FldSetMaxChars(fieldPtr, StrLen(script));
-		    		    FldSetTextPtr(fieldPtr, script);
-					    FldRecalculateField(fieldPtr, true);					
-					//}
+					//FrmSetTitle (pForm, currentActions[currentActionNumber].name);
+					//if at the first action, HIDE the PREV button
+					if (currentActionNumber<=0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));	
+					FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
+					//if (script!=NULL) MemPtrFree (script);
+					script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
+					//
+					//clear out the buffer
+					for (i=0; i < stringSize; i++) script[i]='\0';
+					//
+					StrCat (script, "Name: ");
+					StrCat (script, currentActions[currentActionNumber].name);
+					StrCat (script, "\n");
+					StrCat (script, "Script: ");
+					StrCat (script, currentActions[currentActionNumber].script);
+					
+		   			fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
+					FldFreeMemory(fieldPtr);  // clear the field from prev data
+				    FldSetMaxChars(fieldPtr, StrLen(script));
+		    		FldSetTextPtr(fieldPtr, script);
+					FldRecalculateField(fieldPtr, true);					
 					break;
 				
-				case 1903: //next
+				case 1903: //NEXT
 					currentActionNumber++;
-					//if incremented beyond the last action
-					/*if (currentActionNumber>=numActions)
-					{
-						//currentActionNumber--;
-						//FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
-						pForm = FrmInitForm(CurrentProcessForm);			
-						FrmGotoForm (CurrentProcessForm);
-						FrmDeleteForm(pForm);
-						handled = true;
-					}
-					else
-					{*/
-					//changed to formsettitle from formcopytitle
-						//FrmSetTitle (pForm, currentActions[currentActionNumber].name);	
-						if (currentActionNumber>=(numActions-1))
-						{
-							//currentActionNumber--;
-							FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
-						}
-						FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
-						//if (script!=NULL) MemPtrFree (script);
-						script = (char *) MemPtrNew(stringSize =(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
-						for (i=0; i < stringSize; i++)
-						{
-							script[i]='\0';
-						}
-						StrCat (script, "Name: ");
-						StrCat (script, currentActions[currentActionNumber].name);
-						StrCat (script, "\n");
-						StrCat (script, "Script: ");
-						StrCat (script, currentActions[currentActionNumber].script);
-				
-				   		fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
-					    FldFreeMemory(fieldPtr);  // clear the field from prev data
-					    FldSetMaxChars(fieldPtr, StrLen(script));
-	    			    FldSetTextPtr(fieldPtr, script);
-					    FldRecalculateField(fieldPtr, true);
-					//}					    	
-				    //peos notify changes state to finish if its last action
-				    //dont worry abt this yet...........
+					//FrmSetTitle (pForm, currentActions[currentActionNumber].name);	
+					//if at the last action, HIDE the NEXT button
+					if (currentActionNumber>=(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
+					FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
+					//if (script!=NULL) MemPtrFree (script);
+					script = (char *) MemPtrNew(stringSize =(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
+					//clear out the buffer
+					for (i=0; i < stringSize; i++) script[i]='\0';
+					//
+					StrCat (script, "Name: ");
+					StrCat (script, currentActions[currentActionNumber].name);
+					StrCat (script, "\n");
+					StrCat (script, "Script: ");
+					StrCat (script, currentActions[currentActionNumber].script);
+					fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
+					FldFreeMemory(fieldPtr);  // clear the field from prev data
+					FldSetMaxChars(fieldPtr, StrLen(script));
+	    			FldSetTextPtr(fieldPtr, script);
+					FldRecalculateField(fieldPtr, true);
 					break;
+				
+				case 1904: //FINISH
+					//peos notify changes state to finish if its last action
+				    //dont worry abt this yet...........
+				    break;
+				
 					
 				default: break;
 			}

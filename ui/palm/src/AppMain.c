@@ -16,6 +16,7 @@
 #ifndef STUB
 #include <process_table.h>
 #endif
+#include <SoundMgr.h>
 
 
 #define appFileCreator			'STRT'
@@ -104,6 +105,7 @@ static Boolean MainFormHandler(EventType* pEvent)
 		case frmOpenEvent:
 			pForm = FrmGetActiveForm();
 			FrmDrawForm(pForm);
+			SndPlaySystemSound (sndStartUp);
 			handled = true;
 			break;
 			
