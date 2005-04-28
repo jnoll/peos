@@ -37,8 +37,8 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
 	currentActions = (peos_action_t *) malloc(6 * sizeof(peos_action_t));
 	
 	strcpy (currentActions[0].name, "Fill_name");
-	currentActions[0].script = (char*) malloc (sizeof (char) * (StrLen ("\"Fill in your name and other details in the time_sheet\"")+1));
-	StrCopy (currentActions[0].script, "\"Fill in your name and other details in the time_sheet\"");
+	currentActions[0].script = (char*) malloc (sizeof (char) * (StrLen ("\"testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttestFill in your name and other details in the time_sheet\"")+1));
+	StrCopy (currentActions[0].script, "\"testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttestFill in your name and other details in the time_sheet\"");
 	currentActions[0].pid=1;
 
 	strcpy (currentActions[1].name, "Fill_hours");

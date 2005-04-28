@@ -178,11 +178,14 @@ char * SetUpScript()
 Boolean CurrentActionHandler (EventType* pEvent)
 {
 	Boolean 	handled = false;
-	FormType* 	pForm;
+	FormType  *pForm;
 	FieldType *fieldPtr;
+	ScrollBarType *bar;
 	//only used for movable code chunks	MemHandle mem;
 	char * script;
-	//char * script2;
+	Int16 maxScrollPos, value, min, max, pageSize;
+	UInt16 scrollPos, textHeight, fieldHeight;
+	
 	
 	
 	
@@ -211,6 +214,38 @@ Boolean CurrentActionHandler (EventType* pEvent)
 		    FldRecalculateField(fieldPtr, true);
 			FrmDrawForm(pForm);		
 			handled = true;
+			break;
+		
+		case sclRepeatEvent:
+			pForm = FrmGetActiveForm();	
+			fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));	
+			bar = (ScrollBarType *) FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 123));
+			
+			SclGetScrollBar(bar, &value, &min, &max, &pageSize);
+			FldGetScrollValues(fieldPtr, &scrollPos, &textHeight, &fieldHeight);
+
+			// Scroll the field according to the scrollbar's position
+			if		(scrollPos > value)	   FldScrollField (fieldPtr, scrollPos-value, winUp);
+			else if (scrollPos < value)    FldScrollField (fieldPtr, value-scrollPos, winDown);
+
+		    handled =true;
+			break;		
+			
+		case fldChangedEvent:
+			pForm = FrmGetActiveForm();	
+			fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));	
+			bar = (ScrollBarType *) FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 123));
+			
+			FldGetScrollValues(fieldPtr, &scrollPos, &textHeight, &fieldHeight);
+			// Calculate the maximum scroll position:
+			if(textHeight > fieldHeight) maxScrollPos = textHeight-fieldHeight;
+			else maxScrollPos = scrollPos;
+
+			// Set the scrollbar's position
+			// FieldHeight-1 gives an overlap of 1 line when page scrolling.
+			SclSetScrollBar(bar, scrollPos, 0, maxScrollPos, fieldHeight-1);
+					
+			handled = true;	
 			break;
 			
 		case menuEvent:
