@@ -239,8 +239,12 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			FldGetScrollValues(fieldPtr, &scrollPos, &textHeight, &fieldHeight);
 			// Calculate the maximum scroll position:
 			if(textHeight > fieldHeight) maxScrollPos = textHeight-fieldHeight;
-			else maxScrollPos = scrollPos;
-
+			else  //maxScrollPos=0;
+			{
+				if (scrollPos) maxScrollPos = scrollPos;
+				else maxScrollPos = 0;
+			}
+			scrollPos=0;
 			// Set the scrollbar's position
 			// FieldHeight-1 gives an overlap of 1 line when page scrolling.
 			SclSetScrollBar(bar, scrollPos, 0, maxScrollPos, fieldHeight-1);
