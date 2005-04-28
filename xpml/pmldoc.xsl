@@ -1,4 +1,4 @@
-<!-- $Id: pmldoc.xsl,v 1.1 2005/03/04 05:40:34 jnoll Exp $ -->
+<!-- $Id: pmldoc.xsl,v 1.2 2005/04/28 06:27:49 jnoll Exp $ -->
 <!-- Convert XPML to HTML ``Tutorial'' format. -->
 
 <xsl:stylesheet version="1.0"
@@ -35,7 +35,7 @@
 
 <!-- Populate outline page -->
 <xsl:template match="process" mode="outline">
-    <ol>
+    <ol class="index">
      <xsl:apply-templates mode="index"/>
     </ol>
 </xsl:template>
@@ -51,28 +51,28 @@
 
 <xsl:template match="iteration" mode="index">
     <li class="index"><xsl:value-of select="translate(@name, '_', ' ')"/>:</li>
-    <ol>
+    <ol class="index">
      <xsl:apply-templates mode="index"/>
     </ol>
 </xsl:template>
 
 <xsl:template match="branch" mode="index">
     <li class="index"><xsl:value-of select="translate(@name, '_', ' ')"/>:</li>
-    <ol>
+    <ol class="index">
      <xsl:apply-templates mode="index"/>
     </ol>
 </xsl:template>
 
 <xsl:template match="selection" mode="index">
     <li class="index"><xsl:value-of select="translate(@name, '_', ' ')"/>:</li>
-    <ol>
+    <ol class="index">
      <xsl:apply-templates mode="index"/>
     </ol>
 </xsl:template>
 
 <xsl:template match="sequence" mode="index">
     <li class="index"><xsl:value-of select="translate(@name, '_', ' ')"/>:</li>
-    <ol>
+    <ol class="index">
      <xsl:apply-templates mode="index"/>
     </ol>
 </xsl:template>
@@ -105,6 +105,7 @@
      <xsl:with-param name="toc" select="/process/@name"/>
     </xsl:call-template>
 
+    <div class="scroll">
     <table style="width: 100%;" border="0" cellpadding="2" cellspacing="0">
      <tbody>
       <tr>
@@ -113,6 +114,7 @@
       </tr>
      </tbody>
     </table>
+    </div>
 
     <xsl:call-template name="nav-bar">
      <xsl:with-param name="next" select="following::action/@name"/>
@@ -160,7 +162,7 @@
 	 <hr/>
 
 	 <h2>Table of Contents</h2>
-	 <ol>
+	 <ol class="index">
 	  <xsl:apply-templates mode="index"/>
 	 </ol>
 	</td>
@@ -199,7 +201,8 @@
 <xsl:template name="outline-pane">
  <xsl:param name="name" select="Process"/>
   <td style=
-  "vertical-align: top; width: 25%; background-color: rgb(204, 204, 255);">
+  "vertical-align: top; width: 25%; background-color: rgb(204, 204,
+ 255); overflow: auto; height: 10px;">
         <xsl:apply-templates mode="outline" select="/process"/>
   </td>
 </xsl:template>
@@ -259,6 +262,9 @@
      <a href="{$toc}.html">TOC</a>
      </td>
     </xsl:if>
+     <td>
+     <a href="index.html">Home</a>
+     </td>
     <td width="100%"></td>
    </tr>
   </tbody>
@@ -285,9 +291,14 @@
      H2 { text-transform: capitalize }
      H3 { text-transform: capitalize }
 
-     OL { list-style-type: decimal ; list-style-position: inside} 
+     scroll {overflow: auto; height: 100px;}
+
+
+     OL.index { list-style-type: decimal ; 
+	  list-style-position: inside; 
+     } 
      UL.index { list-style-type: none ; list-style-position: inside} 
-     LI.index { text-transform: capitalize }
+     LI.index { text-transform: capitalize; }
    </STYLE>
 </xsl:template>
 
