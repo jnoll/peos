@@ -185,8 +185,8 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	char * script;
 	Int16 maxScrollPos, value, min, max, pageSize;
 	UInt16 scrollPos, textHeight, fieldHeight;
-	
-	
+	vm_act_state currentActionState;
+	vm_exit_code exit_code;	
 	
 	
 	switch (pEvent->eType)
@@ -195,15 +195,20 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			pForm = FrmGetActiveForm();		
 
 			//get action state and act on the form title and FINISH button accordingly
-			if (get_act_state(currentActions[currentActionNumber].name, currentActions, numActions)==ACT_DONE)
+			currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
+			if (currentActionState == ACT_DONE || currentActionState == ACT_PENDING)
 			{
-				FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1904));
+				FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 				FrmCopyTitle (pForm, "Finished Action");
 			}
-			else FrmCopyTitle (pForm, "Unfin. Action");
+			else 
+			{
+				FrmCopyTitle (pForm, "Unfin. Action");
+				FrmShowObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
+			}
 			
-			if (currentActionNumber==0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
-			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
+			if (currentActionNumber==0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));
+			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 			
 			script = SetUpScript();
 
@@ -296,22 +301,27 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			pForm = FrmGetActiveForm();	
 			switch (pEvent->data.ctlSelect.controlID)
 			{
-				case 1902: //PREV
+				case PREVIOUS_BUTTON: //PREV
 					currentActionNumber--;
 					//FrmSetTitle (pForm, currentActions[currentActionNumber].name);
 					
 					//check if action is a finished action
 					//update form title and FINISH button visibility accordingly
-					if (get_act_state(currentActions[currentActionNumber].name, currentActions, numActions)==ACT_DONE)
+					currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
+					if (currentActionState == ACT_DONE || currentActionState == ACT_PENDING)
 					{
-						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1904));
+						FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 						FrmCopyTitle (pForm, "Finished Action");
 					}
-					else FrmCopyTitle (pForm, "Unfin. Action");
+					else 
+					{
+						FrmCopyTitle (pForm, "Unfin. Action");
+						FrmShowObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
+					}
 					
 					//if at the first action, HIDE the PREV button
-					if (currentActionNumber<=0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));	
-					FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
+					if (currentActionNumber<=0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));	
+					FrmShowObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 					//if (script!=NULL) MemPtrFree (script);
 
 					script = SetUpScript();
@@ -323,22 +333,27 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					FldRecalculateField(fieldPtr, true);					
 					break;
 				
-				case 1903: //NEXT
+				case NEXT_BUTTON: //NEXT
 					currentActionNumber++;
 					//FrmSetTitle (pForm, currentActions[currentActionNumber].name);	
 					
 					//check if action is a finished action
 					//update form title and FINISH button visibility accordingly
-					if (get_act_state(currentActions[currentActionNumber].name, currentActions, numActions)==ACT_DONE)
+					currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
+					if (currentActionState == ACT_DONE || currentActionState == ACT_PENDING)
 					{
-						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1904));
+						FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 						FrmCopyTitle (pForm, "Finished Action");
 					}
-					else FrmCopyTitle (pForm, "Unfin. Action");
+					else 
+					{
+						FrmCopyTitle (pForm, "Unfin. Action");
+						FrmShowObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
+					}
 					
 					//if at the last action, HIDE the NEXT button
-					if (currentActionNumber>=(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
-					FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
+					if (currentActionNumber>=(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
+					FrmShowObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));
 					//if (script!=NULL) MemPtrFree (script);
 
 					script = SetUpScript();
@@ -350,15 +365,31 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					FldRecalculateField(fieldPtr, true);
 					break;
 				
-				case 1904: //FINISH
+				case FINISH_BUTTON: //FINISH
 					//peos notify changes state to finish if its last action
 					//i think normal return code is VM_DONE
-				    if (peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH)==VM_DONE)
+				    exit_code=peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
+				    currentActions = (peos_action_t *) peos_list_actions(currentPid, &numActions);
+
+				    if (exit_code == VM_DONE)
 				    {
-				    	FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1904));
+				    	FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 				    	FrmCopyTitle (pForm, "Finished Action");
 				    }
-				    
+				    else
+				    {
+					currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
+					if (currentActionState == ACT_DONE || currentActionState == ACT_PENDING)
+					{
+						FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
+						FrmCopyTitle (pForm, "Finished Action");
+					}
+					else 
+					{
+						FrmCopyTitle (pForm, "Unfin. Action");
+						FrmShowObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
+					}
+				    }
 				    
 				    break;
 				
