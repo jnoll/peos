@@ -153,6 +153,27 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 return handled;		
 }
 
+char * SetUpScript()
+{
+	char *script;
+
+	UInt32 stringSize, i;
+
+	script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
+	for (i=0; i < stringSize; i++)
+	{
+		script[i]='\0';
+	}
+
+	StrCat (script, "Name: ");
+	StrCat (script, currentActions[currentActionNumber].name);
+	StrCat (script, "\n");
+	StrCat (script, "Script: ");
+	StrCat (script, currentActions[currentActionNumber].script);
+
+	return script;
+}
+
 
 Boolean CurrentActionHandler (EventType* pEvent)
 {
@@ -161,7 +182,6 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	FieldType *fieldPtr;
 	//only used for movable code chunks	MemHandle mem;
 	char * script;
-	UInt32 stringSize, i;
 	//char * script2;
 	
 	
@@ -182,18 +202,8 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			if (currentActionNumber==0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
 			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
 			
-			script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
-			for (i=0; i < stringSize; i++)
-			{
-				script[i]='\0';
-			}
-			StrCat (script, "Name: ");
-			StrCat (script, currentActions[currentActionNumber].name);
-			StrCat (script, "\n");
-			StrCat (script, "Script: ");
-			StrCat (script, currentActions[currentActionNumber].script);
-			
-			//end testing
+			script = SetUpScript();
+
    		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 		    FldFreeMemory(fieldPtr);  // initialize everything, just in case.
 		    FldSetMaxChars(fieldPtr, StrLen(script));
@@ -264,17 +274,9 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					if (currentActionNumber<=0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));	
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
 					//if (script!=NULL) MemPtrFree (script);
-					script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
-					//
-					//clear out the buffer
-					for (i=0; i < stringSize; i++) script[i]='\0';
-					//
-					StrCat (script, "Name: ");
-					StrCat (script, currentActions[currentActionNumber].name);
-					StrCat (script, "\n");
-					StrCat (script, "Script: ");
-					StrCat (script, currentActions[currentActionNumber].script);
-					
+
+					script = SetUpScript();
+
 		   			fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 					FldFreeMemory(fieldPtr);  // clear the field from prev data
 				    FldSetMaxChars(fieldPtr, StrLen(script));
@@ -299,15 +301,9 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					if (currentActionNumber>=(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
 					//if (script!=NULL) MemPtrFree (script);
-					script = (char *) MemPtrNew(stringSize =(2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
-					//clear out the buffer
-					for (i=0; i < stringSize; i++) script[i]='\0';
-					//
-					StrCat (script, "Name: ");
-					StrCat (script, currentActions[currentActionNumber].name);
-					StrCat (script, "\n");
-					StrCat (script, "Script: ");
-					StrCat (script, currentActions[currentActionNumber].script);
+
+					script = SetUpScript();
+
 					fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 					FldFreeMemory(fieldPtr);  // clear the field from prev data
 					FldSetMaxChars(fieldPtr, StrLen(script));
