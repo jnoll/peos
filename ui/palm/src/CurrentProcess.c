@@ -63,7 +63,8 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		FrmCopyTitle (pForm, selection);
 		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));				
 		//CREATE process - for now pass NULL to resources, and 0 for number of resources
-//		currentPid = peos_run (selection, NULL, 0);
+		//now moved to availprocesses and using peos_create_instance
+		//		currentPid = peos_run (selection, NULL, 0);
 		
 		//use returned pid to DISPLAY list of actions
 		//also pass numActions to be updated
@@ -169,12 +170,18 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	{
 		case frmOpenEvent:
 			pForm = FrmGetActiveForm();		
-			//FrmSetTitle (pForm, actionSelection);
+
+			//get action state and act on the form title and FINISH button accordingly
+			if (get_act_state(currentActions[currentActionNumber].name, currentActions, numActions)==ACT_DONE)
+			{
+				FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1904));
+				FrmCopyTitle (pForm, "Finished Action");
+			}
+			else FrmCopyTitle (pForm, "Unfin. Action");
 			
 			if (currentActionNumber==0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));
 			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
 			
-			//testing purposes - stub out
 			script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
 			for (i=0; i < stringSize; i++)
 			{
@@ -243,6 +250,16 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				case 1902: //PREV
 					currentActionNumber--;
 					//FrmSetTitle (pForm, currentActions[currentActionNumber].name);
+					
+					//check if action is a finished action
+					//update form title and FINISH button visibility accordingly
+					if (get_act_state(currentActions[currentActionNumber].name, currentActions, numActions)==ACT_DONE)
+					{
+						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1904));
+						FrmCopyTitle (pForm, "Finished Action");
+					}
+					else FrmCopyTitle (pForm, "Unfin. Action");
+					
 					//if at the first action, HIDE the PREV button
 					if (currentActionNumber<=0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1902));	
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1903));
@@ -268,6 +285,16 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				case 1903: //NEXT
 					currentActionNumber++;
 					//FrmSetTitle (pForm, currentActions[currentActionNumber].name);	
+					
+					//check if action is a finished action
+					//update form title and FINISH button visibility accordingly
+					if (get_act_state(currentActions[currentActionNumber].name, currentActions, numActions)==ACT_DONE)
+					{
+						FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1904));
+						FrmCopyTitle (pForm, "Finished Action");
+					}
+					else FrmCopyTitle (pForm, "Unfin. Action");
+					
 					//if at the last action, HIDE the NEXT button
 					if (currentActionNumber>=(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1903));
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, 1902));
@@ -290,7 +317,14 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				
 				case 1904: //FINISH
 					//peos notify changes state to finish if its last action
-				    //dont worry abt this yet...........
+					//i think normal return code is VM_DONE
+				    if (peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH)==VM_DONE)
+				    {
+				    	FrmHideObject (pForm, FrmGetObjectIndex (pForm, 1904));
+				    	FrmCopyTitle (pForm, "Finished Action");
+				    }
+				    
+				    
 				    break;
 				
 					

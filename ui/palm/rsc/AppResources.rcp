@@ -6,6 +6,7 @@ APPLICATION ID 1 "1783"
 ICONFAMILY "../rsc/bitmaps/AppIcon_Large-1.bmp" "../rsc/bitmaps/AppIcon_Large-2.bmp" "../rsc/bitmaps/AppIcon_Large-8.bmp" TRANSPARENT 0 255 0
 SMALLICONFAMILY "../rsc/bitmaps/AppIcon_Small-1.bmp" "../rsc/bitmaps/AppIcon_Small-2.bmp" "../rsc/bitmaps/AppIcon_Small-8.bmp" TRANSPARENT 0 255 0
 BITMAP ID 9001 "../rsc/bitmaps/pic-phoenix3.bmp" COMPRESS
+
 //alerts
 ALERT ID CheckSelection
 DEFAULTBUTTON 0
