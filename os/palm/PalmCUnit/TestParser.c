@@ -13,6 +13,7 @@
 #include <pml/graph.h>
 #include <pml/tree.h>
 #include "segments.h"
+
 #include <action.h>
 #include <resources.h>
 #include <graph.h>
@@ -194,6 +195,20 @@ static void test_ListActions()
 	ASSERT_STR_EQUAL("\"Fill in total hours\"", actions[2].script);
 	
 }
+
+static void test_PeosNotify()
+{
+	int num_actions;
+	peos_action_t *actions;
+
+	actions = peos_list_actions(0, &num_actions);
+	ASSERT_INT32_EQUAL(5, num_actions);
+	ASSERT_MSG("State not currently in ready state.",get_act_state("Fill_name", actions, num_actions) == ACT_READY);
+	peos_notify(0, "Fill_name", PEOS_EVENT_FINISH);
+	actions = peos_list_actions(0, &num_actions);
+	ASSERT_MSG("State not currently in done state.",get_act_state("Fill_name", actions, num_actions) == ACT_DONE);
+	
+}
 /*-----------------------------*/
  
 void initialize_suite() {
@@ -213,6 +228,7 @@ void initialize_suite() {
   add_test_case(group, "LoadProcess", test_load);
   add_test_case(group, "ListActions", test_ListActions);
   add_test_case(group, "DeleteInstance", test_Delete);
+  add_test_case(group, "PeosNotify", test_PeosNotify);
 }
 
 void terminate_suite() {
