@@ -174,6 +174,7 @@ char * SetUpScript()
 }
 
 char * script;
+
 Boolean CurrentActionHandler (EventType* pEvent)
 {
 	Boolean 	handled = false;
@@ -181,7 +182,6 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	FieldType *fieldPtr;
 	ScrollBarType *bar;
 	//only used for movable code chunks	MemHandle mem;
-	//char * script;
 	Int16 maxScrollPos, value, min, max, pageSize;
 	UInt16 scrollPos, textHeight, fieldHeight;
 	vm_act_state currentActionState;
@@ -323,7 +323,6 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					//if at the first action, HIDE the PREV button
 					if (currentActionNumber<=0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));	
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
-					//if (script!=NULL) MemPtrFree (script);
 
 					if (script !=NULL)
 						MemPtrFree(script);
@@ -357,7 +356,6 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					//if at the last action, HIDE the NEXT button
 					if (currentActionNumber>=(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));
-					//if (script!=NULL) MemPtrFree (script);
 
 					if (script != NULL)
 						MemPtrFree(script);
