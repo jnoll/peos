@@ -21,7 +21,7 @@ extern int peos_run(char *process,peos_resource_t *resources,int num_resources) 
  * action. The parameters are the process id, name of the action and the event. 
  */
 
-extern vm_exit_code peos_notify(int pid, char *action, peos_event event) ;
+extern vm_exit_code peos_notify(int pid, char *action, peos_event event) KRNL_SECTION;
 
 
 /* 
