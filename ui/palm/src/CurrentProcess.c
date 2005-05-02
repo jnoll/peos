@@ -441,7 +441,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					//i think normal return code is VM_DONE		
 					exit_code = peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
 					//currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
-					if (exit_code==VM_DONE)
+					if (exit_code==VM_DONE || exit_code==VM_CONTINUE)
 					{
 						FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 						FrmCopyTitle (pForm, "Finished Action");
