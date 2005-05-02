@@ -23,6 +23,8 @@ int currentPid;
 int unfinished;
 
 int fromNextForm;
+char ** listElements;
+char ** listElements2;
 //extracts names of actions from the array of peos_action_t structs 
 //and puts those names into char** array which can be later displayed as items in the list
 //arguments: peos_action_t array, number of actions
@@ -111,8 +113,8 @@ void InitTheTable(TableType *table, Char **itemLabels)
 	 TblSetColumnSpacing(table, 1, 3);   
 }
 */
-	char ** listElements;
-	char ** listElements2;
+
+
 Boolean CurrentProcessHandler (EventType* pEvent)
 {
 	Boolean 	handled = false;
@@ -199,8 +201,18 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		//if have to do list selected
 		if (FrmGetObjectId (pForm, FrmGetControlGroupSelection (pForm, 1))==1410)
 		{
-		//find currect action number by searching through ....	
+			//find currect action number by searching through ....	
+			for (i=0; i<numActions; i++)
+			{
+				if (StrCompare (actionSelection, currentActions[i].name)==0)
+				{
+					currentActionNumber=i;
+					break;
+				}
+			}		
 		}
+		//
+		//if have all  actions selected
 		else if (FrmGetObjectId (pForm, FrmGetControlGroupSelection (pForm, 1))==1411)
 		{
 			currentActionNumber = itemSelected;
