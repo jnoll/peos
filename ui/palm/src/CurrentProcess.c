@@ -168,7 +168,7 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 			FrmDeleteForm(pForm);
 			handled = true;
 			break;
-		case 1602:
+		case 1602: // go to main form
 			pForm = FrmInitForm (MainForm);
 			FrmGotoForm (MainForm);
 			FrmDeleteForm (pForm);
@@ -204,11 +204,12 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 			//find currect action number by searching through ....	
 			for (i=0; i<numActions; i++)
 			{
-				if (StrCompare (actionSelection, currentActions[i].name)==0)
-				{
-					currentActionNumber=i;
-					break;
-				}
+				if (actionSelection != NULL)
+					if (StrCompare (actionSelection, currentActions[i].name)==0)
+					{
+						currentActionNumber=i;
+						break;
+					}
 			}		
 		}
 		//
@@ -296,11 +297,13 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 			if (listElements!=NULL) {
 				for (i=0; i<numActions; i++)
 				{
-					free (listElements[i]);
+					if (listElements[i] != NULL)
+						free (listElements[i]);
 				}				
 				free(listElements);
 				}
 			listElements=NULL;	
+
 			if (listElements2!=NULL) {
 			for (i=0; i<unfinished; i++)
 			{
