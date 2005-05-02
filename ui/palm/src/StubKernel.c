@@ -34,7 +34,7 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
 {
 	peos_action_t * currentActions;
 	//TEST: create our own peos_action_t
-	currentActions = (peos_action_t *) malloc(6 * sizeof(peos_action_t));
+	currentActions = (peos_action_t *) malloc(12 * sizeof(peos_action_t));
 	
 	strcpy (currentActions[0].name, "Fill_name");
 	currentActions[0].script = (char*) malloc (sizeof (char) * (StrLen ("\"testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttestFill in your name and other details in the time_sheet\"")+1));
@@ -47,8 +47,8 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
 	currentActions[1].pid=1;		
 	
 	strcpy (currentActions[2].name, "Fill_total_hours");
-	currentActions[2].script = (char *) malloc (sizeof (char) * (StrLen ("\"F\"")+1));
-	StrCopy (currentActions[2].script, "\"F\"");
+	currentActions[2].script = (char *) malloc (sizeof (char) * (StrLen ("\"yabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooF\"")+1));
+	StrCopy (currentActions[2].script, "\"yabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooyabadabadooF\"");
 	currentActions[2].pid=1;	
 	
 	strcpy (currentActions[3].name, "Sign_and_date");
@@ -66,13 +66,44 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
 	StrCopy (currentActions[4].script, "\"Hand it to your supervisor\"");
 	currentActions[4].pid=1;		
 		
-	strcpy (currentActions[5].name, "Turn_it_in2");
+	strcpy (currentActions[5].name, "Turn_it_in5");
 	currentActions[5].script = (char *) malloc (sizeof (char) * (StrLen ("\"Hand it to your supervisor2\"")+1));
 	StrCopy (currentActions[5].script, "\"Hand it to your supervisor2\"");
 	currentActions[5].pid=1;		
 
+	strcpy (currentActions[6].name, "Turn_it_in6");
+	currentActions[6].script = (char *) malloc (sizeof (char) * (StrLen ("\"Hand it to your supervisor2\"")+1));
+	StrCopy (currentActions[6].script, "\"Hand it to your supervisor2\"");
+	currentActions[6].pid=1;	
 	
-	*num_actions=6;
+	strcpy (currentActions[7].name, "Turn_it_in7");
+	currentActions[7].script = (char *) malloc (sizeof (char) * (StrLen ("\"Hand it to your supervisor2\"")+1));
+	StrCopy (currentActions[7].script, "\"Hand it to your supervisor2\"");
+	currentActions[7].pid=1;			
+	
+	strcpy (currentActions[8].name, "Turn_it_in8");
+	currentActions[8].script = (char *) malloc (sizeof (char) * (StrLen ("\"Hand it to your supervisor2\"")+1));
+	StrCopy (currentActions[8].script, "\"Hand it to your supervisor2\"");
+	currentActions[8].pid=1;		
+	
+	strcpy (currentActions[9].name, "Turn_it_in9");
+	currentActions[9].script = (char *) malloc (sizeof (char) * (StrLen ("\"Hand it to your supervisor2\"")+1));
+	StrCopy (currentActions[9].script, "\"Hand it to your supervisor2\"");
+	currentActions[9].pid=1;		
+	
+	strcpy (currentActions[10].name, "Turn_it_in10");
+	currentActions[10].script = (char *) malloc (sizeof (char) * (StrLen ("\"Hand it to your supervisor2\"")+1));
+	StrCopy (currentActions[10].script, "\"Hand it to your supervisor2\"");
+	currentActions[10].pid=1;		
+	
+	strcpy (currentActions[11].name, "Turn_it_in11");
+	currentActions[11].script = (char *) malloc (sizeof (char) * (StrLen ("\"Hand it to your supervisor2\"")+1));
+	StrCopy (currentActions[11].script, "\"Hand it to your supervisor2\"");
+	currentActions[11].pid=1;		
+	
+	
+	
+	*num_actions=12;
 	return currentActions;
 }
 //

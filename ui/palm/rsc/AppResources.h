@@ -9,7 +9,7 @@
 #ifndef _APPRESOURCES_H
 #define _APPRESOURCES_H
 
-
+#define numTableRows								25
 #define MainForm                                  1000	//(Left Origin = 0, Top Origin = 0, Width = 160, Height = 160, Usable = 1, Modal = 0, Save Behind = 0, Help ID = 0, Menu Bar ID = 1000, Default Button ID = 0)
 #define MainFormMenuBar                           1000
 
@@ -26,10 +26,11 @@
 #define StartedProcessesList						1503
 
 #define CurrentProcessForm							1400
-#define ActionsList									1403
 #define ActionButton								1401
 #define PreviousActionButton						1402
+#define ActionsList									1403
 #define CurrentProcessLabel							1404
+#define actionsTable								1405
 #define CurrentProcessFormMenuBar						1600
 #define AvailableProcessesMenuBar						1700
 #define StartedProcessesMenuBar							1800
@@ -43,6 +44,9 @@
 #define AboutText1Label                           1103	//(Left Origin = 23, Top Origin = 54, Usable = 1, Font = Standard)
 #define AboutText2Label                           1104	//(Left Origin = 50, Top Origin = 104, Usable = 1, Font = Bold)
 
+#define PREVIOUS_BUTTON 1902
+#define NEXT_BUTTON 1903
+#define FINISH_BUTTON 1904
 
 
 

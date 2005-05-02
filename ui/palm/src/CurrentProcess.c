@@ -2,16 +2,16 @@
 #include "../rsc/AppResources.h"
 #ifdef STUB
 #include "StubKernel.h"
-#endif
-#include <stdlib.h>
-#include <StringMgr.h>
-#include <Form.h>
-
-#ifdef STUB
 #else
 #include <events.h>
 #include <process_table.h>
 #endif
+
+#include <stdlib.h>
+#include <StringMgr.h>
+#include <Form.h>
+#include <Table.h>
+
 
 extern char * selection;
 char * actionSelection;
@@ -41,13 +41,49 @@ char ** list_actions (peos_action_t * currentActions, int numActions)
 	return list;
 }
 //
-//
+/*
+void InitTheTable(TableType *table, Char **itemLabels)
+{
+     UInt16 row;
+     UInt16 rowsInTable;
+
+     rowsInTable = TblGetNumberOfRows (table); // this was set by constructor
+     for (row = 0; row < rowsInTable; row++)
+     {
+          // set the cell styles
+          TblSetItemStyle (table, row, 0, labelTableItem);
+          TblSetItemStyle (table, row, 1, labelTableItem);
+          //if row is less than # of actions previously calculated
+          //then set usable and unitialize
+          if (row<numActions) 
+          {
+          	TblSetRowUsable (table, row, true); // so it can be clicked upon
+          	TblSetRowSelectable (table, row, true);
+			TblSetRowStaticHeight (table, row, true);
+     	  	// fill in the data for each cell
+	        TblSetItemPtr(table, row, 1, itemLabels[row]);
+	        TblSetItemPtr(table, row, 0, "FIN");
+          }
+          //if row # equal to or above # of actions => hide the row
+		  else TblSetRowUsable (table, row, false);
+          
+     }
+
+     // make the columns usable so they're drawn and can be clicked etc.
+     TblSetColumnUsable (table, 0, true);
+     TblSetColumnUsable (table, 1, true);
+     TblSetColumnSpacing(table, 0, 3);
+	 TblSetColumnSpacing(table, 1, 3);   
+}
+*/
+
 Boolean CurrentProcessHandler (EventType* pEvent)
 {
 	Boolean 	handled = false;
 	FormType* 	pForm;
 	ControlType* ctl;
 	ListType *	list;
+	TableType * table;
 
 
 	//RectangleType theRect;
@@ -61,19 +97,27 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		//in the AvailableProcessesForm or StartedProcessesForm
 		pForm = FrmGetActiveForm();		
 		FrmCopyTitle (pForm, selection);
+		
+		
 		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));				
 		//CREATE process - for now pass NULL to resources, and 0 for number of resources
 		//now moved to availprocesses and using peos_create_instance
 		//		currentPid = peos_run (selection, NULL, 0);
 		
 		//use returned pid to DISPLAY list of actions
-		//also pass numActions to be updated
+		//also pass numActions to be updated */
 		currentActions = (peos_action_t *) peos_list_actions (currentPid, &numActions);
 		//get a char** array of action names
 		listElements2 = list_actions (currentActions, numActions);
 		//populate the list with action names
+		
 		LstSetListChoices (list, listElements2, numActions);
 		LstSetSelection (list, -1);
+		
+		table= FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, actionsTable));
+		//InitTheTable(table, listElements2);
+		
+		
 		FrmDrawForm(pForm);		
 		handled = true;
 		break;
@@ -163,17 +207,25 @@ char * SetUpScript()
 	{
 		script[i]='\0';
 	}
-
 	StrCat (script, "Name: ");
 	StrCat (script, currentActions[currentActionNumber].name);
 	StrCat (script, "\n");
 	StrCat (script, "Script: ");
 	StrCat (script, currentActions[currentActionNumber].script);
-
 	return script;
 }
 
 char * script;
+
+void fieldSetup (FieldType *fieldPtr, char * script)
+{
+	FldFreeMemory(fieldPtr);  // initialize everything, just in case.
+	FldSetMaxChars(fieldPtr, StrLen(script));
+	FldSetTextPtr(fieldPtr, script);
+	FldRecalculateField(fieldPtr, true);
+	
+}
+
 
 Boolean CurrentActionHandler (EventType* pEvent)
 {
@@ -185,7 +237,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	Int16 maxScrollPos, value, min, max, pageSize;
 	UInt16 scrollPos, textHeight, fieldHeight;
 	vm_act_state currentActionState;
-	vm_exit_code exit_code;	
+	//vm_exit_code exit_code;	
 	
 	
 	switch (pEvent->eType)
@@ -206,18 +258,28 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				FrmShowObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 			}
 			
-			if (currentActionNumber==0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));
+			if (currentActionNumber==0) 			 FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));
 			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 			
-			if (script !=NULL)
-				MemPtrFree(script);
+			if (script !=NULL) MemPtrFree(script);
 			script = SetUpScript();
 
    		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
-		    FldFreeMemory(fieldPtr);  // initialize everything, just in case.
-		    FldSetMaxChars(fieldPtr, StrLen(script));
-	        FldSetTextPtr(fieldPtr, script);
-		    FldRecalculateField(fieldPtr, true);
+		    fieldSetup (fieldPtr, script);
+		    
+		    //////////////scrollbar stuff
+			bar = (ScrollBarType *) FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 123));
+			FldGetScrollValues(fieldPtr, &scrollPos, &textHeight, &fieldHeight);
+			// Calculate the maximum scroll position:
+			if(textHeight > fieldHeight) maxScrollPos = textHeight-fieldHeight;
+			else maxScrollPos = 0;
+
+			// Set the scrollbar's position
+			// FieldHeight-1 gives an overlap of 1 line when page scrolling.
+			SclSetScrollBar(bar, 0, 0, maxScrollPos, fieldHeight-1);
+			////////////////////////
+			
+			
 			FrmDrawForm(pForm);		
 			handled = true;
 			break;
@@ -235,7 +297,8 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			else if (scrollPos < value)    FldScrollField (fieldPtr, value-scrollPos, winDown);
 
 		    handled =true;
-			break;		
+			break;	
+				
 			
 		case fldChangedEvent:
 			pForm = FrmGetActiveForm();	
@@ -245,19 +308,32 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			FldGetScrollValues(fieldPtr, &scrollPos, &textHeight, &fieldHeight);
 			// Calculate the maximum scroll position:
 			if(textHeight > fieldHeight) maxScrollPos = textHeight-fieldHeight;
-			else  //maxScrollPos=0;
-			{
-				if (scrollPos) maxScrollPos = scrollPos;
-				else maxScrollPos = 0;
-			}
-			scrollPos=0;
+			else maxScrollPos = 0;
+
 			// Set the scrollbar's position
 			// FieldHeight-1 gives an overlap of 1 line when page scrolling.
 			SclSetScrollBar(bar, scrollPos, 0, maxScrollPos, fieldHeight-1);
 					
 			handled = true;	
 			break;
+		
+		
+		//i dont think this works.....
+		/*case fldHeightChangedEvent:
+			pForm = FrmGetActiveForm();	
+			fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));	
+			bar = (ScrollBarType *) FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 123));
 			
+			FldGetScrollValues(fieldPtr, &scrollPos, &textHeight, &fieldHeight);
+			// Calculate the maximum scroll position:
+			if(textHeight > fieldHeight) maxScrollPos = textHeight-fieldHeight;
+			else maxScrollPos = 0;
+
+			// Set the scrollbar's position
+			// FieldHeight-1 gives an overlap of 1 line when page scrolling.
+			SclSetScrollBar(bar, 0, 0, maxScrollPos, fieldHeight-1);
+		*/
+		
 		case menuEvent:
 			switch (pEvent->data.menu.itemID)
 			{
@@ -324,15 +400,11 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					if (currentActionNumber<=0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));	
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 
-					if (script !=NULL)
-						MemPtrFree(script);
+					if (script !=NULL) MemPtrFree(script);
 					script = SetUpScript();
 
 		   			fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
-					FldFreeMemory(fieldPtr);  // clear the field from prev data
-				    FldSetMaxChars(fieldPtr, StrLen(script));
-		    		FldSetTextPtr(fieldPtr, script);
-					FldRecalculateField(fieldPtr, true);					
+					fieldSetup (fieldPtr, script);			
 					break;
 				
 				case NEXT_BUTTON: //NEXT
@@ -362,25 +434,13 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					script = SetUpScript();
 
 					fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
-					FldFreeMemory(fieldPtr);  // clear the field from prev data
-					FldSetMaxChars(fieldPtr, StrLen(script));
-	    				FldSetTextPtr(fieldPtr, script);
-					FldRecalculateField(fieldPtr, true);
+					fieldSetup (fieldPtr, script);
 					break;
 				
 				case FINISH_BUTTON: //FINISH
 					//peos notify changes state to finish if its last action
-					//i think normal return code is VM_DONE
-				    exit_code=peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
-				    currentActions = (peos_action_t *) peos_list_actions(currentPid, &numActions);
-
-				    if (exit_code == VM_DONE)
-				    {
-				    	FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
-				    	FrmCopyTitle (pForm, "Finished Action");
-				    }
-				    else
-				    {
+					//i think normal return code is VM_DONE		
+					peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
 					currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
 					if (currentActionState == ACT_DONE || currentActionState == ACT_PENDING)
 					{
@@ -392,13 +452,29 @@ Boolean CurrentActionHandler (EventType* pEvent)
 						FrmCopyTitle (pForm, "Unfin. Action");
 						FrmShowObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 					}
-				    }
+				    
 				    
 				    break;
 				
 					
 				default: break;
 			}
+			
+			
+			pForm = FrmGetActiveForm();	
+			fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));	
+			bar = (ScrollBarType *) FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, 123));
+			
+			FldGetScrollValues(fieldPtr, &scrollPos, &textHeight, &fieldHeight);
+			// Calculate the maximum scroll position:
+			if(textHeight > fieldHeight) maxScrollPos = textHeight-fieldHeight;
+			else maxScrollPos = 0;
+
+			// Set the scrollbar's position
+			// FieldHeight-1 gives an overlap of 1 line when page scrolling.
+			SclSetScrollBar(bar, 0, 0, maxScrollPos, fieldHeight-1);
+			
+			
 			break;
 		
 		case frmCloseEvent:
@@ -411,11 +487,10 @@ Boolean CurrentActionHandler (EventType* pEvent)
 		      MemPtrFree((MemPtr) FldGetTextPtr(fieldPtr));
 		      //MemPtrFree( actionScript);
 		      //MemPtrFree( script);
-      break;
+      		  break;
 			
-			break;
-		default:
-			break;
+		
+		default: break;
 		
 	}
 	
