@@ -39,7 +39,6 @@ char ** list_actions (peos_action_t * currentActions, int numActions)
 		(char*) list[i]=(char*) malloc (ACTION_NAME_SIZE);
 		StrCopy (list[i], currentActions[i].name);
 	}
-	list[i]=NULL;
 	return list;
 }
 //
@@ -55,7 +54,7 @@ char ** list_todo_actions (peos_action_t * currentActions, int numActions)
 	for (i=0; i<numActions; i++)
 	{
 		currentActionState=get_act_state(currentActions[i].name, currentActions, numActions);
-		if (currentActionState != ACT_DONE || currentActionState != ACT_PENDING) unfinished++;
+		if (currentActionState != ACT_DONE && currentActionState != ACT_PENDING) unfinished++;
 	}
 	
 	list = (char**) malloc ((unfinished)*4);
@@ -63,7 +62,7 @@ char ** list_todo_actions (peos_action_t * currentActions, int numActions)
 	for (i=0; k<unfinished; i++)
 	{
 		currentActionState=get_act_state(currentActions[i].name, currentActions, numActions);
-		if (currentActionState != ACT_DONE || currentActionState != ACT_PENDING)
+		if (currentActionState != ACT_DONE && currentActionState != ACT_PENDING)
 		{
 			(char *) list [k]=(char*) malloc (ACTION_NAME_SIZE);
 			StrCopy (list [k], currentActions[i].name);
