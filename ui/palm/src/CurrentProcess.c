@@ -292,8 +292,24 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 			break;
 			
 		case frmCloseEvent:
-			break;
-			
+
+			if (listElements!=NULL) {
+				for (i=0; i<numActions; i++)
+				{
+					free (listElements[i]);
+				}				
+				free(listElements);
+				}
+			listElements=NULL;	
+			if (listElements2!=NULL) {
+			for (i=0; i<unfinished; i++)
+			{
+				free (listElements2[i]);
+			}			
+			free(listElements2);
+			}
+			listElements2=NULL;
+
 		default: break;
 	}
 	
