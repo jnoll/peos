@@ -31,6 +31,8 @@
 #define ActionsList									1403
 #define CurrentProcessLabel							1404
 #define actionsTable								1405
+#define todoButton									1410
+#define allButton									1411
 #define CurrentProcessFormMenuBar						1600
 #define AvailableProcessesMenuBar						1700
 #define StartedProcessesMenuBar							1800

@@ -1,0 +1,305 @@
+Archive member included because of file (symbol)
+
+./stubkernel.a(StubKernel.o)  AvailProcesses.o (peos_list_models)
+/usr/m68k-palmos/lib/libc.a(malloc.o)
+                              CurrentProcess.o (malloc)
+/usr/m68k-palmos/lib/libc.a(free.o)
+                              CurrentProcess.o (free)
+/usr/m68k-palmos/lib/libc.a(strcmp.o)
+                              ../../../os/palm/stdio.o (strcmp)
+/usr/m68k-palmos/lib/libc.a(strlen.o)
+                              ../../../os/palm/stdio.o (strlen)
+/usr/m68k-palmos/lib/libc.a(strcpy.o)
+                              ./stubkernel.a(StubKernel.o) (strcpy)
+/usr/m68k-palmos/lib/libcrt.a(single_dreloc.o)
+                              /usr/m68k-palmos/lib/crt0.o (_GccRelocateData)
+/usr/m68k-palmos/lib/libcrt.a(hooks.o)
+                              /usr/m68k-palmos/lib/crt0.o (__do_bhook)
+/usr/m68k-palmos/lib/libcrt.a(reloc_chain.o)
+                              /usr/m68k-palmos/lib/libcrt.a(single_dreloc.o) (_RelocateChain)
+
+Allocating common symbols
+Common symbol       size              file
+
+currentActions      0x4               CurrentProcess.o
+numActions          0x2               CurrentProcess.o
+listElements2       0x4               CurrentProcess.o
+currentPid          0x2               CurrentProcess.o
+selection           0x4               AvailProcesses.o
+listElements        0x4               CurrentProcess.o
+script              0x4               CurrentProcess.o
+itemSelected        0x2               CurrentProcess.o
+err                 0x4               ../../../os/palm/stdio.o
+fromNextForm        0x2               CurrentProcess.o
+unfinished          0x2               CurrentProcess.o
+currentActionNumber
+                    0x2               CurrentProcess.o
+actionSelection     0x4               CurrentProcess.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+coderes          0x00000000         0x00008002
+datares          0x00000000         0x00007fff
+trap_region      0x01000000         0x00000002
+disposition_region 0x01000010         0x00000006
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /usr/m68k-palmos/lib/crt0.o
+LOAD /usr/m68k-palmos/lib/gdbstub.o
+LOAD AppMain.o
+LOAD AvailProcesses.o
+LOAD StartedProcesses.o
+LOAD CurrentProcess.o
+LOAD ../../../os/palm/stdio.o
+LOAD ./stubkernel.a
+LOAD /usr/lib/gcc-lib/m68k-palmos/2.95.3-kgpd/libgcc.a
+LOAD /usr/m68k-palmos/lib/libg.a
+LOAD /usr/m68k-palmos/lib/libc.a
+LOAD /usr/lib/gcc-lib/m68k-palmos/2.95.3-kgpd/libgcc.a
+LOAD /usr/m68k-palmos/lib/libcrt.a
+
+.text           0x00000000     0x2b74
+ *(.text)
+ .text          0x00000000       0x98 /usr/m68k-palmos/lib/crt0.o
+                0x00000000                start
+ .text          0x00000098       0x5a /usr/m68k-palmos/lib/gdbstub.o
+ *fill*         0x000000f2        0x2 00
+ .text          0x000000f4      0x33a AppMain.o
+                0x000003ee                PilotMain
+ *fill*         0x0000042e        0x2 00
+ .text          0x00000430      0x2fa AvailProcesses.o
+                0x00000430                list_models
+                0x00000496                AvailableProcessesHandler
+ *fill*         0x0000072a        0x2 00
+ .text          0x0000072c      0x37c StartedProcesses.o
+                0x0000072c                list_instances
+                0x0000078e                StartedProcessHandler
+ .text          0x00000aa8     0x129a CurrentProcess.o
+                0x0000136e                fieldSetup
+                0x00000b50                list_todo_actions
+                0x000013d0                CurrentActionHandler
+                0x00000aa8                list_actions
+                0x00001218                SetUpScript
+                0x00000c76                CurrentProcessHandler
+ *fill*         0x00001d42        0x2 00
+ .text          0x00001d44      0x228 ../../../os/palm/stdio.o
+                0x00001ea6                getc
+                0x00001f30                ferror
+                0x00001f64                doNothing
+                0x00001edc                fread
+                0x00001e46                strdup
+                0x00001dd0                fopen
+                0x00001f3e                fclose
+                0x00001d50                cut_mode
+                0x00001ed4                fwrite
+ .text          0x00001f6c      0x9ee ./stubkernel.a(StubKernel.o)
+                0x00002370                peos_list_actions
+                0x000028d8                peos_list_instances
+                0x0000293e                peos_notify
+                0x00001f82                peos_list_models
+                0x0000294c                get_act_state
+                0x00001fe0                peos_create_instance
+                0x00002930                peos_delete_process_instance
+ *fill*         0x0000295a        0x2 00
+ .text          0x0000295c       0x1c /usr/m68k-palmos/lib/libc.a(malloc.o)
+                0x0000295c                malloc
+ .text          0x00002978       0x14 /usr/m68k-palmos/lib/libc.a(free.o)
+                0x00002978                free
+ .text          0x0000298c       0x28 /usr/m68k-palmos/lib/libc.a(strcmp.o)
+                0x0000298c                strcmp
+ .text          0x000029b4       0x18 /usr/m68k-palmos/lib/libc.a(strlen.o)
+                0x000029b4                strlen
+ .text          0x000029cc       0x1a /usr/m68k-palmos/lib/libc.a(strcpy.o)
+                0x000029cc                strcpy
+ *fill*         0x000029e6        0x2 00
+ .text          0x000029e8       0x4e /usr/m68k-palmos/lib/libcrt.a(single_dreloc.o)
+                0x000029e8                _GccRelocateData
+ *fill*         0x00002a36        0x2 00
+ .text          0x00002a38      0x110 /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+                0x00002b0e                __do_dtors
+                0x00002ad4                __do_ctors
+                0x00002a38                __do_bhook
+                0x00002a86                __do_ehook
+ .text          0x00002b48       0x26 /usr/m68k-palmos/lib/libcrt.a(reloc_chain.o)
+                0x00002b48                _RelocateChain
+                0x00002b70                . = ALIGN (0x4)
+ *fill*         0x00002b6e        0x2 00
+                0x00002b70                bhook_start = .
+ *(bhook)
+ bhook          0x00002b70        0x4 /usr/m68k-palmos/lib/gdbstub.o
+                0x00002b74                bhook_end = .
+                0x00002b74                . = ALIGN (0x4)
+                0x00002b74                ehook_start = .
+ *(ehook)
+                0x00002b74                ehook_end = .
+                0x00002b74                . = ALIGN (0x4)
+                0x00002b74                ctors_start = .
+ *(.ctors)
+                0x00002b74                ctors_end = .
+                0x00002b74                . = ALIGN (0x4)
+                0x00002b74                dtors_start = .
+ *(.dtors)
+                0x00002b74                dtors_end = .
+
+.data           0x00000000      0x754
+                0x00000000                data_start = .
+ *(.data)
+ .data          0x00000000      0x160 AppMain.o
+                0x00000000                _GLOBAL_$F$PilotMain
+ .data          0x00000160       0xf8 AvailProcesses.o
+                0x00000160                _GLOBAL_$F$list_models
+ .data          0x00000258      0x120 StartedProcesses.o
+                0x00000258                _GLOBAL_$F$list_instances
+ .data          0x00000378      0x3dc CurrentProcess.o
+                0x00000378                _GLOBAL_$F$list_actions
+ *(.gcc_exc)
+
+.bss            0x00000754       0x58
+                0x00000754                bss_start = .
+ *(.bss)
+ .bss           0x00000754       0x2c ./stubkernel.a(StubKernel.o)
+ *(COMMON)
+ COMMON         0x00000780        0x4 AvailProcesses.o
+                                  0x0 (size before relaxing)
+                0x00000780                selection
+ COMMON         0x00000784       0x24 CurrentProcess.o
+                                  0x0 (size before relaxing)
+                0x00000784                currentActions
+                0x00000788                numActions
+                0x0000078c                listElements2
+                0x00000790                currentPid
+                0x00000794                listElements
+                0x00000798                script
+                0x0000079c                itemSelected
+                0x0000079e                fromNextForm
+                0x000007a0                unfinished
+                0x000007a2                currentActionNumber
+                0x000007a4                actionSelection
+ COMMON         0x000007a8        0x4 ../../../os/palm/stdio.o
+                                  0x0 (size before relaxing)
+                0x000007a8                err
+                0x000007ac                end = ALIGN (0x4)
+                0x000007ac                edata = ALIGN (0x4)
+
+.trap
+ *(.trap)
+
+.disposn
+ *(.disposn)
+OUTPUT(palmpeos coff-m68k)
+
+.reloc          0x00000000       0xcc
+ .reloc         0x00000000       0x54 AppMain.o
+ .reloc         0x00000054       0x18 AvailProcesses.o
+ .reloc         0x0000006c       0x18 StartedProcesses.o
+ .reloc         0x00000084       0x48 CurrentProcess.o
+
+Cross Reference Table
+
+Symbol                                            File
+AvailableProcessesHandler                         AvailProcesses.o
+                                                  AppMain.o
+CurrentActionHandler                              CurrentProcess.o
+                                                  AppMain.o
+CurrentProcessHandler                             CurrentProcess.o
+                                                  AppMain.o
+PilotMain                                         AppMain.o
+                                                  /usr/m68k-palmos/lib/gdbstub.o
+                                                  /usr/m68k-palmos/lib/crt0.o
+SetUpScript                                       CurrentProcess.o
+StartedProcessHandler                             StartedProcesses.o
+                                                  AppMain.o
+_GLOBAL_$F$PilotMain                              AppMain.o
+_GLOBAL_$F$list_actions                           CurrentProcess.o
+_GLOBAL_$F$list_instances                         StartedProcesses.o
+_GLOBAL_$F$list_models                            AvailProcesses.o
+_GccRelocateData                                  /usr/m68k-palmos/lib/libcrt.a(single_dreloc.o)
+                                                  /usr/m68k-palmos/lib/crt0.o
+_RelocateChain                                    /usr/m68k-palmos/lib/libcrt.a(reloc_chain.o)
+                                                  /usr/m68k-palmos/lib/libcrt.a(single_dreloc.o)
+__do_bhook                                        /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+                                                  /usr/m68k-palmos/lib/crt0.o
+__do_ctors                                        /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+                                                  /usr/m68k-palmos/lib/crt0.o
+__do_dtors                                        /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+                                                  /usr/m68k-palmos/lib/crt0.o
+__do_ehook                                        /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+                                                  /usr/m68k-palmos/lib/crt0.o
+actionSelection                                   CurrentProcess.o
+bhook_end                                         /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+bhook_start                                       /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+bss_start                                         /usr/m68k-palmos/lib/gdbstub.o
+ctors_end                                         /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+ctors_start                                       /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+currentActionNumber                               CurrentProcess.o
+currentActions                                    CurrentProcess.o
+currentPid                                        CurrentProcess.o
+                                                  StartedProcesses.o
+                                                  AvailProcesses.o
+cut_mode                                          ../../../os/palm/stdio.o
+data_start                                        /usr/m68k-palmos/lib/libcrt.a(reloc_chain.o)
+                                                  /usr/m68k-palmos/lib/libcrt.a(single_dreloc.o)
+                                                  /usr/m68k-palmos/lib/gdbstub.o
+doNothing                                         ../../../os/palm/stdio.o
+dtors_end                                         /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+dtors_start                                       /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+ehook_end                                         /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+ehook_start                                       /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+err                                               ../../../os/palm/stdio.o
+fclose                                            ../../../os/palm/stdio.o
+ferror                                            ../../../os/palm/stdio.o
+fieldSetup                                        CurrentProcess.o
+fopen                                             ../../../os/palm/stdio.o
+fread                                             ../../../os/palm/stdio.o
+free                                              /usr/m68k-palmos/lib/libc.a(free.o)
+                                                  ../../../os/palm/stdio.o
+                                                  CurrentProcess.o
+fromNextForm                                      CurrentProcess.o
+fwrite                                            ../../../os/palm/stdio.o
+get_act_state                                     ./stubkernel.a(StubKernel.o)
+                                                  CurrentProcess.o
+getc                                              ../../../os/palm/stdio.o
+itemSelected                                      CurrentProcess.o
+listElements                                      CurrentProcess.o
+listElements2                                     CurrentProcess.o
+list_actions                                      CurrentProcess.o
+list_instances                                    StartedProcesses.o
+list_models                                       AvailProcesses.o
+list_todo_actions                                 CurrentProcess.o
+malloc                                            /usr/m68k-palmos/lib/libc.a(malloc.o)
+                                                  ./stubkernel.a(StubKernel.o)
+                                                  ../../../os/palm/stdio.o
+                                                  CurrentProcess.o
+numActions                                        CurrentProcess.o
+peos_create_instance                              ./stubkernel.a(StubKernel.o)
+                                                  AvailProcesses.o
+peos_delete_process_instance                      ./stubkernel.a(StubKernel.o)
+                                                  StartedProcesses.o
+peos_list_actions                                 ./stubkernel.a(StubKernel.o)
+                                                  CurrentProcess.o
+peos_list_instances                               ./stubkernel.a(StubKernel.o)
+                                                  StartedProcesses.o
+peos_list_models                                  ./stubkernel.a(StubKernel.o)
+                                                  AvailProcesses.o
+peos_notify                                       ./stubkernel.a(StubKernel.o)
+                                                  CurrentProcess.o
+script                                            CurrentProcess.o
+selection                                         CurrentProcess.o
+                                                  StartedProcesses.o
+                                                  AvailProcesses.o
+start                                             /usr/m68k-palmos/lib/crt0.o
+                                                  /usr/m68k-palmos/lib/libcrt.a(hooks.o)
+                                                  /usr/m68k-palmos/lib/libcrt.a(single_dreloc.o)
+                                                  /usr/m68k-palmos/lib/gdbstub.o
+strcmp                                            /usr/m68k-palmos/lib/libc.a(strcmp.o)
+                                                  ../../../os/palm/stdio.o
+strcpy                                            /usr/m68k-palmos/lib/libc.a(strcpy.o)
+                                                  ./stubkernel.a(StubKernel.o)
+strdup                                            ../../../os/palm/stdio.o
+strlen                                            /usr/m68k-palmos/lib/libc.a(strlen.o)
+                                                  ./stubkernel.a(StubKernel.o)
+                                                  ../../../os/palm/stdio.o
+unfinished                                        CurrentProcess.o

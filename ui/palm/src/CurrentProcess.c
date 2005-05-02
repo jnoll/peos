@@ -11,7 +11,7 @@
 #include <StringMgr.h>
 #include <Form.h>
 #include <Table.h>
-
+#define ACTION_NAME_SIZE 32
 
 extern char * selection;
 char * actionSelection;
@@ -20,6 +20,7 @@ int itemSelected;
 int numActions;
 int currentActionNumber;
 int currentPid;
+int unfinished;
 
 int fromNextForm;
 //extracts names of actions from the array of peos_action_t structs 
@@ -32,15 +33,43 @@ char ** list_actions (peos_action_t * currentActions, int numActions)
 	char ** list;	
 
 	//take peos_action_t * and convert it to char **
-	list = (char**) malloc (numActions*4);
+	list = (char**) malloc ((numActions+1)*4);
 	for (i=0; i<numActions; i++) 
 	{
-		(char*) list[i]=(char*) malloc (256);
-		(char*) list[i]=currentActions[i].name;
+		(char*) list[i]=(char*) malloc (ACTION_NAME_SIZE);
+		StrCopy (list[i], currentActions[i].name);
 	}
+	list[i]=NULL;
 	return list;
 }
 //
+
+char ** list_todo_actions (peos_action_t * currentActions, int numActions)
+{
+	UInt16 i;
+	vm_act_state currentActionState;
+	char ** list;
+	
+	unfinished=0;
+	for (i=0; i<numActions; i++)
+	{
+		currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
+		if (currentActionState != ACT_DONE || currentActionState != ACT_PENDING) unfinished++;
+	}
+	
+	list = (char**) malloc ((unfinished+1)*4);
+	for (i=0; i<unfinished; i++)
+	{
+		(char *) list [i]=(char*) malloc (ACTION_NAME_SIZE);
+		StrCopy (list [i], currentActions[i].name);
+	}
+	list[i]=NULL;
+	return list;
+}
+
+
+
+
 /*
 void InitTheTable(TableType *table, Char **itemLabels)
 {
@@ -76,7 +105,8 @@ void InitTheTable(TableType *table, Char **itemLabels)
 	 TblSetColumnSpacing(table, 1, 3);   
 }
 */
-
+	char ** listElements;
+	char ** listElements2;
 Boolean CurrentProcessHandler (EventType* pEvent)
 {
 	Boolean 	handled = false;
@@ -84,11 +114,11 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 	ControlType* ctl;
 	ListType *	list;
 	TableType * table;
+	UInt16 i=0;
 
 
 	//RectangleType theRect;
-	
-	char ** listElements2;
+
 
 	switch (pEvent->eType)
 	{
@@ -108,15 +138,15 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		//also pass numActions to be updated */
 		currentActions = (peos_action_t *) peos_list_actions (currentPid, &numActions);
 		//get a char** array of action names
-		listElements2 = list_actions (currentActions, numActions);
+		listElements2 = list_todo_actions (currentActions, numActions);
 		//populate the list with action names
 		
-		LstSetListChoices (list, listElements2, numActions);
+		LstSetListChoices (list, listElements2, unfinished);
 		LstSetSelection (list, -1);
 		
-		table= FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, actionsTable));
+		//table= FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, actionsTable));
 		//InitTheTable(table, listElements2);
-		
+		FrmSetControlGroupSelection (pForm, 1, 1410);
 		FrmDrawForm(pForm);		
 		handled = true;
 		break;
@@ -158,8 +188,18 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		pForm = FrmGetActiveForm();
 		list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));
 		itemSelected = LstGetSelection (list);
-		currentActionNumber = itemSelected;
 		actionSelection = LstGetSelectionText (list, LstGetSelection (list));
+		
+		//if have to do list selected
+		if (FrmGetObjectId (pForm, FrmGetControlGroupSelection (pForm, 1))==1410)
+		{
+		//find currect action number by searching through ....	
+		}
+		else if (FrmGetObjectId (pForm, FrmGetControlGroupSelection (pForm, 1))==1411)
+		{
+			currentActionNumber = itemSelected;
+		}
+		
 		
 		ctl = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionButton));
 		CtlSetLabel (ctl, actionSelection);	
@@ -168,7 +208,7 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 	case ctlSelectEvent:
 			switch (pEvent->data.ctlSelect.controlID)
 			{
-			case ActionButton:  //to to specific action view
+				case ActionButton:  //to to specific action view
 				pForm = FrmGetActiveForm();
 				list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));
 				if (LstGetSelection (list)==noListSelection)
@@ -184,6 +224,52 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 					handled = true;
 				}
 				break;
+				
+				case todoButton:
+				listElements2 = list_todo_actions (currentActions, numActions);
+				//populate the list with action names
+				pForm = FrmGetActiveForm();
+				list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));	
+				LstEraseList (list);
+				LstSetListChoices (list, listElements2, unfinished);
+				LstSetSelection (list, -1);
+				LstDrawList (list);
+				
+				if (listElements!=NULL) {
+				for (i=0; i<numActions; i++)
+				{
+					free (listElements[i]);
+				}				
+				free(listElements);
+				}
+				listElements=NULL;
+				handled = true;
+				break;
+				
+				
+				case allButton:
+				listElements = list_actions (currentActions, numActions);
+				//populate the list with action names
+				pForm = FrmGetActiveForm();
+				list = FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, ActionsList));	
+				LstEraseList (list);
+				LstSetListChoices (list, listElements, numActions);
+				LstSetSelection (list, -1);
+				LstDrawList (list);
+				
+				
+				if (listElements2!=NULL) {
+				for (i=0; i<unfinished; i++)
+				{
+					free (listElements2[i]);
+				}			
+				free(listElements2);
+				}
+				listElements2=NULL;
+				handled = true;
+				break;
+				
+				default: break;
 			}
 			break;
 			
