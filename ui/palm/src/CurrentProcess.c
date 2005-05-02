@@ -445,6 +445,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					{
 						FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 						FrmCopyTitle (pForm, "Finished Action");
+						currentActions=peos_list_actions(currentPid, &numActions);
 					}
 					else 
 					{
