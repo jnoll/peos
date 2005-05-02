@@ -117,7 +117,6 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 		table= FrmGetObjectPtr (pForm, FrmGetObjectIndex (pForm, actionsTable));
 		//InitTheTable(table, listElements2);
 		
-		
 		FrmDrawForm(pForm);		
 		handled = true;
 		break;
@@ -237,7 +236,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	Int16 maxScrollPos, value, min, max, pageSize;
 	UInt16 scrollPos, textHeight, fieldHeight;
 	vm_act_state currentActionState;
-	//vm_exit_code exit_code;	
+	vm_exit_code exit_code;	
 	
 	
 	switch (pEvent->eType)
@@ -440,9 +439,9 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				case FINISH_BUTTON: //FINISH
 					//peos notify changes state to finish if its last action
 					//i think normal return code is VM_DONE		
-					peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
-					currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
-					if (currentActionState == ACT_DONE || currentActionState == ACT_PENDING)
+					exit_code = peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
+					//currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
+					if (exit_code==VM_DONE)
 					{
 						FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 						FrmCopyTitle (pForm, "Finished Action");
