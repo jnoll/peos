@@ -14,6 +14,7 @@
 #include "AvailProcesses.h"
 #include "CurrentProcess.h"
 #ifndef STUB
+#include <graph.h>
 #include <process_table.h>
 #endif
 #include <SoundMgr.h>

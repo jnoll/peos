@@ -23,9 +23,9 @@ build:
 	m68k-palmos-multigen palmpeos.def
 	m68k-palmos-gcc -c palmpeos-sections.s
 	m68k-palmos-gcc -Xlinker -M -Xlinker --cref -g AppMain.o  AvailProcesses.o \
-		StartedProcesses.o CurrentProcess.o palmpeos-sections.o \
-		../../../os/palm/stdio.o ../../../os/kernel/libpeos.a \
-		../../../pml/libpml.a -o palmpeos palmpeos-sections.ld \
+		StartedProcesses.o CurrentProcess.o palmpeos-sections.o -lPalmOSGlue \
+		../../../os/kernel/libpeos.a  ../../../pml/libpml.a \
+		../../../os/palm/stdio.o -o palmpeos palmpeos-sections.ld \
 		2> palmpeos.map
 	build-prc palmpeos.def -o palmpeos.prc -n PalmPeos -c plmp palmpeos.ro palmpeos
 #	$(CC) -c -D__PALMOS__=0x05000000 $(INCLUDE) -O0 -g -fexceptions -UNDEBUG -Wall -palmos5r4 -o palmpeos  *.o

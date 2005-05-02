@@ -289,12 +289,16 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 return handled;		
 }
 
+char * script;
+
 char * SetUpScript()
 {
-	char *script;
 
 	UInt32 stringSize, i;
-	script = (char *) MemPtrNew(stringSize = (2+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
+
+	if (script!= NULL)
+		MemPtrFree(script);
+	script = (char *) MemPtrNew(stringSize = (10+StrLen ("Name: ") + StrLen ("Script: ") + StrLen(currentActions[currentActionNumber].script)+StrLen (currentActions[currentActionNumber].name)));
 	for (i=0; i < stringSize; i++)
 	{
 		script[i]='\0';
@@ -307,7 +311,6 @@ char * SetUpScript()
 	return script;
 }
 
-char * script;
 
 void fieldSetup (FieldType *fieldPtr, char * script)
 {
@@ -336,6 +339,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 	{
 		case frmOpenEvent:
 			pForm = FrmGetActiveForm();		
+		//	script = NULL;
 
 			//get action state and act on the form title and FINISH button accordingly
 			currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
@@ -353,8 +357,8 @@ Boolean CurrentActionHandler (EventType* pEvent)
 			if (currentActionNumber==0) 			 FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));
 			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 			
-			if (script !=NULL) MemPtrFree(script);
-			script = SetUpScript();
+			//if (script !=NULL) MemPtrFree(script);
+			SetUpScript();
 
    		    fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 		    fieldSetup (fieldPtr, script);
@@ -492,8 +496,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					if (currentActionNumber<=0) FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));	
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 
-					if (script !=NULL) MemPtrFree(script);
-					script = SetUpScript();
+					SetUpScript();
 
 		   			fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 					fieldSetup (fieldPtr, script);			
@@ -521,9 +524,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					if (currentActionNumber>=(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 					FrmShowObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));
 
-					if (script != NULL)
-						MemPtrFree(script);
-					script = SetUpScript();
+					SetUpScript();
 
 					fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 					fieldSetup (fieldPtr, script);
@@ -578,6 +579,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 		      // a pointer-based field.
 		      fieldPtr = (FieldType *) FrmGetObjectPtr(pForm, FrmGetObjectIndex(pForm, 1901));
 		      MemPtrFree((MemPtr) FldGetTextPtr(fieldPtr));
+				script=NULL;
 		      //MemPtrFree( actionScript);
 		      //MemPtrFree( script);
       		  break;
