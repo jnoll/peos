@@ -33,7 +33,7 @@ char ** list_actions (peos_action_t * currentActions, int numActions)
 	char ** list;	
 
 	//take peos_action_t * and convert it to char **
-	list = (char**) malloc ((numActions+1)*4);
+	list = (char**) malloc ((numActions)*4);
 	for (i=0; i<numActions; i++) 
 	{
 		(char*) list[i]=(char*) malloc (ACTION_NAME_SIZE);
@@ -47,23 +47,30 @@ char ** list_actions (peos_action_t * currentActions, int numActions)
 char ** list_todo_actions (peos_action_t * currentActions, int numActions)
 {
 	UInt16 i;
+	UInt16 k;
 	vm_act_state currentActionState;
 	char ** list;
 	
 	unfinished=0;
 	for (i=0; i<numActions; i++)
 	{
-		currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
+		currentActionState=get_act_state(currentActions[i].name, currentActions, numActions);
 		if (currentActionState != ACT_DONE || currentActionState != ACT_PENDING) unfinished++;
 	}
 	
-	list = (char**) malloc ((unfinished+1)*4);
-	for (i=0; i<unfinished; i++)
+	list = (char**) malloc ((unfinished)*4);
+	k=0;
+	for (i=0; k<unfinished; i++)
 	{
-		(char *) list [i]=(char*) malloc (ACTION_NAME_SIZE);
-		StrCopy (list [i], currentActions[i].name);
+		currentActionState=get_act_state(currentActions[i].name, currentActions, numActions);
+		if (currentActionState != ACT_DONE || currentActionState != ACT_PENDING)
+		{
+			(char *) list [k]=(char*) malloc (ACTION_NAME_SIZE);
+			StrCopy (list [k], currentActions[i].name);
+			k++;
+		}
 	}
-	list[i]=NULL;
+	
 	return list;
 }
 
