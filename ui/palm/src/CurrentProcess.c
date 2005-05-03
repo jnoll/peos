@@ -383,7 +383,6 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				FrmCopyTitle (pForm, "Unfin. Action");
 				FrmShowObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 			}
-			
 			if (currentActionNumber==0) 			 FrmHideObject (pForm, FrmGetObjectIndex (pForm, PREVIOUS_BUTTON));
 			if (currentActionNumber==(numActions-1)) FrmHideObject (pForm, FrmGetObjectIndex (pForm, NEXT_BUTTON));
 			
@@ -567,8 +566,12 @@ Boolean CurrentActionHandler (EventType* pEvent)
 					//currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
 					if (exit_code==VM_DONE || exit_code==VM_CONTINUE)
 					{
+						int i;
 						FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
 						FrmCopyTitle (pForm, "Finished Action");
+						for (i=0; i<numActions; i++);
+//							free(currentActions[i].script);
+						free(currentActions);
 						currentActions=peos_list_actions(currentPid, &numActions);
 					}
 					else 
