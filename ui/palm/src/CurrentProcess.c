@@ -570,16 +570,12 @@ Boolean CurrentActionHandler (EventType* pEvent)
 						if (FrmCustomAlert (ConfirmDeleteLastAction, NULL, NULL, NULL)==0)
 						{
 							exit_code = peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
-							if (exit_code==VM_DONE || exit_code==VM_CONTINUE) 
-							{  //if deleted ok, action and the whole process is gone
-								//go back to available processes form
-								free(currentActions);
-								pForm = FrmInitForm(MainForm);			
-								FrmGotoForm (MainForm);
-								FrmDeleteForm(pForm);
-								handled = true;
-								break;
-							}
+							free(currentActions);
+							pForm = FrmInitForm(MainForm);			
+							FrmGotoForm (MainForm);
+							FrmDeleteForm(pForm);
+							handled = true;
+							break;
 						}
 						//user pressed cancel
 						else {}
