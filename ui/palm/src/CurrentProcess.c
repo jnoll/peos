@@ -578,6 +578,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 								FrmGotoForm (MainForm);
 								FrmDeleteForm(pForm);
 								handled = true;
+								break;
 							}
 						}
 						//user pressed cancel
@@ -596,6 +597,7 @@ Boolean CurrentActionHandler (EventType* pEvent)
 							FrmCopyTitle (pForm, "Finished Action");							
 							free(currentActions);
 							currentActions=peos_list_actions(currentPid, &numActions);
+							break;
 						}			
 					}
 				    //end of FINISH button case
