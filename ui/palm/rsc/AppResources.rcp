@@ -26,6 +26,15 @@ BEGIN
 	BUTTONS "OK" "CANCEL"
 END
 
+Alert ID ConfirmDeleteLastAction
+DEFAULTBUTTON 1
+CONFIRMATION
+BEGIN
+	TITLE "Delete last action?"
+	MESSAGE "Deleting last action will automatically delete the whole process. Continue?"
+	BUTTONS "OK" "CANCEL"
+END
+
 
 //forms
 FORM ID MainForm AT (0 0 160 160)
@@ -75,12 +84,12 @@ MENUID CurrentProcessFormMenuBar
 BEGIN
 	TITLE "Current Process"
 	BUTTON "Go To Action" ID ActionButton AT (18 146 120 AUTO) USABLE FRAME FONT 1
-	PUSHBUTTON "To do" ID 1410 AT (24 130 50 AUTO) USABLE GROUP 1
-	PUSHBUTTON "All" ID 1411 AT (75 130 50 AUTO) USABLE GROUP 1
+	PUSHBUTTON "To do" ID 1410 AT (25 130 50 AUTO) USABLE GROUP 1
+	PUSHBUTTON "All" ID 1411 AT (76 130 50 AUTO) USABLE GROUP 1
 	SCROLLBAR ID 1002 AT (151 19 7 141) USABLE VALUE 0 MIN 0 MAX 0 PAGESIZE 10
 	//TABLE ID actionsTable AT (10 35 141 111) ROWS numTableRows COLUMNS 2 COLUMNWIDTHS 15 115
 	LIST ID ActionsList AT (17 35 123 AUTO) USABLE FONT 1 VISIBLEITEMS 8
-	LABEL "Actions:" ID CurrentProcessLabel AT (17 17) USABLE FONT 2
+	LABEL "Actions: To Do / ALL" ID CurrentProcessLabel AT (17 17) USABLE FONT 2
 END
 
 
@@ -114,9 +123,9 @@ MENU ID MainFormMenuBar
 BEGIN
   PULLDOWN "Options"
   BEGIN
-    MENUITEM "About" 					ID 1000 "A"
-    MENUITEM "View Available Processes" ID 1001 "V"
-    MENUITEM "Finish started processes" ID 1002 "S"
+    MENUITEM "About" 					ID 1000 
+    MENUITEM "View Available Processes" ID 1001 
+    MENUITEM "Finish started processes" ID 1002
     MENUITEM SEPARATOR
   END
 END 
@@ -126,10 +135,10 @@ MENU ID CurrentProcessFormMenuBar
 BEGIN
 	PULLDOWN "Options"
 	BEGIN
-    MENUITEM "About" 					ID 1601 "A"
+    MENUITEM "About" 					ID 1601
     MENUITEM "Back To Main"				ID 1602
-    MENUITEM "View Available Processes" ID 1603 "V"
-    MENUITEM "Finish started processes" ID 1604 "S"
+    MENUITEM "View Available Processes" ID 1603
+    MENUITEM "Finish started processes" ID 1604 
     MENUITEM SEPARATOR
   END
 END 

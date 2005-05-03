@@ -121,7 +121,6 @@ Boolean CurrentProcessHandler (EventType* pEvent)
 	FormType* 	pForm;
 	ControlType* ctl;
 	ListType *	list;
-	TableType * table;
 	UInt16 i=0;
 
 
@@ -562,28 +561,46 @@ Boolean CurrentActionHandler (EventType* pEvent)
 				case FINISH_BUTTON: //FINISH
 					//peos notify changes state to finish if its last action
 					//i think normal return code is VM_DONE		
-					exit_code = peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
-					//currentActionState=get_act_state(currentActions[currentActionNumber].name, currentActions, numActions);
-					if (exit_code==VM_DONE || exit_code==VM_CONTINUE)
+					//
+					//check if its the last action
+					//if it is - confirmation of deletion since it will delete whole process
+					if (currentActionNumber>=(numActions-1))
 					{
-						int i;
-						FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
-						FrmCopyTitle (pForm, "Finished Action");
-						for (i=0; i<numActions; i++);
-//							free(currentActions[i].script);
-						free(currentActions);
-						currentActions=peos_list_actions(currentPid, &numActions);
+						//user pressed ok to delete
+						if (FrmCustomAlert (ConfirmDeleteLastAction, NULL, NULL, NULL)==0)
+						{
+							exit_code = peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
+							if (exit_code==VM_DONE || exit_code==VM_CONTINUE) 
+							{  //if deleted ok, action and the whole process is gone
+								//go back to available processes form
+								free(currentActions);
+								pForm = FrmInitForm(MainForm);			
+								FrmGotoForm (MainForm);
+								FrmDeleteForm(pForm);
+								handled = true;
+							}
+						}
+						//user pressed cancel
+						else {}
 					}
+					//
+					//if not last action
+					//regular finish action behavior		
 					else 
 					{
-						FrmCopyTitle (pForm, "Unfin. Action");
-						FrmShowObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
+						exit_code = peos_notify (currentPid, currentActions[currentActionNumber].name, PEOS_EVENT_FINISH);
+						if (exit_code==VM_DONE || exit_code==VM_CONTINUE)
+						{
+							int i;
+							FrmHideObject (pForm, FrmGetObjectIndex (pForm, FINISH_BUTTON));
+							FrmCopyTitle (pForm, "Finished Action");							
+							free(currentActions);
+							currentActions=peos_list_actions(currentPid, &numActions);
+						}			
 					}
-				    
-				    
+				    //end of FINISH button case
 				    break;
-				
-					
+							
 				default: break;
 			}
 			
