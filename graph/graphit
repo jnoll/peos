@@ -1,7 +1,13 @@
 #!/bin/sh
 
-while getopts dfmgv c ; do
+while getopts adfmM:gvc c ; do
     case $c in
+	a)
+	ANON=-a
+	;;
+	c)
+	COLOR="YES";
+	;;
 	d)
 	DOM_FLAG=-d
 	;;
@@ -11,21 +17,39 @@ while getopts dfmgv c ; do
 	m)
 	MATCH_FLAG=-m
 	;;
+	M)
+	MARK="$OPTARG";
+	;;
 	g|v)
 	GV=yes
 	;;
     esac
 done
 
+echo "COLOR=$COLOR" > /dev/stderr
 shift `expr $OPTIND - 1`
-
 while [ $# -gt 0 ] ; do
+    echo "Working...">/dev/stderr
     BASENAME=`basename $1 .pml`
     PML_FILE=${BASENAME}.pml
     DOT_FILE=${BASENAME}.dot
     PS_FILE=${BASENAME}.ps
-    traverse ${DOM_FLAG} ${FLOW_FLAG} ${MATCH_FLAG} $PML_FILE > $DOT_FILE
-    dot -Tps $DOT_FILE > $PS_FILE
+    traverse ${ANON} ${DOM_FLAG} ${FLOW_FLAG} ${MATCH_FLAG} $PML_FILE > $DOT_FILE
+    if [ -n "$MARK" ] ; then
+	echo $MARK >/dev/stderr
+	sed "s/\(label=\"[^\"]*${MARK}[^a-zA-Z0-9][^\"]*\"\)/fontcolor=\"red\",\1/" $DOT_FILE > ${DOT_FILE}.tmp
+	mv ${DOT_FILE}.tmp $DOT_FILE
+
+    fi
+    if [ "$COLOR" = "YES" ] ; then 
+	echo "Coloring" > /dev/stderr
+	if [ -f ${BASENAME}.analysis ] ; then
+	    awk -f color-pml.awk ${BASENAME}.analysis > /tmp/color-${BASENAME}.sed
+	    sed -f /tmp/color-${BASENAME}.sed $DOT_FILE > /tmp/${BASENAME}.colored.dot
+	    mv /tmp/${BASENAME}.colored.dot $DOT_FILE
+	fi
+    fi
+    dot -Tps   $DOT_FILE > $PS_FILE
 #    [ -f $DOT_FILE ] && rm $DOT_FILE
     [ -z "${GV}" ] || gv $PS_FILE
     shift
