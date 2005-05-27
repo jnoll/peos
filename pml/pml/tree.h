@@ -33,14 +33,14 @@ extern Tree TreeCreate (
     String		/* sval  */,
     int			/* ival  */
 # endif
-) INIT_SECTION ;
+);
 
 
 extern void TreeDestroy (
 # ifdef ANSI_PROTOTYPES
     Tree		/* tree */
 # endif
-) INIT_SECTION ;
+);
 
 END_PROTOTYPES
 

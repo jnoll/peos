@@ -1,0 +1,60 @@
+#!/bin/sh
+# $Id: graphit,v 1.1 2005/05/27 01:58:57 jnoll Exp $
+# Convert a pml file into a graphiz 'dot' specification.
+USAGE="usage: $0 [-a (anonymous - no labels)] [-m action (mark specified node)] [-c (color graph)] [-g|v (view)]"
+while getopts acghm:v c ; do
+    case $c in
+	a)
+	ANON=-a
+	;;
+	c)
+	COLOR="YES";
+	;;
+	m)
+	MARK="$OPTARG";
+	;;
+	g|v)
+	GV=yes
+	;;
+	*)
+	echo "$USAGE"
+	exit 0
+    esac
+done
+
+echo "COLOR=$COLOR" > /dev/stderr
+shift `expr $OPTIND - 1`
+while [ $# -gt 0 ] ; do
+    echo "Working...">/dev/stderr
+    FILE=$1
+    BASENAME=`basename $FILE .pml`
+    PML_FILE=${BASENAME}.pml
+    DOT_FILE=${BASENAME}.dot
+    ANA_FILE=${BASENAME}.analysis
+    PS_FILE=${BASENAME}.ps
+    traverse ${ANON} ${DOM_FLAG} ${FLOW_FLAG} ${MATCH_FLAG} $FILE > $DOT_FILE
+    if [ -n "$MARK" ] ; then
+	echo $MARK >/dev/stderr
+	sed "s/\(label=\"[^\"]*${MARK}[^a-zA-Z0-9][^\"]*\"\)/fontcolor=\"red\",\1/" $DOT_FILE > ${DOT_FILE}.tmp
+	mv ${DOT_FILE}.tmp $DOT_FILE
+
+    fi
+    if [ "$COLOR" = "YES" ] ; then 
+	echo "Coloring" > /dev/stderr
+	if [ ! -f ${ANA_FILE} ] ; then
+	    pmlcheck -e $FILE  > $ANA_FILE
+	    pmlcheck -r $FILE >> $ANA_FILE
+	    pmlcheck -p $FILE >> $ANA_FILE
+	    pmlcheck -m $FILE >> $ANA_FILE
+	    pmlcheck -b $FILE >> $ANA_FILE
+	    pmlcheck -t $FILE >> $ANA_FILE
+	fi
+	awk -f color-pml.awk $ANA_FILE > /tmp/color-${BASENAME}.sed
+	sed -f /tmp/color-${BASENAME}.sed $DOT_FILE > /tmp/${BASENAME}.colored.dot
+	mv /tmp/${BASENAME}.colored.dot $DOT_FILE
+    fi
+    dot -Tps   $DOT_FILE > $PS_FILE
+    [ -z "${GV}" ] || gv $PS_FILE
+    shift
+done
+

@@ -5,26 +5,26 @@
  *		declarations for the yacc-generated parser.		*
  ************************************************************************/
 
-# ifndef PARSER_H
-# define PARSER_H
-# include <pml/graph.h>
-# include <pml/features.h>
+# ifndef LINK_PARSER_H
+# define LINK_PARSER_H
+
+# include <pml/tree.h>
 
 /* Variable declarations */
 
-extern Graph program;
-
+extern Tree inputs;
+extern Tree outputs;
 
 /* Function declarations */
 
-BEGIN_PROTOTYPES
+//BEGIN_PROTOTYPES
 
-extern int yyparse (
+extern int yy_linkparse (
 # ifdef ANSI_PROTOTYPES
     void		/* none */
 # endif
-) INIT_SECTION;
+);
 
-END_PROTOTYPES
+//END_PROTOTYPES
 
-# endif /* PARSER_H */
+# endif /* LINK_PARSER_H */

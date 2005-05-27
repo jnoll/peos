@@ -11,11 +11,7 @@
 # include <pml/list.h>
 # include <pml/tokens.h>
 # include <pml/scanner.h>
-#ifdef PALM
-//#include <PalmTypes.h>
-#include <SystemPublic.h>
-//#include <FileStream.h>
-#endif
+
 
 /* Public variable definitions */
 
@@ -63,7 +59,9 @@ string		\"[^"]*\"
 "requires"			{return REQUIRES;}
 "script"			{return SCRIPT;}
 "selection"			{return SELECTION;}
+"select"			{return SELECTION;} /* $jn: added for onr models. */
 "sequence"			{return SEQUENCE;}
+"task"				{return SEQUENCE;} /* $jn: added for onr models. */
 "tool"				{return TOOL;}
 
 {string}			{intern ( ); return STRING;}
@@ -156,6 +154,7 @@ void yyerror (message)
     fprintf (stderr, "%s:%d: %s at ", filename, lineno, message);
     fprintf (stderr, "%s\n", *yytext > 0 ? yytext : "end of input");
 }
+
 
 /************************************************************************
  * Function:	yywrap							*

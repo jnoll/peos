@@ -8,13 +8,14 @@
 # ifndef SCANNER_H
 # define SCANNER_H
 # include <pml/features.h>
-# include <stdio.h>
+
 
 /* Variable declarations */
 
 extern int lineno;
 extern String filename;
 extern FILE *yyin;
+
 
 /* Function declarations */
 
@@ -24,13 +25,14 @@ extern void yyerror (
 # ifdef ANSI_PROTOTYPES
     String		/* message */
 # endif
-) INIT_SECTION ;
+);
+
 
 extern int yylex (
 # ifdef ANSI_PROTOTYPES
     void		/* none */
 # endif
-) INIT_SECTION; 
+);
 
 END_PROTOTYPES
 
