@@ -18,8 +18,13 @@ void doNothing();
 #define is_requires_true(...) 1
 #define is_provides_true(...) 1
 
+#ifndef EOF
+#define EOF 0xFFFF
+#endif
+
 //for bison 
 #define EINTR 4
+
 
 #define BUFSIZ 8192
 
