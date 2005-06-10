@@ -1,0 +1,298 @@
+#!/usr/bin/wish
+##########################GRAPH VIEWER##################################
+# File: analyze.tk
+# Purpose: Graphical interface to view a pml analysis.
+# Requirements: 
+#	* Tcl/tk interface
+#	* Requires Tcldot - a common package of graphviz
+#		see: www.graphviz.org
+# History:
+#	* 06/09/2005 - Garrett Yoshimoto
+#		Interface infrastructure complete
+#			* Added option to select an error message
+#				* Higlight line from *.pml file
+#				* Highlight name from *.dot file (orange)
+#			* Known issues:
+#				* re-rendering a different graph causes
+#					overlay on the display
+#				* Solution: Create a method to delete
+#					all objects on the canvas
+#########################################################################
+package require Tcldot
+
+#########################################################################
+# Modify the shortName to change the default display
+#	* Must follow the form: *.pml (e.g. sample1.pml)
+#
+set defaultFile sample1.pml
+#########################################################################
+regexp {(.*).pml} $defaultFile match defaultFile
+#########################################################################
+# Input checking
+if {$argc == 1} {
+	regexp {(.*).pml} $argv match shortName
+}
+
+if ![info exists shortName] {
+	set shortName $defaultFile
+}	
+#########################################################################
+# Global variables - used to support multiple files
+set filename $shortName.pml
+set filename_ana $shortName.analysis
+set filename_dot $shortName.dot
+
+# Open a dot file and return the graphHandle
+proc openDotFile { file } {
+	set f [open $file r]
+	set g [dotread $f]
+	return $g
+}
+
+########################################################################
+# Adapted from: Practical Programming in Tcl and Tk (2003)
+# 	Creates a text button within a text widget
+proc TextButton { t start end command } {
+	global textbutton
+	if ![info exists textbutton(uid)] {
+		set textbutton(uid) 0
+	} else {
+		incr textbutton(uid)
+	}
+	set tag $t.button$textbutton(uid)
+	$t tag configure $tag -relief raised -borderwidth 2
+	if {[regexp color [winfo visual $t]]} {
+		$t tag configure $tag -foreground blue
+	} else {
+		$t tag configure $tag -background [$t cget -fg]
+		$t tag configure $tag -foreground [$t cget -bg]
+	}
+	#bind command to the tag
+	$t tag bind $tag <Button-1> $command
+	$t tag add $tag $start $end
+	#use another tag to remember the cursor
+	$t tag bind $tag <Enter> \
+		[list TextButtonChangeCursor %W $start $end tcross]
+	$t tag bind $tag <Leave> {TextButtonRestoreCursor %W}
+}
+
+proc TextButtonChangeCursor { t start end cursor } {
+	$t tag add cursor=[$t cget -cursor] $start $end
+	$t config -cursor $cursor
+}
+
+proc TextButtonRestoreCursor { t } {
+	regexp {cursor=([^ ]*)} [$t tag names] x cursor
+	$t config -cursor $cursor
+}
+##########################################################################
+
+# Insert simple text into a text widget
+proc put_text { file target } {
+	$target delete 1.0 end
+	set f [open $file r]
+	set count 1
+	while {[gets $f x] >= 0} {
+		$target insert end "$count $x\n"
+		incr count
+	}
+	catch {close $f}
+}
+
+# Insert items into a text widget while binding a link to view the error
+proc put_error_text { file target } {
+	$target delete 1.0 end
+	set f [open $file r]
+	while {[gets $f x] >= 0} {
+		set errLine [getErrorLine $x]
+		set lineStart [expr [$target index end] - 1]
+		$target insert end "view : $x"
+		set lineEnd [expr $lineStart + 0.4]
+		TextButton $target $lineStart $lineEnd "select_data .win.proc.main {$x}"
+		$target insert end "\n\n"
+	}
+	catch {close $f}
+}
+
+# Return the line of the error
+proc getErrorLine { msg } {
+	# parse the error string to get the error line
+	regexp {[^:]+:([^:]+):.*} $msg match errLine
+	return $errLine
+}
+
+# Select the proper data from the analysis output
+proc select_data { pmlMain x } {
+	global filename
+	global filename_dot
+	# highlight a line
+	set lineNo [getErrorLine $x]
+	put_text $filename $pmlMain
+	$pmlMain see $lineNo.0
+	$pmlMain tag add sel $lineNo.0 [expr $lineNo.0 + 1]
+	# change graph and re-render the variables in x
+	if [regexp {[^:]+:[^:]+: (.*) in action '(.*)' is.*} $x match resource node] {		;# grab node information
+	} else {
+		if [regexp {[^:]+:[^:]+: action '(.*)'.*} $x match node] {			;# grab node information
+		}
+	}
+	# found the resources - next find out what id the resource belongs to
+	set nodeId [getNodeId $filename_dot "$node"]
+	# check if the node wasn't found
+	if {[string equal $nodeId "error"] < 1} {
+		set c .win.graph.dotFile.c
+		set g [openDotFile $filename_dot]
+		$g setnodeattributes style "filled"
+		$g setnodeattributes color "white"
+		[$g findnode $nodeId] setattributes fontcolor "orange"
+		$g layout
+		if ([info exists debug]) {
+			puts [$g render]
+		}
+		eval [$g render $c]	;# problem clearing the canvas
+	}	
+}
+
+
+# Parse the dot file to find out what id belongs to a label
+# Returns the node ID of the label searched for - "error" if the label is not found
+proc getNodeId { dotFile node } {
+	set f [open $dotFile r]
+	while {[gets $f x] >= 0} {
+		regexp {([0-9]*) .*label="(.*)".*} $x match nodeId curLabel
+		if [info exists nodeId] {
+			if [info exists curLabel] {
+				if {[string equal $curLabel $node] > 0} {
+					catch {close $f}
+					return $nodeId
+				}
+			}
+		}
+	}
+	catch {close $f}
+	return "error"
+}
+
+# Refresh the entire display
+proc refresh_display { } {
+	global filename
+	global filename_dot
+	global filename_ana
+
+	put_text $filename .win.proc.main				;#add text to the proc window
+	put_error_text $filename_ana .win.err.main			;#add text to the error window
+	
+	render_graph							;#render the graph
+}
+
+# Render the graph
+proc render_graph { } {
+	# still need to implement a means to refresh the canvas back to blank.
+	# 	- attempts to find all id's and remove them failed
+	# 		- the objects remained on the screen
+	global filename_dot
+	
+	set c .win.graph.dotFile.c
+	set g [openDotFile $filename_dot]
+	$g setnodeattributes style "filled"
+	$g setnodeattributes color "white"
+	$g layout
+	if ([info exists debug]) {
+		puts [$g render]
+	}
+	eval [$g render $c]
+
+	tkwait visibility $c
+	set width [winfo reqwidth .win.graph.dotFile]
+	set height [winfo reqheight .win.graph.dotFile]
+	.win.graph config -scrollregion "0 0 $width $height"
+}	
+	
+
+# Create the interface
+proc main {} {
+	#toplevel window, resizable
+	toplevel .win
+	wm minsize .win 200 100
+	wm title .win "Graph viewer"
+
+	#get global variables
+	global filename
+	global filename_dot
+	global filename_ana
+
+	#frame for the original proc file
+	set f [frame .win.proc -relief ridge]
+	pack $f -fill both -side left -expand true
+	text $f.main -relief sunken -bd 2 -bg white -yscrollcommand "$f.scroll set"
+	scrollbar $f.scroll -command "$f.main yview"
+	label $f.projectTitle -text "PML Error Analysis"
+	pack $f.projectTitle -side top
+	#create a button to implement a simple entry command
+	#entry $f.e -width 30 -relief sunken
+	button $f.submit -text "Refresh Display" \
+		-command {
+			global filename
+			global filename_dot
+			global filename_ana
+			# Originally designed to allow other files to be opened
+			#	Possibly continue work later?
+			#set filename [.win.proc.e get]
+			#regexp {(.*).pml} $filename match shortName
+			#if [info exists shortName] {	;# if the file is of type *.pml, then change the globals and refresh
+			#	set filename_dot $shortName.dot
+			#	set filename_ana $shortName.analysis
+			refresh_display
+			#} else {
+			#	message .msg -justify center -text "A filename of the form *.pml must be entered \
+			#		into the field."
+			#	pack .msg
+			#}
+			}
+	pack $f.submit -side top -fill y
+	label $f.title -text "PML File:"
+	pack $f.title -side top -fill y -anchor nw
+	#end of entry command
+	pack $f.main -side left -fill y -expand true
+	pack $f.scroll -side right -fill y 
+
+	#frame for the error file
+	set error [frame .win.err]
+	pack $error -fill both -side bottom -expand true
+	label $error.title -text "Analysis file:"
+	pack $error.title -side top -anchor nw
+	text $error.main -relief sunken -bd 2 -bg white -yscrollcommand "$error.scroll set"
+	scrollbar $error.scroll -command "$error.main yview"
+	label $error.desc -text "NOTE: Error selections appear in orange on the graph"
+	pack $error.desc -side bottom -anchor sw
+	pack $error.main -side left -fill y -expand true
+	pack $error.scroll -side right -fill y 
+
+	#frame for the dot file
+	set graph [canvas .win.graph -background white -relief sunken -height 700 -width 600]
+	set f2 [frame $graph.dotFile -bg white -bd 0]
+	$graph create window 0 0 -anchor w -window $f2
+	set c [canvas $f2.c -background white -relief sunken -height 500 -width 600 \
+		-xscrollincrement 30 -yscrollincrement 30 \
+		-yscrollcommand ".win.graph.dotFile.yscroll set" \
+		-xscrollcommand ".win.graph.dotFile.xscroll set"]
+	# Note that the scrollbar is not complete - size of the image still needs to be determined to set
+	#	the scrollregion option
+	scrollbar $f2.yscroll -orient vertical \
+		-command "$c yview"
+	scrollbar $f2.xscroll -orient horizontal \
+		-command "$c xview"
+
+	pack $graph -side right -fill both -expand true
+	label $graph.title -text "Graph:" -background white
+	pack $graph.title -anchor nw
+	
+	pack $f2 -side left -fill both -expand true
+	pack $f2.yscroll -side right -fill y
+	pack $f2.xscroll -side bottom -fill x
+	pack $c -side left -fill both -expand true
+#	pack $f2 -side right -fill both -expand true
+	
+	refresh_display
+}
+main
