@@ -1,10 +1,12 @@
-<!-- $Id: pmldoc.xsl,v 1.2 2005/04/28 06:27:49 jnoll Exp $ -->
+<!-- $Id: pmldoc.xsl,v 1.3 2005/06/28 22:25:07 jnoll Exp $ -->
 <!-- Convert XPML to HTML ``Tutorial'' format. -->
 
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:exsl="http://exslt.org/common"
                 extension-element-prefixes="exsl">
+<xsl:import href="html.xsl"/>
+<xsl:import href="style.xsl"/>
 
 <xsl:output method="html" indent="yes" />
 
@@ -284,67 +286,10 @@
   </table>
 </xsl:template>
 
-<xsl:template name="style">
-   <STYLE TYPE="text/css">
-     TABLE { border: 1px solid white; }
-     H1  {  text-transform: uppercase }
-     H2 { text-transform: capitalize }
-     H3 { text-transform: capitalize }
-
-     scroll {overflow: auto; height: 100px;}
-
-
-     OL.index { list-style-type: decimal ; 
-	  list-style-position: inside; 
-     } 
-     UL.index { list-style-type: none ; list-style-position: inside} 
-     LI.index { text-transform: capitalize; }
-   </STYLE>
-</xsl:template>
 
 <xsl:template match="title|abstract" mode="index">
 </xsl:template>
 <xsl:template match="title|abstract" mode="detail">
-</xsl:template>
-
-<xsl:template match="em">
- <i><xsl:apply-templates/></i>
-</xsl:template>
-
-<xsl:template match="enum">
- <ol>
- <xsl:apply-templates/>
- </ol>
-</xsl:template>
-
-<xsl:template match="itemize">
- <ul>
- <xsl:apply-templates/>
- </ul>
-</xsl:template>
-
-<xsl:template match="item">
- <li> <xsl:apply-templates/> </li>
-</xsl:template>
-
-<xsl:template match="verb|code">
- <pre>
-<xsl:apply-templates/>
- </pre>
-</xsl:template>
-
-<xsl:template match="url">
- <a href="{@url}"><xsl:value-of select="@name"/></a>
-</xsl:template>
-
-
-
-<!-- Copy input element to output, so HTML will appear in scripts. -->
-<xsl:template match="*">
-  <xsl:element name="{name()}">
-   <xsl:apply-templates select="*|text()"/>
-  </xsl:element>
-
 </xsl:template>
 
 

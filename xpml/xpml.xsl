@@ -1,20 +1,21 @@
-<!-- $Id: xpml.xsl,v 1.1 2005/03/04 05:40:34 jnoll Exp $ -->
+<!-- $Id: xpml.xsl,v 1.2 2005/06/28 22:25:07 jnoll Exp $ -->
 <!-- Convert XPML to PML -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:import href="html.xsl"/>
 
- <xsl:strip-space elements="*"/>
- <xsl:output method="text" indent="yes" />
+<xsl:strip-space elements="*"/>
+<xsl:output method="text" indent="yes" />
 
 
- <xsl:variable name="newline">
+<xsl:variable name="newline">
 <xsl:text>
 </xsl:text>
- </xsl:variable>
+</xsl:variable>
 
- <xsl:variable name="ket">
+<xsl:variable name="ket">
 <xsl:text> }
 </xsl:text>
- </xsl:variable>
+</xsl:variable>
 
 <xsl:template match="process">
   <xsl:text>process </xsl:text>
