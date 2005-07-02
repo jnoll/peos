@@ -1,15 +1,15 @@
 # compiler:
-PMLC = ../../../compiler/pmlc
+PML_DIR=../../../pml
 CC = gcc
 
-CFLAGS = -g -Wall -I. -I.. -I../../.. -I/home/jnoll/include
+CFLAGS = -g -Wall -I. -I.. -I$(PML_DIR) -I/home/jnoll/include
 # keep track of dependencies automatically
 .KEEP_STATE:
 
 # lib
-LIBS = ../../../pml/libpml.a  -ltcl 
+LIBS =  -lpml -ltcl 
 TEST_LIBS = -lcheck $(LIBS)
-LDFLAGS = -g -L/home/jnoll/lib
+LDFLAGS = -g -L/home/jnoll/lib -L$(PML_DIR)/pml/
 
 # objects
 CORE_OBJS = action.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o tclinterp.o
@@ -92,7 +92,7 @@ tags:	$(SOURCES)
 	ctags $(SOURCES)
 
 clean:
-	-rm -f *.o core.*
+	rm -f *.o core.*
 
 reallyclean: clean
 	-rm -f $(TESTS) test_assertions test_resources test_graph \

@@ -1,15 +1,15 @@
 # compiler:
 CC = gcc 
 
-
-CFLAGS = -g -I../.. -Wall
+PML_DIR=../../pml
+CFLAGS = -g -I$(PML_DIR) -Wall
 
 # keep track of dependencies automatically
 .KEEP_STATE:
 
 # lib
 LIBRARY = libpeos.a
-LIBS = $(LIBRARY) ../../pml/libpml.a 
+LIBS = $(LIBRARY) $(PML_DIR)/pml/libpml.a 
 
 CORE_LIBS = -ltcl
 LDFLAGS = -g -L../../lib
@@ -79,7 +79,8 @@ cflow:
 	cflow -I../.. $(SOURCES) > cflow
 
 clean:
-	rm -f *.o core.*
+	rm -f *.o core.* $(LIBRARY)
+	$(MAKE) -C test clean
 
 reallyclean: clean
 	rm -f proc_table.dat proc_table.dat.xml peos shell

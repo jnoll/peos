@@ -78,10 +78,10 @@ proc_table:
 	-@$(HARNESS) $<  2>&1 |tee $@ | grep -n FAILURE || true
 
 clean:
-	-rm *.tc *.pml *.log || true
+	rm -f *.tc *.pml *.log
 
 reallyclean: clean
-	-rm  core*
+	rm -f  core*
 
 log_clean:
-	-rm *.log
+	rm -f *.log
