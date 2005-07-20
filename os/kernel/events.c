@@ -183,11 +183,11 @@ int peos_set_resource_binding(int pid, char *resource_name, char *value)
 	exit(EXIT_FAILURE);
     }
     
-    status = set_resource_binding(pid, resource_name, value);
+    status = set_resource_binding(pid, resource_name, value);    //see process_table.c
     /* update the process state */
     update_status = update_process_state(pid);
 
-    if(save_process_table() < 0) {
+    if(save_process_table() < 0) {    //see process_table.c
         fprintf(stderr, "System Error: Cannot Save Process Table\n");
 	exit(EXIT_FAILURE);
     }
@@ -272,15 +272,15 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *
 peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
 {
     peos_resource_t *resources;	
-    char *model_file = find_model_file(model);
+    char *model_file = find_model_file(model);    //see process.c
     /*
      *  No need to load and save process table as context is not 
      * accessed at all 
      * 
      */
+    //printf("model = %s\nmodel_file = %s\n", model, model_file);
+    resources =  get_resource_list(model_file,num_resources);    //see resources.c
     
-    resources =  get_resource_list(model_file,num_resources);
-
     /* No need to update process state here */
 
     return resources;

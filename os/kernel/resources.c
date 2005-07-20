@@ -265,7 +265,7 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
     Node n;
     int num_resources = 0;
     peos_resource_t *resource_list;
-    g = makegraph(model);
+    g = makegraph(model);    //see graph.c
     if(g != NULL) {	
 	resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
         for(n = g->source->next; n != NULL; n = n -> next) {

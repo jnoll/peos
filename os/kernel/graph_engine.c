@@ -12,14 +12,12 @@
 #include "process_table.h"
 #include "graph_engine.h"
 
-
 void handle_selection(Node n);
 void mark_successors(Node n, vm_act_state state);
 void add_iteration_lists(Graph g);
 void set_rendezvous_state(Node n);
 vm_act_state set_node_state (Node n, vm_act_state state);
 vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state);
-
 
 void sanitize(Graph g)
 {
@@ -28,8 +26,6 @@ void sanitize(Graph g)
 	sanitize_node(n);
     }
 }
-
-
 
 /* 
  * Find Iteration begin and End Nodes. If the node is a beginning of an 
@@ -154,7 +150,6 @@ void add_super_node_lists(Graph g)
 	}
     }
 }
-				    
 
 /*
  * When a action gets set to run, it has to be checked if that action is 
@@ -163,7 +158,6 @@ void add_super_node_lists(Graph g)
  * to do this recursively, because there can be iterations within iterations.
  *
  */
-
 
 void set_iter_none(Node n, Node original)
 {
@@ -292,7 +286,6 @@ void mark_successors(Node n, vm_act_state state)
  *
  */
 
-
 void propogate_join_done(Node n, vm_act_state state_set)
 {
     int i;
@@ -309,7 +302,6 @@ void propogate_join_done(Node n, vm_act_state state_set)
     else
         return;
 }
-		
 
 /*
  * 
@@ -346,8 +338,6 @@ void set_rendezvous_state(Node n)
     else
         return;
 }
-
-
 
 void set_process_state(Graph g)
 {
@@ -388,8 +378,6 @@ void make_other_run_suspend(Graph g, char *act_name)
 	}
     }
 }    
- 
-				     
 
 int action_run(Graph g, char *act_name)
 {
@@ -493,7 +481,6 @@ vm_exit_code action_done(Graph g, char *act_name)
     }
     else
         return VM_CONTINUE;
- 
 }
 
 char *get_script_graph(Graph g, char *action_name)
@@ -525,8 +512,6 @@ vm_act_state get_act_state_graph(int pid, char *act_name)
     else
         return -1;	    
 }
-	
-
 
 void initialize_graph(Graph g, int pid)
 {
@@ -552,7 +537,6 @@ void initialize_graph(Graph g, int pid)
     sanitize(g); /* sanitize markers */
     mark_successors(g->source->next,ACT_READY);
 }
-
 
 vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event event)
 {
@@ -600,7 +584,6 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
     else
         return VM_INTERNAL_ERROR;
 }
-
 
 vm_act_state set_node_state(Node n, vm_act_state state)
 {
@@ -685,7 +668,6 @@ vm_exit_code update_process_state(int pid)
     }
     return VM_CONTINUE;
 }
-	
 
 vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
 {
@@ -719,7 +701,6 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
                                                                 
     return exit_status;
 }
-
 
 vm_exit_code set_act_state_graph(Graph g, char *action, vm_act_state state)
 {

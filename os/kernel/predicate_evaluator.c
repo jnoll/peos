@@ -39,16 +39,41 @@ extern char *act_state_name(vm_act_state state);
 
 void to(int i){
 	switch(i){
-	    case DOT:fprintf(pe_log," DOT "); break;
-	    case EQ: fprintf(pe_log," EQ "); break;
-	    case NE: fprintf(pe_log," NE "); break;
-	    case GE: fprintf(pe_log," GE "); break;
-	    case LE: fprintf(pe_log," LE "); break;
-	    case LT: fprintf(pe_log," LT "); break;
-	    case GT: fprintf(pe_log," GT "); break;
+	    case DOT:fprintf(pe_log," DOT "); break;    // .
+	    case EQ: fprintf(pe_log," EQ "); break;     // ==
+	    case NE: fprintf(pe_log," NE "); break;     // !=
+	    case GE: fprintf(pe_log," GE "); break;     // >=
+	    case LE: fprintf(pe_log," LE "); break;     // <=
+	    case LT: fprintf(pe_log," LT "); break;     // <
+	    case GT: fprintf(pe_log," GT "); break;     // >
 	    default: fprintf(pe_log," default "); break;
 	}
 }
+//begin koranin
+/*int evalulate_predicate(char* tcl_file, char* args)
+{
+    peos_tcl* interpreter
+    char* result_str = NULL;
+    int return_val = 0;
+    
+    if(peos_tcl_start(&interpreter)==TCL_ERROR){
+        fprintf(pe_log,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
+        return 0;
+    }
+    if(!result_str){
+        result_str = (char*)malloc(sizeof(char)*(255));
+    }
+    peos_tcl_script(interpreter, "tclf_exists.tcl");
+    Tcl_Eval(interpreter->interp, args);
+    if(result_str) free (result_str);
+    if(args) free (args);
+    if(!strcmp ("1", interpreter->interp->result))
+        return_val = 1;
+    peos_tcl_delete(interpreter);
+    return return_val;
+}*/
+//end koranin
+
 int pe_file_exists(char* filename)
 {
 	peos_tcl* interpreter;

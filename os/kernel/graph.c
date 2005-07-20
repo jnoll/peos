@@ -26,14 +26,14 @@ Graph makegraph(char *file)
     lineno = 1;
     yyin = NULL;
     yyin = fopen(filename, "r");
-	
+
     program = NULL;
     if (yyin) {
 	/* In case the previous invocation of makegraph() ended mid-stream
 	 * due to error, restart the lexer to flush old input. 
 	 */
-	yyrestart(yyin);	
-	yyparse();
+	yyrestart(yyin);
+	yyparse();    //see /pml/parser.c
 	fclose(yyin);
     }
 

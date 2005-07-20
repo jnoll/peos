@@ -19,16 +19,130 @@
 #include "graph_engine.h"
 #include "process.h"
 
+/* begin koranin */
+#include <tcl.h>
+#define MAX_LINE 40
+/* return a string with trimed leading and/or trailing white space characters */
+char* trim(char* string) {
+    int i;
+    while (string != '\0' && isspace(*string)) {
+        ++string;
+    }
 
+    if (string == NULL)
+        return NULL;
 
-int create_process(char *model)
+    // trim right white spaces
+    for (i = strlen(string) - 1; isspace(*(string + i)); i--)
+        *(string + i) = '\0';
+
+    printf("trim = \"%s\"\n", string);
+    return string;
+}
+
+char* subs__res_var(char* var_file, char* res_value)
+{
+/*
+	Tcl_Interp *myinterp;
+	char *action = "set a [expr 5 * 8]";//; expr $a";
+	int status;
+
+	printf ("Your Program will run ... \n");
+
+	myinterp = Tcl_CreateInterp();
+	status = Tcl_Eval(myinterp,action);
+        status = Tcl_Eval(myinterp,"expr $a sup");
+
+	printf ("Your Program has completed %s\n", myinterp->result);
+*/
+    FILE* stream;
+    char* var_name;
+    char* var_value;
+    char line[MAX_LINE];
+    Tcl_Interp* interp;
+    char* action;
+    char* stmt;
+    int first = 1;
+    //int status;
+
+    action=(char*)malloc(500);
+    stmt=(char*)malloc(50);
+    
+    if ((stream=fopen(var_file, "r")) == NULL) {
+        printf("%s file doesn't exists\n", var_file);
+        exit(1);
+    }
+
+    printf("\"%s\" file opened\n", var_file);
+
+    while (fgets(line, MAX_LINE, stream) != NULL) {
+
+        var_name = trim(strtok(line, ":"));
+        var_value = trim(strtok(NULL, ":"));
+        
+        //if (!first)
+        //    action = strcat(action, "; ");
+        sprintf(stmt, "set %s \"%s\"; ", var_name, var_value);
+
+	printf("stmt = %s\n", stmt);
+
+        if (first)
+        {
+            action = strcpy(action, stmt);
+            first = 0;
+        }
+        else
+            action = strcat(action, stmt);
+
+    }
+    fclose(stream);
+
+    sprintf(stmt, "set result \"%s\"", res_value);
+    action = strcat(action, stmt);
+    printf("action = %s\n", action);
+    interp = Tcl_CreateInterp();
+    Tcl_Eval(interp, action);
+    printf("RESOURCE VALUE = <%s>\n", interp->result);
+    return interp->result;
+}
+
+/* set resource values from the resource file (xxx.res) */
+void bind_resources_value(int pid, char* res_file, char* var_file) {
+
+    FILE* stream;
+    char* res_name;
+    char* res_value;
+    //int i;
+    char line[MAX_LINE];
+    if ((stream = fopen(res_file,"r")) == NULL) {
+        printf("%s file doesn't exists\n", res_file);
+        exit(1);
+    }
+    
+    if(update_state() < 0) {
+        fprintf(stderr, "Could not update process state\n");
+        exit(EXIT_FAILURE);
+    }
+
+    while (fgets(line, MAX_LINE, stream) != NULL) {
+        res_name = trim(strtok(line, ":"));
+        res_value = trim(strtok(NULL, ":"));
+        if (peos_set_resource_binding(pid, res_name, subs__res_var(var_file, res_value)) < 0) {    //see events.c
+            fprintf(stderr, "Could not bind resources");
+            exit(EXIT_FAILURE);
+        }
+    }
+    fclose(stream);
+}
+
+/*int create_process_ret_pid(char *model)
 {
     int pid;
     int i;
     int num_resources;
     peos_resource_t *resources;
 
-    resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
+    resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);    //see events.c
 
     if (resources == NULL) {
         printf("error getting resources\n");
@@ -47,7 +161,38 @@ int create_process(char *model)
     } 
     else {
 	printf("Created pid = %d\n", pid);
-	
+	return pid;
+    }
+}*/
+
+/* end koranin */
+
+int create_process(char *model)
+{
+    int pid;
+    int i;
+    int num_resources;
+    peos_resource_t *resources;
+
+    resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);    //see events.c
+
+    if (resources == NULL) {
+        printf("error getting resources\n");
+	return -1;
+    }
+    
+    for(i = 0; i < num_resources; i++) {
+	strcpy(resources[i].value, "$$");
+    }
+    
+    printf("Executing %s:\n", model);
+    
+    if ((pid = peos_run(model,resources,num_resources)) < 0) {    //see events.c
+	printf("couldn't create process\n");
+	return -1;
+    } 
+    else {
+	printf("Created pid = %d\n", pid);
 	return 1;
     }
 }
@@ -155,46 +300,88 @@ main (int argc, char **argv)
     char *model;
     int l = 0; /* l == 1 iff login option is passed */
     char *login = "proc_table"; /* default login name */
+    //int b = 0; /* b == 1 iff binding option exists */
+    char *res_file;
+    char *var_file;
     opterr = 0;
     system ("echo '#######################################################################' >  pelog");
     system ("echo '###################   PREDICATE EVALUATOR DEBUG LOG    ################' >> pelog");
     system ("echo '#######################################################################' >> pelog");
-    while ((c = getopt (argc, argv, "+c:n:ihr:d:ul:")) != -1) {
+
+    while ((c = getopt (argc, argv, "+c:n:ihrb:d:ul:")) != -1) {
         switch (c) {
             case 'l': {
 	                  l = 1;
                           login = strdup(optarg);
                           break;
 		      }
-	            		      
             case 'c': {
-			   if(l == 0) {   
-		               if(argc != 3) {
-		                   fprintf(stderr, "Usage: peos -c process_file\n");
-	                           exit(EXIT_FAILURE);
-	                       }
-			       else {
-			           model = argv[2];
-			       }
-			   }
-			   else {
-			       if(argc !=5) {
-		                   fprintf(stderr, "Usage: peos -l login_name -c process_file\n");
-	                           exit(EXIT_FAILURE);
-			       }
-			       else {
-                                   model = argv[4];
-			       }
-			   }
-			   set_login_name(login);
-			   if(create_process(model) < 0) {
-			       fprintf(stderr, "Could not Create Process\n");
-			       exit(EXIT_FAILURE);
-			   }
-			   else return 1;
-		           break;
+                          if (l == 0) {
+                              if (argc != 3) {
+                                  fprintf(stderr, "Usage: peos -c process_file\n");
+                                  exit(EXIT_FAILURE);
+                              }
+                              model = argv[2];
+                          }
+                          else {
+                              if (argc != 5) {
+                                  fprintf(stderr, "Usage: peos -c process_file\n");
+                                  exit(EXIT_FAILURE);
+                              }
+                              model = argv[4];
+                          }
+                          
+                          set_login_name(login);
+                          if (create_process(model) != 1) {
+                              fprintf(stderr, "Could not Create Process\n");
+			      exit(EXIT_FAILURE);
+			  }
+                          /*if (getopt(argc, argv, "b") == 'b')
+                              b = 1;
+
+                          if (l == 0) {
+                              if (argc == 3) {
+                                  model = argv[2];
+                              }
+                              else if (argc == 5 && b) {
+                                  model = argv[2];
+                                  res_file = argv[4];
+                              }
+                              else {
+                                  if (b)
+                                      fprintf(stderr, "Usage: peos -c process_file -b resource_file\n");
+                                  else
+                                      fprintf(stderr, "Usage: peos -c process_file\n");
+                                  exit(EXIT_FAILURE);
+                              }
+                          }
+                          else {
+                              if (argc == 5) {
+                                  model = argv[4];
+                              }
+                              else if (argc == 7 && b) {
+                                  model = argv[4];
+                                  res_file = argv[6];
+                              }
+                              else {
+                                  if (b)
+                                      fprintf(stderr, "Usage: peos -l login_name -c process_file -b resource_file\n");
+                                  else
+                                      fprintf(stderr, "Usage: peos -l login_name -c process_file\n");
+	                          exit(EXIT_FAILURE);
+                              }
+                          }
+                          set_login_name(login);
+                          if((pid = create_process_ret_pid(model)) < 0) {
+                              fprintf(stderr, "Could not Create Process\n");
+			      exit(EXIT_FAILURE);
+			  }
+			  if (b)
+			  {
+			      bind_resources_value(pid, res_file);
+			  }*/
+			  return 1;
 		      }
-		      
            case 'n': {
 			 if(l == 0) {    
 		             if(argc != 5) {
@@ -283,7 +470,7 @@ main (int argc, char **argv)
 			   }
 		       }
 		       set_login_name(login);
-		       if(peos_set_resource_binding(pid, res_name, res_val) < 0) {
+		       if(peos_set_resource_binding(pid, res_name, res_val) < 0) {    //see events.c
 		           fprintf(stderr, "Could not bind resources");
 		           exit(EXIT_FAILURE);
 		       }
@@ -291,7 +478,34 @@ main (int argc, char **argv)
 		       		   
                        break;
                    }
-		   
+         case 'b': {
+                       if(l == 0) {
+                           if (argc != 4 && argc != 5) {
+		               fprintf(stderr, "Usage: peos -b pid resource_file [variable_file]\n");
+			       exit(EXIT_FAILURE);
+		           }
+			   else {
+			       pid = atoi(argv[2]);
+                               res_file = argv[3];
+                               var_file = (argc == 5) ? argv[4] : NULL;
+			   }
+		       }
+		       else {
+		           if(argc != 6 && argc != 7) {
+		               fprintf(stderr, "Usage: peos -l login_name -b pid resource_file [variable_file]\n");
+			       exit(EXIT_FAILURE);
+		           }
+			   else {
+                               pid = atoi(argv[4]);
+			       res_file = argv[5];
+			       var_file = (argc == 7) ? argv[6] : NULL;
+			   }
+		       }
+		       set_login_name(login);
+		       bind_resources_value(pid, res_file, var_file);
+	               return 1;
+                       break;
+                   }
 	 case 'd': {
 		       if(l == 0) {	   
                            if(argc != 3) {
@@ -352,11 +566,13 @@ main (int argc, char **argv)
 	               printf("To update states of all processes (daemon simulation): peos [-l login_name] -u \n");
 	               printf("To get a list of instances: peos [-l login_name] -i\n");
 		       printf("To bind resources: peos [-l login_name] -r pid resource_name resource_value\n");
+		       printf("To bind resources for resource file: peos [-l login_name] -b resource_file\n");
 		       printf("To delete a process: peos [-l login_name] -d pid\n");
 	               printf("To get help: peos -h\n");
 		       break;
 		   }	       
-         
+        
+
 	 case '?': {
                        if (isprint (optopt))
                            fprintf (stderr, "Unknown option `-%c'.Please use peos -h for help.\n", optopt);
