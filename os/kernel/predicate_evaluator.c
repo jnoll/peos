@@ -49,32 +49,8 @@ void to(int i){
 	    default: fprintf(pe_log," default "); break;
 	}
 }
-//begin koranin
-/*int evalulate_predicate(char* tcl_file, char* args)
-{
-    peos_tcl* interpreter
-    char* result_str = NULL;
-    int return_val = 0;
-    
-    if(peos_tcl_start(&interpreter)==TCL_ERROR){
-        fprintf(pe_log,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-        return 0;
-    }
-    if(!result_str){
-        result_str = (char*)malloc(sizeof(char)*(255));
-    }
-    peos_tcl_script(interpreter, "tclf_exists.tcl");
-    Tcl_Eval(interpreter->interp, args);
-    if(result_str) free (result_str);
-    if(args) free (args);
-    if(!strcmp ("1", interpreter->interp->result))
-        return_val = 1;
-    peos_tcl_delete(interpreter);
-    return return_val;
-}*/
-//end koranin
 
-int pe_file_exists(char* filename)
+/*int pe_file_exists(char* filename)
 {
 	peos_tcl* interpreter;
 	char* result_str=NULL;
@@ -161,7 +137,6 @@ int pe_byname(char* func_name, char* argument)
 	peos_tcl_delete(interpreter);
 	fprintf(pe,"RETURN pe_byname %d\n", return_val);
 	return return_val;
-	
 }
 
 int pe_isdirempty(char* path)
@@ -206,7 +181,6 @@ int pe_isdirempty(char* path)
 #endif
 	return result;
 }
-
 
 int pe_timestamp(char* file1, char*file2)
 {
@@ -355,7 +329,7 @@ int pe_file_size(char* filename)
 	return return_val;
 	
 }
-
+*/
 
 char* pe_get_resval(int pid,char* resource_name)
 {
@@ -410,6 +384,108 @@ char* pe_get_resval(int pid,char* resource_name)
 	
 }
 
+int get_eval_result(char* pml_file, char* pml_procedure, char* resource_file)
+{
+    Tcl_Interp* interp;
+    char* action;
+    char* result;
+
+    action = (char*)malloc(strlen(pml_procedure) + strlen(resource_file) + 2);
+    sprintf(action, "%s %s", pml_procedure, resource_file);
+
+    interp = Tcl_CreateInterp();
+    Tcl_EvalFile(interp, pml_file);
+    if (Tcl_Eval(interp, action) == TCL_ERROR) {
+        printf("%s\n", interp->result);
+        return 0;
+    }
+    result = (char*)malloc(strlen(interp->result) + 1);
+    strcpy(result, interp->result);
+    Tcl_DeleteInterp(interp);
+    //printf("PROCEDURE = \"%s\" RESOURCE = \"%s\" EVAL RESULT = \"%s\"\n", pml_procedure, resource_file, result);
+    return  atoi(result);
+}
+
+void print_op(int i){
+	switch(i){
+	    case DOT:printf("."); break;    // .
+	    case EQ: printf("=="); break;     // ==
+	    case NE: printf("!="); break;     // !=
+	    case GE: printf(">="); break;     // >=
+	    case LE: printf("<="); break;     // <=
+	    case LT: printf("<"); break;     // <
+	    case GT: printf(">"); break;     // >
+	    default: printf("default"); break;
+	}
+}
+
+void print_tree(Tree t)
+{
+    if (!t)
+        return;
+    if (IS_ID_TREE(t))
+        printf("<%s>", TREE_ID(t));
+    else if (IS_OP_TREE(t))
+    {
+        printf("[");
+        print_op(TREE_OP(t));//printf("[%d]", TREE_OP(t));
+        printf("]");
+        printf("(");  print_tree(t->left);
+        printf(",");
+        print_tree(t->right);  printf(")");
+    }
+}
+
+int pe_perform_predicate_eval(char* pml_file, int pid, Tree t)
+{
+    if (!t)
+        return 0;
+    //printf("in pe_perform_predicate_eval"); print_tree(t);printf("\n");
+
+    if (IS_ID_TREE(t)) {  //printf("id tree = %s\n", TREE_ID(t));
+        if (strlen(TREE_ID(t)) > 0 && TREE_ID(t)[0] == '\"') {
+            if (!strcmp(TREE_ID(t), "\"True\"") ||
+                !strcmp(TREE_ID(t), "\"Passed\"") ||
+                !strcmp(TREE_ID(t), "\"1\"")) {
+                    //printf("Me 1\n");
+                    return 1;	
+            }else if(!strcmp(TREE_ID(t), "\"False\"") ||
+                     !strcmp(TREE_ID(t), "\"Failed\"") ||
+                     !strcmp(TREE_ID(t), "\"0\"")) {
+                    //printf("Me 0\n");
+                    return 0;
+            }
+        }
+        return get_eval_result(pml_file, "exists", pe_get_resval(pid, TREE_ID(t)));
+    } else if (IS_OP_TREE(t)) {  //printf("op tree = "); print_op(TREE_OP(t)); printf("\n");
+        switch (TREE_OP(t)) {
+            case DOT:
+                //printf("%s.%s\n", TREE_ID(t->left), TREE_ID(t->right));
+                return get_eval_result(pml_file, TREE_ID(t->right), pe_get_resval(pid, TREE_ID(t->left)));
+            case EQ:
+               //printf("EQ enter\n");
+                //printf("%d == %d\n", pe_perform_predicate_eval(pml_file, pid, t->left), pe_perform_predicate_eval(pml_file, pid, t->right));
+                return (pe_perform_predicate_eval(pml_file, pid, t->left) == pe_perform_predicate_eval(pml_file, pid, t->right)) ? 1 : 0;
+            case NE:
+                //printf("%d != %d", pe_perform_predicate_eval(pml_file, pid, t->left), pe_perform_predicate_eval(pml_file, pid, t->right));
+                return pe_perform_predicate_eval(pml_file, pid, t->left) != pe_perform_predicate_eval(pml_file, pid, t->right);
+            case GE:
+                //printf("%d >= %d", pe_perform_predicate_eval(pml_file, pid, t->left), pe_perform_predicate_eval(pml_file, pid, t->right));
+                return pe_perform_predicate_eval(pml_file, pid, t->left) >= pe_perform_predicate_eval(pml_file, pid, t->right);
+            case LE:
+                return pe_perform_predicate_eval(pml_file, pid, t->left) <= pe_perform_predicate_eval(pml_file, pid, t->right);
+            case LT:
+                return pe_perform_predicate_eval(pml_file, pid, t->left) < pe_perform_predicate_eval(pml_file, pid, t->right);
+            case GT:
+                return pe_perform_predicate_eval(pml_file, pid, t->left) > pe_perform_predicate_eval(pml_file, pid, t->right);
+            case AND:
+                return pe_perform_predicate_eval(pml_file, pid, t->left) && pe_perform_predicate_eval(pml_file, pid, t->right);
+            case OR:
+                return pe_perform_predicate_eval(pml_file, pid, t->left) || pe_perform_predicate_eval(pml_file, pid, t->right);
+        }
+    }
+}
+
 
 /****************************************************************
 *  Purpose: Make sure the tree is valid, only then pass it to 
@@ -418,6 +494,7 @@ char* pe_get_resval(int pid,char* resource_name)
 *  Precondition: tree (for now, non-TCL)
 *  Postcondition: if the tree is valid, result is displayed.
 ****************************************************************/
+/*
 int pe_perform_predicate_eval(int pid, Tree t)
 {
 #ifdef PE_LOG
@@ -498,10 +575,23 @@ int pe_perform_predicate_eval(int pid, Tree t)
 	}
 	return 0;
 }
-	
+*/	
 
+/*int
+pe_make_resource_list(int pid , Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier)
+{
+    printf("in pe_make_resource_list");
+    print_tree(t);
+    printf("\n");
 
-
+    int result;
+    if (!t)
+        return 0;
+    result = pe_perform_predicate_eval("/home/ksuwanna/peos/src/os/kernel/peos_init.tcl", pid, t);
+    printf("in pe_make_resource_list result = '%d'\n", result);
+    return result;
+}*/
+/*
 int
 pe_make_resource_list(int pid , Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier)
 {
@@ -515,7 +605,7 @@ pe_make_resource_list(int pid , Tree t, peos_resource_t **rlist, int *num_resour
 #endif
     if(t) {
 	if (IS_OP_TREE(t)) {
-	    switch TREE_OP(t) { 
+	    switch TREE_OP(t) {
 	    case DOT: 
 #ifdef PE_DEBUG
 	    if(!fnd)fprintf(pe_log,"\nn-  - - - - DOT treeIdLeft:%s treeIdRight:%s\n",TREE_ID(t->left),TREE_ID(t->right));
@@ -614,8 +704,8 @@ eval_result = (eval_result && pe_make_resource_list(pid, t->right, &resource_lis
     *rlist = resource_list;
     return eval_result;
 }
-
-int
+*/
+/*int
 pe_get_resource_list_action_requires(int pid, char *act_name, int
 		*total_resources, int t)
 {
@@ -629,13 +719,13 @@ pe_get_resource_list_action_requires(int pid, char *act_name, int
 	if(!result_str){
 		result_str = (char*)malloc(sizeof(char)*(255));
 	}
-	g = context -> process_graph;   
+	g = context -> process_graph;
 	if(g != NULL) {
 		n = find_node(g,act_name);
 		if(n == NULL) {
 			fprintf(stderr,"get_resource_list_action :cannot find action");
 			return 0;
-			}
+		}
 	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 	if(t == PE_RESOURCE_REQUIRES)
 		return pe_make_resource_list(pid, n -> requires, &act_resources, &num_resources, &rsize, "\0");
@@ -651,8 +741,37 @@ int pe_is_requires_eval_true(int pid, char *act_name, int t)
 {
     int num_resources;
     return  pe_get_resource_list_action_requires(pid,act_name,&num_resources, t);  
-}
+}*/
 
+int pe_is_requires_eval_true(int pid, char *act_name, int t)
+{
+    Node n;
+    peos_context_t *context = peos_get_context(pid);
+    Graph g = context -> process_graph;
+    int result = 0;
+
+    if(g == NULL)
+        return 0;
+
+    n = find_node(g,act_name);
+    if(n == NULL) {
+        fprintf(stderr,"get_resource_list_action :cannot find action");
+        return 0;
+    }
+
+    if(t == PE_RESOURCE_REQUIRES)
+    {
+        result = pe_perform_predicate_eval("/home/ksuwanna/peos/src/os/kernel/peos_init.tcl", pid, n->requires);
+        //printf("requires tree = "); print_tree(n->requires);  printf("\n");
+    }
+    else if (t == PE_RESOURCE_PROVIDES)
+    {
+        result = pe_perform_predicate_eval("/home/ksuwanna/peos/src/os/kernel/peos_init.tcl", pid, n->provides);
+        //printf("privides tree = "); print_tree(n->provides);  printf("\n");
+    }
+    //printf ("    pe_is_requires_eval_true = '%d'\n", result);
+    return result;
+}
 
 int is_requires_true_old(int pid, char *act_name)
 {
@@ -685,7 +804,6 @@ int is_requires_true_old(int pid, char *act_name)
 	}
         return 1;
     }
-     
 }
 int is_provides_true_old(int pid, char *act_name)
 {

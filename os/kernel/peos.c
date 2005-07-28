@@ -36,25 +36,12 @@ char* trim(char* string) {
     for (i = strlen(string) - 1; isspace(*(string + i)); i--)
         *(string + i) = '\0';
 
-    printf("trim = \"%s\"\n", string);
+    //printf("trim = \"%s\"\n", string);
     return string;
 }
 
 char* subs__res_var(char* var_file, char* res_value)
 {
-/*
-	Tcl_Interp *myinterp;
-	char *action = "set a [expr 5 * 8]";//; expr $a";
-	int status;
-
-	printf ("Your Program will run ... \n");
-
-	myinterp = Tcl_CreateInterp();
-	status = Tcl_Eval(myinterp,action);
-        status = Tcl_Eval(myinterp,"expr $a sup");
-
-	printf ("Your Program has completed %s\n", myinterp->result);
-*/
     FILE* stream;
     char* var_name;
     char* var_value;
@@ -63,10 +50,11 @@ char* subs__res_var(char* var_file, char* res_value)
     char* action;
     char* stmt;
     int first = 1;
+    char* result;
     //int status;
 
     action=(char*)malloc(500);
-    stmt=(char*)malloc(50);
+    stmt=(char*)malloc(100);
     
     if ((stream=fopen(var_file, "r")) == NULL) {
         printf("%s file doesn't exists\n", var_file);
@@ -79,9 +67,6 @@ char* subs__res_var(char* var_file, char* res_value)
 
         var_name = trim(strtok(line, ":"));
         var_value = trim(strtok(NULL, ":"));
-        
-        //if (!first)
-        //    action = strcat(action, "; ");
         sprintf(stmt, "set %s \"%s\"; ", var_name, var_value);
 
 	printf("stmt = %s\n", stmt);
@@ -102,8 +87,11 @@ char* subs__res_var(char* var_file, char* res_value)
     printf("action = %s\n", action);
     interp = Tcl_CreateInterp();
     Tcl_Eval(interp, action);
-    printf("RESOURCE VALUE = <%s>\n", interp->result);
-    return interp->result;
+    result = (char*)malloc(strlen(interp->result) + 1);
+    strcpy(result, interp->result);
+    Tcl_DeleteInterp(interp);
+    printf("RESOURCE VALUE = <%s>\n", result);
+    return result;
 }
 
 /* set resource values from the resource file (xxx.res) */
@@ -127,7 +115,11 @@ void bind_resources_value(int pid, char* res_file, char* var_file) {
     while (fgets(line, MAX_LINE, stream) != NULL) {
         res_name = trim(strtok(line, ":"));
         res_value = trim(strtok(NULL, ":"));
-        if (peos_set_resource_binding(pid, res_name, subs__res_var(var_file, res_value)) < 0) {    //see events.c
+
+        if (var_file != NULL)
+            res_value = subs__res_var(var_file, res_value);
+
+        if (peos_set_resource_binding(pid, res_name, res_value) < 0) {    //see events.c
             fprintf(stderr, "Could not bind resources");
             exit(EXIT_FAILURE);
         }
