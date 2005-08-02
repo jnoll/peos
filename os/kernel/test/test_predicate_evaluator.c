@@ -199,6 +199,7 @@ END_TEST
 
 START_TEST(test_pe_file_exists)
 {
+    //fail_unless(0, "exists");
     /*
     fail_unless(pe_file_exists("file_that_doesnt_exist")==0
     , "pe_file_exists returned 1 with non-existent filename");
