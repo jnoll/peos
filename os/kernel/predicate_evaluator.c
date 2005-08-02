@@ -526,14 +526,14 @@ int pe_perform_predicate_eval(char* pml_file, int pid, Tree t)
                     return 0;
         }
         
-        printf("no dot -> %s\n", pe_get_resval(pid, TREE_ID(t)));
+        //printf("no dot -> %s\n", pe_get_resval(pid, TREE_ID(t)));
         
         return (int) get_eval_result(pml_file, "default", pe_get_resval(pid, TREE_ID(t)));
     } else if (IS_OP_TREE(t)) {  //support just binary operator
         switch (TREE_OP(t)) {
             case DOT:
             
-            printf("dot -> %s\n", pe_get_resval(pid, TREE_ID(t->left)));
+            //printf("dot -> %s\n", pe_get_resval(pid, TREE_ID(t->left)));
             
                 return get_eval_result(pml_file, TREE_ID(t->right), pe_get_resval(pid, TREE_ID(t->left)));
             case EQ:

@@ -1,10 +1,14 @@
+proc default { path } {
+    exists $path
+}
+
 proc exists { path } {
     expr { [file exists $path] }
 }
 
-proc filecount { pathname } {
+proc filecount { path } {
        set i 0
-       foreach f [exec ls $pathname] {
+       foreach f [exec ls $path] {
 	  set i [expr $i + 1] 
        }
        expr $i 
@@ -19,7 +23,7 @@ proc filesize { path } {
 #    expr { [exec spell $filename] }
 #}
 
-#proc timestamp { path } {
-#    file stat $path stat
-#    expr { $stat(mtime) }
-#}
+proc timestamp { path } {
+    file stat $path stat
+    expr { $stat(mtime) }
+}
