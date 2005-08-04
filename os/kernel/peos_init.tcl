@@ -3,7 +3,7 @@ proc default { path } {
 }
 
 proc exists { path } {
-    expr { [file exists $path] }
+    expr [file exists $path]
 }
 
 proc filecount { path } {
@@ -11,19 +11,21 @@ proc filecount { path } {
        foreach f [exec ls $path] {
 	  set i [expr $i + 1] 
        }
-       expr $i 
+       expr $i
 }
 
 proc filesize { path } {
-    file stat $path fstat
-    expr { $fstat(size) }
+    expr [file size $path]
 }
 
-#proc tclf_spellcheck { filename } {
-#    expr { [exec spell $filename] }
-#}
-
 proc timestamp { path } {
-    file stat $path stat
-    expr { $stat(mtime) }
+    expr [file mtime $path]
+}
+
+proc misspellcount { path } {
+    set i 0
+    foreach f [exec spell $path] {
+        set i [expr $i + 1]
+    }
+    expr $i
 }

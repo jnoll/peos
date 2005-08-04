@@ -25,6 +25,8 @@
 /* return a string with trimed leading and/or trailing white space characters */
 char* trim(char* string) {
     int i;
+    char* result;
+
     while (string != '\0' && isspace(*string)) {
         ++string;
     }
@@ -36,10 +38,11 @@ char* trim(char* string) {
     for (i = strlen(string) - 1; isspace(*(string + i)); i--)
         *(string + i) = '\0';
 
-    //printf("trim = \"%s\"\n", string);
-    return string;
+    result = strdup(string);
+    strcpy(result, string);
+    return result;
 }
-
+/*
 char* subs__res_var(char* var_file, char* res_value)
 {
     FILE* stream;
@@ -64,9 +67,12 @@ char* subs__res_var(char* var_file, char* res_value)
     printf("\"%s\" file opened\n", var_file);
 
     while (fgets(line, MAX_LINE, stream) != NULL) {
-
+    
         var_name = trim(strtok(line, ":"));
         var_value = trim(strtok(NULL, ":"));
+	
+	//(void) Tcl_SetVar(interp, var_name, var_value, 0);
+        
         sprintf(stmt, "set %s \"%s\"; ", var_name, var_value);
 
 	printf("stmt = %s\n", stmt);
@@ -94,7 +100,7 @@ char* subs__res_var(char* var_file, char* res_value)
     return result;
 }
 
-/* set resource values from the resource file (xxx.res) */
+// set resource values from the resource file (xxx.res)
 void bind_resources_value(int pid, char* res_file, char* var_file) {
 
     FILE* stream;
@@ -125,37 +131,36 @@ void bind_resources_value(int pid, char* res_file, char* var_file) {
         }
     }
     fclose(stream);
-}
-
-/*int create_process_ret_pid(char *model)
-{
-    int pid;
-    int i;
-    int num_resources;
-    peos_resource_t *resources;
-
-    resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);    //see events.c
-
-    if (resources == NULL) {
-        printf("error getting resources\n");
-	return -1;
-    }
-    
-    for(i = 0; i < num_resources; i++) {
-	strcpy(resources[i].value, "$$");
-    }
-    
-    printf("Executing %s:\n", model);
-    
-    if ((pid = peos_run(model,resources,num_resources)) < 0) {
-	printf("couldn't create process\n");
-	return -1;
-    } 
-    else {
-	printf("Created pid = %d\n", pid);
-	return pid;
-    }
 }*/
+
+void bind_resources_value(int pid, char* res_file) {
+
+    FILE* stream;
+    char* res_name;
+    char* res_value;
+    //int i;
+    char line[MAX_LINE];
+    if ((stream = fopen(res_file,"r")) == NULL) {
+        printf("%s file doesn't exists\n", res_file);
+        exit(1);
+    }
+
+    if(update_state() < 0) {
+        fprintf(stderr, "Could not update process state\n");
+        exit(EXIT_FAILURE);
+    }
+
+    while (fgets(line, MAX_LINE, stream) != NULL) {
+        res_name = trim(strtok(line, ":"));
+        res_value = trim(strtok(NULL, ":"));
+
+        if (peos_set_resource_binding(pid, res_name, res_value) < 0) {    //see events.c
+            fprintf(stderr, "Could not bind resources");
+            exit(EXIT_FAILURE);
+        }
+    }
+    fclose(stream);
+}
 
 /* end koranin */
 
@@ -276,6 +281,14 @@ void set_login_name(char *loginname)
 }
 
 
+void replace_char(char* string, char old, char new) {
+    int i;
+    int len = strlen(string);
+    for (i = 0; i < len; i++) {
+        if (string[i] == old)
+        string[i] = new;
+    }
+}
 
 #ifndef PALM
 /* stub out main because PalmPilot will not use command line interpreter */
@@ -294,7 +307,7 @@ main (int argc, char **argv)
     char *login = "proc_table"; /* default login name */
     //int b = 0; /* b == 1 iff binding option exists */
     char *res_file;
-    char *var_file;
+    //char *var_file;
     opterr = 0;
     system ("echo '#######################################################################' >  pelog");
     system ("echo '###################   PREDICATE EVALUATOR DEBUG LOG    ################' >> pelog");
@@ -375,7 +388,7 @@ main (int argc, char **argv)
 			  return 1;
 		      }
            case 'n': {
-			 if(l == 0) {    
+			 if(l == 0) {
 		             if(argc != 5) {
 		                 fprintf(stderr, "Usage: peos -n pid act_name start|finish|suspend|abort\n");
 	                         exit(EXIT_FAILURE);
@@ -462,6 +475,9 @@ main (int argc, char **argv)
 			   }
 		       }
 		       set_login_name(login);
+
+replace_char(res_val, '@', '$');
+
 		       if(peos_set_resource_binding(pid, res_name, res_val) < 0) {    //see events.c
 		           fprintf(stderr, "Could not bind resources");
 		           exit(EXIT_FAILURE);
@@ -472,29 +488,27 @@ main (int argc, char **argv)
                    }
          case 'b': {
                        if(l == 0) {
-                           if (argc != 4 && argc != 5) {
+                           if (argc != 4) {
 		               fprintf(stderr, "Usage: peos -b pid resource_file [variable_file]\n");
 			       exit(EXIT_FAILURE);
 		           }
 			   else {
 			       pid = atoi(argv[2]);
                                res_file = argv[3];
-                               var_file = (argc == 5) ? argv[4] : NULL;
 			   }
 		       }
 		       else {
-		           if(argc != 6 && argc != 7) {
+		           if(argc != 6) {
 		               fprintf(stderr, "Usage: peos -l login_name -b pid resource_file [variable_file]\n");
 			       exit(EXIT_FAILURE);
 		           }
 			   else {
                                pid = atoi(argv[4]);
 			       res_file = argv[5];
-			       var_file = (argc == 7) ? argv[6] : NULL;
 			   }
 		       }
 		       set_login_name(login);
-		       bind_resources_value(pid, res_file, var_file);
+		       bind_resources_value(pid, res_file);
 	               return 1;
                        break;
                    }

@@ -75,7 +75,7 @@ main(int argc, char *argv[])
     unlink("proc_table.dat.xml");
 
     /* Create a process */
-    
+
     if (create_process("test_list_action_API.pml") < 0) {
         fprintf(stderr, "Error executing list instances API test\n");
         exit(EXIT_FAILURE);
@@ -83,7 +83,7 @@ main(int argc, char *argv[])
 
 
     /* bind resources */
-    
+
     if (peos_set_resource_binding(0, "test_list_action_API_res1", "test_list_action_API_res1_val") < 0) { 
         fprintf(stderr, "Error executing list instances API test\n");
         exit(EXIT_FAILURE);

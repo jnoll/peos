@@ -182,7 +182,6 @@ int peos_set_resource_binding(int pid, char *resource_name, char *value)
         fprintf(stderr, "System Error: Cannot Load Process Table\n");
 	exit(EXIT_FAILURE);
     }
-    
     status = set_resource_binding(pid, resource_name, value);    //see process_table.c
     /* update the process state */
     update_status = update_process_state(pid);

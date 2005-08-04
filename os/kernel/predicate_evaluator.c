@@ -385,7 +385,25 @@ char* pe_get_resval(int pid,char* resource_name)
 }
 */
 
-char* pe_get_resval(int pid,char* res_name) {
+/*void replace_char(char* string, char old, char new) {
+    int i;
+    int len = strlen(string);
+    for (i = 0; i < len; i++) {
+        if (string[i] == old)
+        string[i] = new;
+    }
+}*/
+
+int contains_char(char* string, char ch) {
+    int i;
+    int len = strlen(string);
+    for (i = 0; i < len; i++)
+        if (string[i] == ch)
+            return 1;
+    return 0;
+}
+
+/*char* pe_get_resval(int pid,char* res_name) {
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *proc_resources = context->resources;
     int num_proc_resources = context -> num_resources;
@@ -398,6 +416,84 @@ char* pe_get_resval(int pid,char* res_name) {
         }
     }
     return res_name;
+}*/
+
+char* pe_get_resval(int pid, char* res_name) {
+//printf("enter\n");
+    int i;
+    char* result = malloc(100);
+    char* res_value;
+    Tcl_Interp* interp;
+    char* action;
+    peos_context_t *context = peos_get_context(pid);
+    peos_resource_t *proc_resources = context->resources;
+    int num_proc_resources = context->num_resources;
+
+    strcpy(result, "$$");
+
+    if (!res_name)
+        return result;
+ 
+    interp = Tcl_CreateInterp();
+
+    for (i = 0; i < num_proc_resources; i++) {
+        res_value = proc_resources[i].value;
+        if (res_value && !contains_char(res_value, '@') && !contains_char(res_value, '$')) {
+            action = malloc(strlen(proc_resources[i].name) + strlen(res_value) + 8);
+            sprintf(action, "set %s \"%s\"", proc_resources[i].name, res_value);
+            if (Tcl_Eval(interp, action) == TCL_ERROR) {
+                printf("%s\n", interp->result);
+                exit(225);
+            }
+            free(action);
+        }
+    }
+
+    if (i != 0) {
+        for (i = 0; i < num_proc_resources; i++) {
+            if (!strcmp(res_name, proc_resources[i].name)) {
+                res_value = proc_resources[i].value;
+
+                if (!res_value || strcmp(res_value, "$$") == 0)
+                    break;
+//printf("%d res_value = %s\n", i, res_value);
+//                tmp = strdup(res_value);
+//                if (!tmp) {
+//                    fprintf(stderr, "Error allocating memory: aborting!\n");
+//                    exit(255);
+//                }
+//                strcpy(tmp, res_value);
+//printf("%d tmp1 = %s\n", i, tmp);
+//                if (contains_char(tmp, '@'))
+//                    replace_char(tmp, '@', '$');
+//                else if (!contains_char(tmp, '$'))
+//                {
+//printf("%d tmp2 = %s\n", i, tmp);
+                    //free(result);
+//                    result = tmp;
+//                    break;
+//                }
+                if (!contains_char(res_value, '$'))
+                    break;
+                action = malloc(strlen(res_value) + 12);
+                sprintf(action, "set result %s", res_value);
+                if (Tcl_Eval(interp, action) == TCL_ERROR) {
+                    break;
+                }
+                strcpy(result, interp->result);
+                free(action);
+                break;
+            }
+        }
+    }
+//printf("deleting\n");
+    Tcl_DeleteInterp(interp);
+//printf("deleted\n");
+    //if (action != NULL)
+        //free(action);
+//printf("freed\n");
+    printf("(%s, %s)\n", res_name, result);
+    return result;
 }
 
 long get_eval_result(char* pml_file, char* pml_procedure, char* resource)
@@ -422,14 +518,17 @@ long get_eval_result(char* pml_file, char* pml_procedure, char* resource)
         }
         sprintf(action, "%s %s", pml_procedure, resource);
     }
+    
+    //printf("action = %s\n", action);
 
     interp = Tcl_CreateInterp();
     Tcl_EvalFile(interp, pml_file);
     if (Tcl_Eval(interp, action) == TCL_ERROR) {
         //printf("%s\n", interp->result);
         //return 0;
-        
-        printf("Error: check tcl or pml file");
+
+        printf("Error: check tcl or pml file\n");
+        printf("%s\n", interp->result);
         exit(1);
     }
     result = atol(interp->result);
@@ -471,24 +570,19 @@ void print_tree(Tree t)
     }
 }
 
-// Check if resources in a tree contains value
-int res_value_available(int pid, Tree t)
+int res_values_available(int pid, Tree t)
 {
     char* res_value;
     if (IS_ID_TREE(t)) {
         if (TREE_ID(t)[0] != '\"') {
-            //printf("sup -> %s\n", TREE_ID(t));
             res_value = pe_get_resval(pid, TREE_ID(t));
-            //printf("sup -> %s, %s\n", TREE_ID(t), res_value);
-            //if (!res_value)
-            //    return 0;
             if (!res_value || !strcmp(res_value, "$$"))
                 return 0;
         }
     } else if (IS_OP_TREE(t)) {
         switch (TREE_OP(t)) {
             case DOT:
-                return res_value_available(pid, t->left);
+                return res_values_available(pid, t->left);
             case EQ:
             case NE:
             case GE:
@@ -497,21 +591,20 @@ int res_value_available(int pid, Tree t)
             case GT:
             case AND:
             case OR:
-                return res_value_available(pid, t->left) && res_value_available(pid, t->right);
+                return res_values_available(pid, t->left) && res_values_available(pid, t->right);
         }
     }
     return 1;
 }
 
+
 int pe_perform_predicate_eval(char* pml_file, int pid, Tree t)
 {
-    //if (!t) return 0;
-    if (!t || !res_value_available(pid, t)) //will not evaluate if not all resources have their value assigned
+    if (!t || !res_values_available(pid, t)) //will not evaluate if not all resources have their value assigned
         return 0;
 
     if (!pml_file)
         pml_file = "/home/ksuwanna/peos/src/os/kernel/peos_init.tcl";    //default tcl file
-
 
     if (IS_ID_TREE(t) && TREE_ID(t)) {
         //if (strlen(TREE_ID(t)) > 0 && 
