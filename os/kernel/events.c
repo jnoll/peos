@@ -392,7 +392,7 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
 
     if(pid >= 0) {
         update_status = update_process_state(pid);
-    }	
+    }
     
     if(save_process_table() < 0) {
         fprintf(stderr,"System Error: Cannot Save Process Table\n");

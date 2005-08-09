@@ -19,126 +19,82 @@
 #include "graph_engine.h"
 #include "process.h"
 
-/* begin koranin */
-#include <tcl.h>
+
 #define MAX_LINE 40
-/* return a string with trimed leading and/or trailing white space characters */
-char* trim(char* string) {
+
+void replace_char(char* string, char old, char new) {
     int i;
-    char* result;
-
-    while (string != '\0' && isspace(*string)) {
-        ++string;
+    int len = strlen(string);
+    for (i = 0; i < len; i++) {
+        if (string[i] == old)
+            string[i] = new;
     }
-
-    if (string == NULL)
-        return NULL;
-
-    // trim right white spaces
-    for (i = strlen(string) - 1; isspace(*(string + i)); i--)
-        *(string + i) = '\0';
-
-    result = strdup(string);
-    strcpy(result, string);
-    return result;
 }
-/*
-char* subs__res_var(char* var_file, char* res_value)
+
+int trim(char* str)
 {
-    FILE* stream;
-    char* var_name;
-    char* var_value;
-    char line[MAX_LINE];
-    Tcl_Interp* interp;
-    char* action;
-    char* stmt;
-    int first = 1;
-    char* result;
-    //int status;
+    int fi;    //an index of the first character after whitespace(s)
+    int li;    //an index of the last character before whitespace(s)
+    int old_len = strlen(str);    //orginal string length
+    int i;
+    int new_len;    //trimmed string length
 
-    action=(char*)malloc(500);
-    stmt=(char*)malloc(100);
-    
-    if ((stream=fopen(var_file, "r")) == NULL) {
-        printf("%s file doesn't exists\n", var_file);
-        exit(1);
-    }
+    for (fi = 0; (fi < old_len) && (str[fi] == ' '); fi++)    //get fi
+        ;
 
-    printf("\"%s\" file opened\n", var_file);
+    for (li = old_len - 1; (li >= 0) && ((str[li] == ' ') || (str[li] == '\n')); li--)    //get li
+        ;
 
-    while (fgets(line, MAX_LINE, stream) != NULL) {
-    
-        var_name = trim(strtok(line, ":"));
-        var_value = trim(strtok(NULL, ":"));
-	
-	//(void) Tcl_SetVar(interp, var_name, var_value, 0);
-        
-        sprintf(stmt, "set %s \"%s\"; ", var_name, var_value);
+    new_len = li - fi + 1;
 
-	printf("stmt = %s\n", stmt);
+    for (i = 0; i < new_len; i++)   //shift char forward
+        str[i] = str[fi + i];
 
-        if (first)
-        {
-            action = strcpy(action, stmt);
-            first = 0;
-        }
-        else
-            action = strcat(action, stmt);
+    for (; i < old_len; i++)    //clear whitespace(s) and newline
+        str[i] = '\0';
 
-    }
-    fclose(stream);
-
-    sprintf(stmt, "set result \"%s\"", res_value);
-    action = strcat(action, stmt);
-    printf("action = %s\n", action);
-    interp = Tcl_CreateInterp();
-    Tcl_Eval(interp, action);
-    result = (char*)malloc(strlen(interp->result) + 1);
-    strcpy(result, interp->result);
-    Tcl_DeleteInterp(interp);
-    printf("RESOURCE VALUE = <%s>\n", result);
-    return result;
+    return strlen(str);
 }
 
-// set resource values from the resource file (xxx.res)
-void bind_resources_value(int pid, char* res_file, char* var_file) {
-
-    FILE* stream;
-    char* res_name;
-    char* res_value;
-    //int i;
-    char line[MAX_LINE];
-    if ((stream = fopen(res_file,"r")) == NULL) {
-        printf("%s file doesn't exists\n", res_file);
-        exit(1);
-    }
+char *find_resource_file(char *model)
+{
+    char *ext, model_file[BUFSIZ];
+    char *model_dir;
+    FILE *f;
     
-    if(update_state() < 0) {
-        fprintf(stderr, "Could not update process state\n");
-        exit(EXIT_FAILURE);
+    // XXX FIXME! there is a potential buffer overrun here!
+    if (model[0] == '/' || strncmp(model, "./", 2) == 0) {
+        model_file[0] = '\0';
     }
-
-    while (fgets(line, MAX_LINE, stream) != NULL) {
-        res_name = trim(strtok(line, ":"));
-        res_value = trim(strtok(NULL, ":"));
-
-        if (var_file != NULL)
-            res_value = subs__res_var(var_file, res_value);
-
-        if (peos_set_resource_binding(pid, res_name, res_value) < 0) {    //see events.c
-            fprintf(stderr, "Could not bind resources");
-            exit(EXIT_FAILURE);
+    else {
+        model_dir = getenv("COMPILER_DIR");
+        if (model_dir == NULL) {
+            model_dir = ".";
         }
+        sprintf(model_file, "%s/", model_dir);
     }
-    fclose(stream);
-}*/
+    ext = strrchr(model, '.');
+    if (ext != NULL) {
+        strncat(model_file, model, ext - model);
+    }
+    else {
+        strncat(model_file, model, strlen(model));
+    }
+    strcat(model_file, ".res");
+    if ((f = fopen(model_file, "r"))) {
+        fclose(f);
+        return strdup(model_file);
+    } else {
+        return NULL;
+    }
+}
 
-void bind_resources_value(int pid, char* res_file) {
+void bind_resource_file(int pid, char* res_file) {
 
     FILE* stream;
     char* res_name;
     char* res_value;
-    //int i;
+
     char line[MAX_LINE];
     if ((stream = fopen(res_file,"r")) == NULL) {
         printf("%s file doesn't exists\n", res_file);
@@ -151,18 +107,19 @@ void bind_resources_value(int pid, char* res_file) {
     }
 
     while (fgets(line, MAX_LINE, stream) != NULL) {
-        res_name = trim(strtok(line, ":"));
-        res_value = trim(strtok(NULL, ":"));
-
-        if (peos_set_resource_binding(pid, res_name, res_value) < 0) {    //see events.c
-            fprintf(stderr, "Could not bind resources");
-            exit(EXIT_FAILURE);
+        if (trim(res_name = strtok(line, ":")) > 0 && trim(res_value = strtok(NULL, ":")) > 0) {
+            if (peos_set_resource_binding(pid, res_name, res_value) < 0) {    //see events.c
+                fprintf(stderr, "Could not bind resource (%s, %s)\n", res_name, res_value);
+                exit(EXIT_FAILURE);
+            }
         }
+        /*else {
+        fprintf(stderr, "Invalid format.  Check resource file\n");
+        exit(EXIT_FAILURE);
+    }*/
     }
     fclose(stream);
 }
-
-/* end koranin */
 
 int create_process(char *model)
 {
@@ -170,30 +127,33 @@ int create_process(char *model)
     int i;
     int num_resources;
     peos_resource_t *resources;
+    char* res_file;
 
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);    //see events.c
 
     if (resources == NULL) {
         printf("error getting resources\n");
-	return -1;
+        return -1;
     }
     
     for(i = 0; i < num_resources; i++) {
-	strcpy(resources[i].value, "$$");
+        strcpy(resources[i].value, "$$");
     }
     
     printf("Executing %s:\n", model);
     
     if ((pid = peos_run(model,resources,num_resources)) < 0) {    //see events.c
-	printf("couldn't create process\n");
-	return -1;
-    } 
-    else {
-	printf("Created pid = %d\n", pid);
-	return 1;
+        printf("couldn't create process\n");
+        return -1;
     }
+    
+    if ((res_file = find_resource_file(model)) != NULL) {
+        bind_resource_file(pid, res_file);
+    }
+    
+    printf("Created pid = %d\n", pid);
+    return 1;
 }
-
 
 int notify(int pid, char *action, char *event)
 {
@@ -202,41 +162,41 @@ int notify(int pid, char *action, char *event)
     if(strcmp(event, "start") == 0) {
         printf("Performing action %s\n", action);
         if ((status = peos_notify(pid, action, PEOS_EVENT_START)) == VM_ERROR 
-	|| (status == VM_INTERNAL_ERROR)) {
-	    printf("process executed an illegal instruction and has been terminated\n");
-	    return -1;
-        }
-	else return 1;
-    }	
+             || (status == VM_INTERNAL_ERROR)) {
+            printf("process executed an illegal instruction and has been terminated\n");
+            return -1;
+             }
+             else return 1;
+    }
 
     if(strcmp(event, "finish") == 0) {
         printf("Finishing action %s\n", action);
         if ((status = peos_notify(pid, action,PEOS_EVENT_FINISH)) == VM_ERROR 
-	|| status == VM_INTERNAL_ERROR) {
-	    printf("process executed an illegal instruction and has been terminated\n");
-	    return -1;
-        }
-	else return 1;
+             || status == VM_INTERNAL_ERROR) {
+            printf("process executed an illegal instruction and has been terminated\n");
+            return -1;
+             }
+             else return 1;
     }
     
     if(strcmp(event, "suspend") == 0) {
-	printf("Suspending action %s\n",action);    
+        printf("Suspending action %s\n",action);    
         if ((status = peos_notify(pid, action,PEOS_EVENT_SUSPEND)) == VM_ERROR 
-	|| status == VM_INTERNAL_ERROR) {
-	    printf("process encountered an illegal event and has been terminated\n");
-	    return -1;
-        }
-	else return 1;
+             || status == VM_INTERNAL_ERROR) {
+            printf("process encountered an illegal event and has been terminated\n");
+            return -1;
+             }
+             else return 1;
     }
     
     if(strcmp(event, "abort") == 0) {
-	printf("Aborting action %s\n",action);    
+        printf("Aborting action %s\n",action);    
         if ((status = peos_notify(pid, action,PEOS_EVENT_ABORT)) == VM_ERROR 
-	|| status == VM_INTERNAL_ERROR) {
-	    printf("process encountered an illegal event and has been terminated\n");
-	    return -1;
-        }
-	else return 1;
+             || status == VM_INTERNAL_ERROR) {
+            printf("process encountered an illegal event and has been terminated\n");
+            return -1;
+             }
+             else return 1;
     }
 #ifndef PALM
     fprintf(stderr,"Unknown event\n");
@@ -253,17 +213,17 @@ int update_state() {
     char **result = peos_list_instances();	
 	
     while((i <= PEOS_MAX_PID)) {
-	if (result[i] != NULL) {
-	    int temp_num_actions;	
-	    tempalist = peos_list_actions(i,&temp_num_actions);	
-	    if(tempalist) {
+        if (result[i] != NULL) {
+            int temp_num_actions;	
+            tempalist = peos_list_actions(i,&temp_num_actions);	
+            if(tempalist) {
                 if(peos_notify(i, "dummy_action", PEOS_EVENT_RESOURCE_CHANGE) == VM_INTERNAL_ERROR) {
-	            printf("Error in notifying resource change event\n");
-	            return -1;
-	        }
-	    }
-	}
-	i++;
+                    printf("Error in notifying resource change event\n");
+                    return -1;
+                }
+            }
+        }
+        i++;
     }
     return 1;
 }
@@ -271,23 +231,13 @@ int update_state() {
 void set_login_name(char *loginname)
 {
     char *process_filename;
-    
+
     process_filename = (char *) malloc((strlen(loginname) + strlen(".dat") +1) * sizeof(char));
     strcpy(process_filename, loginname);
     strcat(process_filename, ".dat"); 
 
     peos_set_process_table_file(process_filename);
     peos_set_loginname(loginname);
-}
-
-
-void replace_char(char* string, char old, char new) {
-    int i;
-    int len = strlen(string);
-    for (i = 0; i < len; i++) {
-        if (string[i] == old)
-        string[i] = new;
-    }
 }
 
 #ifndef PALM
@@ -305,9 +255,7 @@ main (int argc, char **argv)
     char *model;
     int l = 0; /* l == 1 iff login option is passed */
     char *login = "proc_table"; /* default login name */
-    //int b = 0; /* b == 1 iff binding option exists */
     char *res_file;
-    //char *var_file;
     opterr = 0;
     system ("echo '#######################################################################' >  pelog");
     system ("echo '###################   PREDICATE EVALUATOR DEBUG LOG    ################' >> pelog");
@@ -315,286 +263,189 @@ main (int argc, char **argv)
 
     while ((c = getopt (argc, argv, "+c:n:ihrb:d:ul:")) != -1) {
         switch (c) {
-            case 'l': {
-	                  l = 1;
-                          login = strdup(optarg);
-                          break;
-		      }
-            case 'c': {
-                          if (l == 0) {
-                              if (argc != 3) {
-                                  fprintf(stderr, "Usage: peos -c process_file\n");
-                                  exit(EXIT_FAILURE);
-                              }
-                              model = argv[2];
-                          }
-                          else {
-                              if (argc != 5) {
-                                  fprintf(stderr, "Usage: peos -c process_file\n");
-                                  exit(EXIT_FAILURE);
-                              }
-                              model = argv[4];
-                          }
-                          
-                          set_login_name(login);
-                          if (create_process(model) != 1) {
-                              fprintf(stderr, "Could not Create Process\n");
-			      exit(EXIT_FAILURE);
-			  }
-                          /*if (getopt(argc, argv, "b") == 'b')
-                              b = 1;
-
-                          if (l == 0) {
-                              if (argc == 3) {
-                                  model = argv[2];
-                              }
-                              else if (argc == 5 && b) {
-                                  model = argv[2];
-                                  res_file = argv[4];
-                              }
-                              else {
-                                  if (b)
-                                      fprintf(stderr, "Usage: peos -c process_file -b resource_file\n");
-                                  else
-                                      fprintf(stderr, "Usage: peos -c process_file\n");
-                                  exit(EXIT_FAILURE);
-                              }
-                          }
-                          else {
-                              if (argc == 5) {
-                                  model = argv[4];
-                              }
-                              else if (argc == 7 && b) {
-                                  model = argv[4];
-                                  res_file = argv[6];
-                              }
-                              else {
-                                  if (b)
-                                      fprintf(stderr, "Usage: peos -l login_name -c process_file -b resource_file\n");
-                                  else
-                                      fprintf(stderr, "Usage: peos -l login_name -c process_file\n");
-	                          exit(EXIT_FAILURE);
-                              }
-                          }
-                          set_login_name(login);
-                          if((pid = create_process_ret_pid(model)) < 0) {
-                              fprintf(stderr, "Could not Create Process\n");
-			      exit(EXIT_FAILURE);
-			  }
-			  if (b)
-			  {
-			      bind_resources_value(pid, res_file);
-			  }*/
-			  return 1;
-		      }
-           case 'n': {
-			 if(l == 0) {
-		             if(argc != 5) {
-		                 fprintf(stderr, "Usage: peos -n pid act_name start|finish|suspend|abort\n");
-	                         exit(EXIT_FAILURE);
-	                     }
-			     else {
-                                 pid = atoi(argv[2]);
-                                 act_name = argv[3];
-                                 event = argv[4];
-			     }
-			 }
-			 else {
-			     if(argc != 7) {	 
-		                 fprintf(stderr, "Usage: peos -l login_name -n pid act_name start|finish|suspend|abort\n");
-	                         exit(EXIT_FAILURE);
-	                     }
-			     else {
-                                 pid = atoi(argv[4]);
-                                 act_name = argv[5];
-                                 event = argv[6];
-			     }
-			 }
-			 set_login_name(login);
-			 if(notify(pid, act_name, event) < 0) {
-			     fprintf(stderr, "Could not %s action %s\n",event, act_name);
-		             exit(EXIT_FAILURE);
-			 }
-	                 else return 1;
-			 break;
-		     }
-		     
-	 case 'i': {
-		       if(l == 0) {
-                           if(argc != 2) {
-		               fprintf(stderr, "Usage: peos -i \n");
-			       exit(EXIT_FAILURE);
-		           }
-		       }
-		       else {
-                           if(argc != 5) {
-		               fprintf(stderr, "Usage: peos -l login_name -i \n");
-			       exit(EXIT_FAILURE);
-		           }
-		       }
-		       {
-		           int i;
-		           char ** result;
-		           set_login_name(login);
-		           result = peos_list_instances(result);
-		           if (result != NULL) {
-		               for (i = 0; i <= PEOS_MAX_PID; i++) {
-		                   printf("%d %s\n", i, result[i]);
-		               }
-			       return 1;
-		           }
-		           else {
-		               fprintf(stderr, "error getting instances\n");
-	                       exit(EXIT_FAILURE);
-	                   }
-		       }
-                       break;
-                   }
-		   
-	 case 'r': {
-		       if(l == 0) {
-                           if(argc != 5) {
-		               fprintf(stderr, "Usage: peos -r pid resource_name resource_value\n");
-			       exit(EXIT_FAILURE);
-		           }
-			   else {
-                               pid = atoi(argv[2]);
-			       res_name = argv[3];
-			       res_val = argv[4];
-			   }
-		       }
-		       else {
-		           if(argc != 7) {
-		               fprintf(stderr, "Usage: peos -l login_name -r pid resource_name resource_value\n");
-			       exit(EXIT_FAILURE);
-		           }
-			   else {
-                               pid = atoi(argv[4]);
-			       res_name = argv[5];
-			       res_val = argv[6];
-			   }
-		       }
-		       set_login_name(login);
-
-replace_char(res_val, '@', '$');
-
-		       if(peos_set_resource_binding(pid, res_name, res_val) < 0) {    //see events.c
-		           fprintf(stderr, "Could not bind resources");
-		           exit(EXIT_FAILURE);
-		       }
-	               else return 1;
-		       		   
-                       break;
-                   }
-         case 'b': {
-                       if(l == 0) {
-                           if (argc != 4) {
-		               fprintf(stderr, "Usage: peos -b pid resource_file [variable_file]\n");
-			       exit(EXIT_FAILURE);
-		           }
-			   else {
-			       pid = atoi(argv[2]);
-                               res_file = argv[3];
-			   }
-		       }
-		       else {
-		           if(argc != 6) {
-		               fprintf(stderr, "Usage: peos -l login_name -b pid resource_file [variable_file]\n");
-			       exit(EXIT_FAILURE);
-		           }
-			   else {
-                               pid = atoi(argv[4]);
-			       res_file = argv[5];
-			   }
-		       }
-		       set_login_name(login);
-		       bind_resources_value(pid, res_file);
-	               return 1;
-                       break;
-                   }
-	 case 'd': {
-		       if(l == 0) {	   
-                           if(argc != 3) {
-		               fprintf(stderr, "Usage: peos -d pid \n");
-			       exit(EXIT_FAILURE);
-		           }
-			   else {
-                               pid = atoi(argv[2]);
-			   }
-		       }
-		       else {
-                           if(argc != 5) {
-		               fprintf(stderr, "Usage: peos -l login_name -d pid \n");
-			       exit(EXIT_FAILURE);
-		           }
-		           else {
-                               pid = atoi(argv[4]);
-			   }
-		       }
-		       set_login_name(login);
-		       if(peos_delete_process_instance(pid) < 0) {
-			   fprintf(stderr, "Could not delete process instance\n");
-		           exit(EXIT_FAILURE);
-		       }
-	               else return 1;
-		       		   
-                       break;
-		   }
-
-	 case 'u': {
-		       if(l == 0) {	   
-                           if(argc != 2) {
-		               fprintf(stderr, "Usage: peos -u\n");
-			       exit(EXIT_FAILURE);
-		           }
-		       }
-		       else {
-                           if(argc != 4) {
-		               fprintf(stderr, "Usage: peos -l login_name -u\n");
-			       exit(EXIT_FAILURE);
-		           }
-		       }
-		       set_login_name(login);
-		       if(update_state() < 0) {
-		           fprintf(stderr, "Could not update process state\n");
-		           exit(EXIT_FAILURE);
-		       }
-	               else return 1;
-		       		   
-                       break;
-		   }
-
-		   
-	 case 'h': {
-		       printf("To create a process: peos [-l login_name] -c name_of_model_file\n");
-	               printf("To start an action: peos [-l login_name] -n process_id action_name event\n");
-	               printf("Event can be: start or finish or abort or suspend\n");
-	               printf("To update states of all processes (daemon simulation): peos [-l login_name] -u \n");
-	               printf("To get a list of instances: peos [-l login_name] -i\n");
-		       printf("To bind resources: peos [-l login_name] -r pid resource_name resource_value\n");
-		       printf("To bind resources for resource file: peos [-l login_name] -b resource_file\n");
-		       printf("To delete a process: peos [-l login_name] -d pid\n");
-	               printf("To get help: peos -h\n");
-		       break;
-		   }	       
-        
-
-	 case '?': {
-                       if (isprint (optopt))
-                           fprintf (stderr, "Unknown option `-%c'.Please use peos -h for help.\n", optopt);
-                       else
-                           fprintf (stderr, "Unknown option character `\\x%x'.Please use peos -h for help.\n", optopt);
-                       return 1;
-		       break;
-		   }
-		
-         default:
-              abort ();
-	}
+            case 'l':
+                l = 1;
+                login = strdup(optarg);
+                break;
+            case 'c':
+                if (l == 0) {
+                    if (argc != 3) {
+                        fprintf(stderr, "Usage: peos -c process_file\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    model = argv[2];
+                }
+                else {
+                    if (argc != 5) {
+                        fprintf(stderr, "Usage: peos -c process_file\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    model = argv[4];
+                }
+                set_login_name(login);
+                if (create_process(model) != 1) {
+                    fprintf(stderr, "Could not Create Process\n");
+                    exit(EXIT_FAILURE);
+                }
+                return 1;
+            case 'n':
+                if(l == 0) {
+                    if(argc != 5) {
+                        fprintf(stderr, "Usage: peos -n pid act_name start|finish|suspend|abort\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    pid = atoi(argv[2]);
+                    act_name = argv[3];
+                    event = argv[4];
+                }
+                else {
+                    if(argc != 7) {
+                        fprintf(stderr, "Usage: peos -l login_name -n pid act_name start|finish|suspend|abort\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    pid = atoi(argv[4]);
+                    act_name = argv[5];
+                    event = argv[6];
+                }
+                set_login_name(login);
+                if(notify(pid, act_name, event) < 0) {
+                    fprintf(stderr, "Could not %s action %s\n",event, act_name);
+                    exit(EXIT_FAILURE);
+                }
+                return 1;
+            case 'i':
+                if (l == 0) {
+                    if(argc != 2) {
+                        fprintf(stderr, "Usage: peos -i \n");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+                else {
+                    if(argc != 4) {
+                        fprintf(stderr, "Usage: peos -l login_name -i \n");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+                set_login_name(login);
+                {
+                    int i;
+                    char ** result;
+                    result = peos_list_instances(result);
+                    if (result == NULL) {
+                        fprintf(stderr, "error getting instances\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    for (i = 0; i <= PEOS_MAX_PID; i++)
+                        printf("%d %s\n", i, result[i]);
+                }
+                return 1;
+            case 'r':
+                if(l == 0) {
+                    if(argc != 5) {
+                        fprintf(stderr, "Usage: peos -r pid resource_name resource_value\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    pid = atoi(argv[2]);
+                    res_name = argv[3];
+                    res_val = argv[4];
+                }
+                else {
+                    if(argc != 7) {
+                        fprintf(stderr, "Usage: peos -l login_name -r pid resource_name resource_value\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    pid = atoi(argv[4]);
+                    res_name = argv[5];
+                    res_val = argv[6];
+                }
+                set_login_name(login);
+                replace_char(res_val, '@', '$');
+                if(peos_set_resource_binding(pid, res_name, res_val) < 0) {    //see events.c
+                    fprintf(stderr, "Could not bind resources");
+                    exit(EXIT_FAILURE);
+                }
+                return 1;
+            case 'b':
+                if(l == 0) {
+                    if (argc != 4) {
+                        fprintf(stderr, "Usage: peos -b pid resource_file [variable_file]\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    pid = atoi(argv[2]);
+                    res_file = argv[3];
+                }
+                else {
+                    if(argc != 6) {
+                        fprintf(stderr, "Usage: peos -l login_name -b pid resource_file [variable_file]\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    pid = atoi(argv[4]);
+                    res_file = argv[5];
+                }
+                set_login_name(login);
+                bind_resource_file(pid, res_file);
+                return 1;
+            case 'd':
+                if(l == 0) {
+                    if(argc != 3) {
+                        fprintf(stderr, "Usage: peos -d pid \n");
+                        exit(EXIT_FAILURE);
+                    }
+                    pid = atoi(argv[2]);
+                }
+                else {
+                    if(argc != 5) {
+                        fprintf(stderr, "Usage: peos -l login_name -d pid \n");
+                        exit(EXIT_FAILURE);
+                    }
+                    pid = atoi(argv[4]);
+                }
+                set_login_name(login);
+                if(peos_delete_process_instance(pid) < 0) {
+                    fprintf(stderr, "Could not delete process instance\n");
+                    exit(EXIT_FAILURE);
+                }
+                return 1;
+            case 'u':
+                if(l == 0) {
+                    if(argc != 2) {
+                        fprintf(stderr, "Usage: peos -u\n");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+                else {
+                    if(argc != 4) {
+                        fprintf(stderr, "Usage: peos -l login_name -u\n");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+                set_login_name(login);
+                if(update_state() < 0) {
+                    fprintf(stderr, "Could not update process state\n");
+                    exit(EXIT_FAILURE);
+                }
+                return 1;
+            case 'h':
+                printf("To create a process: peos [-l login_name] -c name_of_model_file\n");
+                printf("To start an action: peos [-l login_name] -n process_id action_name event\n");
+                printf("Event can be: start or finish or abort or suspend\n");
+                printf("To update states of all processes (daemon simulation): peos [-l login_name] -u \n");
+                printf("To get a list of instances: peos [-l login_name] -i\n");
+                printf("To bind resources: peos [-l login_name] -r pid resource_name resource_value\n");
+                printf("To bind resources for resource file: peos [-l login_name] -b resource_file\n");
+                printf("To delete a process: peos [-l login_name] -d pid\n");
+                printf("To get help: peos -h\n");
+                break;
+            case '?':
+                if (isprint (optopt))
+                    fprintf (stderr, "Unknown option `-%c'.Please use peos -h for help.\n", optopt);
+                else
+                    fprintf (stderr, "Unknown option character `\\x%x'.Please use peos -h for help.\n", optopt);
+                return 1;
+            default:
+                abort();
+        }
     }
     return 0;
 }
-		   
 #endif
-
-		   
