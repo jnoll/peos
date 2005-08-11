@@ -69,7 +69,7 @@ char* pe_get_resval(int pid, char* res_name) {
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *proc_resources = context->resources;
     int num_proc_resources = context->num_resources;
-
+    
     strcpy(result, "$$");
 
     if (!res_name)
@@ -222,7 +222,7 @@ int pe_perform_predicate_eval(char* pml_file, int pid, Tree t)
         return 0;
 
     if (!pml_file)
-        pml_file = "/home/ksuwanna/peos/src/os/kernel/peos_init.tcl";    //default tcl file
+        pml_file = "./../../os/kernel/peos_init.tcl";//"/home/ksuwanna/peos/src/os/kernel/peos_init.tcl";    //default tcl file
 
     if (IS_ID_TREE(t) && TREE_ID(t)) {
         //if (strlen(TREE_ID(t)) > 0 && 

@@ -191,7 +191,8 @@ int peos_tcl_eval(peos_tcl* ptcl, char* name_str, char* eval_str, char* result_s
     	return TCL_ERROR;
     }else{
         if(!strcmp(eval_str,"$$")){
-	   sprintf(str,"set %s \\$\\$", name_str);
+	   //sprintf(str,"set %s \\$\\$", name_str);
+            sprintf(str, "set %s \\${%s}", name_str, name_str);
 	}else{
 	   sprintf(str,"set %s %s", name_str, eval_str);
 	}
