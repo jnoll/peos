@@ -14,14 +14,18 @@
 /* Globals. */
 peos_resource_t *global_resources;
 int global_num_resources;
+static peos_context_t* global_context;
 
 /* Stubs. */
 /* XXX As far as I can tell, the tests don't directly exercise any
    function that actually calls this. -jn */
 peos_context_t *peos_get_context(int pid)
 {
-    static peos_context_t context;
-    return &context;
+    //static peos_context_t context;
+    //return &context;
+    
+    return &global_context;
+    
 }
 
 peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int *num_resources)
@@ -196,106 +200,95 @@ START_TEST(test_is_provides_true_2)
 }
 END_TEST
 
-
-START_TEST(test_pe_file_exists)
+START_TEST(test_contains_char)
 {
-    //fail_unless(0, "exists");
-    /*
-    fail_unless(pe_file_exists("file_that_doesnt_exist")==0
-    , "pe_file_exists returned 1 with non-existent filename");
-    system("touch myfilename");
-    fail_unless(pe_file_exists("myfilename")==1
-    , "pe_file_exists returned 0 for a file that exists");
-    system("rm myfilename");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_pe_file_exists\n");
-#endif
-    */
+    char* str = "abc";
+    fail_unless(contains_char(str, 'a'), "contains_char failed");
+    fail_unless(contains_char(str, 'b'), "contains_char failed");
+    fail_unless(contains_char(str, 'c'), "contains_char failed");
+    fail_unless(!contains_char(str, 'd'), "contains_char failed");
 }
 END_TEST
 
-START_TEST(test_pe_byname)
+START_TEST(test_pe_get_resval)
 {
-    /*
-    system("rm -rf /tmp/temp");
-    system("mkdir /tmp/temp");
-    system("touch /tmp/temp/one");
-    fail_unless(pe_byname("filecount", "/tmp/temp")==1, "pe_byname failed");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_pe_byname\n");
-#endif
-    */
+    global_context = (peos_context_t*) malloc(sizeof(peos_context_t));
+    global_context->resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
+    strcpy(global_context->resources[0].name, "res1");
+    strcpy(global_context->resources[0].value, "val1");
+    //fail_unless(strcmp(pe_get_resval(0, "res1"), "val1") == 0, "pe_get_resval failed");
 }
 END_TEST
 
-START_TEST(test_pe_isdirempty)
+START_TEST(test_get_eval_result_exists)
 {
-/*
-    system("rm -rf /tmp/mydir");
-    system("mkdir /tmp/mydir");
-    fail_unless(pe_isdirempty("/tmp/mydir")==1, "pe_isdirempty failed");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_pe_isdirempty\n");
-#endif
-*/
+    system("touch my_file");
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "exists", "my_file"), "get_eval_result_exists failed");
+    system("rm my_file");
+    fail_unless(!get_eval_result("./../../../os/kernel/peos_init.tcl", "exists", "my_file"), "get_eval_result_exists failed");
+}
+END_TEST
+        
+START_TEST(test_get_eval_result_filecount)
+{
+    system("rm -rf /tmp/my_dir");
+    system("mkdir /tmp/my_dir");
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "filecount", "/tmp/my_dir") == 0, "get_eval_result_filecount failed");
+    system("touch /tmp/my_dir/my_file_1");
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "filecount", "/tmp/my_dir") == 1, "get_eval_result_filecount failed");
+    system("touch /tmp/my_dir/my_file_2");
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "filecount", "/tmp/my_dir") == 2, "get_eval_result_filecount failed");
+    system("rm -rf /tmp/my_dir");
+}
+END_TEST
+        
+START_TEST(test_get_eval_result_filesize)
+{
+    FILE *fp;
+    long before, after;
+    fp = fopen("my_file", "w");
+    fprintf(fp, "some text\n");
+    fclose(fp);
+    before = get_eval_result("./../../../os/kernel/peos_init.tcl", "filesize", "my_file");
+    fp = fopen("my_file", "w");
+    fprintf(fp, "some more text\n");
+    fclose(fp);
+    after = get_eval_result("./../../../os/kernel/peos_init.tcl", "filesize", "my_file");
+    system("rm my_file");
+    fail_unless(before < after, "get_eval_result_filesize failed");
 }
 END_TEST
 
-START_TEST(test_pe_timestamp)
+START_TEST(test_get_eval_result_timestamp)
 {
-/*
-    system("touch file");
-    fail_unless(pe_timestamp("peos", "file")==0, "pe_timestamp failed");
-    system("rm file");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_pe_timestamp\n");
-#endif
-*/
+    long before, after;
+    system("touch -t 200201311759.30 my_file");  //year is 2002
+    before = get_eval_result("./../../../os/kernel/peos_init.tcl", "timestamp", "my_file");
+    system("touch -t 200301311759.30 my_file"); //change year to 2003
+    after = get_eval_result("./../../../os/kernel/peos_init.tcl", "timestamp", "my_file");
+    system("rm my_file");
+    fail_unless(before < after, "get_eval_result_timestamp failed");
 }
 END_TEST
 
-START_TEST(test_pe_spellcheck)
+START_TEST(test_get_eval_result_misspellcount)
 {
-/*
-    system("echo 'A quick brown fox jumped over a lazy dog!' > file1");
-    fail_unless(pe_spellcheck("file1")==1, "pe_spellcheck failed");
-    system("echo 'A qucik brwon fxo jumped over a lazy dog!' > file1");
-    fail_unless(pe_spellcheck("file1")==0, "pe_spellcheck failed");
-    system("rm file1");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_pe_spellcheck\n");
-#endif
-*/
+    FILE* fp;
+    fp = fopen("my_file", "w");
+    fprintf(fp, "no error\n");
+    fclose(fp);
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "misspellcount", "my_file") == 0, "get_eval_result_misspellcount failed");
+    fp = fopen("my_file", "w");
+    fprintf(fp, "aabb\n");
+    fclose(fp);
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "misspellcount", "my_file") == 1, "get_eval_result_misspellcount failed");
+    fp = fopen("my_file", "w");
+    fprintf(fp, "ccdd\n");
+    fclose(fp);
+    system("rm my_file");
 }
-END_TEST
-
-START_TEST(test_pe_file_size)
-{
-/*
-    int file_size =0;
-    system("touch file1");
-    file_size=pe_file_size("file1");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t\tFile size 1: %d\n",file_size);
-#endif
-    fail_unless(file_size==0, "pe_file_size failed");
-    system("echo 'file size is no longer zero' > file1");
-    file_size=pe_file_size("file1");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t\tFile size 2: %d\n",file_size);
-#endif
-    fail_unless(file_size!=0, "pe_file_size failed");
-    system("rm file1");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_pe_file_size\n");
-#endif
-*/
-}
-END_TEST
-
-
-
-
+END_TEST        
+        
 int
 main(int argc, char *argv[])
 {
@@ -310,39 +303,41 @@ main(int argc, char *argv[])
     tcase_add_test(tc,test_is_provides_true);
     tcase_add_test(tc,test_is_provides_true_1);
     tcase_add_test(tc,test_is_provides_true_2);
-    
-    
+
     tc = tcase_create("is_requires_true");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_is_requires_true);
     tcase_add_test(tc,test_is_requires_true_1);
     tcase_add_test(tc,test_is_requires_true_2);
-  
     
-    tc = tcase_create("testing_pe_file_exists");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_pe_file_exists);
+    tc = tcase_create("contains_char");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_contains_char);
     
-    tc = tcase_create("testing_pe_byname");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_pe_byname);
+    tc = tcase_create("pe_get_resval");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_pe_get_resval);  
     
-    tc = tcase_create("testing_pe_isdirempty");
+    tc = tcase_create("get_eval_result_exists");
     suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_pe_isdirempty);
+    tcase_add_test(tc,test_get_eval_result_exists);
     
-    tc = tcase_create("testing_pe_timestamp");
+    tc = tcase_create("get_eval_result_filecount");
     suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_pe_timestamp);
+    tcase_add_test(tc,test_get_eval_result_filecount);
     
-    tc = tcase_create("testing_pe_spellcheck");
+    tc = tcase_create("get_eval_result_filesize");
     suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_pe_spellcheck);
+    tcase_add_test(tc,test_get_eval_result_filesize);
     
-    tc = tcase_create("testing_pe_file_size");
+    tc = tcase_create("get_eval_result_timestamp");
     suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_pe_file_size);
-   
+    tcase_add_test(tc,test_get_eval_result_timestamp);
+    
+    tc = tcase_create("get_eval_result_misspellcount");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_get_eval_result_misspellcount);
+    
     sr = srunner_create(s);
 
     srunner_set_fork_status(sr, fork_status);
