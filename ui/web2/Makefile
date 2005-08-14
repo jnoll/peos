@@ -2,7 +2,7 @@
 INSTALL_DIR=$(HTML_DIR)/PEOS
 KERNEL_DIR = ../../../os/kernel
 
-HTML_DIR=
+
 
 all: build
 build:

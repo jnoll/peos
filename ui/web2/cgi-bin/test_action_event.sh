@@ -177,7 +177,7 @@ then
   echo; echo "State incorrect after clicking Abort"
 fi
 
-rm output
+#rm output
 #rm dfZRuitU82fEY.dat*
 echo "done"
 
