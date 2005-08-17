@@ -7,25 +7,41 @@ proc exists { path } {
 }
 
 proc filecount { path } {
-       set i 0
-       foreach f [exec ls $path] {
-	  set i [expr $i + 1] 
-       }
-       expr $i
+    set i 0
+    set e [exists $path]
+    if {$e == 1} {
+        foreach f [exec ls $path] {
+            set i [expr $i + 1]
+        }
+    }
+    expr $i
 }
 
 proc filesize { path } {
-    expr [file size $path]
+    set i 0
+    set e [exists $path]
+    if {$e == 1} {
+        set i [file size $path]
+   }
+    expr $i
 }
 
 proc timestamp { path } {
-    expr [file mtime $path]
+    set i 0
+    set e [exists $path]
+    if {$e == 1} {
+        set i [expr [file mtime $path]]
+    }
+    expr $i
 }
 
 proc misspellcount { path } {
     set i 0
-    foreach f [exec spell $path] {
-        set i [expr $i + 1]
+    set e [exists $path]
+    if {$e == 1} {
+        foreach f [exec spell $path] {
+            set i [expr $i + 1]
+       }
     }
     expr $i
 }

@@ -20,8 +20,7 @@ mv proc_table.dat old_proc_table.dat
 fi
 
 #create a process
-peos -c peos_test.pml > output
-
+./peos -c peos_test.pml > output
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' proc_table.dat.xml > /dev/null)
 then
@@ -52,7 +51,7 @@ then
 fi
 
 #start an action
-peos -n 0 a start > output
+./peos -n 0 a start > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' proc_table.dat.xml > /dev/null)
@@ -84,7 +83,7 @@ then
 fi
 
 #suspend an action
-peos -n 0 a suspend > output
+./peos -n 0 a suspend > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' proc_table.dat.xml > /dev/null)
@@ -117,8 +116,8 @@ fi
 
 #abort action
 
-peos -n 0 a start > output
-peos -n 0 a abort > output
+./peos -n 0 a start > output
+./peos -n 0 a abort > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' proc_table.dat.xml > /dev/null)
@@ -151,7 +150,7 @@ fi
 
 
 #finish action
-peos -n 0 a finish > output
+./peos -n 0 a finish > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' proc_table.dat.xml > /dev/null)
@@ -182,9 +181,9 @@ then
   echo
 fi
 
-peos -c peos_test.pml > output
+./peos -c peos_test.pml > output
 
-peos -d 0 > output
+./peos -d 0 > output
 
 if (grep '<process pid=\"0\"' proc_table.dat.xml > /dev/null)
 then
@@ -234,8 +233,8 @@ echo "action b {}" >> peos_test.pml
 echo "action c {}" >> peos_test.pml
 echo "}" >> peos_test.pml
 
-peos -c peos_test.pml > output
-peos -u
+./peos -c peos_test.pml > output
+./peos -u
 
 if !(grep '<action name=\"a\" state=\"READY\">' proc_table.dat.xml > /dev/null)
 then
@@ -274,9 +273,9 @@ echo "requires{r1}" >> peos_test.pml
 echo "}" >> peos_test.pml
 echo "}" >> peos_test.pml
 
-peos -c peos_test.pml > output
+./peos -c peos_test.pml > output
 
-peos -r 0 r1 r1val > output
+./peos -r 0 r1 r1val > output
 
 
 if !(grep '<req_resource name=\"r1\" value=\"r1val\" qualifier=\"\">' proc_table.dat.xml > stdout)
@@ -286,8 +285,105 @@ then
   echo
 fi
 
+
 rm proc_table.dat
 rm proc_table.dat.xml
+rm peos_test.pml
+rm output
+
+# test create process with resource file
+echo "process p {" > peos_test.pml
+echo "action a {" >> peos_test.pml
+echo "requires{r1}" >> peos_test.pml
+echo "provides{r2 && r3}" >> peos_test.pml
+echo "}" >> peos_test.pml
+echo "}" >> peos_test.pml
+
+echo "r1: r1val" > peos_test.res
+echo "r2: \${r1}/r2val" >> peos_test.res
+echo "r3: \${r2}/r3val" >> peos_test.res
+
+./peos -c peos_test.pml > output
+
+if !(grep '<req_resource name=\"r1\" value=\"r1val\" qualifier=\"\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed resource 'file' binding.
+  echo
+fi
+
+if !(grep '<prov_resource name=\"r2\" value=\"r1val/r2val\" qualifier=\"\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed resource 'file' binding.
+  echo
+fi
+
+if !(grep '<prov_resource name=\"r3\" value=\"r1val/r2val/r3val\" qualifier=\"\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed resource 'file' binding.
+  echo
+fi
+
+echo "r2: \${r1}/r2val" > peos_test.res
+echo "r3: \${r2}/r3val" >> peos_test.res
+
+./peos -c peos_test.pml > output
+
+if !(grep '<prov_resource name=\"r2\" value=\"\${r1}/r2val\" qualifier=\"\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed resource 'file' binding.
+  echo
+fi
+
+if !(grep '<prov_resource name=\"r3\" value=\"\${r1}/r2val/r3val\" qualifier=\"\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed resource 'file' binding.
+  echo
+fi
+
+
+rm peos_test.res
+rm proc_table.dat
+rm proc_table.dat.xml
+rm peos_test.pml
+rm output
+
+#test resources operator
+echo "process p {" > peos_test.pml
+echo "action act0 {}" >> peos_test.pml
+echo "action act1 {provides{r1}}" >> peos_test.pml
+echo "action act2 {provides{r2}}" >> peos_test.pml
+echo "action act3 {provides{r1.filesize}}" >> peos_test.pml
+echo "action act4 {provides{r1.filesize > r2.filesize}}" >> peos_test.pml
+echo "action act7 {provides{r1.filesize != r1.filesize}}" >> peos_test.pml
+echo "}" >> peos_test.pml
+
+echo "r1: peos_test.pml" > peos_test.res
+echo "r2: peos_test.res" >> peos_rest.res
+
+./peos -c peos_test.pml > output
+
+if !(grep '<action name=\"act0\" state=\"READY\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed operating resources
+  echo
+fi
+
+if !(grep '<action name=\"act1\" state=\"AVAILABLE\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed operating resources
+  echo
+fi
+#################################
+rm peos_test.res
+rm proc_table.dat
+#rm proc_table.dat.xml
 rm peos_test.pml
 rm output
 

@@ -15,16 +15,14 @@
 #include "predicate_evaluator.h"
 #endif
 
-
-void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier) 
-{
+void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier) {
     int i = 0;
     peos_resource_t *resource_list = *rlist;
 
     while((i < *num_resources) && (strcmp(resource_list[i].name, id)) != 0) {
         i++;
     }
-    if (i == *num_resources) 
+    if (i == *num_resources)
     {
         if(*num_resources == *rsize) {
 	    *rsize = *rsize + INST_ARRAY_INCR;
@@ -38,18 +36,16 @@ void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int 
     *rlist = resource_list;
 }
 
-
-void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier)
-{
+void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int *rsize, char *qualifier) {
     char *qual = qualifier;	
     peos_resource_t *resource_list = *rlist;
     if(t) {
 	if (IS_OP_TREE(t)) {
-	    switch TREE_OP(t) { 
-	    case DOT: 
+	    switch TREE_OP(t) {
+	    case DOT:
 	    make_resource_list(t->left, &resource_list, num_resources, rsize, "\0");
 	    break;
-	    case EQ: 
+	    case EQ:
 	    case NE:
 	    case GE:
 	    case LE:
@@ -94,159 +90,83 @@ void make_resource_list(Tree t, peos_resource_t **rlist, int *num_resources, int
 }
 
 #ifndef PALM
-peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *total_resources)
-{
-
-    char* result_str=NULL;
-    Graph g;
-    Node n;
-    int i,j;
+peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *total_resources) {
     int rsize = 256;
+    Node n;
+    peos_resource_t *act_resources;
     int num_resources = 0;
     peos_context_t *context = peos_get_context(pid);
-    peos_resource_t *proc_resources = context -> resources;
-    int num_proc_resources = context -> num_resources;
-    peos_resource_t *act_resources;
-peos_tcl* interpreter;
-    if(peos_tcl_start(&(interpreter))==TCL_ERROR){
-       fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-       return NULL;
-    }
-    if(!result_str){
-       result_str = (char*)malloc(sizeof(char)*(255));
-    }
-    g = context -> process_graph;
-    if(g != NULL) {
-        n = find_node(g,act_name);
-        if(n == NULL) {
-            fprintf(stderr,"get_resource_list_action :cannot find action\n");
-	    if(result_str) free(result_str);
-	    return NULL;
-	}
+    Graph g = context -> process_graph;
 
-	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-	make_resource_list(n -> requires, &act_resources, &num_resources, &rsize, "\0");
-	*total_resources = num_resources;
-        for(i = 0; i < num_resources; i++) {
-            for(j = 0; j < num_proc_resources; j++) {
-	            peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
-	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
-	            strcpy(act_resources[i].value,result_str);
-		    break;
-		}
-	    }
-	}
-	if(result_str) free(result_str);
-	peos_tcl_delete(interpreter);
-        return act_resources;
-    }else{
+    if (g == NULL) {
         fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
-	if(result_str) free(result_str);
         return NULL;
     }
+
+    n = find_node(g, act_name);
+
+    if(n == NULL) {
+        fprintf(stderr,"get_resource_list_action :cannot find action\n");
+        return NULL;
+    }
+
+    act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+    make_resource_list(n -> requires, &act_resources, &num_resources, &rsize, "\0");
+    *total_resources = num_resources;
+    return act_resources;
 }
 
-peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int
-		*total_resources)
-{
-    char* result_str=NULL;
-    Graph g;
-    Node n;
-    int i,j;
+peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int *total_resources) {
     int rsize = 256;
+    Node n;
+    peos_resource_t *act_resources;
     int num_resources = 0;
     peos_context_t *context = peos_get_context(pid);
-    peos_resource_t *proc_resources = context -> resources;
-    int num_proc_resources = context -> num_resources;
-    peos_resource_t *act_resources;
-peos_tcl* interpreter;   
-    if(peos_tcl_start(&(interpreter))==TCL_ERROR){
-       fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-       return NULL;
-    }
-    if(!result_str){
-       result_str = (char*)malloc(sizeof(char)*(255));
-    }
-    g = context -> process_graph;   
-    if(g != NULL) {
-        n = find_node(g,act_name);
-        if(n == NULL) {
-            fprintf(stderr,"get_resource_list_action :cannot find action");
-            return NULL;
-        }
+    Graph g = context -> process_graph;
 
-	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-	make_resource_list(n -> provides, &act_resources, &num_resources, &rsize, "\0");
-        *total_resources = num_resources;
-        for(i = 0; i < num_resources; i++) {
-            for(j = 0; j < num_proc_resources; j++) {
-	        peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
-                if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
-	            strcpy(act_resources[i].value,result_str);
-                    break;
-                }
-            }
-        }
-	if(result_str) free(result_str);
-	peos_tcl_delete(interpreter);
-        return act_resources;
-    }else{
-        if(result_str) free(result_str);
+    if (g == NULL) {
+        fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
         return NULL;
     }
+
+    n = find_node(g, act_name);
+
+    if(n == NULL) {
+        fprintf(stderr,"get_resource_list_action :cannot find action\n");
+        return NULL;
+    }
+
+    act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+    make_resource_list(n -> provides, &act_resources, &num_resources, &rsize, "\0");
+    *total_resources = num_resources;
+    return act_resources;
 }
 
-
-peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_resources)
-{
-    char* result_str=NULL;
-    Graph g;
-    Node n;
-    int i,j;
+peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_resources) {
     int rsize = 256;
+    Node n;
+    peos_resource_t *act_resources;
     int num_resources = 0;
     peos_context_t *context = peos_get_context(pid);
-    peos_resource_t *proc_resources = context -> resources;
-    int num_proc_resources = context -> num_resources;
-    peos_resource_t *act_resources;
-    peos_tcl* interpreter;
-    if(peos_tcl_start(&(interpreter))==TCL_ERROR){
-       fprintf(stderr,"ERROR: TCL_ERROR creating a Tcl interpreter\n");
-       return NULL;
-    }
-    if(!result_str){
-       result_str = (char*)malloc(sizeof(char)*(255));
-    }
-    g = context -> process_graph;
-    if(g != NULL) {
-        n = find_node(g,act_name);
-	if(n == NULL) {
-	    fprintf(stderr,"get_resource_list_action :cannot find action");
-	    return NULL;
-	}
+    Graph g = context -> process_graph;
 
-	act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-	
-	make_resource_list(n -> requires, &act_resources,&num_resources, &rsize, "\0");
-	make_resource_list(n -> provides, &act_resources,&num_resources, &rsize, "\0");
-	*total_resources = num_resources;
-	for(i = 0; i < num_resources; i++) {
-	    for(j = 0; j < num_proc_resources; j++) {
-	       peos_tcl_eval(interpreter,proc_resources[j].name , proc_resources[j].value, result_str );
- 	        if(strcmp(act_resources[i].name,proc_resources[j].name) == 0) {
-	            strcpy(act_resources[i].value,result_str);
-		    break;
-		}
-	    }
-	}
-	if(result_str) free(result_str);
-	peos_tcl_delete(interpreter);
-        return act_resources;
-    }
-    else{
-        if(result_str) free(result_str);
+    if (g == NULL) {
+        fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
         return NULL;
     }
+
+    n = find_node(g, act_name);
+
+    if(n == NULL) {
+        fprintf(stderr,"get_resource_list_action :cannot find action\n");
+        return NULL;
+    }
+
+    act_resources = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+    make_resource_list(n -> requires, &act_resources,&num_resources, &rsize, "\0");
+    make_resource_list(n -> provides, &act_resources,&num_resources, &rsize, "\0");
+    *total_resources = num_resources;
+    return act_resources;
 }
 #endif
 
@@ -266,27 +186,24 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
     int num_resources = 0;
     peos_resource_t *resource_list;
     g = makegraph(model);    //see graph.c
-    if(g != NULL) {	
-	resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
+    if(g != NULL) {
+        resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
         for(n = g->source->next; n != NULL; n = n -> next) {
-	    if(n -> type == ACTION) {
+            if(n -> type == ACTION) {
                 make_resource_list(n->requires, &resource_list, &num_resources, &rsize, "\0");
-		make_resource_list(n->provides, &resource_list, &num_resources, &rsize, "\0");
-	    }
-	}
-	*total_resources = num_resources;
-	GraphDestroy(g);
-	return resource_list;
+                make_resource_list(n->provides, &resource_list, &num_resources, &rsize, "\0");
+            }
+        }
+        *total_resources = num_resources;
+        GraphDestroy(g);
+        return resource_list;
     }
-    else
-	{
-	*total_resources = 386; /* checking path test is going down */
+    else {
+        *total_resources = 386; /* checking path test is going down */
         return NULL;
-	}
+    }
 }
 
-
-
 #ifdef UNIT_TEST
 #include "test_resources.c"
 #endif

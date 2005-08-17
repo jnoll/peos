@@ -35,20 +35,8 @@
 
 FILE* pe_log=NULL;
 int number=0;
-extern char *act_state_name(vm_act_state state);
 
-void to(int i){
-	switch(i){
-	    case DOT:fprintf(pe_log," DOT "); break;    // .
-	    case EQ: fprintf(pe_log," EQ "); break;     // ==
-	    case NE: fprintf(pe_log," NE "); break;     // !=
-	    case GE: fprintf(pe_log," GE "); break;     // >=
-	    case LE: fprintf(pe_log," LE "); break;     // <=
-	    case LT: fprintf(pe_log," LT "); break;     // <
-	    case GT: fprintf(pe_log," GT "); break;     // >
-	    default: fprintf(pe_log," default "); break;
-	}
-}
+extern char *act_state_name(vm_act_state state);
 
 int contains_char(char* string, char ch) {
     int i;
@@ -60,7 +48,6 @@ int contains_char(char* string, char ch) {
 }
 
 char* pe_get_resval(int pid, char* res_name) {
-
     int i;
     char* result = malloc(100);
     char* res_value;
@@ -69,12 +56,12 @@ char* pe_get_resval(int pid, char* res_name) {
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *proc_resources = context->resources;
     int num_proc_resources = context->num_resources;
-    
+
     strcpy(result, "$$");
 
     if (!res_name)
         return result;
- 
+
     interp = Tcl_CreateInterp();
 
     for (i = 0; i < num_proc_resources; i++) {
@@ -136,56 +123,17 @@ long get_eval_result(char* pml_file, char* pml_procedure, char* resource)
         }
         sprintf(action, "%s %s", pml_procedure, resource);
     }
-    
-    //printf("action = %s\n", action);
 
     interp = Tcl_CreateInterp();
     Tcl_EvalFile(interp, pml_file);
     if (Tcl_Eval(interp, action) == TCL_ERROR) {
-        //printf("%s\n", interp->result);
-        //return 0;
-
-        printf("Error: check tcl or pml file\n");
-        printf("%s\n", interp->result);
-        exit(1);
+        fprintf(stderr, "Error evaluating tcl\n%s\n", interp->result);
+        exit(255);
     }
     result = atol(interp->result);
     Tcl_DeleteInterp(interp);
     free(action);
-    //printf("PROCEDURE = \"%s\" RESOURCE = \"%s\" EVAL RESULT = \"%s\"\n", pml_procedure, resource, result);
     return result;
-}
-
-void print_op(int i){
-	switch(i){
-	    case DOT:printf("."); break;    // .
-	    case EQ: printf("=="); break;     // ==
-	    case NE: printf("!="); break;     // !=
-	    case GE: printf(">="); break;     // >=
-	    case LE: printf("<="); break;     // <=
-	    case LT: printf("<"); break;     // <
-	    case GT: printf(">"); break;     // >
-	    case AND: printf("&&"); break;
-	    case OR: printf("||"); break;
-	    default: printf("default"); break;
-	}
-}
-
-void print_tree(Tree t)
-{
-    if (!t)
-        return;
-    if (IS_ID_TREE(t))
-        printf("<%s>", TREE_ID(t));
-    else if (IS_OP_TREE(t))
-    {
-        printf("[");
-        print_op(TREE_OP(t));//printf("[%d]", TREE_OP(t));
-        printf("]");
-        printf("(");  print_tree(t->left);
-        printf(",");
-        print_tree(t->right);  printf(")");
-    }
 }
 
 int res_values_available(int pid, Tree t)
@@ -215,37 +163,36 @@ int res_values_available(int pid, Tree t)
     return 1;
 }
 
-
 int pe_perform_predicate_eval(char* pml_file, int pid, Tree t)
 {
+    //char* res_value;
     if (!t || !res_values_available(pid, t)) //will not evaluate if not all resources have their value assigned
         return 0;
 
     if (!pml_file)
-        pml_file = "./../../os/kernel/peos_init.tcl";//"/home/ksuwanna/peos/src/os/kernel/peos_init.tcl";    //default tcl file
+        pml_file = "./../../os/kernel/peos_init.tcl";  //default tcl file
 
     if (IS_ID_TREE(t) && TREE_ID(t)) {
-        //if (strlen(TREE_ID(t)) > 0 && 
         if (strlen(TREE_ID(t)) > 0 && TREE_ID(t)[0] == '\"') {
             if (!strcmp(TREE_ID(t), "\"True\"") ||
-                !strcmp(TREE_ID(t), "\"Passed\"") ||
-                !strcmp(TREE_ID(t), "\"1\""))
-                    return 1;	
+                 !strcmp(TREE_ID(t), "\"Passed\"") ||
+                 !strcmp(TREE_ID(t), "\"1\""))
+                return 1;	
             if (!strcmp(TREE_ID(t), "\"False\"") ||
-                !strcmp(TREE_ID(t), "\"Failed\"") ||
-                !strcmp(TREE_ID(t), "\"0\""))
-                    return 0;
+                 !strcmp(TREE_ID(t), "\"Failed\"") ||
+                 !strcmp(TREE_ID(t), "\"0\""))
+                return 0;
         }
-        
-        //printf("no dot -> %s\n", pe_get_resval(pid, TREE_ID(t)));
-        
-        return (int) get_eval_result(pml_file, "default", pe_get_resval(pid, TREE_ID(t)));
+        //res_value = pe_get_resval(pid, TREE_ID(t));
+        //if (res_value == NULL || !strcmp(res_value, "") || contains_char(res_value, '$'))
+        //    return 0;    //true if resource is not unbound
+        return (int) get_eval_result(pml_file, "exists", pe_get_resval(pid, TREE_ID(t)));
     } else if (IS_OP_TREE(t)) {  //support just binary operator
         switch (TREE_OP(t)) {
             case DOT:
-            
-            //printf("dot -> %s\n", pe_get_resval(pid, TREE_ID(t->left)));
-            
+                //res_value = pe_get_resval(pid, TREE_ID(t->left));
+                //if (res_value == NULL || !strcmp(res_value, "") || contains_char(res_value, '$'))
+                 //   return 0;    //true if resource is not unbound
                 return get_eval_result(pml_file, TREE_ID(t->right), pe_get_resval(pid, TREE_ID(t->left)));
             case EQ:
                 return pe_perform_predicate_eval(pml_file, pid, t->left) == pe_perform_predicate_eval(pml_file, pid, t->right);
@@ -259,18 +206,15 @@ int pe_perform_predicate_eval(char* pml_file, int pid, Tree t)
                 return pe_perform_predicate_eval(pml_file, pid, t->left) < pe_perform_predicate_eval(pml_file, pid, t->right);
             case GT:
                 return pe_perform_predicate_eval(pml_file, pid, t->left) > pe_perform_predicate_eval(pml_file, pid, t->right);
-            case AND:  //perform short circuit
-                return (pe_perform_predicate_eval(pml_file, pid, t->left) != 1) ? 
-                           0 : pe_perform_predicate_eval(pml_file, pid, t->right);
-            case OR:  //perform short circuit
-                return (pe_perform_predicate_eval(pml_file, pid, t->left) == 1) ?
-                           1 : pe_perform_predicate_eval(pml_file, pid, t->right);
+                case AND:  //perform short circuit
+                    return pe_perform_predicate_eval(pml_file, pid, t->left) && pe_perform_predicate_eval(pml_file, pid, t->right);
+                    case OR:  //perform short circuit
+                        return pe_perform_predicate_eval(pml_file, pid, t->left) || pe_perform_predicate_eval(pml_file, pid, t->right);
         }
     }
 }
 
-int pe_is_requires_eval_true(int pid, char *act_name, int t)
-{
+int pe_is_requires_eval_true(int pid, char *act_name, int t) {
     Node n;
     peos_context_t *context = peos_get_context(pid);
     Graph g = context -> process_graph;
@@ -284,114 +228,90 @@ int pe_is_requires_eval_true(int pid, char *act_name, int t)
         fprintf(stderr,"get_resource_list_action :cannot find action");
         return 0;
     }
-    //printf("action = %s\n", act_name);
     if(t == PE_RESOURCE_REQUIRES)
     {
         result = pe_perform_predicate_eval(NULL, pid, n->requires);
-        //printf("    requires tree = "); print_tree(n->requires);  printf("\n");//, resval = %s\n", pe_get_resval(pid, n->requires));
     }
     else if (t == PE_RESOURCE_PROVIDES)
     {
         result = pe_perform_predicate_eval(NULL, pid, n->provides);
-        //printf("    privides tree = "); print_tree(n->provides);  printf("\n");//printf(", resval = %s\n", pe_get_resval(pid, n->provides));
     }
-    //printf ("        pe_is_requires_eval_true = '%d'\n", result);
     return result;
 }
 
-int is_requires_true_old(int pid, char *act_name)
+int is_requires_true_old(peos_resource_t *resources, int num_resources)//(int pid, char *act_name)
 {
-    peos_resource_t *resources;
-    int num_resources;
     int i;
 
-    resources = get_resource_list_action_requires(pid,act_name,&num_resources);
     if (num_resources == 0) {
         return 1;
     }
     else {
         struct stat buf;
 	
-	for(i = 0; i < num_resources; i++)
-	{
-	    if(strcmp(resources[i].qualifier, "abstract") != 0) {
+        for(i = 0; i < num_resources; i++)
+        {
+            if(strcmp(resources[i].qualifier, "abstract") != 0) {
 
-	        if(strcmp(resources[i].value,"$$") == 0) return 0;
-	        if(stat(resources[i].value, &buf) == -1) {
-	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
-	                return 0;
-	            }
-	            else {
-	                fprintf(stderr, "Required Resource Detection Error for %s\n",resources[i].name);
-		        return 0;
-	            }
-	        }
-	    }
-	}
+                if(strcmp(resources[i].value,"$$") == 0) return 0;
+                if(stat(resources[i].value, &buf) == -1) {
+                    if(errno == ENOENT) { /* If stat failed because file didn't exist */
+                        return 0;
+                    }
+                    else {
+                        fprintf(stderr, "Required Resource Detection Error for %s\n",resources[i].name);
+                        return 0;
+                    }
+                }
+            }
+        }
         return 1;
     }
 }
-int is_provides_true_old(int pid, char *act_name)
+
+int is_provides_true_old(peos_resource_t *resources, int num_resources)//(int pid, char *act_name)
 {
-    peos_resource_t *resources;
-    int num_resources;
     int i;
 
-    resources = get_resource_list_action_provides(pid,act_name,&num_resources);
     if (num_resources == 0) {
         return 1;
     }
     else {
         struct stat buf;
-	for(i = 0; i < num_resources; i++)
-	{
-	    if(strcmp(resources[i].qualifier, "abstract") != 0) {
-	        if((strcmp(resources[i].value,"$$") == 0) && (strcmp(resources[i].qualifier, "abstract") != 0)) return 0;
-	        if(stat(resources[i].value, &buf) == -1) {
-	            if(errno == ENOENT) { /* If stat failed because file didn't exist */
-	                return 0;
-	            }
-	            else {
-	                fprintf(stderr, "Provided Resource Detection Error for %s\n",resources[i].name);
-		        return 0;
-	            }
-	        }
-	    }
-	}
+        for(i = 0; i < num_resources; i++)
+        {
+            if(strcmp(resources[i].qualifier, "abstract") != 0) {
+                if((strcmp(resources[i].value,"$$") == 0) && (strcmp(resources[i].qualifier, "abstract") != 0)) return 0;
+                if(stat(resources[i].value, &buf) == -1) {
+                    if(errno == ENOENT) { /* If stat failed because file didn't exist */
+                        return 0;
+                    }
+                    else {
+                        fprintf(stderr, "Provided Resource Detection Error for %s\n",resources[i].name);
+                        return 0;
+                    }
+                }
+            }
+        }
         return 1;
     }
 }
+
 int is_requires_true(int pid, char *act_name)
 {
-       int i;
-#ifdef PE_LOG
-       //pe_log = NULL;
-       pe_log = fopen ("pelog", "a");
-#endif
-	i = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_REQUIRES);
-#ifdef PE_LOG
-	fprintf(pe_log, "***RETURN from is_requires_true : %d\n", i);
-	fflush(pe_log);
-	if(pe_log != NULL && pe_log != stderr)fclose(pe_log);
-#endif
-	return (i || is_requires_true_old(pid, act_name));
+    peos_resource_t *resources;
+    int num_resources;
+    resources = get_resource_list_action_requires(pid,act_name,&num_resources);
+    return pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_REQUIRES) || is_requires_true_old(resources, num_resources);
 }
 
 int is_provides_true(int pid, char *act_name)
-{
-	int i;
-#ifdef PE_LOG
-       //pe_log = NULL;
-       pe_log = fopen ("pelog", "a");
-#endif 
-
-       i = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_PROVIDES);
-#ifdef PE_LOG
-	fprintf(pe_log, "***RETURN from is_provodes_true : %d\n", i);
-	fflush(pe_log);
-	if(pe_log != NULL && pe_log != stderr)fclose(pe_log);
-#endif
-       return (i || is_provides_true_old(pid, act_name));
+{   int result;
+    peos_resource_t *resources;
+    int num_resources;
+    resources = get_resource_list_action_provides(pid,act_name,&num_resources);
+    result = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_PROVIDES);
+    return result || is_provides_true_old(resources, num_resources);
 }
 
 //----------------------

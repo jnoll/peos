@@ -43,15 +43,15 @@ Graph makegraph(char *file)
 Node find_node(Graph g, char *node_name)
 {
     Node n;
-    for(n = g -> source; n!= NULL; n = n -> next) {
-        if((n -> name) && (n -> type == ACTION)) {
+    for (n = g -> source; n!= NULL; n = n -> next) {
+        if ((n -> name) && (n -> type == ACTION)) {
             if (strcmp((n -> name),node_name) == 0) {
 	        return n;
 	    }
 	}
     }
     return NULL;
-}	
+}
 
 void sanitize_node(Node n)
 {

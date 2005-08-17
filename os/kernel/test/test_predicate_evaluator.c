@@ -100,7 +100,6 @@ START_TEST(test_is_requires_true)
    
 }
 END_TEST
-	
 
 START_TEST(test_is_requires_true_1)
 {
@@ -239,6 +238,7 @@ START_TEST(test_get_eval_result_filecount)
     system("touch /tmp/my_dir/my_file_2");
     fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "filecount", "/tmp/my_dir") == 2, "get_eval_result_filecount failed");
     system("rm -rf /tmp/my_dir");
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "filecount", "not_exist_dir") == 0, "get_eval_result_filecount failed");
 }
 END_TEST
         
@@ -246,7 +246,7 @@ START_TEST(test_get_eval_result_filesize)
 {
     FILE *fp;
     long before, after;
-    fp = fopen("my_file", "w");
+     fp = fopen("my_file", "w");
     fprintf(fp, "some text\n");
     fclose(fp);
     before = get_eval_result("./../../../os/kernel/peos_init.tcl", "filesize", "my_file");
@@ -256,6 +256,7 @@ START_TEST(test_get_eval_result_filesize)
     after = get_eval_result("./../../../os/kernel/peos_init.tcl", "filesize", "my_file");
     system("rm my_file");
     fail_unless(before < after, "get_eval_result_filesize failed");
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "filesize", "not_exist_file") == 0, "get_eval_result_filesize failed");
 }
 END_TEST
 
@@ -268,6 +269,7 @@ START_TEST(test_get_eval_result_timestamp)
     after = get_eval_result("./../../../os/kernel/peos_init.tcl", "timestamp", "my_file");
     system("rm my_file");
     fail_unless(before < after, "get_eval_result_timestamp failed");
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "timestamp", "not_exists_file") == 0, "get_eval_result_timestamp failed");
 }
 END_TEST
 
@@ -286,8 +288,9 @@ START_TEST(test_get_eval_result_misspellcount)
     fprintf(fp, "ccdd\n");
     fclose(fp);
     system("rm my_file");
+    fail_unless(get_eval_result("./../../../os/kernel/peos_init.tcl", "misspellcount", "not_exists_file") == 0, "get_eval_result_misspellcount failed");
 }
-END_TEST        
+END_TEST
         
 int
 main(int argc, char *argv[])
