@@ -309,7 +309,7 @@ START_TEST(test_get_resource_list)
     fprintf(fp, "process p { action act0 {  requires { res0 } provides { res1 && res2 }} action act1 { requires { res2 && res3} }}\n");
     fclose(fp);
     resources = get_resource_list("temp.pml", &num_resources);
-    system("rm my_file");
+    system("rm temp.pml");
     fail_unless(num_resources == 4, "test_get_resource_list");
     fail_unless(strcmp(resources[0].name, "res0") == 0, "test_get_resource_list");
     fail_unless(strcmp(resources[1].name, "res1") == 0, "test_get_resource_list");

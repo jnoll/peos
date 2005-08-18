@@ -38,77 +38,19 @@ int number=0;
 
 extern char *act_state_name(vm_act_state state);
 
-int contains_char(char* string, char ch) {
-    int i;
-    int len = strlen(string);
-    for (i = 0; i < len; i++)
-        if (string[i] == ch)
-            return 1;
-    return 0;
-}
-
-char* pe_get_resval(int pid, char* res_name) {
-    int i;
-    char* result = malloc(100);
-    char* res_value;
-    Tcl_Interp* interp;
-    char* action;
-    peos_context_t *context = peos_get_context(pid);
-    peos_resource_t *proc_resources = context->resources;
-    int num_proc_resources = context->num_resources;
-
-    strcpy(result, "$$");
-
-    if (!res_name)
-        return result;
-
-    interp = Tcl_CreateInterp();
-
-    for (i = 0; i < num_proc_resources; i++) {
-        res_value = proc_resources[i].value;
-        if (res_value && !contains_char(res_value, '$')) {
-            action = malloc(strlen(proc_resources[i].name) + strlen(res_value) + 8);
-            sprintf(action, "set %s \"%s\"", proc_resources[i].name, res_value);
-            if (Tcl_Eval(interp, action) == TCL_ERROR) {
-                printf("%s\n", interp->result);
-                exit(225);
-            }
-            free(action);
-        }
-    }
-
-    if (i != 0) {
-        for (i = 0; i < num_proc_resources; i++) {
-            if (!strcmp(res_name, proc_resources[i].name)) {
-                res_value = proc_resources[i].value;
-
-                if (!res_value || strcmp(res_value, "$$") == 0)
-                    break;
-                if (!contains_char(res_value, '$'))
-                    break;
-                action = malloc(strlen(res_value) + 12);
-                sprintf(action, "set result %s", res_value);
-                if (Tcl_Eval(interp, action) == TCL_ERROR) {
-                    break;
-                }
-                strcpy(result, interp->result);
-                free(action);
-                break;
-            }
-        }
-    }
-    Tcl_DeleteInterp(interp);
-    return result;
-}
-
-long get_eval_result(char* pml_file, char* pml_procedure, char* resource)
-{
+long get_eval_result(char* tcl_file, char* tcl_procedure, char* resource) {
     Tcl_Interp* interp;
     char* action;
     long result;
 
-    if (pml_procedure == NULL) {
-        action = strdup(resource);//(char*)malloc(strlen(resource) + 1);
+    if (strcspn(resource, "$") != strlen(resource)) { //if res_value not contains $
+        if (strcmp(tcl_procedure, "exists") == 0)
+            return 1;
+        return 0;
+    }
+
+    if (tcl_procedure == NULL) {
+        action = strdup(resource);
         if (!action) {
             fprintf(stderr, "Error allocating memory: aborting!\n");
             exit(255);
@@ -116,18 +58,18 @@ long get_eval_result(char* pml_file, char* pml_procedure, char* resource)
         strcpy(action, resource);
     }
     else {
-        action = (char*)malloc(strlen(pml_procedure) + strlen(resource) + 2);
+        action = (char*)malloc(strlen(tcl_procedure) + strlen(resource) + 2);
         if (!action) {
             fprintf(stderr, "Error allocating memory: aborting!\n");
             exit(255);
         }
-        sprintf(action, "%s %s", pml_procedure, resource);
+        sprintf(action, "%s %s", tcl_procedure, resource);
     }
 
     interp = Tcl_CreateInterp();
-    Tcl_EvalFile(interp, pml_file);
+    Tcl_EvalFile(interp, tcl_file);
     if (Tcl_Eval(interp, action) == TCL_ERROR) {
-        fprintf(stderr, "Error evaluating tcl\n%s\n", interp->result);
+        fprintf(stderr, "Error evaluating tcl: aborting!\n%s\n", interp->result);
         exit(255);
     }
     result = atol(interp->result);
@@ -136,43 +78,13 @@ long get_eval_result(char* pml_file, char* pml_procedure, char* resource)
     return result;
 }
 
-int res_values_available(int pid, Tree t)
-{
-    char* res_value;
+int eval_predicate(char* tcl_file, peos_resource_t* resources, int num_resources, Tree t) {
+    int i;
+    
+    if (num_resources == 0)
+        return 1;
+    
     if (IS_ID_TREE(t)) {
-        if (TREE_ID(t)[0] != '\"') {
-            res_value = pe_get_resval(pid, TREE_ID(t));
-            if (!res_value || !strcmp(res_value, "$$"))
-                return 0;
-        }
-    } else if (IS_OP_TREE(t)) {
-        switch (TREE_OP(t)) {
-            case DOT:
-                return res_values_available(pid, t->left);
-            case EQ:
-            case NE:
-            case GE:
-            case LE:
-            case LT:
-            case GT:
-            case AND:
-            case OR:
-                return res_values_available(pid, t->left) && res_values_available(pid, t->right);
-        }
-    }
-    return 1;
-}
-
-int pe_perform_predicate_eval(char* pml_file, int pid, Tree t)
-{
-    //char* res_value;
-    if (!t || !res_values_available(pid, t)) //will not evaluate if not all resources have their value assigned
-        return 0;
-
-    if (!pml_file)
-        pml_file = "./../../os/kernel/peos_init.tcl";  //default tcl file
-
-    if (IS_ID_TREE(t) && TREE_ID(t)) {
         if (strlen(TREE_ID(t)) > 0 && TREE_ID(t)[0] == '\"') {
             if (!strcmp(TREE_ID(t), "\"True\"") ||
                  !strcmp(TREE_ID(t), "\"Passed\"") ||
@@ -183,60 +95,61 @@ int pe_perform_predicate_eval(char* pml_file, int pid, Tree t)
                  !strcmp(TREE_ID(t), "\"0\""))
                 return 0;
         }
-        //res_value = pe_get_resval(pid, TREE_ID(t));
-        //if (res_value == NULL || !strcmp(res_value, "") || contains_char(res_value, '$'))
-        //    return 0;    //true if resource is not unbound
-        return (int) get_eval_result(pml_file, "exists", pe_get_resval(pid, TREE_ID(t)));
-    } else if (IS_OP_TREE(t)) {  //support just binary operator
+        i = get_resource_index(resources, num_resources, TREE_ID(t));
+        if (strcmp(resources[i].qualifier, "abstract") == 0)
+            return 1;
+        return (int) get_eval_result(tcl_file, "exists", resources[i].value);
+    } else if (IS_OP_TREE(t)) {  //support binary operator only
         switch (TREE_OP(t)) {
             case DOT:
-                //res_value = pe_get_resval(pid, TREE_ID(t->left));
-                //if (res_value == NULL || !strcmp(res_value, "") || contains_char(res_value, '$'))
-                 //   return 0;    //true if resource is not unbound
-                return get_eval_result(pml_file, TREE_ID(t->right), pe_get_resval(pid, TREE_ID(t->left)));
+                i = get_resource_index(resources, num_resources, TREE_ID(t->left));
+                if (strcmp(resources[i].qualifier, "abstract") == 0)
+                    return 1;
+                return (int) get_eval_result(tcl_file, TREE_ID(t->right), resources[i].value);
             case EQ:
-                return pe_perform_predicate_eval(pml_file, pid, t->left) == pe_perform_predicate_eval(pml_file, pid, t->right);
+                return eval_predicate(tcl_file, resources, num_resources, t->left) == eval_predicate(tcl_file, resources, num_resources, t->right);
             case NE:
-                return pe_perform_predicate_eval(pml_file, pid, t->left) != pe_perform_predicate_eval(pml_file, pid, t->right);
+                return eval_predicate(tcl_file, resources, num_resources, t->left) != eval_predicate(tcl_file, resources, num_resources, t->right);
             case GE:
-                return pe_perform_predicate_eval(pml_file, pid, t->left) >= pe_perform_predicate_eval(pml_file, pid, t->right);
+                return eval_predicate(tcl_file, resources, num_resources, t->left) >= eval_predicate(tcl_file, resources, num_resources, t->right);
             case LE:
-                return pe_perform_predicate_eval(pml_file, pid, t->left) <= pe_perform_predicate_eval(pml_file, pid, t->right);
+                return eval_predicate(tcl_file, resources, num_resources, t->left) <= eval_predicate(tcl_file, resources, num_resources, t->right);
             case LT:
-                return pe_perform_predicate_eval(pml_file, pid, t->left) < pe_perform_predicate_eval(pml_file, pid, t->right);
+                return eval_predicate(tcl_file, resources, num_resources, t->left) < eval_predicate(tcl_file, resources, num_resources, t->right);
             case GT:
-                return pe_perform_predicate_eval(pml_file, pid, t->left) > pe_perform_predicate_eval(pml_file, pid, t->right);
+                return eval_predicate(tcl_file, resources, num_resources, t->left) > eval_predicate(tcl_file, resources, num_resources, t->right);
                 case AND:  //perform short circuit
-                    return pe_perform_predicate_eval(pml_file, pid, t->left) && pe_perform_predicate_eval(pml_file, pid, t->right);
+                    return eval_predicate(tcl_file, resources, num_resources, t->left) && eval_predicate(tcl_file, resources, num_resources, t->right);
                     case OR:  //perform short circuit
-                        return pe_perform_predicate_eval(pml_file, pid, t->left) || pe_perform_predicate_eval(pml_file, pid, t->right);
+                        return eval_predicate(tcl_file, resources, num_resources, t->left) || eval_predicate(tcl_file, resources, num_resources, t->right);
         }
     }
 }
 
-int pe_is_requires_eval_true(int pid, char *act_name, int t) {
-    Node n;
-    peos_context_t *context = peos_get_context(pid);
-    Graph g = context -> process_graph;
-    int result = 0;
-
-    if(g == NULL)
-        return 0;
-
-    n = find_node(g,act_name);
-    if(n == NULL) {
-        fprintf(stderr,"get_resource_list_action :cannot find action");
-        return 0;
+void eval_resource_list(peos_resource_t* proc_resources, int num_proc_resources, peos_resource_t* eval_resources, int num_eval_resources) {
+    int i;
+    char* value;
+    char* buff = (char*)malloc(sizeof(char) * 255);
+    
+    Tcl_Interp* interp = Tcl_CreateInterp();
+    for (i = 0; i < num_proc_resources; i++) {
+        if (strcmp(proc_resources[i].value, "") == 0 || strcmp(proc_resources[i].value, "$$") == 0)
+            sprintf(buff, "set %s \\${%s}", proc_resources[i].name, proc_resources[i].name);
+        else
+            sprintf(buff, "set %s %s", proc_resources[i].name, proc_resources[i].value);
+        Tcl_Eval(interp, buff);
     }
-    if(t == PE_RESOURCE_REQUIRES)
-    {
-        result = pe_perform_predicate_eval(NULL, pid, n->requires);
+    for (i = 0; i < num_eval_resources; i++) {
+        value = Tcl_GetVar(interp, eval_resources[i].name, TCL_GLOBAL_ONLY);
+        if (value != NULL)
+            strcpy(eval_resources[i].value, value);
+        else
+            strcpy(eval_resources[i].value, "");
     }
-    else if (t == PE_RESOURCE_PROVIDES)
-    {
-        result = pe_perform_predicate_eval(NULL, pid, n->provides);
-    }
-    return result;
+    Tcl_DeleteInterp(interp);
+    if (value)
+        free(value);
+    free(buff);
 }
 
 int is_requires_true_old(peos_resource_t *resources, int num_resources)//(int pid, char *act_name)
@@ -299,19 +212,55 @@ int is_provides_true_old(peos_resource_t *resources, int num_resources)//(int pi
 
 int is_requires_true(int pid, char *act_name)
 {
+    /*Node n;
     peos_resource_t *resources;
+    peos_context_t *context = peos_get_context(pid);
+    Graph g = context -> process_graph;
+
+    if(g == NULL)
+        return 0;
+
+    n = find_node(g,act_name);
+    if(n == NULL) {
+        fprintf(stderr,"get_resource_list_action :cannot find action");
+        return 0;
+    }
     int num_resources;
     resources = get_resource_list_action_requires(pid,act_name,&num_resources);
-    return pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_REQUIRES) || is_requires_true_old(resources, num_resources);
+    eval_resource_list(context->resources, context->num_resources, resources, num_resources);
+    return eval_predicate("./../../os/kernel/peos_init.tcl", resources, num_resources, n->requires) || is_requires_true_old(resources, num_resources);*/
+    return 0;
 }
 
 int is_provides_true(int pid, char *act_name)
-{   int result;
+{
+    /*Node n;
     peos_resource_t *resources;
+    peos_context_t *context = peos_get_context(pid);
+    Graph g = context -> process_graph;
+
+    if(g == NULL)
+        return 0;
+
+    n = find_node(g,act_name);
+    if(n == NULL) {
+        fprintf(stderr,"get_resource_list_action :cannot find action");
+        return 0;
+    }
     int num_resources;
     resources = get_resource_list_action_provides(pid,act_name,&num_resources);
-    result = pe_is_requires_eval_true(pid,act_name, PE_RESOURCE_PROVIDES);
-    return result || is_provides_true_old(resources, num_resources);
+    eval_resource_list(context->resources, context->num_resources, resources, num_resources);
+    return eval_predicate("./../../os/kernel/peos_init.tcl", resources, num_resources, n->provides) || is_provides_true_old(resources, num_resources);*/
+    return 0;
+}
+int get_resource_index(peos_resource_t* resources, int num_resources, char* res_name) {
+    int i;
+    //printf("\n res_name = %s\n", res_name);
+    for (i = 0; i < num_resources; i++)
+        if (strcmp(res_name, resources[i].name) == 0)
+            return i;
+    fprintf(stderr,"Error resource not found: aborting\n");
+    return -1;
 }
 
 //----------------------
