@@ -14,10 +14,7 @@
 #include "graph_engine.h"
 #include "process.h"
 #include "resources.h"
-
-#ifndef PALM
 #include "tclinterp.h"
-#endif
 
 #undef NO_TCL
 #undef PE_LOG
@@ -29,14 +26,25 @@
 # define PE_RETURN
 #endif
 
-#define PE_RESOURCE_PROVIDES 100
-#define PE_RESOURCE_REQUIRES 200
+//#define PE_RESOURCE_PROVIDES 100
+//#define PE_RESOURCE_REQUIRES 200
 
 
 FILE* pe_log=NULL;
 int number=0;
 
 extern char *act_state_name(vm_act_state state);
+
+
+int get_resource_index(peos_resource_t* resources, int num_resources, char* res_name) {
+    int i;
+    //printf("\n res_name = %s\n", res_name);
+    for (i = 0; i < num_resources; i++)
+        if (strcmp(res_name, resources[i].name) == 0)
+            return i;
+    fprintf(stderr,"Error resource not found: aborting\n");
+    return -1;
+}
 
 long get_eval_result(char* tcl_file, char* tcl_procedure, char* resource) {
     Tcl_Interp* interp;
@@ -126,35 +134,33 @@ int eval_predicate(char* tcl_file, peos_resource_t* resources, int num_resources
     }
 }
 
-void eval_resource_list(peos_resource_t* proc_resources, int num_proc_resources, peos_resource_t* eval_resources, int num_eval_resources) {
+
+int eval_resource_list(peos_resource_t** resources, int num_resources) {
     int i;
-    char* value;
+    peos_resource_t* res = *resources;
     char* buff = (char*)malloc(sizeof(char) * 255);
     
     Tcl_Interp* interp = Tcl_CreateInterp();
-    for (i = 0; i < num_proc_resources; i++) {
-        if (strcmp(proc_resources[i].value, "") == 0 || strcmp(proc_resources[i].value, "$$") == 0)
-            sprintf(buff, "set %s \\${%s}", proc_resources[i].name, proc_resources[i].name);
+    for (i = 0; i < num_resources; i++) {
+        if (strcmp(res[i].value, "") == 0 || strcmp(res[i].value, "$$") == 0)
+            sprintf(buff, "set %s \\${%s}", res[i].name, res[i].name);
         else
-            sprintf(buff, "set %s %s", proc_resources[i].name, proc_resources[i].value);
-        Tcl_Eval(interp, buff);
-    }
-    for (i = 0; i < num_eval_resources; i++) {
-        value = Tcl_GetVar(interp, eval_resources[i].name, TCL_GLOBAL_ONLY);
-        if (value != NULL)
-            strcpy(eval_resources[i].value, value);
-        else
-            strcpy(eval_resources[i].value, "");
+            sprintf(buff, "set %s %s", res[i].name, res[i].value);
+
+        if (Tcl_Eval(interp, buff) == TCL_ERROR) {
+            fprintf(stderr, "Error evaluating tcl: aborting!\n%s\n", interp->result);
+            exit(255);
+        }
+        strcpy(res[i].value, interp -> result);
     }
     Tcl_DeleteInterp(interp);
-    if (value)
-        free(value);
     free(buff);
+    return 1;
 }
 
 int is_requires_true_old(peos_resource_t *resources, int num_resources)//(int pid, char *act_name)
 {
-    int i;
+    /*int i;
 
     if (num_resources == 0) {
         return 1;
@@ -168,7 +174,7 @@ int is_requires_true_old(peos_resource_t *resources, int num_resources)//(int pi
 
                 if(strcmp(resources[i].value,"$$") == 0) return 0;
                 if(stat(resources[i].value, &buf) == -1) {
-                    if(errno == ENOENT) { /* If stat failed because file didn't exist */
+                    if(errno == ENOENT) { // If stat failed because file didn't exist
                         return 0;
                     }
                     else {
@@ -179,12 +185,12 @@ int is_requires_true_old(peos_resource_t *resources, int num_resources)//(int pi
             }
         }
         return 1;
-    }
+}*/
 }
 
 int is_provides_true_old(peos_resource_t *resources, int num_resources)//(int pid, char *act_name)
 {
-    int i;
+    /*int i;
 
     if (num_resources == 0) {
         return 1;
@@ -196,7 +202,7 @@ int is_provides_true_old(peos_resource_t *resources, int num_resources)//(int pi
             if(strcmp(resources[i].qualifier, "abstract") != 0) {
                 if((strcmp(resources[i].value,"$$") == 0) && (strcmp(resources[i].qualifier, "abstract") != 0)) return 0;
                 if(stat(resources[i].value, &buf) == -1) {
-                    if(errno == ENOENT) { /* If stat failed because file didn't exist */
+    if(errno == ENOENT) { // If stat failed because file didn't exist
                         return 0;
                     }
                     else {
@@ -207,7 +213,7 @@ int is_provides_true_old(peos_resource_t *resources, int num_resources)//(int pi
             }
         }
         return 1;
-    }
+    }*/
 }
 
 int is_requires_true(int pid, char *act_name)
@@ -252,15 +258,6 @@ int is_provides_true(int pid, char *act_name)
     eval_resource_list(context->resources, context->num_resources, resources, num_resources);
     return eval_predicate("./../../os/kernel/peos_init.tcl", resources, num_resources, n->provides) || is_provides_true_old(resources, num_resources);*/
     return 0;
-}
-int get_resource_index(peos_resource_t* resources, int num_resources, char* res_name) {
-    int i;
-    //printf("\n res_name = %s\n", res_name);
-    for (i = 0; i < num_resources; i++)
-        if (strcmp(res_name, resources[i].name) == 0)
-            return i;
-    fprintf(stderr,"Error resource not found: aborting\n");
-    return -1;
 }
 
 //----------------------

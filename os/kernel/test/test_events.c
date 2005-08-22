@@ -13,6 +13,8 @@
 /* Globals. */
 char *instance_dir = NULL;
 char *login_name = "jnoll";
+peos_resource_t* global_resources;
+int global_num_resources;
 
 /* Stubs. */
 peos_context_t *peos_get_context(int pid)
@@ -79,21 +81,21 @@ peos_resource_t *get_resource_list(char *model, int *num_res)
 
 peos_resource_t *get_resource_list_action(int pid,char *act_name, int *num_res)
 {
-    peos_resource_t *resources;	
-    return resources;
+    *num_res = global_num_resources;
+    return global_resources;
 }
 
 peos_resource_t *get_resource_list_action_requires(int pid,char *act_name, int *num_res)
 {
-    peos_resource_t *resources;	
-    return resources;
+    *num_res = global_num_resources;
+    return global_resources;
 }
 
 
 peos_resource_t *get_resource_list_action_provides(int pid,char *act_name, int *num_res)
 {
-    peos_resource_t *resources;	
-    return resources;
+    *num_res = global_num_resources;
+    return global_resources;
 }
 
 int peos_create_instance(char *model,peos_resource_t *resources,int num_resources)
@@ -106,7 +108,6 @@ int set_resource_binding(int pid, char *resource_name, char *resource_value)
     return 1;
 }
 
-
 char *get_resource_binding(int pid, char *resource_name)
 {
     return "binding";
@@ -118,8 +119,23 @@ char *get_resource_qualifier(int pid, char *resource_name)
     return "qualifier";
 }
 
+int eval_resource_list(peos_resource_t** resources, int num_resources) {
+    int i;
+    peos_resource_t* res = *resources;
+    for (i = 0; i < num_resources; i++) {
+        strcat(res[i].value, "_eval");
+    }
+    return 1;
+}
 
-
+int fill_resource_list_value(peos_resource_t* source, int num_source, peos_resource_t** destination, int num_destination) {
+    int i;
+    peos_resource_t* res = *destination;
+    for (i = 0; i < num_destination; i++) {
+        strcat(res[i].value, "_eval");
+    }
+    return 1;
+}
 
 START_TEST(test_list_models)
 {
@@ -190,12 +206,85 @@ START_TEST(test_run_process)
     /* Pre: Because load_actions() and find_model_file are stubs,
      * there are no actual pre conditions.
      */
-	fail_unless(peos_run(model,resources, num_resources) != 0, 
-		    "failed to create instance");
+	fail_unless(peos_run(model,resources, num_resources) != 0, "failed to create instance");
 }
 END_TEST
 
-
+START_TEST(test_peos_eval_resource_list)
+{
+    peos_resource_t* resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    strcpy(resources[0].value, "val0");
+    strcpy(resources[1].value, "val1");
+    strcpy(resources[2].value, "val2");
+    
+    peos_eval_resource_list(0, &resources, 3);
+    
+    fail_unless(strcmp(resources[0].value, "val0_eval") == 0, "fail evaluate resource list");
+    fail_unless(strcmp(resources[1].value, "val1_eval") == 0, "fail evaluate resource list");
+    fail_unless(strcmp(resources[2].value, "val2_eval") == 0, "fail evaluate resource list");
+}
+END_TEST
+
+START_TEST(test_peos_get_resource_list_action)
+{
+    int num_resources;
+    peos_resource_t* resources;
+    global_num_resources = 3;
+    global_resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    
+    strcpy(global_resources[0].value, "val0");
+    strcpy(global_resources[1].value, "val1");
+    strcpy(global_resources[2].value, "val2");
+    
+    resources = peos_get_resource_list_action(0, &resources, &num_resources);
+    
+    fail_unless(num_resources == 3, "fail get action resource list");
+    fail_unless(strcmp(resources[0].value, "val0_eval") == 0, "fail get action resource list");
+    fail_unless(strcmp(resources[1].value, "val1_eval") == 0, "fail get action resource list");
+    fail_unless(strcmp(resources[2].value, "val2_eval") == 0, "fail get action resource list");
+}
+END_TEST
+        
+START_TEST(test_peos_get_resource_list_action_requires)
+{
+    int num_resources;
+    peos_resource_t* resources;
+    global_num_resources = 3;
+    global_resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    
+    strcpy(global_resources[0].value, "val0");
+    strcpy(global_resources[1].value, "val1");
+    strcpy(global_resources[2].value, "val2");
+    
+    resources = peos_get_resource_list_action_requires(0, &resources, &num_resources);
+    
+    fail_unless(num_resources == 3, "fail get action requires resource list");
+    fail_unless(strcmp(resources[0].value, "val0_eval") == 0, "fail get action requires resource list");
+    fail_unless(strcmp(resources[1].value, "val1_eval") == 0, "fail get action requires resource list");
+    fail_unless(strcmp(resources[2].value, "val2_eval") == 0, "fail get action requires resource list");
+}
+END_TEST
+        
+START_TEST(test_peos_get_resource_list_action_provides)
+{
+    int num_resources;
+    peos_resource_t* resources;
+    global_num_resources = 3;
+    global_resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    
+    strcpy(global_resources[0].value, "val0");
+    strcpy(global_resources[1].value, "val1");
+    strcpy(global_resources[2].value, "val2");
+    
+    resources = peos_get_resource_list_action_provides(0, &resources, &num_resources);
+    
+    fail_unless(num_resources == 3, "fail get action provides resource list");
+    fail_unless(strcmp(resources[0].value, "val0_eval") == 0, "fail get action provides resource list");
+    fail_unless(strcmp(resources[1].value, "val1_eval") == 0, "fail get action provides resource list");
+    fail_unless(strcmp(resources[2].value, "val2_eval") == 0, "fail get action provides resource list");
+}
+END_TEST
+
 int
 main(int argc, char *argv[])
 {
@@ -211,11 +300,17 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_list_models);
 
 
-
-   tc = tcase_create("run");
+    tc = tcase_create("run");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_run_process);
 
+    tc = tcase_create("resource_list");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_peos_eval_resource_list);
+    tcase_add_test(tc, test_peos_get_resource_list_action);
+    tcase_add_test(tc, test_peos_get_resource_list_action_requires);
+    tcase_add_test(tc, test_peos_get_resource_list_action_provides);
+    
     sr = srunner_create(s);
 
     srunner_set_fork_status(sr, fork_status);

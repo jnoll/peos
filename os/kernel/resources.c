@@ -204,6 +204,20 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
     }
 }
 
+int fill_resource_list_value(peos_resource_t* source, int num_source, peos_resource_t** destination, int num_destination) {
+    int i, j;
+    peos_resource_t* des = *destination;
+    for (i = 0; i < num_destination; i++) {
+        for (j = 0; j < num_source; j++) {
+            if (strcmp(des[i].name, source[j].name) == 0) {
+                strcpy(des[i].value, source[j].value);
+                break;
+            }
+        }
+    }
+    return 1;
+}
+
 #ifdef UNIT_TEST
 #include "test_resources.c"
 #endif

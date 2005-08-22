@@ -48,7 +48,6 @@ List make_list(Item i1, Item i2, Item i3, Item i4, Item i5)
 
 Node make_node(char *name, vm_act_state state, int type,int order)
 {
-
      Node n = (Node) malloc (sizeof(struct node));	
      n -> data = (void *) malloc (sizeof (struct data));
      n->name = name;
@@ -123,21 +122,21 @@ Graph stub_makegraph(char *file)
    act_0 -> provides = t6;
    act_1 -> requires = t9;
    act_1 -> provides = NULL;
-   
+
    g -> source = source;
    g -> sink = sink;
    source->type = PROCESS;
    sink->type = PROCESS;
-   source->name = "p";  
+   source->name = "p";
    sink -> name = "p";
-   
+
    source->next = sel;
    sel->next = act_0;
    act_0->next = act_1;
    act_1->next = join;
    join->next=sink;
    sink->next=NULL;
-   
+
    act_0 -> type = ACTION;
    act_0 -> name = "act_0";
    act_0 -> data = (void *) malloc (sizeof (struct data));
@@ -148,8 +147,7 @@ Graph stub_makegraph(char *file)
    MARKED_3(act_0) = 0;
    MARKED_4(act_0) = 0;
    STATE(act_0) = ACT_NONE;
-			  
-   
+
    act_1->type = ACTION;
    act_1 -> name = "act_1";
    act_1 -> data = (void *) malloc (sizeof (struct data));
@@ -159,11 +157,10 @@ Graph stub_makegraph(char *file)
    MARKED_2(act_1) = 0;
    MARKED_3(act_1) = 0;
    MARKED_4(act_1) = 0;
-	       
+
    STATE(act_1) = ACT_NONE;
-  
+
    return g;
-   
 }
 
 

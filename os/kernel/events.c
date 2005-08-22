@@ -201,59 +201,80 @@ int peos_set_resource_binding(int pid, char *resource_name, char *value)
 }    
 
 #ifndef PALM
+
+int peos_eval_resource_list(int pid, peos_resource_t** resources, int num_resources) {
+    peos_resource_t *proc_resources;
+    peos_context_t *context;
+    int i;
+
+    context = peos_get_context(pid);
+    proc_resources = (peos_resource_t *) calloc(context->num_resources, sizeof(peos_resource_t));
+    for (i = 0; i < context->num_resources; i++) {
+        strcpy(proc_resources[i].name, context->resources[i].name);
+        strcpy(proc_resources[i].value, context->resources[i].value);
+    }
+    eval_resource_list(&proc_resources, context->num_resources);
+    fill_resource_list_value(proc_resources, context->num_resources, resources, num_resources);
+    free(proc_resources);
+    return 1;
+}
+
 peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resources)
 {
     peos_resource_t *resources;
-	
+
     if(load_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Load Process Table\n");
 	exit(EXIT_FAILURE);
     }
+
+    resources =  get_resource_list_action(pid, name, num_resources);
+    peos_eval_resource_list(pid, &resources, *num_resources);
     
-    resources =  get_resource_list_action(pid,name,num_resources);
     /* No need to update process state here */
 
     if(save_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Save Process Table\n");
 	exit(EXIT_FAILURE);
     }
-
     return resources;
 }
 
 
-peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *num_req_resources)
-{
-    peos_resource_t *resources;	
-
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
-	exit(EXIT_FAILURE);
-    }
-    
-    resources = get_resource_list_action_requires(pid,name,num_req_resources);
-
-    /* No need to update process state here */
-
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
-	exit(EXIT_FAILURE);
-    }
-
-    return resources;
-}
-
-
-peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *num_pro_resources)
+peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *num_resources)
 {
     peos_resource_t *resources;
-	
+
     if(load_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Load Process Table\n");
 	exit(EXIT_FAILURE);
     }
-    
-    resources =  get_resource_list_action_provides(pid,name,num_pro_resources);
+
+    resources = get_resource_list_action_requires(pid,name,num_resources);
+    peos_eval_resource_list(pid, &resources, *num_resources);
+
+    /* No need to update process state here */
+
+    if(save_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    return resources;
+}
+
+
+peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *num_resources)
+{
+    peos_resource_t *resources;
+    	
+    if(load_process_table() < 0) {
+        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+	exit(EXIT_FAILURE);
+    }
+
+    resources =  get_resource_list_action_provides(pid,name,num_resources);
+    peos_eval_resource_list(pid, &resources, *num_resources);
 
     /* No need to update process state here */
 
@@ -266,18 +287,15 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *
 }
 #endif
 
-
-
 peos_resource_t *peos_get_resource_list(char *model,int *num_resources)
 {
-    peos_resource_t *resources;	
+    peos_resource_t *resources;
     char *model_file = find_model_file(model);    //see process.c
     /*
      *  No need to load and save process table as context is not 
      * accessed at all 
      * 
      */
-    //printf("model = %s\nmodel_file = %s\n", model, model_file);
     resources =  get_resource_list(model_file,num_resources);    //see resources.c
     
     /* No need to update process state here */

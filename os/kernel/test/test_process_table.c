@@ -27,7 +27,7 @@ void initialize_graph(Graph g, int pid)
     }
 }
 
-vm_exit_code update_process_state(int pid) 
+vm_exit_code update_process_state(int pid)
 {
     return VM_CONTINUE;
 }
@@ -36,7 +36,6 @@ char *act_state_name(vm_act_state s)
 {
     return "READY";
 }
-
 
 peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *num_resources)
 {
@@ -52,8 +51,7 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
 
     return resources;
 }
-    
-    
+
 peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int *num_resources)
 {
     peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
@@ -68,11 +66,21 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int 
 
     return resources;
 }
-    
 
+int eval_resource_list(peos_resource_t** resources, int num_resources) {
+    return 1;
+}
 
+int fill_resource_list_value(peos_resource_t* source, int num_source, peos_resource_t** destination, int num_destination) {
+    int i;
+    peos_resource_t* res = *destination;
 
-
+    for (i = 0; i < num_destination; i++) {
+        strcat(res[i].value, "_eval");
+    }
+    return 1;
+}
+
 START_TEST(test_get_pid)
 {
     int pid;
@@ -589,7 +597,6 @@ START_TEST(test_load_proc_table)
 	    fail_unless(strcmp(context->resources[i].name, "some_resource") == 0, "resource name");
 	    fail_unless(strcmp(context->resources[i].value, "some_value") == 0, "resource value");
         }
-	
     }
 
     unlink("proc_table_test.dat");
@@ -679,11 +686,12 @@ START_TEST(test_list_actions_0)
 END_TEST
 
 
-START_TEST(test_print_action_node)
+START_TEST(test_print_action_node_0)
 {
     int abytes, nbytes;	
     FILE *expected, *actual;	
     char expectedmem[BUFSIZ], actualmem[BUFSIZ];
+    
     Node n = make_node("act_0", ACT_READY, ACTION, 3);
     PID(n) = 0;
 
@@ -723,6 +731,33 @@ START_TEST(test_print_action_node)
     unlink("expected.xml");
     unlink("actual.xml");
 
+}
+END_TEST
+        
+START_TEST(test_print_action_node_1)
+{
+    int i = 0;
+    char* line = (char*)malloc(sizeof(char) * 255);
+    FILE *actual;
+    Node n = make_node("act_0", ACT_READY, ACTION, 3);
+    PID(n) = 0;
+    actual = fopen("actual.xml", "w");
+
+    process_table[0].num_resources = 2;
+    process_table[0].resources = (peos_resource_t*)calloc(2, sizeof(peos_resource_t));
+
+    print_action_node(n, actual);
+
+    fclose(actual);
+    actual = fopen("actual.xml", "r");
+    while (fgets(line, 255, actual) != NULL) {
+        if (strcmp(line, "<req_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></req_resource>\n") == 0)
+            i++;
+        else if (strcmp(line, "<req_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></req_resource>\n") == 0)
+            i++;
+    }
+    fclose(actual);
+    fail_unless(i == 2, "print action node failed");
 }
 END_TEST
 
@@ -1050,7 +1085,7 @@ START_TEST(test_save_proc_table_xml)
     for(i=1; i < PEOS_MAX_PID; i++) {
       //  context = &(process_table[i]);
       //  context -> process_graph = NULL;
-	  process_table[i].process_graph = NULL;    
+	  process_table[i].process_graph = NULL;
     }
     
     unlink("proc_table.dat.xml");
@@ -1089,8 +1124,6 @@ START_TEST(test_save_proc_table_xml)
     unlink("proc_table.dat.xml");
 }
 END_TEST
-    
-
 
 /* Sets up a full table. */
 void setup_find_free_entry()
@@ -1246,7 +1279,10 @@ main(int argc, char *argv[])
 
     tc = tcase_create("xml file");
     suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_print_action_node);
+    
+    tcase_add_test(tc, test_print_action_node_0);
+    tcase_add_test(tc, test_print_action_node_1);
+    
     tcase_add_test(tc, test_print_after_escaping);
     tcase_add_test(tc, test_print_graph);
     tcase_add_test(tc, test_print_xml_iteration);

@@ -292,51 +292,36 @@ END_TEST
 END_TEST
 
 START_TEST(test_eval_resource_list_0) {
-    peos_resource_t* proc_resources;
-    peos_resource_t* eval_resources;
+    peos_resource_t* resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
     
-    proc_resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
-    strcpy(proc_resources[0].name, "res0");
-    strcpy(proc_resources[0].value, "val0");
-    strcpy(proc_resources[1].name, "res1");
-    strcpy(proc_resources[1].value, "$res0/val1");
-    strcpy(proc_resources[2].name, "res2");
-    strcpy(proc_resources[2].value, "${res1}/val2");
+    strcpy(resources[0].name, "res0");
+    strcpy(resources[0].value, "val0");
+    strcpy(resources[1].name, "res1");
+    strcpy(resources[1].value, "$res0/val1");
+    strcpy(resources[2].name, "res2");
+    strcpy(resources[2].value, "${res1}/val2");
     
-    eval_resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
-    strcpy(eval_resources[0].name, "res0");
-    strcpy(eval_resources[1].name, "res1");
-    strcpy(eval_resources[2].name, "res2");
+    eval_resource_list(&resources, 3);
     
-    eval_resource_list(proc_resources, 3, eval_resources, 3);
-    
-    fail_unless(strcmp(eval_resources[0].value, "val0") == 0, "eval_resource_list failed");
-    fail_unless(strcmp(eval_resources[1].value, "val0/val1") == 0, "eval_resource_list failed");
-    fail_unless(strcmp(eval_resources[2].value, "val0/val1/val2") == 0, "eval_resource_list failed");
+    fail_unless(strcmp(resources[0].value, "val0") == 0, "eval_resource_list failed");
+    fail_unless(strcmp(resources[1].value, "val0/val1") == 0, "eval_resource_list failed");
+    fail_unless(strcmp(resources[2].value, "val0/val1/val2") == 0, "eval_resource_list failed");
 }
 END_TEST
         
 START_TEST(test_eval_resource_list_1) {
-    peos_resource_t* proc_resources;
-    peos_resource_t* eval_resources;
+    peos_resource_t* resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    strcpy(resources[0].name, "res0");  //res0 is unbound
+    strcpy(resources[1].name, "res1");
+    strcpy(resources[1].value, "$res0/val1");
+    strcpy(resources[2].name, "res2");
+    strcpy(resources[2].value, "${res1}/val2");
     
-    proc_resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
-    strcpy(proc_resources[0].name, "res0");  //res0 is unbound
-    strcpy(proc_resources[1].name, "res1");
-    strcpy(proc_resources[1].value, "$res0/val1");
-    strcpy(proc_resources[2].name, "res2");
-    strcpy(proc_resources[2].value, "${res1}/val2");
+    eval_resource_list(&resources, 3);
     
-    eval_resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
-    strcpy(eval_resources[0].name, "res0");
-    strcpy(eval_resources[1].name, "res1");
-    strcpy(eval_resources[2].name, "res2");
-    
-    eval_resource_list(proc_resources, 3, eval_resources, 3);
-    
-    fail_unless(strcmp(eval_resources[0].value, "${res0}") == 0, "eval_resource_list failed");
-    fail_unless(strcmp(eval_resources[1].value, "${res0}/val1") == 0, "eval_resource_list failed");
-    fail_unless(strcmp(eval_resources[2].value, "${res0}/val1/val2") == 0, "eval_resource_list failed");
+    fail_unless(strcmp(resources[0].value, "${res0}") == 0, "eval_resource_list failed");
+    fail_unless(strcmp(resources[1].value, "${res0}/val1") == 0, "eval_resource_list failed");
+    fail_unless(strcmp(resources[2].value, "${res0}/val1/val2") == 0, "eval_resource_list failed");
 }
 END_TEST
 

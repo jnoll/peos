@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.56 2005/04/18 01:38:16 sbeeby Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.57 2005/08/22 03:28:08 ksuwanna Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -115,8 +115,6 @@ void peos_set_process_table_file(char *file_name)
     }
 }
 
-
-
 int peos_get_pid(peos_context_t *context)
 {
     int pid = context- process_table;
@@ -189,7 +187,6 @@ return 0;
 #endif
 }
 
-
 char *get_resource_binding(int pid, char *resource_name)
 {
 #ifndef PALM
@@ -214,7 +211,6 @@ return NULL;
 #endif
 }
 
-
 char *get_resource_qualifier(int pid, char *resource_name)
 {
     int i;
@@ -226,7 +222,7 @@ char *get_resource_qualifier(int pid, char *resource_name)
     resources = context -> resources;
     num_resources = context -> num_resources;
     if(resources == NULL) return NULL;
-         
+
     for(i = 0; i < num_resources; i++) {
         if(strcmp(resources[i].name,resource_name) == 0) {
 	    return resources[i].qualifier;
@@ -299,28 +295,25 @@ return 0;
  * Set state of nodes in g from state info in actions and other nodes.
  * XXX collapse these two lists into one; there's no need to distinguish.
  */
-int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other_node_t *other_nodes, int num_other_nodes)
-{
+int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other_node_t *other_nodes, int num_other_nodes) {
     int i;
     Node node;
-                                                                      
     for(node = g -> source; node != NULL; node = node -> next) {
         if (node -> type == ACTION) {
             STATE(node) = get_act_state(node -> name,actions,num_actions);
-	}
-	else {
-	    if((node->type == SELECTION) || (node->type == BRANCH)) {
-	        for(i=0;i < num_other_nodes; i++) {
-	            if (strcmp(node->name,other_nodes[i].name)==0) {
-	                STATE(node) = other_nodes[i].state;
-	                STATE(node->matching) = other_nodes[i].state;
-	            }
-	        }
-	     }
-	 }
+        }
+        else {
+            if((node->type == SELECTION) || (node->type == BRANCH)) {
+                for(i=0;i < num_other_nodes; i++) {
+                    if (strcmp(node->name,other_nodes[i].name)==0) {
+                        STATE(node) = other_nodes[i].state;
+                        STATE(node->matching) = other_nodes[i].state;
+                    }
+                }
+            }
+        }
     }
-	
-    return 1;   
+    return 1;
 }
 
 #ifndef PALM
@@ -581,13 +574,26 @@ void print_action_node(Node n, FILE *fp)
 #ifndef PALM
     int num_req_resources;
     int num_prov_resources;
-    int i;
-    
+    int i;    
+    peos_context_t* context;
+    peos_resource_t* proc_resources;
     peos_resource_t *req_resources;
-    peos_resource_t *prov_resources;    
+    peos_resource_t *prov_resources;
     
     req_resources = get_resource_list_action_requires(PID(n), n->name, &num_req_resources);
     prov_resources = get_resource_list_action_provides(PID(n), n->name, &num_prov_resources);
+    context = peos_get_context(PID(n));
+    if (context && context->num_resources > 0) {
+        proc_resources = (peos_resource_t *) calloc(context->num_resources, sizeof(peos_resource_t));
+        for (i = 0; i < context->num_resources; i++) {
+            strcpy(proc_resources[i].name, context->resources[i].name);
+            strcpy(proc_resources[i].value, context->resources[i].value);
+        }
+
+        eval_resource_list(&proc_resources, context->num_resources);
+        fill_resource_list_value(proc_resources, context->num_resources, &req_resources, num_req_resources);
+        fill_resource_list_value(proc_resources, context->num_resources, &prov_resources, num_prov_resources);
+    }
   
     fprintf(fp, "<action name=\"");
     print_after_escaping(n->name,fp);
@@ -602,7 +608,6 @@ void print_action_node(Node n, FILE *fp)
 	fprintf(fp, "\" value=\"");
 	print_after_escaping(req_resources[i].value, fp);
 	fprintf(fp, "\" qualifier=\"%s\"></req_resource>\n",req_resources[i].qualifier);
-	
     }
 
     for(i=0; i < num_prov_resources; i++) {
@@ -690,8 +695,6 @@ int save_proc_table_xml()
     char *xml_filename = (char *) malloc((strlen(process_table_filename)+strlen(".xml")+1) * sizeof(char));
     strcpy(xml_filename, process_table_filename);
     strcat(xml_filename, ".xml");
-
-    
 
     fp = fopen(xml_filename, "w");
     fprintf(fp, "<process_table>\n");

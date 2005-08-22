@@ -113,10 +113,6 @@ void bind_resource_file(int pid, char* res_file) {
                 exit(EXIT_FAILURE);
             }
         }
-        /*else {
-        fprintf(stderr, "Invalid format.  Check resource file\n");
-        exit(EXIT_FAILURE);
-    }*/
     }
     fclose(stream);
 }

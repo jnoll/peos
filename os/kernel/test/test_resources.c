@@ -15,16 +15,6 @@ Graph global_graph = NULL;
 extern Node make_node(char *name, vm_act_state, int type,int order);
 extern Tree make_tree(char *sval, int ival, Tree left, Tree right);
 
-/*peos_context_t *peos_get_context(int pid)
-{
-    static peos_context_t context;
-    return &context;
-}*/
-
-/*Graph makegraph(char *file) {
-    return global_graph;
-}*/
-
 peos_context_t *peos_get_context(int pid)
 {
     process_table[0].process_graph = global_graph;
@@ -49,28 +39,28 @@ START_TEST(test_insert_resource)
     /* Post: all resources have been inserted in order. */
     fail_unless(num_resources == num_expected, "num_resources wrong");
     for (i = 0; i < num_expected; i++) {
-	sprintf(rname, "%s_%d", "resource", i);
-	fail_unless(strcmp(resource_list[i].name, rname) == 0, "resource name wrong");
-	fail_unless(strcmp(resource_list[i].qualifier, "qualifier") == 0, "qualifier missing");
+        sprintf(rname, "%s_%d", "resource", i);
+        fail_unless(strcmp(resource_list[i].name, rname) == 0, "resource name wrong");
+        fail_unless(strcmp(resource_list[i].qualifier, "qualifier") == 0, "qualifier missing");
     }
-}	
+}
 END_TEST
 
 START_TEST(test_make_resource_list)
 {
-	int num_resources = 0, rsize = 256;
-	char *ptr = "y";
-	peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
-	
-	Tree t1 = make_tree("y",0,NULL,NULL);
-	Tree t2 = make_tree("modified",0,NULL,NULL);
-	Tree t3 = make_tree(NULL,DOT,t1,t2);
-	Tree t4 = make_tree("\"true\"",0,NULL,NULL);
-	Tree t5 = make_tree(NULL,EQ,t3,t4);
+    int num_resources = 0, rsize = 256;
+    char *ptr = "y";
+    peos_resource_t *resource_list = (peos_resource_t *) calloc(rsize,sizeof(peos_resource_t));
 
-	make_resource_list(t5, &resource_list, &num_resources, &rsize, "\0");
+    Tree t1 = make_tree("y",0,NULL,NULL);
+    Tree t2 = make_tree("modified",0,NULL,NULL);
+    Tree t3 = make_tree(NULL,DOT,t1,t2);
+    Tree t4 = make_tree("\"true\"",0,NULL,NULL);
+    Tree t5 = make_tree(NULL,EQ,t3,t4);
 
-	fail_unless(num_resources == 1,"num_resources wrong");
+    make_resource_list(t5, &resource_list, &num_resources, &rsize, "\0");
+
+    fail_unless(num_resources == 1,"num_resources wrong");
     fail_unless(strcmp(resource_list[0].name,ptr) == 0,"resource name wrong");
 
 }	
@@ -156,7 +146,7 @@ START_TEST(test_get_resource_list_action_requires)
     int num_resources = 0;
     Tree t0, t1, t2;
     Node source, sink, act0, act1;
-    
+
     source = make_node("p",ACT_NONE,PROCESS,0);  // process p { }
     sink = make_node("p",ACT_NONE,PROCESS,3);
 
@@ -170,7 +160,7 @@ START_TEST(test_get_resource_list_action_requires)
     act1 ->requires = t0;  // requires { res1 == res2 }
 
     //source -> act0 -> act1 -> sink
-    
+
     source->next = act0;
     act0->next = act1;
     act1->next = sink;
@@ -299,7 +289,7 @@ START_TEST(test_get_resource_list_action)
     fail_unless(strcmp(resources[2].name, "res2") == 0, "test_get_resource_list_action");
 }
 END_TEST
-        
+
 START_TEST(test_get_resource_list)
 {
     peos_resource_t *resources;
@@ -315,10 +305,80 @@ START_TEST(test_get_resource_list)
     fail_unless(strcmp(resources[1].name, "res1") == 0, "test_get_resource_list");
     fail_unless(strcmp(resources[2].name, "res2") == 0, "test_get_resource_list");
     fail_unless(strcmp(resources[3].name, "res3") == 0, "test_get_resource_list");
+}
+END_TEST
+        
+START_TEST(test_fill_resource_list_value_0)
+{
+    peos_resource_t* source = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    peos_resource_t* destination = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+
+    strcpy(source[0].name, "res0");
+    strcpy(source[0].value, "val0");
+    strcpy(source[1].name, "res1");
+    strcpy(source[1].value, "val1");
+    strcpy(source[2].name, "res2");
+    strcpy(source[2].value, "val2");
+    
+    strcpy(destination[0].name, "res0");
+    strcpy(destination[1].name, "res1");
+    strcpy(destination[2].name, "res2");
+    
+    fill_resource_list_value(source, 3, &destination, 3);
+    
+    fail_unless(strcmp(destination[0].value, "val0") == 0, "test_fill_resource_list_value");
+    fail_unless(strcmp(destination[1].value, "val1") == 0, "test_fill_resource_list_value");
+    fail_unless(strcmp(destination[2].value, "val2") == 0, "test_fill_resource_list_value");
     
 }
 END_TEST
         
+START_TEST(test_fill_resource_list_value_1)
+{
+    peos_resource_t* source = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
+    peos_resource_t* destination = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+
+    strcpy(source[0].name, "res0");
+    strcpy(source[0].value, "val0");
+    strcpy(source[1].name, "res1");
+    strcpy(source[1].value, "val1");
+    
+    strcpy(destination[0].name, "res0");
+    strcpy(destination[1].name, "res1");
+    strcpy(destination[2].name, "res2");
+    
+    fill_resource_list_value(source, 3, &destination, 3);
+    
+    fail_unless(strcmp(destination[0].value, "val0") == 0, "test_fill_resource_list_value");
+    fail_unless(strcmp(destination[1].value, "val1") == 0, "test_fill_resource_list_value");
+    fail_unless(strcmp(destination[2].value, "") == 0, "test_fill_resource_list_value");
+    
+}
+END_TEST
+        
+START_TEST(test_fill_resource_list_value_2)
+{
+    peos_resource_t* source = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    peos_resource_t* destination = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
+
+    strcpy(source[0].name, "res0");
+    strcpy(source[0].value, "val0");
+    strcpy(source[1].name, "res1");
+    strcpy(source[1].value, "val1");
+    strcpy(source[2].name, "res2");
+    strcpy(source[2].value, "val2");
+    
+    strcpy(destination[0].name, "res0");
+    strcpy(destination[1].name, "res1");
+    
+    fill_resource_list_value(source, 3, &destination, 3);
+    
+    fail_unless(strcmp(destination[0].value, "val0") == 0, "test_fill_resource_list_value");
+    fail_unless(strcmp(destination[1].value, "val1") == 0, "test_fill_resource_list_value");
+    
+}
+END_TEST
+
 int main(int argc, char *argv[])
 {
     int nf;
@@ -338,7 +398,11 @@ int main(int argc, char *argv[])
     tcase_add_test(tc,test_get_resource_list_action_provides);
     tcase_add_test(tc,test_get_resource_list_action);
     tcase_add_test(tc,test_get_resource_list);
-     sr = srunner_create(s);
+    tcase_add_test(tc,test_fill_resource_list_value_0);
+    tcase_add_test(tc,test_fill_resource_list_value_1);
+    tcase_add_test(tc,test_fill_resource_list_value_2);
+    
+    sr = srunner_create(s);
 
     srunner_set_fork_status(sr, fork_status);
 
