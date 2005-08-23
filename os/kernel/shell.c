@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.32 2004/09/30 21:09:01 ppozdnya Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.33 2005/08/23 11:10:42 ksuwanna Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -147,7 +147,7 @@ void create_process(int argc, char *argv[])
 
 void list_resource_binding(int argc, char *argv[])
 {
-    int i, pid, num_resources, num_provided_resources;
+    int i, pid, num_resources = 0, num_provided_resources = 0;
     char *action;
     peos_resource_t *req_resources;
     peos_resource_t *pro_resources;

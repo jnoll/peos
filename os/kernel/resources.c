@@ -11,7 +11,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "tclinterp.h"
 #include "predicate_evaluator.h"
 #endif
 

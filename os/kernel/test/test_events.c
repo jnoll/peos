@@ -120,11 +120,6 @@ char *get_resource_qualifier(int pid, char *resource_name)
 }
 
 int eval_resource_list(peos_resource_t** resources, int num_resources) {
-    int i;
-    peos_resource_t* res = *resources;
-    for (i = 0; i < num_resources; i++) {
-        strcat(res[i].value, "_eval");
-    }
     return 1;
 }
 

@@ -26,19 +26,13 @@
 # define PE_RETURN
 #endif
 
-//#define PE_RESOURCE_PROVIDES 100
-//#define PE_RESOURCE_REQUIRES 200
-
-
 FILE* pe_log=NULL;
 int number=0;
 
 extern char *act_state_name(vm_act_state state);
 
-
 int get_resource_index(peos_resource_t* resources, int num_resources, char* res_name) {
     int i;
-    //printf("\n res_name = %s\n", res_name);
     for (i = 0; i < num_resources; i++)
         if (strcmp(res_name, resources[i].name) == 0)
             return i;
@@ -134,12 +128,11 @@ int eval_predicate(char* tcl_file, peos_resource_t* resources, int num_resources
     }
 }
 
-
 int eval_resource_list(peos_resource_t** resources, int num_resources) {
     int i;
     peos_resource_t* res = *resources;
     char* buff = (char*)malloc(sizeof(char) * 255);
-    
+
     Tcl_Interp* interp = Tcl_CreateInterp();
     for (i = 0; i < num_resources; i++) {
         if (strcmp(res[i].value, "") == 0 || strcmp(res[i].value, "$$") == 0)
@@ -157,110 +150,6 @@ int eval_resource_list(peos_resource_t** resources, int num_resources) {
     free(buff);
     return 1;
 }
-
-int is_requires_true_old(peos_resource_t *resources, int num_resources)//(int pid, char *act_name)
-{
-    /*int i;
-
-    if (num_resources == 0) {
-        return 1;
-    }
-    else {
-        struct stat buf;
-	
-        for(i = 0; i < num_resources; i++)
-        {
-            if(strcmp(resources[i].qualifier, "abstract") != 0) {
-
-                if(strcmp(resources[i].value,"$$") == 0) return 0;
-                if(stat(resources[i].value, &buf) == -1) {
-                    if(errno == ENOENT) { // If stat failed because file didn't exist
-                        return 0;
-                    }
-                    else {
-                        fprintf(stderr, "Required Resource Detection Error for %s\n",resources[i].name);
-                        return 0;
-                    }
-                }
-            }
-        }
-        return 1;
-}*/
-}
-
-int is_provides_true_old(peos_resource_t *resources, int num_resources)//(int pid, char *act_name)
-{
-    /*int i;
-
-    if (num_resources == 0) {
-        return 1;
-    }
-    else {
-        struct stat buf;
-        for(i = 0; i < num_resources; i++)
-        {
-            if(strcmp(resources[i].qualifier, "abstract") != 0) {
-                if((strcmp(resources[i].value,"$$") == 0) && (strcmp(resources[i].qualifier, "abstract") != 0)) return 0;
-                if(stat(resources[i].value, &buf) == -1) {
-    if(errno == ENOENT) { // If stat failed because file didn't exist
-                        return 0;
-                    }
-                    else {
-                        fprintf(stderr, "Provided Resource Detection Error for %s\n",resources[i].name);
-                        return 0;
-                    }
-                }
-            }
-        }
-        return 1;
-    }*/
-}
-
-int is_requires_true(int pid, char *act_name)
-{
-    /*Node n;
-    peos_resource_t *resources;
-    peos_context_t *context = peos_get_context(pid);
-    Graph g = context -> process_graph;
-
-    if(g == NULL)
-        return 0;
-
-    n = find_node(g,act_name);
-    if(n == NULL) {
-        fprintf(stderr,"get_resource_list_action :cannot find action");
-        return 0;
-    }
-    int num_resources;
-    resources = get_resource_list_action_requires(pid,act_name,&num_resources);
-    eval_resource_list(context->resources, context->num_resources, resources, num_resources);
-    return eval_predicate("./../../os/kernel/peos_init.tcl", resources, num_resources, n->requires) || is_requires_true_old(resources, num_resources);*/
-    return 0;
-}
-
-int is_provides_true(int pid, char *act_name)
-{
-    /*Node n;
-    peos_resource_t *resources;
-    peos_context_t *context = peos_get_context(pid);
-    Graph g = context -> process_graph;
-
-    if(g == NULL)
-        return 0;
-
-    n = find_node(g,act_name);
-    if(n == NULL) {
-        fprintf(stderr,"get_resource_list_action :cannot find action");
-        return 0;
-    }
-    int num_resources;
-    resources = get_resource_list_action_provides(pid,act_name,&num_resources);
-    eval_resource_list(context->resources, context->num_resources, resources, num_resources);
-    return eval_predicate("./../../os/kernel/peos_init.tcl", resources, num_resources, n->provides) || is_provides_true_old(resources, num_resources);*/
-    return 0;
-}
-
-//----------------------
 
 #ifdef UNIT_TEST
 #include "test_predicate_evaluator.c"

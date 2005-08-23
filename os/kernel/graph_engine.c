@@ -4,6 +4,7 @@
 #ifndef PALM
 #include <time.h>
 #include "predicate_evaluator.h"
+#include "resources.h"
 #endif
 #include "process.h"
 #include "action.h"
@@ -385,7 +386,7 @@ int action_run(Graph g, char *act_name)
 
     n = find_node(g, act_name);
     if(n != NULL) {
-	set_node_state(n, ACT_RUN);    
+	set_node_state(n, ACT_RUN);
 	make_other_run_suspend(g, act_name);
 	mark_iter_nodes(n);  /* handle iterations */
 	handle_selection(n); /* handle selections */
@@ -432,7 +433,7 @@ void handle_selection(Node n)
     }
     return;
 }
-					
+
 vm_exit_code action_done(Graph g, char *act_name)
 {
     Node n;
@@ -585,55 +586,70 @@ vm_exit_code handle_resource_event(int pid, char *action, vm_resource_event even
         return VM_INTERNAL_ERROR;
 }
 
+int is_requires_true(Node n) {
+    int i;
+    int num_resources = 0;
+    peos_resource_t* resources;
+    peos_resource_t* proc_resources;
+    peos_context_t* context = peos_get_context(PID(n));
+    resources = get_resource_list_action_requires(PID(n), n->name, &num_resources);
+    if (context && context->num_resources > 0) {
+        proc_resources = (peos_resource_t *) calloc(context->num_resources, sizeof(peos_resource_t));
+        for (i = 0; i < context->num_resources; i++) {
+            strcpy(proc_resources[i].name, context->resources[i].name);
+            strcpy(proc_resources[i].value, context->resources[i].value);
+        }
+        eval_resource_list(&proc_resources, context->num_resources);
+        fill_resource_list_value(proc_resources, context->num_resources, &resources, num_resources);
+    }
+    return eval_predicate("./../../../os/kernel/peos_init.tcl", resources, num_resources, n->requires);
+}
+
+int is_provides_true(Node n) {
+    int i;
+    int num_resources = 0;
+    peos_resource_t* resources;
+    peos_resource_t* proc_resources;
+    peos_context_t* context = peos_get_context(PID(n));
+    resources = get_resource_list_action_provides(PID(n), n->name, &num_resources);
+    if (context && context->num_resources > 0) {
+        proc_resources = (peos_resource_t *) calloc(context->num_resources, sizeof(peos_resource_t));
+       for (i = 0; i < context->num_resources; i++) {
+            strcpy(proc_resources[i].name, context->resources[i].name);
+         strcpy(proc_resources[i].value, context->resources[i].value);
+       }
+       eval_resource_list(&proc_resources, context->num_resources);
+       fill_resource_list_value(proc_resources, context->num_resources, &resources, num_resources);
+    }
+    return eval_predicate("./../../../os/kernel/peos_init.tcl", resources, num_resources, n->provides);
+}
+
 vm_act_state set_node_state(Node n, vm_act_state state)
 {
     vm_act_state state_set = state;
-    
+
     if(n->type != ACTION) {
         STATE(n) = state_set;
-	return state_set;
+        return state_set;
     }
 
     switch(state_set) {
-        
-        case(ACT_READY) : {
-			      if(is_requires_true(PID(n), n -> name)) {
-			          STATE(n) = state_set;
-		                  return state_set;
-			      }
-	                      else {
-		                  state_set = ACT_BLOCKED;
-				  STATE(n) = state_set;
-	                          return state_set;
-			      }
-			      break;
-			  }
-			  
-        case(ACT_DONE) : {
-			     if(is_provides_true(PID(n), n->name)) {
-			         STATE(n) = state_set;
-				 return state_set;
-			     }
-			     else {
-			         state_set = ACT_PENDING;
-				 STATE(n) = state_set;
-				 return state_set;
-			     }
-			     break;
-			 }
-			  
-	default: {
-		     STATE(n) = state_set;
-		 }
-			      				  
+        case ACT_READY:
+            if (!is_requires_true(n))
+                state_set = ACT_BLOCKED;
+            break;
+        case ACT_DONE:
+            if (!is_provides_true(n))
+                state_set = ACT_PENDING;
+            break;
     }
+    STATE(n) = state_set;
     return state_set;
 }
-	    
+
 /* this function was earlier called handle_resource_change */
 
-vm_exit_code update_process_state(int pid)
-{
+vm_exit_code update_process_state(int pid) {
     Graph g;
     Node n;
 
@@ -641,30 +657,29 @@ vm_exit_code update_process_state(int pid)
 
     if(context == NULL) {
         fprintf(stderr, "Handle Resource Change: Cannot Get Context\n");
-	return VM_INTERNAL_ERROR;
+        return VM_INTERNAL_ERROR;
     }
 
     g = context -> process_graph;
 
     if(g == NULL) {
         fprintf(stderr, "Handle Resource Change Error: Cannot Get Graph\n");
-	return VM_INTERNAL_ERROR;
+        return VM_INTERNAL_ERROR;
     }
 
     for(n = g->source->next; n != NULL; n = n->next) {
         if(n->type == ACTION) {
-	    if(is_requires_true(pid, n->name)) {
-	        if(handle_resource_event(pid, n->name, REQUIRES_TRUE) == VM_INTERNAL_ERROR) {
-	            return VM_INTERNAL_ERROR;
-		}
-	    }
-	    
-	    if(is_provides_true(pid, n->name)) {
-	        if(handle_resource_event(pid, n->name, PROVIDES_TRUE) == VM_INTERNAL_ERROR) {
-		    return VM_INTERNAL_ERROR;
-		}
-	    }
-	}
+            if(is_requires_true(n)) {
+                if(handle_resource_event(pid, n->name, REQUIRES_TRUE) == VM_INTERNAL_ERROR) {
+                    return VM_INTERNAL_ERROR;
+                }
+            }
+            if(is_provides_true(n)) {
+                if(handle_resource_event(pid, n->name, PROVIDES_TRUE) == VM_INTERNAL_ERROR) {
+                    return VM_INTERNAL_ERROR;
+                }
+            }
+        }
     }
     return VM_CONTINUE;
 }
@@ -674,7 +689,7 @@ vm_exit_code handle_action_change(int pid, char *action, vm_act_state state)
     Graph g;
     char msg[256], *this_state;
     vm_exit_code exit_status;
-       
+
     peos_context_t *context = peos_get_context(pid);
 
     this_state = act_state_name(state);

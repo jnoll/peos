@@ -14,192 +14,27 @@
 /* Globals. */
 peos_resource_t *global_resources;
 int global_num_resources;
-static peos_context_t* global_context;
 
 /* Stubs. */
 extern Tree make_tree(char *sval, int ival, Tree left, Tree right);
 /* XXX As far as I can tell, the tests don't directly exercise any
    function that actually calls this. -jn */
-   
-peos_context_t *peos_get_context(int pid)
-{
-    //static peos_context_t context;
-    //return &context;
-    
-    return &global_context;
-    
+
+peos_context_t *peos_get_context(int pid) {
+    static peos_context_t context;
+    return &context;
 }
 
-peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int *num_resources)
-{
-    
+peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int *num_resources) {
     *num_resources = global_num_resources;
-
-    return global_resources;
-} 
-     
-
-peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *num_resources)
-{ 
-     
-    *num_resources = global_num_resources;
-
     return global_resources;
 }
 
-
-START_TEST(test_is_provides_true)
-{
-
-    FILE *fptr;
-
-    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "resource_file");
-    strcpy(resources[0].qualifier, "abstract");
-
-    global_resources = resources;
-    global_num_resources = 1;
- 
-    fptr = fopen("resource_file", "w");
-
-    fail_unless(is_provides_true(0, "some_name") == 1, "is_provides_true failed");
-    if(resources) free(resources);
-
-    unlink("resource_file");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\n\t*** Leaving test_is_provides_true\n");
-#endif
-   
+peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int *num_resources) {
+    *num_resources = global_num_resources;
+    return global_resources;
 }
-END_TEST
-	
-	
-START_TEST(test_is_requires_true)
-{
 
-    FILE *fptr;
-
-    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "resource_file");
-    strcpy(resources[0].qualifier, "abstract");
-
-    global_resources = resources;
-    global_num_resources = 1;
-
-    fptr = fopen("resource_file", "w");
-
-    fail_unless(is_requires_true(0, "some_name") == 1, "is_requires_true failed");
-    if(resources) free(resources);
-
-    unlink("resource_file");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_is_requires_true\n");
-#endif
-   
-}
-END_TEST
-
-START_TEST(test_is_requires_true_1)
-{
-    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "$$");
-    strcpy(resources[0].qualifier, "abstract");
-
-    global_resources = resources;
-    global_num_resources = 1;
-
-    fail_unless(is_requires_true(0, "some_name") == 1, "is_requires_true failed");
-    if(resources) free(resources);
-
-    unlink("resource_file");
-    
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_is_requires_true_1\n");
-#endif
-}
-END_TEST
-	
-
-START_TEST(test_is_provides_true_1)
-{
-    peos_resource_t *resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "$$");
-    strcpy(resources[0].qualifier, "abstract");
-
-    global_resources = resources;
-    global_num_resources = 1;
-
-    fail_unless(is_provides_true(0, "some_name") == 1, "is_provides_true failed");
-    if(resources) free(resources);
-
-    unlink("resource_file");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_is_provides_true_1\n");
-#endif
-}
-END_TEST
-	
-    
-START_TEST(test_is_requires_true_2)
-{
-    peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "$$");
-    strcpy(resources[0].qualifier, "abstract");
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "$$");
-    strcpy(resources[0].qualifier, "$$");
-
-    global_resources = resources;
-    global_num_resources = 2;
-
-    fail_unless(is_requires_true(0, "some_name") == 0, "is_requires_true 2  failed");
-
-    if(resources) free(resources);
-
-    unlink("resource_file");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_is_requires_true_2\n");
-#endif  
-}
-END_TEST
-
-
-START_TEST(test_is_provides_true_2)
-{
-    peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "$$");
-    strcpy(resources[0].qualifier, "abstract");
-
-    strcpy(resources[0].name, "resource_0");
-    strcpy(resources[0].value, "$$");
-    strcpy(resources[0].qualifier, "$$");
-
-    global_resources = resources;
-    global_num_resources = 2;
-
-    fail_unless(is_provides_true(0, "some_name") == 0, "is_provides_true 2  failed");
-    if(resources) free(resources);
-
-    unlink("resource_file");
-#ifdef TEST_PREDICATE_VERBOSE
-    fprintf(stderr,"\t*** Leaving test_is_provides_true_2\n");
-#endif
-}
-END_TEST
-        
 START_TEST(test_get_resource_index)
 {
     
@@ -325,6 +160,22 @@ START_TEST(test_eval_resource_list_1) {
 }
 END_TEST
 
+START_TEST(test_eval_predicate_abstract_0)
+{
+    peos_resource_t* resources;
+    Tree t_res;
+    
+    resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    strcpy(resources[0].name, "res");
+    strcpy(resources[0].value, "my_file");
+    strcpy(resources[0].qualifier, "abstract");
+
+    t_res = make_tree("res", 0, NULL, NULL);
+    
+    fail_unless(eval_predicate("./../../../os/kernel/peos_init.tcl", resources, 1, t_res), "eval_predicate_abstract_0 failed");
+}
+END_TEST
+        
 START_TEST(test_eval_predicate_0)
 {
     peos_resource_t* resources;
@@ -456,17 +307,6 @@ main(int argc, char *argv[])
     TCase *tc;
     //system("cp -f ../tclf_*tcl `pwd`");
     parse_args(argc, argv);
-    /*tc = tcase_create("is_provides_true");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_is_provides_true);
-    tcase_add_test(tc,test_is_provides_true_1);
-    tcase_add_test(tc,test_is_provides_true_2);
-
-    tc = tcase_create("is_requires_true");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_is_requires_true);
-    tcase_add_test(tc,test_is_requires_true_1);
-    tcase_add_test(tc,test_is_requires_true_2);*/
     
     tc = tcase_create("get_resource_index");
     suite_add_tcase(s,tc);
@@ -491,6 +331,10 @@ main(int argc, char *argv[])
     tc = tcase_create("get_eval_result_misspellcount");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_get_eval_result_misspellcount);
+    
+    tc = tcase_create("eval_predicate_abstract_0");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc, test_eval_predicate_abstract_0);
     
     tc = tcase_create("eval_resource_list_0");
     suite_add_tcase(s,tc);

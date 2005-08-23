@@ -21,6 +21,8 @@ int requires_state[5];
 int provides_state[5];
 int requires_index = 0;
 int provides_index = 0;
+int flag;
+peos_resource_t* global_resources;
 
 /* Stubs. */
 extern Node make_node(char *name, vm_act_state, int type,int order);
@@ -31,36 +33,62 @@ extern Tree make_con_tree(Tree left, Tree right, int op, char* value);
 extern List make_list(Item i1, Item i2, Item i3, Item i4, Item i5);
 
 
-peos_context_t *peos_get_context(int pid)
-{
-	process_table[0].process_graph = global_graph;
-	return pid == 0 ? &(process_table[pid]) : NULL;
+peos_context_t *peos_get_context(int pid) {
+    process_table[0].process_graph = global_graph;
+    return pid == 0 ? &(process_table[pid]) : NULL;
 }
 
-char *act_state_name(vm_act_state state)
-{
+char *act_state_name(vm_act_state state) {
     return "READY";
 }
 
-int is_requires_true(int pid, char *act_name)
-{
-	int value = requires_state[++requires_index];
+peos_resource_t *get_resource_list_action_requires(int pid,char *act_name,int *num_resources) {
+    peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
+    *num_resources = 2;
+    strcpy(resources[0].name, "res0");
+    strcpy(resources[0].value, "val0");
+    strcpy(resources[1].name, "res1");
+    strcpy(resources[1].value, "val1");
+    flag = 1;
+    return resources;
+}
+
+peos_resource_t *get_resource_list_action_provides(int pid,char *act_name,int *num_resources) {
+    peos_resource_t *resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
+    *num_resources = 2;
+    strcpy(resources[0].name, "res0");
+    strcpy(resources[0].value, "val0");
+    strcpy(resources[1].name, "res1");
+    strcpy(resources[1].value, "val1");
+    flag = 0;
+    return resources;
+}
+
+int eval_predicate(char* tcl_file, peos_resource_t* resources, int num_resources, Tree t) {
+    global_resources = resources;
+    int value = flag ? requires_state[++requires_index] : provides_state[++provides_index];
     return value;
 }
 
-int is_provides_true(int pid, char *act_name)
-{
-	int value = provides_state[++provides_index];
-   return value;
+int fill_resource_list_value(peos_resource_t* source, int num_source, peos_resource_t** destination, int num_destination) {
+    int i;
+    peos_resource_t* res = *destination;
+
+    for (i = 0; i < num_destination; i++) {
+        strcat(res[i].value, "_eval");
+    }
+    return 1;
 }
 
-void log_event(char *msg)
-{
+int eval_resource_list(peos_resource_t** resources, int num_resources) {
+    return 1;
+}
+
+void log_event(char *msg) {
     return;
 }
 
-int delete_entry(int pid)
-{
+int delete_entry(int pid) {
     return 1;
 }
 
@@ -1133,8 +1161,7 @@ END_TEST
 
 START_TEST(test_set_node_state_ready)
 {
- 
-   Node n = make_node("act",ACT_NONE,ACTION,0);
+   Node n = make_node("act", ACT_NONE, ACTION, 0);
 
    requires_index = 0;
    provides_index = 0;
@@ -1145,19 +1172,17 @@ START_TEST(test_set_node_state_ready)
    fail_unless(STATE(n) == ACT_READY, "act not ready");
 }
 END_TEST
-		   
 
 START_TEST(test_set_node_state_ready_1)
 {
- 
-   Node n = make_node("act",ACT_NONE,ACTION,0);
+   Node n = make_node("act", ACT_NONE, ACTION, 0);
 
    requires_index = 0;
    provides_index = 0;
 
    requires_state[1] = TRUE;
    provides_state[1] = FALSE;
- 
+
    fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
    fail_unless(STATE(n) == ACT_READY, "act not ready");
 }
@@ -1166,7 +1191,6 @@ END_TEST
 
 START_TEST(test_set_node_state_ready_2)
 {
- 
    Node n = make_node("act",ACT_NONE,ACTION,0);
 
    requires_index = 0;
@@ -1303,8 +1327,6 @@ START_TEST(test_set_act_state_graph_none)
 }
 END_TEST
 
-
-
 START_TEST(test_set_act_state_graph_abort)
 {
 	Graph g = (Graph) malloc (sizeof(struct graph));
@@ -1339,11 +1361,38 @@ START_TEST(test_set_act_state_graph_abort)
 
 }
 END_TEST
+        
+START_TEST(test_is_requires_true)
+{
+    Node n = make_node("act",ACT_NONE,ACTION,0);
+    PID(n) = 1;
+    process_table[0].num_resources = 2;
+    process_table[0].resources = (peos_resource_t*)calloc(2, sizeof(peos_resource_t));
+    requires_state[1] = TRUE;
+    fail_unless(is_requires_true(n), "test_is_requires_true failed");
+    fail_unless(strcmp(global_resources[0].name, "res0") == 0, "test_is_requires_true failed");
+    fail_unless(strcmp(global_resources[0].value, "val0") == 0, "test_is_requires_true failed");
+    fail_unless(strcmp(global_resources[1].name, "res1") == 0, "test_is_requires_true failed");
+    fail_unless(strcmp(global_resources[1].value, "val1") == 0, "test_is_requires_true failed");
+}
+END_TEST
+        
+START_TEST(test_is_provides_true)
+{
+    Node n = make_node("act",ACT_NONE,ACTION,0);
+    PID(n) = 1;
+    process_table[0].num_resources = 2;
+    process_table[0].resources = (peos_resource_t*)calloc(2, sizeof(peos_resource_t));
+    provides_state[1] = TRUE;
+    fail_unless(is_provides_true(n), "test_is_provides_true failed");
+    fail_unless(strcmp(global_resources[0].name, "res0") == 0, "test_is_provides_true failed");
+    fail_unless(strcmp(global_resources[0].value, "val0") == 0, "test_is_provides_true failed");
+    fail_unless(strcmp(global_resources[1].name, "res1") == 0, "test_is_provides_true failed");
+    fail_unless(strcmp(global_resources[1].value, "val1") == 0, "test_is_provides_true failed");
+}
+END_TEST
 
-
-
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int nf;
     SRunner *sr;
@@ -1417,6 +1466,10 @@ main(int argc, char *argv[])
     tcase_add_test(tc,test_set_act_state_graph_suspend);
     tcase_add_test(tc,test_set_act_state_graph_none);
     tcase_add_test(tc,test_set_act_state_graph_abort);
+    
+    tc = tcase_create("evaluate predicate");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_is_requires_true);
 
     sr = srunner_create(s);
 
