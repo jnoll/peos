@@ -178,7 +178,7 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
     int rsize = 256;
 #else
     int rsize=15;
-#endif;
+#endif
 
     Graph g;
     Node n;

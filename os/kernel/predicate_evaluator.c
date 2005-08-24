@@ -45,10 +45,13 @@ long get_eval_result(char* tcl_file, char* tcl_procedure, char* resource) {
     char* action;
     long result;
 
-    if (strcspn(resource, "$") != strlen(resource)) { //if res_value not contains $
-        if (strcmp(tcl_procedure, "exists") == 0)
-            return 1;
-        return 0;
+    interp = Tcl_CreateInterp();
+    if (Tcl_VarEval(interp, "set ", "dummyVar ", resource, NULL) == TCL_ERROR) {
+	/* 'resource' probably contains a string like $var or ${var},
+	   which means it's a non-value; clause is therefore false.*/ 
+
+	Tcl_DeleteInterp(interp);
+	return 0;
     }
 
     if (tcl_procedure == NULL) {
@@ -57,9 +60,7 @@ long get_eval_result(char* tcl_file, char* tcl_procedure, char* resource) {
             fprintf(stderr, "Error allocating memory: aborting!\n");
             exit(255);
         }
-        strcpy(action, resource);
-    }
-    else {
+    } else {
         action = (char*)malloc(strlen(tcl_procedure) + strlen(resource) + 2);
         if (!action) {
             fprintf(stderr, "Error allocating memory: aborting!\n");
@@ -68,7 +69,7 @@ long get_eval_result(char* tcl_file, char* tcl_procedure, char* resource) {
         sprintf(action, "%s %s", tcl_procedure, resource);
     }
 
-    interp = Tcl_CreateInterp();
+
     Tcl_EvalFile(interp, tcl_file);
     if (Tcl_Eval(interp, action) == TCL_ERROR) {
         fprintf(stderr, "Error evaluating tcl: aborting!\n%s\n", interp->result);
