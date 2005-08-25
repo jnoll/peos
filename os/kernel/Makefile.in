@@ -23,7 +23,6 @@ OBJS = \
 $(CORE_OBJS)
 
 CORE_OBJS = \
-tclinterp.o \
 action.o \
 events.o \
 graph.o \

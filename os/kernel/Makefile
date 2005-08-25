@@ -28,7 +28,6 @@ process.o \
 resources.o \
 
 CORE_OBJS = \
-tclinterp.o \
 predicate_evaluator.o \
 ${PALM_CORE_OBJS}
 

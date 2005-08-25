@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "predicate_evaluator.h"
 #include "events.h"
 #include "process_table.h"
 #include "pmlheaders.h"
@@ -14,7 +15,6 @@
 #include "graph_engine.h"
 #include "process.h"
 #include "resources.h"
-#include "tclinterp.h"
 
 #undef NO_TCL
 #undef PE_LOG

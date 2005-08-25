@@ -1,6 +1,10 @@
 
 #ifndef _PREDICATE_EVALUATOR_H
 #define _PREDICATE_EVALUATOR_H
+#include <tcl.h>
+#ifndef _TCL
+#include "/home/jntestuser/tcl_install/include/tcl.h"
+#endif
 #include <pml/tree.h>
 #include "action.h"
 

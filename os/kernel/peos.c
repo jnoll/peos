@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdio.h>
 #ifndef PALM
-#include "tclinterp.h"
 #include <unistd.h>
 #else
 #include <PalmOS.h>
