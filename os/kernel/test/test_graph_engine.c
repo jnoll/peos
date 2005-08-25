@@ -64,7 +64,7 @@ peos_resource_t *get_resource_list_action_provides(int pid,char *act_name,int *n
     return resources;
 }
 
-int eval_predicate(char* tcl_file, peos_resource_t* resources, int num_resources, Tree t) {
+int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
     global_resources = resources;
     int value = flag ? requires_state[++requires_index] : provides_state[++provides_index];
     return value;

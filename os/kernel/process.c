@@ -87,9 +87,8 @@ char *find_model_file(char *model)
     if ((f = fopen(model_file, "r"))) {
         fclose(f);
         return strdup(model_file);
-    } else {
-        return NULL;
     }
+    return NULL;
 }
 #else
 char *find_model_file(char *model)

@@ -602,7 +602,7 @@ int is_requires_true(Node n) {
         eval_resource_list(&proc_resources, context->num_resources);
         fill_resource_list_value(proc_resources, context->num_resources, &resources, num_resources);
     }
-    return eval_predicate("./../../../os/kernel/peos_init.tcl", resources, num_resources, n->requires);
+    return eval_predicate(resources, num_resources, n->requires);
 }
 
 int is_provides_true(Node n) {
@@ -621,7 +621,7 @@ int is_provides_true(Node n) {
        eval_resource_list(&proc_resources, context->num_resources);
        fill_resource_list_value(proc_resources, context->num_resources, &resources, num_resources);
     }
-    return eval_predicate("./../../../os/kernel/peos_init.tcl", resources, num_resources, n->provides);
+    return eval_predicate(resources, num_resources, n->provides);
 }
 
 vm_act_state set_node_state(Node n, vm_act_state state)

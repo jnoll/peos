@@ -40,10 +40,43 @@ int get_resource_index(peos_resource_t* resources, int num_resources, char* res_
     return -1;
 }
 
-long get_eval_result(char* tcl_file, char* tcl_procedure, char* resource) {
+char* find_tcl_file(char *tcl_file)
+{
+    int i;
+    FILE *f;
+    char* path;
+    char* result;
+    path = (char*) malloc(sizeof(char)*256);
+    result = (char*) malloc(sizeof(char)*256);
+    
+    if (!path || !result) {
+        fprintf(stderr, "Error allocating memory: aborting!\n");
+        exit(255);
+    }
+    
+    strcpy(path, "./");
+    for (i = 0; i < 20; i++) {
+        sprintf(result, "%s%s", path, tcl_file);
+        if ((f = fopen(result, "r"))) {
+            fclose(f);
+            free(path);
+            return result;
+        }
+        strcat(path, "../");
+    }
+    return NULL;
+}
+
+long get_eval_result(char* tcl_procedure, char* resource) {
     Tcl_Interp* interp;
     char* action;
     long result;
+    char* tcl_file = find_tcl_file("peos_init.tcl");
+    
+    if (!tcl_file) {
+        fprintf(stderr, "Error tcl file not found: aborting!\n");
+        exit(255);
+    }
 
     interp = Tcl_CreateInterp();
     if (Tcl_VarEval(interp, "set ", "dummyVar ", resource, NULL) == TCL_ERROR) {
@@ -81,7 +114,7 @@ long get_eval_result(char* tcl_file, char* tcl_procedure, char* resource) {
     return result;
 }
 
-int eval_predicate(char* tcl_file, peos_resource_t* resources, int num_resources, Tree t) {
+int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
     int i;
     
     if (num_resources == 0)
@@ -101,30 +134,30 @@ int eval_predicate(char* tcl_file, peos_resource_t* resources, int num_resources
         i = get_resource_index(resources, num_resources, TREE_ID(t));
         if (strcmp(resources[i].qualifier, "abstract") == 0)
             return 1;
-        return (int) get_eval_result(tcl_file, "exists", resources[i].value);
+        return (int) get_eval_result("exists", resources[i].value);
     } else if (IS_OP_TREE(t)) {  //support binary operator only
         switch (TREE_OP(t)) {
             case DOT:
                 i = get_resource_index(resources, num_resources, TREE_ID(t->left));
                 if (strcmp(resources[i].qualifier, "abstract") == 0)
                     return 1;
-                return (int) get_eval_result(tcl_file, TREE_ID(t->right), resources[i].value);
+                return (int) get_eval_result(TREE_ID(t->right), resources[i].value);
             case EQ:
-                return eval_predicate(tcl_file, resources, num_resources, t->left) == eval_predicate(tcl_file, resources, num_resources, t->right);
+                return eval_predicate(resources, num_resources, t->left) == eval_predicate(resources, num_resources, t->right);
             case NE:
-                return eval_predicate(tcl_file, resources, num_resources, t->left) != eval_predicate(tcl_file, resources, num_resources, t->right);
+                return eval_predicate(resources, num_resources, t->left) != eval_predicate(resources, num_resources, t->right);
             case GE:
-                return eval_predicate(tcl_file, resources, num_resources, t->left) >= eval_predicate(tcl_file, resources, num_resources, t->right);
+                return eval_predicate(resources, num_resources, t->left) >= eval_predicate(resources, num_resources, t->right);
             case LE:
-                return eval_predicate(tcl_file, resources, num_resources, t->left) <= eval_predicate(tcl_file, resources, num_resources, t->right);
+                return eval_predicate(resources, num_resources, t->left) <= eval_predicate(resources, num_resources, t->right);
             case LT:
-                return eval_predicate(tcl_file, resources, num_resources, t->left) < eval_predicate(tcl_file, resources, num_resources, t->right);
+                return eval_predicate(resources, num_resources, t->left) < eval_predicate(resources, num_resources, t->right);
             case GT:
-                return eval_predicate(tcl_file, resources, num_resources, t->left) > eval_predicate(tcl_file, resources, num_resources, t->right);
-                case AND:  //perform short circuit
-                    return eval_predicate(tcl_file, resources, num_resources, t->left) && eval_predicate(tcl_file, resources, num_resources, t->right);
-                    case OR:  //perform short circuit
-                        return eval_predicate(tcl_file, resources, num_resources, t->left) || eval_predicate(tcl_file, resources, num_resources, t->right);
+                return eval_predicate(resources, num_resources, t->left) > eval_predicate(resources, num_resources, t->right);
+            case AND:  //perform short circuit
+                return eval_predicate(resources, num_resources, t->left) && eval_predicate(resources, num_resources, t->right);
+            case OR:  //perform short circuit
+                return eval_predicate(resources, num_resources, t->left) || eval_predicate(resources, num_resources, t->right);
         }
     }
 }

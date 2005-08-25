@@ -33,7 +33,6 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
 
 START_TEST(test_get_resource_index)
 {
-    
     peos_resource_t* resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
     strcpy(resources[0].name, "res0");
     strcpy(resources[1].name, "res1");
@@ -44,28 +43,41 @@ START_TEST(test_get_resource_index)
 }
 END_TEST
 
+START_TEST(test_find_tcl_file)
+{
+    FILE* f;
+    char* file_path = find_tcl_file("peos_init.tcl");
+    if ((f = fopen(file_path, "r"))) {
+        fclose(f);
+    }
+    else {
+        fail_unless(0, "find_tcl_file failed");
+    }
+}
+END_TEST
+        
 START_TEST(test_get_eval_result_exists)
 {
-    fail_unless(get_eval_result("../peos_init.tcl", "exists", "$res") == 0, "get_eval_result_exists failed");
+    fail_unless(get_eval_result("exists", "$res") == 0, "get_eval_result_exists failed");
     system("touch my_file");
-    fail_unless(get_eval_result("../peos_init.tcl", "exists", "my_file"), "get_eval_result_exists failed");
+    fail_unless(get_eval_result("exists", "my_file"), "get_eval_result_exists failed");
     system("rm my_file");
-    fail_unless(!get_eval_result("../peos_init.tcl", "exists", "my_file"), "get_eval_result_exists failed");
+    fail_unless(!get_eval_result("exists", "my_file"), "get_eval_result_exists failed");
 }
 END_TEST
         
 START_TEST(test_get_eval_result_filecount)
 {
-    fail_unless(get_eval_result("../peos_init.tcl", "filecount", "$res") == 0, "get_eval_result_filecount failed");
+    fail_unless(get_eval_result("filecount", "$res") == 0, "get_eval_result_filecount failed");
     system("rm -rf /tmp/my_dir");
     system("mkdir /tmp/my_dir");
-    fail_unless(get_eval_result("../peos_init.tcl", "filecount", "/tmp/my_dir") == 0, "get_eval_result_filecount failed");
+    fail_unless(get_eval_result("filecount", "/tmp/my_dir") == 0, "get_eval_result_filecount failed");
     system("touch /tmp/my_dir/my_file_1");
-    fail_unless(get_eval_result("../peos_init.tcl", "filecount", "/tmp/my_dir") == 1, "get_eval_result_filecount failed");
+    fail_unless(get_eval_result("filecount", "/tmp/my_dir") == 1, "get_eval_result_filecount failed");
     system("touch /tmp/my_dir/my_file_2");
-    fail_unless(get_eval_result("../peos_init.tcl", "filecount", "/tmp/my_dir") == 2, "get_eval_result_filecount failed");
+    fail_unless(get_eval_result("filecount", "/tmp/my_dir") == 2, "get_eval_result_filecount failed");
     system("rm -rf /tmp/my_dir");
-    fail_unless(get_eval_result("../peos_init.tcl", "filecount", "not_exist_dir") == 0, "get_eval_result_filecount failed");
+    fail_unless(get_eval_result("filecount", "not_exist_dir") == 0, "get_eval_result_filecount failed");
 }
 END_TEST
         
@@ -73,52 +85,52 @@ START_TEST(test_get_eval_result_filesize)
 {
     FILE *fp;
     long before, after;
-    fail_unless(get_eval_result("../peos_init.tcl", "filesize", "$res") == 0, "get_eval_result_filesize failed");
+    fail_unless(get_eval_result("filesize", "$res") == 0, "get_eval_result_filesize failed");
      fp = fopen("my_file", "w");
     fprintf(fp, "some text\n");
     fclose(fp);
-    before = get_eval_result("../peos_init.tcl", "filesize", "my_file");
+    before = get_eval_result("filesize", "my_file");
     fp = fopen("my_file", "w");
     fprintf(fp, "some more text\n");
     fclose(fp);
-    after = get_eval_result("../peos_init.tcl", "filesize", "my_file");
+    after = get_eval_result("filesize", "my_file");
     system("rm my_file");
     fail_unless(before < after, "get_eval_result_filesize failed");
-    fail_unless(get_eval_result("../peos_init.tcl", "filesize", "not_exist_file") == 0, "get_eval_result_filesize failed");
+    fail_unless(get_eval_result("filesize", "not_exist_file") == 0, "get_eval_result_filesize failed");
 }
 END_TEST
 
 START_TEST(test_get_eval_result_timestamp)
 {
     long before, after;
-    fail_unless(get_eval_result("../peos_init.tcl", "timestamp", "$res") == 0, "get_eval_result_timestamp failed");
+    fail_unless(get_eval_result("timestamp", "$res") == 0, "get_eval_result_timestamp failed");
     system("touch -t 200201311759.30 my_file");  //year is 2002
-    before = get_eval_result("../peos_init.tcl", "timestamp", "my_file");
+    before = get_eval_result("timestamp", "my_file");
     system("touch -t 200301311759.30 my_file"); //change year to 2003
-    after = get_eval_result("../peos_init.tcl", "timestamp", "my_file");
+    after = get_eval_result("timestamp", "my_file");
     system("rm my_file");
     fail_unless(before < after, "get_eval_result_timestamp failed");
-    fail_unless(get_eval_result("../peos_init.tcl", "timestamp", "not_exists_file") == 0, "get_eval_result_timestamp failed");
+    fail_unless(get_eval_result("timestamp", "not_exists_file") == 0, "get_eval_result_timestamp failed");
 }
 END_TEST
 
 START_TEST(test_get_eval_result_misspellcount)
 {
     FILE* fp;
-    fail_unless(get_eval_result("../peos_init.tcl", "misspellcount", "$res") == 0, "get_eval_result_misspellcount failed");
+    fail_unless(get_eval_result("misspellcount", "$res") == 0, "get_eval_result_misspellcount failed");
     fp = fopen("my_file", "w");
     fprintf(fp, "no error\n");
     fclose(fp);
-    fail_unless(get_eval_result("../peos_init.tcl", "misspellcount", "my_file") == 0, "get_eval_result_misspellcount failed");
+    fail_unless(get_eval_result("misspellcount", "my_file") == 0, "get_eval_result_misspellcount failed");
     fp = fopen("my_file", "w");
     fprintf(fp, "aabb\n");
     fclose(fp);
-    fail_unless(get_eval_result("../peos_init.tcl", "misspellcount", "my_file") == 1, "get_eval_result_misspellcount failed");
+    fail_unless(get_eval_result("misspellcount", "my_file") == 1, "get_eval_result_misspellcount failed");
     fp = fopen("my_file", "w");
     fprintf(fp, "ccdd\n");
     fclose(fp);
     system("rm my_file");
-    fail_unless(get_eval_result("../peos_init.tcl", "misspellcount", "not_exists_file") == 0, "get_eval_result_misspellcount failed");
+    fail_unless(get_eval_result("misspellcount", "not_exists_file") == 0, "get_eval_result_misspellcount failed");
 }
 END_TEST
 
@@ -168,7 +180,7 @@ START_TEST(test_eval_predicate_abstract_0)
 
     t_res = make_tree("res", 0, NULL, NULL);
     
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 1, t_res), "eval_predicate_abstract_0 failed");
+    fail_unless(eval_predicate(resources, 1, t_res), "eval_predicate_abstract_0 failed");
 }
 END_TEST
         
@@ -184,9 +196,9 @@ START_TEST(test_eval_predicate_0)
     t_res = make_tree("res", 0, NULL, NULL);
     
     system("touch my_file");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 1, t_res), "eval_predicate_0 failed");
+    fail_unless(eval_predicate(resources, 1, t_res), "eval_predicate_0 failed");
     system("rm my_file");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 1, t_res), "eval_predicate_0 failed");
+    fail_unless(!eval_predicate(resources, 1, t_res), "eval_predicate_0 failed");
 }
 END_TEST
         
@@ -204,9 +216,9 @@ START_TEST(test_eval_predicate_1)
     t_dot = make_tree(NULL, DOT, t_res, t_exists);
     
     system("touch my_file");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 1, t_dot), "eval_predicate_1 failed");
+    fail_unless(eval_predicate(resources, 1, t_dot), "eval_predicate_1 failed");
     system("rm my_file");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 1, t_dot), "eval_predicate_1 failed");
+    fail_unless(!eval_predicate(resources, 1, t_dot), "eval_predicate_1 failed");
 }
 END_TEST
 
@@ -228,14 +240,14 @@ START_TEST(test_eval_predicate_2)
     
     system("touch my_file0");
     system("touch my_file1");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_and), "eval_predicate_2 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_or), "eval_predicate_2 failed");
+    fail_unless(eval_predicate(resources, 2, t_and), "eval_predicate_2 failed");
+    fail_unless(eval_predicate(resources, 2, t_or), "eval_predicate_2 failed");
     system("rm my_file0");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_and), "eval_predicate_2 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_or), "eval_predicate_2 failed");
+    fail_unless(!eval_predicate(resources, 2, t_and), "eval_predicate_2 failed");
+    fail_unless(eval_predicate(resources, 2, t_or), "eval_predicate_2 failed");
     system("rm my_file1");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_and), "eval_predicate_2 failed");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_or), "eval_predicate_2 failed");
+    fail_unless(!eval_predicate(resources, 2, t_and), "eval_predicate_2 failed");
+    fail_unless(!eval_predicate(resources, 2, t_or), "eval_predicate_2 failed");
 }
 END_TEST
         
@@ -267,28 +279,28 @@ START_TEST(test_eval_predicate_3)
     
     system("touch my_file0");
     system("touch my_file1");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_eq), "eval_predicate_3 failed");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_ne), "eval_predicate_3 failed");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_lt), "eval_predicate_3 failed");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_gt), "eval_predicate_3 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_le), "eval_predicate_3 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_ge), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_eq), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_ne), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_lt), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_gt), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_le), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_ge), "eval_predicate_3 failed");
     system("echo \"12\" > my_file0");
     system("echo \"1234\" > my_file1");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_eq), "eval_predicate_3 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_ne), "eval_predicate_3 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_lt), "eval_predicate_3 failed");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_gt), "eval_predicate_3 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_le), "eval_predicate_3 failed");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_ge), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_eq), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_ne), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_lt), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_gt), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_le), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_ge), "eval_predicate_3 failed");
     system("echo \"1234\" > my_file0");
     system("echo \"12\" > my_file1");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_eq), "eval_predicate_3 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_ne), "eval_predicate_3 failed");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_lt), "eval_predicate_3 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_gt), "eval_predicate_3 failed");
-    fail_unless(!eval_predicate("../peos_init.tcl", resources, 2, t_le), "eval_predicate_3 failed");
-    fail_unless(eval_predicate("../peos_init.tcl", resources, 2, t_ge), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_eq), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_ne), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_lt), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_gt), "eval_predicate_3 failed");
+    fail_unless(!eval_predicate(resources, 2, t_le), "eval_predicate_3 failed");
+    fail_unless(eval_predicate(resources, 2, t_ge), "eval_predicate_3 failed");
     system("rm my_file0");
     system("rm my_file1");
 }
@@ -307,6 +319,10 @@ main(int argc, char *argv[])
     tc = tcase_create("get_resource_index");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_get_resource_index);
+    
+    tc = tcase_create("find_tcl_file");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_find_tcl_file);
     
     tc = tcase_create("get_eval_result_exists");
     suite_add_tcase(s,tc);
