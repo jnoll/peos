@@ -10,25 +10,17 @@
 #include "process.h"
 #include "unistd.h"
 
-
 int create_process(char *model)
 {
     int pid;
-    int i;
     int num_resources;
     peos_resource_t *resources;
 
-
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
-
 
     if (resources == NULL) {
         printf("error getting resources\n");
 	return -1;
-    }
-    
-    for(i = 0; i < num_resources; i++) {
-	strcpy(resources[i].value, "$$");
     }
     
     printf("Executing %s:\n", model);
@@ -74,13 +66,15 @@ main(int argc, char *argv[])
     unlink("proc_table.dat");
     unlink("proc_table.dat.xml");
 
+
+    system("more ./../peos_init.tcl > peos_init.tcl");
+
     /* Create a process */
 
     if (create_process("test_list_action_API.pml") < 0) {
         fprintf(stderr, "Error executing list instances API test\n");
         exit(EXIT_FAILURE);
     }
-
 
     /* bind resources */
 
@@ -150,6 +144,7 @@ main(int argc, char *argv[])
     unlink("test_list_action_API.pml");
     unlink("proc_table.dat");
     unlink("proc_table.dat.xml");
+    system("rm peos_init.tcl");
     
     fprintf(stderr, "done .. \n");
     return 0;

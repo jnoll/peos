@@ -118,7 +118,6 @@ void bind_resource_file(int pid, char* res_file) {
 int create_process(char *model)
 {
     int pid;
-    int i;
     int num_resources;
     peos_resource_t *resources;
     char* res_file;
@@ -128,10 +127,6 @@ int create_process(char *model)
     if (resources == NULL) {
         printf("error getting resources\n");
         return -1;
-    }
-    
-    for(i = 0; i < num_resources; i++) {
-        strcpy(resources[i].value, "$$");
     }
     
     printf("Executing %s:\n", model);

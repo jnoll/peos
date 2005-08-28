@@ -19,8 +19,6 @@
 
 /* Forward declarations. */
 extern peos_context_t *find_free_entry();
-
-
 
 char *act_state_name(vm_act_state state) 
 {

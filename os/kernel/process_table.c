@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.58 2005/08/25 07:51:34 ksuwanna Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.59 2005/08/28 06:17:13 ksuwanna Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -154,29 +154,29 @@ int set_resource_binding(int pid, char *resource_name, char *resource_value)
 {
 #ifndef PALM
     int i;
-
+    int num_resources;
     peos_resource_t *resources;
     peos_context_t *context = peos_get_context(pid);
-    int num_resources;
 
-    if(context == NULL) return -1;
+    if(context == NULL)
+        return -1;
+
     resources = context -> resources;
     num_resources = context -> num_resources;
 
-    if(resources == NULL) return -1;
-    
+    if(resources == NULL)
+        return -1;
+
     for(i = 0; i < num_resources; i++) {
-        if(strcmp(resources[i].name,resource_name) == 0) {
-	    if(strlen(resource_value) < RESOURCE_FIELD_LENGTH) {	
-                strcpy(resources[i].value,resource_value);
-	        return 1;
-	    }
-	    else {
-	        fprintf(stderr, "buffer overflow in set resource binding\n");
-		return -1;
-	    }
-	}
-    }	
+        if(strcmp(resources[i].name, resource_name) == 0) {
+            if(strlen(resource_value) < RESOURCE_FIELD_LENGTH) {
+                strcpy(resources[i].value, resource_value);
+                return 1;
+            }
+            fprintf(stderr, "buffer overflow in set resource binding\n");
+            return -1;
+        }
+    }
     return -1;
 #else 
 return 0;
@@ -313,96 +313,106 @@ int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other
 }
 
 #ifndef PALM
-int
-load_context(FILE *in, peos_context_t *context)
+int load_context(FILE *in, peos_context_t *context)
 {
     int i;
     int num_actions, num_other_nodes;
-
     peos_action_t *actions;
-
     peos_other_node_t *other_nodes;
-
-    if (fscanf(in, "pid: %d\n", &context->pid) != 1) {
+    char* res_value = (char*)malloc(sizeof(char) * 256);
+    
+    if (!res_value) {
+        fprintf(stderr, "Error allocating memory: aborting!\n");
+        exit(255);
+    }
+    
+    if (fscanf(in, "pid: %d\n", &context->pid) != 1)
         return 0;
-    }
-    if (fscanf(in, "model: %s\n", context->model) != 1) {
-	return 0;
-    }
+
+    if (fscanf(in, "model: %s\n", context->model) != 1)
+        return 0;
+
     if (strcmp(context->model, "none") == 0) {
-	context->model[0] = '\0';
-	context->process_graph = NULL;
+        context->model[0] = '\0';
+        context->process_graph = NULL;
     }
 
     if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
-    
+
     if (context->status != PEOS_NONE && context->model[0]) {
-	if ((context->process_graph = makegraph(context->model)) == NULL) {
-	    return 0;
-	} else {
-	    initialize_graph(context->process_graph, context->pid);
-	}
+        if ((context->process_graph = makegraph(context->model)) == NULL)
+            return 0;
+        else
+            initialize_graph(context->process_graph, context->pid);
     }
-    
-    if (fscanf(in, "actions: ") < 0) return 0; 
-    
-    if (fscanf(in, "%d ", &num_actions) != 1) return 0;
+
+    if (fscanf(in, "actions: ") < 0)
+        return 0; 
+
+    if (fscanf(in, "%d ", &num_actions) != 1)
+        return 0;
+
     actions = (peos_action_t *) calloc(num_actions, sizeof(peos_action_t));
 
     for (i = 0; i < num_actions; i++) {
         if (fscanf(in, "%s %d", actions[i].name,(int *)&actions[i].state) != 2) {
-	    free(actions);
-	    return 0; 
-	}
-	actions[i].pid = context->pid;
+            free(actions);
+            return 0;
+        }
+        actions[i].pid = context->pid;
     }
 
     fscanf(in, "\n");
 
-    if (fscanf(in, "other_nodes: ") < 0) return 0;
-                                                                        
-    if (fscanf(in, "%d ", &num_other_nodes) != 1) return 0;
-    other_nodes = (peos_other_node_t *) 
-	calloc(num_other_nodes, sizeof(peos_other_node_t));    
+    if (fscanf(in, "other_nodes: ") < 0)
+        return 0;
+
+    if (fscanf(in, "%d ", &num_other_nodes) != 1)
+        return 0;
+
+    other_nodes = (peos_other_node_t *)calloc(num_other_nodes, sizeof(peos_other_node_t));    
 
     for (i = 0; i < num_other_nodes; i++) {
         if (fscanf(in, "%s %d", other_nodes[i].name,(int *)&other_nodes[i].state) != 2) {
-	    free(other_nodes);
-            return 0;
-	}
-        other_nodes[i].pid = context->pid;
-    }
-     
-
-    fscanf(in, "\n");
-    
-    if (fscanf(in, "resources: ") < 0) return 0;
-                                                                          
-    if (fscanf(in, "%d ", &context->num_resources) != 1) return 0;
-
-    
-    context->resources = (peos_resource_t *) calloc(context->num_resources,sizeof(peos_resource_t));
-	                                                                                
-    for (i = 0; i < context->num_resources; i++) {
-        if (fscanf(in, "%s %s", context->resources[i].name,context->resources[i].value) != 2) {
-	    free(context->resources);
+            free(other_nodes);
             return 0;
         }
-        context->resources[i].pid = context->pid;
-     }
-                                                                      
-
-    if (fscanf(in, "\n\n") < 0) return 0; 
-
-    if (context->process_graph) {
-	if (annotate_graph(context->process_graph, actions, num_actions, 
-		       other_nodes, num_other_nodes) < 0) {
-	return 0;
-	}
+        other_nodes[i].pid = context->pid;
     }
 
-    if (num_actions) free(actions);
-    if (num_other_nodes) free(other_nodes); 
+
+    fscanf(in, "\n");
+
+    if (fscanf(in, "resources: ") < 0)
+        return 0;
+
+    if (fscanf(in, "%d ", &context->num_resources) != 1)
+        return 0;
+
+    context->resources = (peos_resource_t *)calloc(context->num_resources, sizeof(peos_resource_t));
+
+    for (i = 0; i < context->num_resources; i++) {
+        if (fscanf(in, "%s %s", context->resources[i].name, res_value) != 2) {
+            free(context->resources);
+            return 0;
+        }
+        if (res_value[0] != '\"' && res_value[strlen(res_value) - 1] != '\"') {
+            return 0;
+        }
+        strncpy(context->resources[i].value, ++res_value, strlen(res_value) - 2);
+        context->resources[i].pid = context->pid;
+    }
+
+    if (fscanf(in, "\n\n") < 0)
+        return 0;
+
+    if (context->process_graph && (annotate_graph(context->process_graph, actions, num_actions, other_nodes, num_other_nodes) < 0))
+        return 0;
+
+    if (num_actions)
+        free(actions);
+    if (num_other_nodes)
+        free(other_nodes);
     return 1;
 }
 #endif
@@ -422,11 +432,8 @@ int load_proc_table(char *file)
 {   
     int i, status = -1;
     FILE *in;
-
     int num_proc = 0;
     
-    
-   
     filedes = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (filedes < 0) {
         fprintf(stderr, "Cannot Get Process Table File Descriptor\n");
@@ -472,12 +479,11 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     peos_other_node_t *other_nodes;
 
     make_node_lists(context->process_graph,&actions,&num_actions,&other_nodes,&num_other_nodes);
-    
-    
+
     fprintf(out, "pid: %d\n", pid);
     fprintf(out, "model: %s\n", context->model[0] ? context->model : "none");
     fprintf(out, "status: %d\n", context->status);
-    fprintf(out, "actions: "); 
+    fprintf(out, "actions: ");
     fprintf(out, "%d ", num_actions);
     for (i = 0; i < num_actions; i++) {
         fprintf(out, " %s %d", actions[i].name, actions[i].state); 
@@ -492,9 +498,9 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     fprintf(out, "\nresources: ");
     fprintf(out, "%d ", context->num_resources);
     for (i = 0; i < context->num_resources; i++) {
-        fprintf(out, " %s %s", context->resources[i].name, context->resources[i].value);
+        fprintf(out, " %s \"%s\"", context->resources[i].name, context->resources[i].value);
     }
-      
+
     fprintf(out, "\n\n"); 
     return 1;
 #else
@@ -507,9 +513,7 @@ int
 save_proc_table(char *file)
 {
     int i;
-    FILE *out; 
-
-    out = fopen(file, "w");
+    FILE *out = fopen(file, "w");
    
     if (out) {
         for (i = 0; i <= PEOS_MAX_PID; i++) {

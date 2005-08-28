@@ -476,7 +476,7 @@ START_TEST(test_save_proc_table)
         for (i = 0; i < context->num_resources; i++) {
           strcpy(context->resources[i].name, "some_resource");
             strcpy(context->resources[i].value,"some_value");
-            fprintf(f, " %s %s", context->resources[i].name, context->resources[i].value);
+            fprintf(f, " %s \"%s\"", context->resources[i].name, context->resources[i].value);
           }
 	
 	fprintf(f, "\n\n"); 
@@ -518,7 +518,7 @@ START_TEST(test_load_proc_table)
 
     peos_context_t ctx;
     FILE *f;
-    int num_actions,num_other_nodes;
+    int num_actions, num_other_nodes;
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
 
@@ -564,7 +564,7 @@ START_TEST(test_load_proc_table)
         for (i = 0; i < context->num_resources; i++) {
 	    strcpy(context->resources[i].name, "some_resource");
 	    strcpy(context->resources[i].value, "some_value"); 
-            fprintf(f, " %s %s", context->resources[i].name, context->resources[i].value);
+            fprintf(f, " %s \"%s\"", context->resources[i].name, context->resources[i].value);
 	}
 	
 	fprintf(f, "\n\n"); 
@@ -606,7 +606,6 @@ END_TEST
 
 START_TEST(test_list_actions_0)
 {
-    
     int i, j;
     char  *model = TEST_PROC_NAME;
 
@@ -657,7 +656,7 @@ START_TEST(test_list_actions_0)
         for (i = 0; i < context->num_resources; i++) {
 	    strcpy(context->resources[i].name, "some_resource");
 	    strcpy(context->resources[i].value, "some_value"); 
-            fprintf(f, " %s %s", context->resources[i].name, context->resources[i].value);
+            fprintf(f, " %s \"%s\"", context->resources[i].name, context->resources[i].value);
 	}
 	
 	fprintf(f, "\n\n"); 

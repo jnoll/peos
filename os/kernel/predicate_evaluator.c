@@ -40,30 +40,15 @@ int get_resource_index(peos_resource_t* resources, int num_resources, char* res_
     return -1;
 }
 
-char* find_tcl_file(char *tcl_file)
-{
-    int i;
-    FILE *f;
-    char* path;
-    char* result;
-    path = (char*) malloc(sizeof(char)*256);
-    result = (char*) malloc(sizeof(char)*256);
-    
-    if (!path || !result) {
-        fprintf(stderr, "Error allocating memory: aborting!\n");
-        exit(255);
+char* get_tcl_file() {
+    FILE* f;
+    char* tcl_file = strdup("./peos_init.tcl");
+    if ((f = fopen(tcl_file, "r"))) {
+        fclose(f);
+        return tcl_file;
     }
-    
-    strcpy(path, "./");
-    for (i = 0; i < 20; i++) {
-        sprintf(result, "%s%s", path, tcl_file);
-        if ((f = fopen(result, "r"))) {
-            fclose(f);
-            free(path);
-            return result;
-        }
-        strcat(path, "../");
-    }
+    if (tcl_file)
+        free(tcl_file);
     return NULL;
 }
 
@@ -71,10 +56,10 @@ long get_eval_result(char* tcl_procedure, char* resource) {
     Tcl_Interp* interp;
     char* action;
     long result;
-    char* tcl_file = find_tcl_file("peos_init.tcl");
+    char* tcl_file = get_tcl_file();
     
     if (!tcl_file) {
-        fprintf(stderr, "Error tcl file not found: aborting!\n");
+        fprintf(stderr, "Error invalid tcl file path: aborting!\n");
         exit(255);
     }
 
@@ -117,9 +102,6 @@ long get_eval_result(char* tcl_procedure, char* resource) {
 int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
     int i;
     
-    if (num_resources == 0)
-        return 1;
-    
     if (IS_ID_TREE(t)) {
         if (strlen(TREE_ID(t)) > 0 && TREE_ID(t)[0] == '\"') {
             if (!strcmp(TREE_ID(t), "\"True\"") ||
@@ -131,13 +113,21 @@ int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
                  !strcmp(TREE_ID(t), "\"0\""))
                 return 0;
         }
+        if (!resources || num_resources == 0) {
+            fprintf(stderr, "Error invalid resources: aborting!\n");
+            exit(255);
+        }
         i = get_resource_index(resources, num_resources, TREE_ID(t));
         if (strcmp(resources[i].qualifier, "abstract") == 0)
             return 1;
         return (int) get_eval_result("exists", resources[i].value);
-    } else if (IS_OP_TREE(t)) {  //support binary operator only
+    } else if (IS_OP_TREE(t)) {  //support binary operators only
         switch (TREE_OP(t)) {
             case DOT:
+                if (!resources || num_resources == 0) {
+                    fprintf(stderr, "Error invalid resources: aborting!\n");
+                    exit(255);
+                }
                 i = get_resource_index(resources, num_resources, TREE_ID(t->left));
                 if (strcmp(resources[i].qualifier, "abstract") == 0)
                     return 1;
@@ -169,7 +159,7 @@ int eval_resource_list(peos_resource_t** resources, int num_resources) {
 
     Tcl_Interp* interp = Tcl_CreateInterp();
     for (i = 0; i < num_resources; i++) {
-        if (strcmp(res[i].value, "") == 0 || strcmp(res[i].value, "$$") == 0)
+        if (strcmp(res[i].value, "") == 0)
             sprintf(buff, "set %s \\${%s}", res[i].name, res[i].name);
         else
             sprintf(buff, "set %s %s", res[i].name, res[i].value);

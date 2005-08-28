@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.33 2005/08/23 11:10:42 ksuwanna Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.34 2005/08/28 06:17:13 ksuwanna Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -108,7 +108,6 @@ void list(int argc, char *argv[])
 void create_process(int argc, char *argv[])
 {
     int pid;
-    int i;
     char *model;
     int num_resources;
     peos_resource_t *resources;
@@ -128,10 +127,6 @@ void create_process(int argc, char *argv[])
     if (resources == NULL) {
         printf("error getting resources\n");
 	return;
-    }
-    
-    for(i = 0; i < num_resources; i++) {
-	strcpy(resources[i].value, "$$");
     }
     
     printf("Executing %s:\n", model);
