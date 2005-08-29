@@ -101,15 +101,16 @@ long get_eval_result(char* tcl_procedure, char* resource) {
 
 int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
     int i;
-    
+    if (!t)
+        return 1;
     if (IS_ID_TREE(t)) {
         if (strlen(TREE_ID(t)) > 0 && TREE_ID(t)[0] == '\"') {
-            if (!strcmp(TREE_ID(t), "\"True\"") ||
-                 !strcmp(TREE_ID(t), "\"Passed\"") ||
+            if (!strcmp(TREE_ID(t), "\"True\"") || !strcmp(TREE_ID(t), "\"true\"") ||
+                 !strcmp(TREE_ID(t), "\"Passed\"") || !strcmp(TREE_ID(t), "\"passed\"") ||
                  !strcmp(TREE_ID(t), "\"1\""))
                 return 1;	
-            if (!strcmp(TREE_ID(t), "\"False\"") ||
-                 !strcmp(TREE_ID(t), "\"Failed\"") ||
+            if (!strcmp(TREE_ID(t), "\"False\"") || !strcmp(TREE_ID(t), "\"false\"") ||
+                 !strcmp(TREE_ID(t), "\"Failed\"") || !strcmp(TREE_ID(t), "\"failed\"") ||
                  !strcmp(TREE_ID(t), "\"0\""))
                 return 0;
         }

@@ -180,7 +180,13 @@ START_TEST(test_eval_predicate_abstract)
     fail_unless(eval_predicate(resources, 1, t_res), "eval_predicate_abstract_0 failed");
 }
 END_TEST
-        
+
+START_TEST(test_eval_predicate_null_tree)
+{
+    fail_unless(eval_predicate(NULL, 0, NULL), "eval_predicate_null_tree failed");
+}
+END_TEST
+
 START_TEST(test_eval_predicate_single_node)
 {
     peos_resource_t* resources;
@@ -373,6 +379,10 @@ main(int argc, char *argv[])
     tc = tcase_create("eval_predicate_abstract");
     suite_add_tcase(s,tc);
     tcase_add_test(tc, test_eval_predicate_abstract);
+    
+    tc = tcase_create("eval_predicate_null_tree");
+    suite_add_tcase(s,tc);
+    tcase_add_test(tc, test_eval_predicate_null_tree);
     
     tc = tcase_create("eval_predicate_single_node");
     suite_add_tcase(s,tc);
