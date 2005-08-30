@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.59 2005/08/28 06:17:13 ksuwanna Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.60 2005/08/30 02:27:02 ksuwanna Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -337,14 +337,8 @@ int load_context(FILE *in, peos_context_t *context)
         context->process_graph = NULL;
     }
 
-    if (fscanf(in, "status: %d\n", (int *)&context->status) != 1) return 0;
-
-    if (context->status != PEOS_NONE && context->model[0]) {
-        if ((context->process_graph = makegraph(context->model)) == NULL)
-            return 0;
-        else
-            initialize_graph(context->process_graph, context->pid);
-    }
+    if (fscanf(in, "status: %d\n", (int *)&context->status) != 1)
+        return 0;
 
     if (fscanf(in, "actions: ") < 0)
         return 0; 
@@ -380,7 +374,6 @@ int load_context(FILE *in, peos_context_t *context)
         other_nodes[i].pid = context->pid;
     }
 
-
     fscanf(in, "\n");
 
     if (fscanf(in, "resources: ") < 0)
@@ -405,6 +398,12 @@ int load_context(FILE *in, peos_context_t *context)
 
     if (fscanf(in, "\n\n") < 0)
         return 0;
+    
+    if (context->status != PEOS_NONE && context->model[0]) {
+        if ((context->process_graph = makegraph(context->model)) == NULL)
+            return 0;
+        initialize_graph(context->process_graph, context->pid);
+    }
 
     if (context->process_graph && (annotate_graph(context->process_graph, actions, num_actions, other_nodes, num_other_nodes) < 0))
         return 0;

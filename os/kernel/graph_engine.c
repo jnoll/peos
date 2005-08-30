@@ -256,7 +256,7 @@ void mark_successors(Node n, vm_act_state state)
     int i;
     Node child;
     if (n -> type == ACTION) {
-	set_node_state(n, state);    
+	set_node_state(n, state);
 	mark_iter_nodes(n);
 	return;
     }
@@ -592,6 +592,8 @@ int is_requires_true(Node n) {
     peos_resource_t* resources;
     peos_resource_t* proc_resources;
     peos_context_t* context = peos_get_context(PID(n));
+    //if (!context->resources)
+    //    return 0;
     resources = get_resource_list_action_requires(PID(n), n->name, &num_resources);
     if (context && context->num_resources > 0) {
         proc_resources = (peos_resource_t *) calloc(context->num_resources, sizeof(peos_resource_t));
@@ -611,6 +613,8 @@ int is_provides_true(Node n) {
     peos_resource_t* resources;
     peos_resource_t* proc_resources;
     peos_context_t* context = peos_get_context(PID(n));
+    //if (!context->resources)
+    //    return 0;
     resources = get_resource_list_action_provides(PID(n), n->name, &num_resources);
     if (context && context->num_resources > 0) {
         proc_resources = (peos_resource_t *) calloc(context->num_resources, sizeof(peos_resource_t));
