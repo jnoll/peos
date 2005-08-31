@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSFile: process_table.c$
-* Version:      $Id: process_table.c,v 1.60 2005/08/30 02:27:02 ksuwanna Exp $ ($Name:  $)
+* Version:      $Id: process_table.c,v 1.61 2005/08/31 09:29:21 ksuwanna Exp $ ($Name:  $)
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
@@ -319,7 +319,7 @@ int load_context(FILE *in, peos_context_t *context)
     int num_actions, num_other_nodes;
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
-    char* res_value = (char*)malloc(sizeof(char) * 256);
+    char* res_value = (char*)malloc(sizeof(char) * 258);
     
     if (!res_value) {
         fprintf(stderr, "Error allocating memory: aborting!\n");
@@ -389,16 +389,21 @@ int load_context(FILE *in, peos_context_t *context)
             free(context->resources);
             return 0;
         }
-        if (res_value[0] != '\"' && res_value[strlen(res_value) - 1] != '\"') {
+
+        if (strlen(res_value) >= 258)
             return 0;
-        }
+
+        if (res_value[0] != '\"' && res_value[strlen(res_value) - 1] != '\"')
+            return 0;
+
         strncpy(context->resources[i].value, ++res_value, strlen(res_value) - 2);
+        --res_value;
         context->resources[i].pid = context->pid;
     }
 
     if (fscanf(in, "\n\n") < 0)
         return 0;
-    
+
     if (context->status != PEOS_NONE && context->model[0]) {
         if ((context->process_graph = makegraph(context->model)) == NULL)
             return 0;
@@ -408,6 +413,8 @@ int load_context(FILE *in, peos_context_t *context)
     if (context->process_graph && (annotate_graph(context->process_graph, actions, num_actions, other_nodes, num_other_nodes) < 0))
         return 0;
 
+    if (res_value)
+        free(res_value);
     if (num_actions)
         free(actions);
     if (num_other_nodes)
@@ -500,7 +507,7 @@ int save_context(int pid, peos_context_t *context, FILE *out)
         fprintf(out, " %s \"%s\"", context->resources[i].name, context->resources[i].value);
     }
 
-    fprintf(out, "\n\n"); 
+    fprintf(out, "\n\n");
     return 1;
 #else
 return 0;

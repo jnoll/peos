@@ -32,7 +32,6 @@ typedef struct peos_context_tag {
     int num_resources;
     char model[PATH_MAX]; 
     peos_resource_t *resources;
-  //  peos_tcl* interpreter;	/* tcl interpreter for this process */
 } peos_context_t;
 
 extern int get_lock(int filedes) ;

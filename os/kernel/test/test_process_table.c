@@ -427,6 +427,191 @@ START_TEST(test_annotate_graph)
 }
 END_TEST
 
+START_TEST(test_save_context)
+{
+    FILE* f;
+    char line[600];
+    char res_line[600];
+    int i;
+    
+    peos_context_t* context = &(process_table[0]);
+    context->process_graph = (Graph)stub_makegraph("some file");
+    strcpy(context->model, "test.pml");
+    context->status = PEOS_RUNNING;
+    context->num_resources = 2;
+    context->resources = (peos_resource_t *)calloc(context->num_resources, sizeof(peos_resource_t));
+    
+    //test for unbound resource
+    strcpy(context->resources[0].name, "res0");
+    strcpy(context->resources[1].name, "res1");
+    f = fopen("test_save_context.dat", "w");
+    fail_unless(save_context(0, context, f), "save_context failed");
+    fclose(f);
+    f = fopen("test_save_context.dat", "r");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "pid: 0\n") == 0, "save_context failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "model: test.pml\n") == 0, "save_context failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "status: 4\n") == 0, "save_context failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "actions: 2  act_0 0 act_1 0\n") == 0, "save_context failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "other_nodes: 1  sel 0\n") == 0, "save_context failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "resources: 2  res0 \"\" res1 \"\"\n") == 0, "save_context failed");
+    fclose(f);
+
+    //test for bounded resource with single character
+    strcpy(context->resources[0].value, "a");
+    strcpy(context->resources[1].value, "b");
+    f = fopen("test_save_context.dat", "w");
+    fail_unless(save_context(0, context, f), "save_context failed");
+    fclose(f);
+    f = fopen("test_save_context.dat", "r");
+    //skip to resource line
+    for (i = 0; i < 6; i++)
+        fgets(line, 600, f);
+    fclose(f);
+    fail_unless(strcmp(line, "resources: 2  res0 \"a\" res1 \"b\"\n") == 0, "save_context failed");
+
+    //test for maximum number of resource values' characters
+    for (i = 0; i < 255; i++) {
+        context->resources[0].value[i] = 'a';
+        context->resources[1].value[i] = 'b';
+    }
+    context->resources[0].value[++i] = '\0';
+    context->resources[1].value[i] = '\0';
+
+    f = fopen("test_save_context.dat", "w");
+    fail_unless(save_context(0, context, f), "save_context failed");
+    fclose(f);
+    f = fopen("test_save_context.dat", "r");
+    //skip to resource line
+    for (i = 0; i < 6; i++)
+        fgets(line, 600, f);
+    fclose(f);
+    sprintf(res_line, "resources: 2  res0 \"%s\" res1 \"%s\"\n", context->resources[0].value, context->resources[1].value);
+    fail_unless(strcmp(line, res_line) == 0, "save_context failed");
+    unlink("test_save_context.dat");
+}
+END_TEST
+
+START_TEST(test_load_context)
+{
+    int i;
+    char res_value[257];
+    FILE* f;
+    Node node;
+    peos_context_t ctx;
+    peos_context_t* context = &(ctx);
+    
+    make_pml_file("test.pml", "process sample5 { action act_0 { script {\"test script\"} } action act_1 { script {\"test script\"} } }");
+    
+    //test for unbound resource
+    f = fopen("test_load_context.dat", "w");
+    fprintf(f, "pid: 0\n");
+    fprintf(f, "model: test.pml\n");
+    fprintf(f, "status: 4\n");
+    fprintf(f, "actions: 2  act_0 0 act_1 0\n");
+    fprintf(f, "other_nodes: 1  sel 0\n");
+    fprintf(f, "resources: 2  res0 \"\" res1 \"\"\n");
+    fprintf(f, " \n");
+    fclose(f);
+    f = fopen("test_load_context.dat", "r");
+    fail_unless(load_context(f, context), "load_context failed");
+    fclose(f);
+    fail_unless(context->pid == 0, "load_context failed");
+    fail_unless(strcmp(context->model, "test.pml") == 0, "load_context failed");
+    fail_unless(context->status == PEOS_RUNNING, "load_context failed");
+    fail_unless(context->process_graph, "load_context failed");
+    node = context->process_graph->source->next;
+    fail_unless(node, "load_context failed");
+    fail_unless(node->type == ACTION, "load_context failed");
+    fail_unless(strcmp(node->name, "act_0") == 0, "load_context failed");
+    node = node->next;
+    fail_unless(node, "load_context failed");
+    fail_unless(node->type == ACTION, "load_context failed");
+    fail_unless(strcmp(node->name, "act_1") == 0, "load_context failed");
+    fail_unless(context->num_resources == 2, "load_context failed");
+    fail_unless(strcmp(context->resources[0].name, "res0") == 0, "load_context failed");
+    fail_unless(strcmp(context->resources[0].value, "") == 0, "load_context failed");
+    fail_unless(strcmp(context->resources[1].name, "res1") == 0, "load_context failed");
+    fail_unless(strcmp(context->resources[1].value, "") == 0, "load_context failed");
+    
+    //test for single value resource
+    f = fopen("test_load_context.dat", "w");
+    fprintf(f, "pid: 0\n");
+    fprintf(f, "model: test.pml\n");
+    fprintf(f, "status: 4\n");
+    fprintf(f, "actions: 2  act_0 0 act_1 0\n");
+    fprintf(f, "other_nodes: 1  sel 0\n");
+    fprintf(f, "resources: 2  res0 \"a\" res1 \"b\"\n");
+    fprintf(f, " \n");
+    fclose(f);
+    f = fopen("test_load_context.dat", "r");
+    fail_unless(load_context(f, context), "load_context failed");
+    fclose(f);
+    fail_unless(strcmp(context->resources[0].value, "a") == 0, "load_context failed");
+    fail_unless(strcmp(context->resources[1].value, "b") == 0, "load_context failed");
+    
+    //test for single value resource
+    f = fopen("test_load_context.dat", "w");
+    fprintf(f, "pid: 0\n");
+    fprintf(f, "model: test.pml\n");
+    fprintf(f, "status: 4\n");
+    fprintf(f, "actions: 2  act_0 0 act_1 0\n");
+    fprintf(f, "other_nodes: 1  sel 0\n");
+    fprintf(f, "resources: 2  res0 \"a\" res1 \"b\"\n");
+    fprintf(f, " \n");
+    fclose(f);
+    f = fopen("test_load_context.dat", "r");
+    fail_unless(load_context(f, context), "load_context failed");
+    fclose(f);
+    fail_unless(strcmp(context->resources[0].value, "a") == 0, "load_context failed");
+    fail_unless(strcmp(context->resources[1].value, "b") == 0, "load_context failed");
+    
+    //test for maximum number of resource values' characters
+    for (i = 0; i < 255; i++) {
+        res_value[i] = 'a';
+    }
+    res_value[++i] = '\0';
+    
+    f = fopen("test_load_context.dat", "w");
+    fprintf(f, "pid: 0\n");
+    fprintf(f, "model: test.pml\n");
+    fprintf(f, "status: 4\n");
+    fprintf(f, "actions: 2  act_0 0 act_1 0\n");
+    fprintf(f, "other_nodes: 1  sel 0\n");
+    fprintf(f, "resources: 2  res0 \"%s\" res1 \"%s\"\n", res_value, res_value);
+    fprintf(f, " \n");
+    fclose(f);
+    f = fopen("test_load_context.dat", "r");
+    fail_unless(load_context(f, context), "load_context failed");
+    fclose(f);
+    fail_unless(strcmp(context->resources[0].value, res_value) == 0, "load_context failed");
+    fail_unless(strcmp(context->resources[1].value, res_value) == 0, "load_context failed");
+    
+    //test for beyond maximum number of resource values' characters
+    for (i = 0; i < 256; i++) {
+        res_value[i] = 'a';
+    }
+    res_value[++i] = '\0';
+    f = fopen("test_load_context.dat", "w");
+    fprintf(f, "pid: 0\n");
+    fprintf(f, "model: test.pml\n");
+    fprintf(f, "status: 4\n");
+    fprintf(f, "actions: 2  act_0 0 act_1 0\n");
+    fprintf(f, "other_nodes: 1  sel 0\n");
+    fprintf(f, "resources: 2  res0 \"%s\" res1 \"%s\"\n", res_value, res_value);
+    fprintf(f, " \n");
+    fclose(f);
+    f = fopen("test_load_context.dat", "r");
+    fail_unless(!load_context(f, context), "load_context failed");
+    fclose(f);
+    unlink("test_load_context.dat");
+}
+END_TEST
 
 START_TEST(test_save_proc_table)
 {
@@ -1252,6 +1437,8 @@ main(int argc, char *argv[])
 
     tc = tcase_create("table io");
     suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_load_context);
+    tcase_add_test(tc, test_save_context);
     tcase_add_test(tc, test_load_proc_table);
     tcase_add_test(tc, test_save_proc_table);
 
