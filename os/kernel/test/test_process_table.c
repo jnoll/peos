@@ -462,7 +462,7 @@ START_TEST(test_save_context)
     fail_unless(strcmp(line, "resources: 2  res0 \"\" res1 \"\"\n") == 0, "save_context failed");
     fclose(f);
 
-    //test for bounded resource with single character
+    //test for bounded resources with single character as their value
     strcpy(context->resources[0].value, "a");
     strcpy(context->resources[1].value, "b");
     f = fopen("test_save_context.dat", "w");
@@ -475,7 +475,7 @@ START_TEST(test_save_context)
     fclose(f);
     fail_unless(strcmp(line, "resources: 2  res0 \"a\" res1 \"b\"\n") == 0, "save_context failed");
 
-    //test for maximum number of resource values' characters
+    //test for bounded resources with their value equal maximum number of characters
     for (i = 0; i < 255; i++) {
         context->resources[0].value[i] = 'a';
         context->resources[1].value[i] = 'b';
@@ -539,7 +539,7 @@ START_TEST(test_load_context)
     fail_unless(strcmp(context->resources[1].name, "res1") == 0, "load_context failed");
     fail_unless(strcmp(context->resources[1].value, "") == 0, "load_context failed");
     
-    //test for single value resource
+    //test for bounded resources with single character as their value
     f = fopen("test_load_context.dat", "w");
     fprintf(f, "pid: 0\n");
     fprintf(f, "model: test.pml\n");
@@ -555,7 +555,7 @@ START_TEST(test_load_context)
     fail_unless(strcmp(context->resources[0].value, "a") == 0, "load_context failed");
     fail_unless(strcmp(context->resources[1].value, "b") == 0, "load_context failed");
     
-    //test for maximum number of resource values' characters
+    //test for bounded resources with their value equal maximum number of characters
     for (i = 0; i < 255; i++) {
         res_value[i] = 'a';
     }
@@ -576,7 +576,7 @@ START_TEST(test_load_context)
     fail_unless(strcmp(context->resources[0].value, res_value) == 0, "load_context failed");
     fail_unless(strcmp(context->resources[1].value, res_value) == 0, "load_context failed");
     
-    //test for beyond maximum number of resource values' characters
+    //test for bounded resources with their value beyond maximum number of characters
     for (i = 0; i < 256; i++) {
         res_value[i] = 'a';
     }
