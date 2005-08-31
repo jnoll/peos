@@ -555,22 +555,6 @@ START_TEST(test_load_context)
     fail_unless(strcmp(context->resources[0].value, "a") == 0, "load_context failed");
     fail_unless(strcmp(context->resources[1].value, "b") == 0, "load_context failed");
     
-    //test for single value resource
-    f = fopen("test_load_context.dat", "w");
-    fprintf(f, "pid: 0\n");
-    fprintf(f, "model: test.pml\n");
-    fprintf(f, "status: 4\n");
-    fprintf(f, "actions: 2  act_0 0 act_1 0\n");
-    fprintf(f, "other_nodes: 1  sel 0\n");
-    fprintf(f, "resources: 2  res0 \"a\" res1 \"b\"\n");
-    fprintf(f, " \n");
-    fclose(f);
-    f = fopen("test_load_context.dat", "r");
-    fail_unless(load_context(f, context), "load_context failed");
-    fclose(f);
-    fail_unless(strcmp(context->resources[0].value, "a") == 0, "load_context failed");
-    fail_unless(strcmp(context->resources[1].value, "b") == 0, "load_context failed");
-    
     //test for maximum number of resource values' characters
     for (i = 0; i < 255; i++) {
         res_value[i] = 'a';
