@@ -1,6 +1,12 @@
 #!/bin/sh
 echo -n "Running testscript $0... "
 
+# Check for peos_init.tcl
+if [ ! -f peos_init.tcl ]
+then
+  echo; echo "Cannot find peos_init.tcl"
+fi
+
 # Clean environment; otherwise, pid may be offset by previous test.
 rm dfZRuitU82fEY.dat*
 

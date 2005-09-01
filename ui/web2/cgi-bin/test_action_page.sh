@@ -1,6 +1,12 @@
 #!/bin/sh
 echo -n "Running testscript $0... "
 
+# Check for peos_init.tcl
+if [ ! -f peos_init.tcl ]
+then
+  echo; echo "Cannot find peos_init.tcl"
+fi
+
 # First time the user logs in with no data
 export QUERY_STRING="action=start"
 export REQUEST_METHOD=GET

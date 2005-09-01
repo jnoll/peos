@@ -62,6 +62,12 @@ check_for_table() {
 # Clean environment; otherwise, pid may be offset by previous test.
 rm dfZRuitU82fEY.dat*
 
+# Check for peos_init.tcl
+if [ ! -f peos_init.tcl ]
+then
+  echo; echo "Cannot find peos_init.tcl"
+fi
+
 # First time the user logs in with no data
 export QUERY_STRING="action=start"
 export REQUEST_METHOD=GET
