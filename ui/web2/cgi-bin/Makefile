@@ -36,7 +36,9 @@ PML = test_action.pml readme.pml cvs_add_dir.pml
 all: test
 
 test: $(CGI) create_testtable
+	cp $(KERNEL_DIR)/peos_init.tcl ./
 	@for t in $(TESTS) ; do sh $$t ; done
+	rm peos_init.tcl
 	rm event.log
 
 
@@ -60,7 +62,8 @@ install:
 		cp hidden/htpasswd $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd ;\
 		chmod 744 $(INSTALL_DIR)/cgi-bin/hidden/.htpasswd ;\
 	fi
-
+	cp $(KERNEL_DIR)/peos_init.tcl $(INSTALL_DIR)/cgi-bin
+	chmod 744 $(INSTALL_DIR)/cgi-bin/peos_init.tcl
 
 
 create_testtable: create_testtable.o
