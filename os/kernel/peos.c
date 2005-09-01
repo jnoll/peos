@@ -95,7 +95,7 @@ void bind_resource_file(int pid, char* res_file) {
 
     char line[MAX_LINE];
     if ((stream = fopen(res_file,"r")) == NULL) {
-        printf("%s file doesn't exists\n", res_file);
+        fprintf(stderr, "%s file doesn't exists\n", res_file);
         exit(1);
     }
 

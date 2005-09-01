@@ -293,10 +293,10 @@ rm output
 
 # test create process with resource file
 echo "process p {" > peos_test.pml
-echo "action a {" >> peos_test.pml
-echo "requires{r1}" >> peos_test.pml
-echo "provides{r2 && r3}" >> peos_test.pml
-echo "}" >> peos_test.pml
+echo "  action a {" >> peos_test.pml
+echo "      requires{r1}" >> peos_test.pml
+echo "      provides{r2 && r3}" >> peos_test.pml
+echo "  }" >> peos_test.pml
 echo "}" >> peos_test.pml
 
 echo "r1: r1val" > peos_test.res
@@ -345,6 +345,23 @@ then
   echo
 fi
 
+echo "r1:" > peos_test.res
+echo "r2: \${r1}/r2val" >> peos_test.res
+echo "r3: \${r2}/r3val" >> peos_test.res
+
+if !(grep '<prov_resource name=\"r2\" value=\"\${r1}/r2val\" qualifier=\"\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed resource 'file' binding.
+  echo
+fi
+
+if !(grep '<prov_resource name=\"r3\" value=\"\${r1}/r2val/r3val\" qualifier=\"\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed resource 'file' binding.
+  echo
+fi
 
 rm peos_test.res
 rm proc_table.dat
@@ -359,31 +376,47 @@ echo "action act1 {provides{r1}}" >> peos_test.pml
 echo "action act2 {provides{r2}}" >> peos_test.pml
 echo "action act3 {provides{r1.filesize}}" >> peos_test.pml
 echo "action act4 {provides{r1.filesize > r2.filesize}}" >> peos_test.pml
-echo "action act7 {provides{r1.filesize != r1.filesize}}" >> peos_test.pml
 echo "}" >> peos_test.pml
 
+echo "small file" > small
+
 echo "r1: peos_test.pml" > peos_test.res
-echo "r2: peos_test.res" >> peos_rest.res
+echo "r2: small" >> peos_rest.res
 
 ./peos -c peos_test.pml > output
 
 if !(grep '<action name=\"act0\" state=\"READY\">' proc_table.dat.xml > stdout)
 then
   echo
-  echo Failed operating resources
+  echo Failed evaluating resources
   echo
 fi
 
-if !(grep '<action name=\"act1\" state=\"AVAILABLE\">' proc_table.dat.xml > stdout)
+if !(grep '<action name=\"act1\" state=\"SATISFIED\">' proc_table.dat.xml > stdout)
 then
   echo
-  echo Failed operating resources
+  echo Failed evaluating resources
+  echo
+fi
+
+if !(grep '<action name=\"act3\" state=\"SATISFIED\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed evaluating resources
+  echo
+fi
+
+if !(grep '<action name=\"act4\" state=\"SATISFIED\">' proc_table.dat.xml > stdout)
+then
+  echo
+  echo Failed evaluating resources
   echo
 fi
 #################################
+rm small
 rm peos_test.res
 rm proc_table.dat
-#rm proc_table.dat.xml
+rm proc_table.dat.xml
 rm peos_test.pml
 rm output
 
