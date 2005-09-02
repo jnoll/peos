@@ -7,9 +7,9 @@ CFLAGS = -w -g -Wall -I$(OS_DIR) -I../../../pml -I/usr/include/libxml2
 
 LD = gcc
 
-LIBS = -lpml -lcrypt -lxml2 -lz -lm -lpeos -ltcl
+LIBS = -lpml -lcrypt -lxml2 -lpthread -lz  -lpeos -ltcl8.4 -lm
 
-LDFLAGS = -g -L../../../os/kernel -L../../../pml/pml -L/usr/lib 
+LDFLAGS = -g -static  -L../../../os/kernel -L../../../pml/pml -L/home/jnoll/lib -L/usr/lib 
 KERNEL_OBJECTS = $(KERNEL_DIR)/events.o \
 	$(KERNEL_DIR)/graph_engine.o \
 	$(KERNEL_DIR)/process_table.o \
