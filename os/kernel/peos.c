@@ -23,9 +23,9 @@ int create_process(char *model) {
     int pid;
     int num_resources;
     peos_resource_t *resources;
-    char* res_file;
+    char res_file[BUFSIZ];
+    char* res_path;
     char* ext;
-    char model_file[BUFSIZ];
 
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);    //see events.c
 
@@ -42,14 +42,13 @@ int create_process(char *model) {
     }
     
     ext = strrchr(model, '.');
-    if (ext != NULL) {
-        strncat(model_file, model, ext - model);
+    if (ext) {
+        strncat(res_file, model, ext - model);
     }
-    strcat(model_file, ".res");
+    strcat(res_file, ".res");
 
-    
-    if ((res_file = find_file(model_file)) != NULL) {
-        peos_bind_resource_file(pid, res_file);
+    if ((res_path = find_file(res_file))) {
+        peos_bind_resource_file(pid, res_path);
     }
     
     printf("Created pid = %d\n", pid);
