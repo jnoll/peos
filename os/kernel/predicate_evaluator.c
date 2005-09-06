@@ -15,6 +15,7 @@
 #include "graph_engine.h"
 #include "process.h"
 #include "resources.h"
+#include "peos_util.h"
 
 #undef NO_TCL
 #undef PE_LOG
@@ -40,23 +41,11 @@ int get_resource_index(peos_resource_t* resources, int num_resources, char* res_
     return -1;
 }
 
-char* get_tcl_file() {
-    FILE* f;
-    char* tcl_file = strdup("./peos_init.tcl");
-    if ((f = fopen(tcl_file, "r"))) {
-        fclose(f);
-        return tcl_file;
-    }
-    if (tcl_file)
-        free(tcl_file);
-    return NULL;
-}
-
 long get_eval_result(char* tcl_procedure, char* resource) {
     Tcl_Interp* interp;
     char* action;
     long result;
-    char* tcl_file = get_tcl_file();
+    char* tcl_file = find_file("peos_init.tcl");
     
     if (!tcl_file) {
         fprintf(stderr, "Error invalid tcl file path: aborting!\n");

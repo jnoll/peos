@@ -26,6 +26,7 @@ graph_engine.o \
 process_table.o \
 process.o \
 resources.o \
+peos_util.o \
 
 CORE_OBJS = \
 predicate_evaluator.o \

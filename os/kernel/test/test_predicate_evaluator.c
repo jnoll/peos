@@ -31,6 +31,10 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
     return global_resources;
 }
 
+char* find_file(char* file) {
+    return strdup("./../peos_init.tcl");
+}
+
 START_TEST(test_get_resource_index)
 {
     peos_resource_t* resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
@@ -43,30 +47,18 @@ START_TEST(test_get_resource_index)
 }
 END_TEST
 
-START_TEST(test_get_tcl_file)
-{
-    system("touch peos_init.tcl");
-    fail_unless(strcmp(get_tcl_file(), "./peos_init.tcl") == 0, "get_tcl_file");
-    system("rm peos_init.tcl");
-    fail_unless(!get_tcl_file(), "get_tcl_file");
-}
-END_TEST
-
 START_TEST(test_get_eval_result_exists)
 {
-    system("more ./../peos_init.tcl > peos_init.tcl");
     fail_unless(get_eval_result("exists", "$res") == 0, "get_eval_result_exists failed");
     system("touch my_file");
     fail_unless(get_eval_result("exists", "my_file"), "get_eval_result_exists failed");
     system("rm my_file");
     fail_unless(!get_eval_result("exists", "my_file"), "get_eval_result_exists failed");
-    system("rm peos_init.tcl");
 }
 END_TEST
 
 START_TEST(test_get_eval_result_filecount)
 {
-    system("more ./../peos_init.tcl > peos_init.tcl");
     fail_unless(get_eval_result("filecount", "$res") == 0, "get_eval_result_filecount failed");
     system("rm -rf /tmp/my_dir");
     system("mkdir /tmp/my_dir");
@@ -77,14 +69,12 @@ START_TEST(test_get_eval_result_filecount)
     fail_unless(get_eval_result("filecount", "/tmp/my_dir") == 2, "get_eval_result_filecount failed");
     system("rm -rf /tmp/my_dir");
     fail_unless(get_eval_result("filecount", "not_exist_dir") == 0, "get_eval_result_filecount failed");
-    system("rm peos_init.tcl");
 }
 END_TEST
         
 START_TEST(test_get_eval_result_filesize)
 {
     long before, after;
-    system("more ./../peos_init.tcl > peos_init.tcl");
     fail_unless(get_eval_result("filesize", "$res") == 0, "get_eval_result_filesize failed");
     system("echo abc > my_file");
     before = get_eval_result("filesize", "my_file");
@@ -93,14 +83,12 @@ START_TEST(test_get_eval_result_filesize)
     system("rm my_file");
     fail_unless(before < after, "get_eval_result_filesize failed");
     fail_unless(get_eval_result("filesize", "not_exist_file") == 0, "get_eval_result_filesize failed");
-    system("rm peos_init.tcl");
 }
 END_TEST
 
 START_TEST(test_get_eval_result_timestamp)
 {
     long before, after;
-    system("more ./../peos_init.tcl > peos_init.tcl");
     fail_unless(get_eval_result("timestamp", "$res") == 0, "get_eval_result_timestamp failed");
     system("touch -t 200201311759.30 my_file");  //year is 2002
     before = get_eval_result("timestamp", "my_file");
@@ -109,13 +97,11 @@ START_TEST(test_get_eval_result_timestamp)
     system("rm my_file");
     fail_unless(before < after, "get_eval_result_timestamp failed");
     fail_unless(get_eval_result("timestamp", "not_exists_file") == 0, "get_eval_result_timestamp failed");
-    system("rm peos_init.tcl");
 }
 END_TEST
 
 START_TEST(test_get_eval_result_misspellcount)
 {
-    system("more ./../peos_init.tcl > peos_init.tcl");
     fail_unless(get_eval_result("misspellcount", "$res") == 0, "get_eval_result_misspellcount failed");
     system("touch my_file");
     fail_unless(get_eval_result("misspellcount", "my_file") == 0, "get_eval_result_misspellcount failed");
@@ -127,7 +113,6 @@ START_TEST(test_get_eval_result_misspellcount)
     fail_unless(get_eval_result("misspellcount", "my_file") == 2, "get_eval_result_misspellcount failed");
     system("rm my_file");
     fail_unless(get_eval_result("misspellcount", "not_exists_file") == 0, "get_eval_result_misspellcount failed");
-    system("rm peos_init.tcl");
 }
 END_TEST
 
@@ -211,12 +196,10 @@ START_TEST(test_eval_predicate_single_node)
     fail_unless(!eval_predicate(NULL, 0, t4), "eval_predicate_single_node failed");
     fail_unless(!eval_predicate(NULL, 0, t5), "eval_predicate_single_node failed");
     
-    system("more ./../peos_init.tcl > peos_init.tcl");
     system("touch my_file");
     fail_unless(eval_predicate(resources, 1, t6), "eval_predicate_single_node failed");
     system("rm my_file");
     fail_unless(!eval_predicate(resources, 1, t6), "eval_predicate_single_node failed");
-    system("rm peos_init.tcl");
 }
 END_TEST
         
@@ -233,12 +216,10 @@ START_TEST(test_eval_predicate_dot)
     t_exists = make_tree("exists", 0, NULL, NULL);
     t_dot = make_tree(NULL, DOT, t_res, t_exists);
     
-    system("more ./../peos_init.tcl > peos_init.tcl");
     system("touch my_file");
     fail_unless(eval_predicate(resources, 1, t_dot), "eval_predicate_dot failed");
     system("rm my_file");
     fail_unless(!eval_predicate(resources, 1, t_dot), "eval_predicate_dot failed");
-    system("rm peos_init.tcl");
 }
 END_TEST
 
@@ -258,7 +239,6 @@ START_TEST(test_eval_predicate_and_or)
     t_and = make_tree(NULL, AND, t_res0, t_res1);
     t_or = make_tree(NULL, OR, t_res0, t_res1);
     
-    system("more ./../peos_init.tcl > peos_init.tcl");
     system("touch my_file0");
     system("touch my_file1");
     fail_unless(eval_predicate(resources, 2, t_and), "eval_predicate_and_or failed");
@@ -269,7 +249,6 @@ START_TEST(test_eval_predicate_and_or)
     system("rm my_file1");
     fail_unless(!eval_predicate(resources, 2, t_and), "eval_predicate_and_or failed");
     fail_unless(!eval_predicate(resources, 2, t_or), "eval_predicate_and_or failed");
-    system("rm peos_init.tcl");
 }
 END_TEST
         
@@ -299,7 +278,6 @@ START_TEST(test_eval_predicate_eq_ne_gt_le_ge)
     t_le = make_tree(NULL, LE, t_dot0, t_dot1); // res0.filesize <= res1.filesize
     t_ge = make_tree(NULL, GE, t_dot0, t_dot1); // res0.filesize >= res1.filesize
     
-    system("more ./../peos_init.tcl > peos_init.tcl");
     system("touch my_file0");
     system("touch my_file1");
     fail_unless(eval_predicate(resources, 2, t_eq), "eval_predicate_eq_ne_gt_le_ge failed");
@@ -326,7 +304,6 @@ START_TEST(test_eval_predicate_eq_ne_gt_le_ge)
     fail_unless(eval_predicate(resources, 2, t_ge), "eval_predicate_eq_ne_gt_le_ge failed");
     system("rm my_file0");
     system("rm my_file1");
-    system("rm peos_init.tcl");
 }
 END_TEST
         
@@ -343,10 +320,6 @@ main(int argc, char *argv[])
     tc = tcase_create("get_resource_index");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_get_resource_index);
-    
-    tc = tcase_create("get_tcl_file");
-    suite_add_tcase(s,tc);
-    tcase_add_test(tc,test_get_tcl_file);
     
     tc = tcase_create("get_eval_result_exists");
     suite_add_tcase(s,tc);

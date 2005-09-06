@@ -17,110 +17,15 @@
 #include "pmlheaders.h"
 #include "graph_engine.h"
 #include "process.h"
+#include "peos_util.h"
 
-
-#define MAX_LINE 40
-
-void replace_char(char* string, char old, char new) {
-    int i;
-    int len = strlen(string);
-    for (i = 0; i < len; i++) {
-        if (string[i] == old)
-            string[i] = new;
-    }
-}
-
-int trim(char* str)
-{
-    int fi;    //an index of the first character after whitespace(s)
-    int li;    //an index of the last character before whitespace(s)
-    int old_len = strlen(str);    //orginal string length
-    int i;
-    int new_len;    //trimmed string length
-
-    for (fi = 0; (fi < old_len) && (str[fi] == ' '); fi++)    //get fi
-        ;
-
-    for (li = old_len - 1; (li >= 0) && ((str[li] == ' ') || (str[li] == '\n')); li--)    //get li
-        ;
-
-    new_len = li - fi + 1;
-
-    for (i = 0; i < new_len; i++)   //shift char forward
-        str[i] = str[fi + i];
-
-    for (; i < old_len; i++)    //clear whitespace(s) and newline
-        str[i] = '\0';
-
-    return strlen(str);
-}
-
-char *find_resource_file(char *model)
-{
-    char *ext, model_file[BUFSIZ];
-    char *model_dir;
-    FILE *f;
-    
-    // XXX FIXME! there is a potential buffer overrun here!
-    if (model[0] == '/' || strncmp(model, "./", 2) == 0) {
-        model_file[0] = '\0';
-    }
-    else {
-        model_dir = getenv("COMPILER_DIR");
-        if (model_dir == NULL) {
-            model_dir = ".";
-        }
-        sprintf(model_file, "%s/", model_dir);
-    }
-    ext = strrchr(model, '.');
-    if (ext != NULL) {
-        strncat(model_file, model, ext - model);
-    }
-    else {
-        strncat(model_file, model, strlen(model));
-    }
-    strcat(model_file, ".res");
-    if ((f = fopen(model_file, "r"))) {
-        fclose(f);
-        return strdup(model_file);
-    }
-    return NULL;
-}
-
-void bind_resource_file(int pid, char* res_file) {
-
-    FILE* stream;
-    char* res_name;
-    char* res_value;
-
-    char line[MAX_LINE];
-    if ((stream = fopen(res_file,"r")) == NULL) {
-        fprintf(stderr, "%s file doesn't exists\n", res_file);
-        exit(1);
-    }
-
-    if(update_state() < 0) {
-        fprintf(stderr, "Could not update process state\n");
-        exit(EXIT_FAILURE);
-    }
-
-    while (fgets(line, MAX_LINE, stream) != NULL) {
-        if (trim(res_name = strtok(line, ":")) > 0 && trim(res_value = strtok(NULL, ":")) > 0) {
-            if (peos_set_resource_binding(pid, res_name, res_value) < 0) {    //see events.c
-                fprintf(stderr, "Could not bind resource (%s, %s)\n", res_name, res_value);
-                exit(EXIT_FAILURE);
-            }
-        }
-    }
-    fclose(stream);
-}
-
-int create_process(char *model)
-{
+int create_process(char *model) {
     int pid;
     int num_resources;
     peos_resource_t *resources;
     char* res_file;
+    char* ext;
+    char model_file[BUFSIZ];
 
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);    //see events.c
 
@@ -136,8 +41,15 @@ int create_process(char *model)
         return -1;
     }
     
-    if ((res_file = find_resource_file(model)) != NULL) {
-        bind_resource_file(pid, res_file);
+    ext = strrchr(model, '.');
+    if (ext != NULL) {
+        strncat(model_file, model, ext - model);
+    }
+    strcat(model_file, ".res");
+
+    
+    if ((res_file = find_file(model_file)) != NULL) {
+        peos_bind_resource_file(pid, res_file);
     }
     
     printf("Created pid = %d\n", pid);
@@ -348,7 +260,6 @@ main (int argc, char **argv)
                     res_val = argv[6];
                 }
                 set_login_name(login);
-                replace_char(res_val, '@', '$');
                 if(peos_set_resource_binding(pid, res_name, res_val) < 0) {    //see events.c
                     fprintf(stderr, "Could not bind resources");
                     exit(EXIT_FAILURE);
@@ -372,7 +283,7 @@ main (int argc, char **argv)
                     res_file = argv[5];
                 }
                 set_login_name(login);
-                bind_resource_file(pid, res_file);
+                peos_bind_resource_file(pid, res_file);
                 return 1;
             case 'd':
                 if(l == 0) {

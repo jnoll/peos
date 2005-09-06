@@ -2,7 +2,7 @@
 *****************************************************************************
 *
 * File:         $RCSfile: shell.c,v $
-* Version:      $Id: shell.c,v 1.34 2005/08/28 06:17:13 ksuwanna Exp $ ($Name:  $)
+* Version:      $Id: shell.c,v 1.35 2005/09/06 04:17:44 ksuwanna Exp $ ($Name:  $)
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
@@ -25,6 +25,7 @@
 #include "pmlheaders.h"
 #include "graph_engine.h"
 #include "process.h"
+#include "peos_util.h"
 
 extern char *act_state_name(vm_act_state state);
 
@@ -196,7 +197,7 @@ void list_resources(int argc, char *argv[])
     }
 
     model = argv[1];
-    model_file = (char *)find_model_file(model);
+    model_file = (char *)find_file(model);
     if (model_file == NULL) {
         printf("error: model file %s not found\n", model);
         return;

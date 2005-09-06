@@ -13,6 +13,7 @@
 #include "events.h"
 #include "graph.h"
 #include "graph_engine.h"
+#include "peos_util.h"
 
 /* Globals. */
 
@@ -55,45 +56,6 @@ char *act_state_name(vm_act_state state)
 	    break;
       }
 }
-
-#ifndef PALM
-char *find_model_file(char *model)
-{
-    char *ext, model_file[BUFSIZ];
-    char *model_dir;
-    FILE *f;
-
-    /* XXX FIXME! there is a potential buffer overrun here! */
-    if (model[0] == '/' || strncmp(model, "./", 2) == 0) {
-	model_file[0] = '\0';
-    } else {
-	model_dir = getenv("COMPILER_DIR");
-	if (model_dir == NULL) {
-	    model_dir = ".";
-	}
-	sprintf(model_file, "%s/", model_dir);
-    }
-
-    ext = strrchr(model, '.');
-    if (ext != NULL) {
-	strncat(model_file, model, ext - model);
-    } else {
-	strncat(model_file, model, strlen(model));
-    }
-
-    strcat(model_file, ".pml");
-    if ((f = fopen(model_file, "r"))) {
-        fclose(f);
-        return strdup(model_file);
-    }
-    return NULL;
-}
-#else
-char *find_model_file(char *model)
-{
-	return strdup(model);
-}
-#endif
 
 int peos_create_instance(char *model_file,peos_resource_t *resources,int num_resources)
 {

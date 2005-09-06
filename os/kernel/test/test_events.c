@@ -105,6 +105,12 @@ int peos_create_instance(char *model,peos_resource_t *resources,int num_resource
 
 int set_resource_binding(int pid, char *resource_name, char *resource_value)
 {
+    FILE* f;
+    if (pid == 600) {//for test_peos_bind_resource_file
+        f = fopen("test_bind_resource_file.dat", "a");
+        fprintf(f, "%s %s\n", resource_name, resource_value);
+        fclose(f);
+    }
     return 1;
 }
 
@@ -131,6 +137,98 @@ int fill_resource_list_value(peos_resource_t* source, int num_source, peos_resou
     }
     return 1;
 }
+
+char* find_file(char* file) {
+    return file;
+}
+
+START_TEST(test_trim)
+{
+    char* str = malloc(256);
+    strcpy(str, "a");
+    fail_unless(trim(str) == 1, "test_trim failed");
+    fail_unless(strcmp(str, "a") == 0, "test_trim failed");
+    strcpy(str, "abc");
+    fail_unless(trim(str) == 3, "test_trim failed");
+    fail_unless(strcmp(str, "abc") == 0, "test_trim failed");
+    strcpy(str, " abc");
+    fail_unless(trim(str) == 3, "test_trim failed");
+    fail_unless(strcmp(str, "abc") == 0, "test_trim failed");
+    strcpy(str, "abc ");
+    fail_unless(trim(str) == 3, "test_trim failed");
+    fail_unless(strcmp(str, "abc") == 0, "test_trim failed");
+    strcpy(str, " abc ");
+    fail_unless(trim(str) == 3, "test_trim failed");
+    fail_unless(strcmp(str, "abc") == 0, "test_trim failed");
+    strcpy(str, " a b c ");
+    fail_unless(trim(str) == 5, "test_trim failed");
+    fail_unless(strcmp(str, "a b c") == 0, "test_trim failed");
+    strcpy(str, "  abc  \n");
+    fail_unless(trim(str) == 3, "test_trim failed");
+    fail_unless(strcmp(str, "abc") == 0, "test_trim failed");
+    free(str);
+}
+END_TEST
+
+START_TEST(test_peos_bind_resource_file)
+{
+    FILE* f;
+    char line[600];
+    //one resource line
+    system("echo res0:val0 > test_bind_resource_file.res");
+    peos_bind_resource_file(600, "test_bind_resource_file.res");
+    f = fopen("test_bind_resource_file.dat", "r");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res0 val0\n") == 0, "test_peos_bind_resource_file failed");
+    fclose(f);
+    system("rm test_bind_resource_file.dat");
+    
+    //three resource lines
+    system("echo res1:val1 >> test_bind_resource_file.res");
+    system("echo res2:val2 >> test_bind_resource_file.res");
+    peos_bind_resource_file(600, "test_bind_resource_file.res");
+    f = fopen("test_bind_resource_file.dat", "r");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res0 val0\n") == 0, "test_peos_bind_resource_file failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res1 val1\n") == 0, "test_peos_bind_resource_file failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res2 val2\n") == 0, "test_peos_bind_resource_file failed");
+    fclose(f);
+    system("rm test_bind_resource_file.*");
+    
+    //two resource lines with empty line in between
+    system("echo res0:val0 > test_bind_resource_file.res");
+    system("echo >> test_bind_resource_file.res");
+    system("echo res1:val1 >> test_bind_resource_file.res");
+    peos_bind_resource_file(600, "test_bind_resource_file.res");
+    f = fopen("test_bind_resource_file.dat", "r");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res0 val0\n") == 0, "test_peos_bind_resource_file failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res1 val1\n") == 0, "test_peos_bind_resource_file failed");
+    fclose(f);
+    system("rm test_bind_resource_file.*");
+    
+    //resource line with whitespace
+    system("echo 'res0 :val0 ' > test_bind_resource_file.res");
+    system("echo ' res1: val1' >> test_bind_resource_file.res");
+    system("echo ' res2 : val2 ' >> test_bind_resource_file.res");
+    system("echo '  res3  :  val3  ' >> test_bind_resource_file.res");
+    peos_bind_resource_file(600, "test_bind_resource_file.res");
+    f = fopen("test_bind_resource_file.dat", "r");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res0 val0\n") == 0, "test_peos_bind_resource_file failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res1 val1\n") == 0, "test_peos_bind_resource_file failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res2 val2\n") == 0, "test_peos_bind_resource_file failed");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res3 val3\n") == 0, "test_peos_bind_resource_file failed");
+    fclose(f);
+    system("rm test_bind_resource_file.*");
+}
+END_TEST
 
 START_TEST(test_list_models)
 {
@@ -289,11 +387,18 @@ main(int argc, char *argv[])
     TCase *tc;
 
     parse_args(argc, argv);
-
+    
     tc = tcase_create("list_models");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_list_models);
 
+    tc = tcase_create("trim");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_trim);
+    
+    tc = tcase_create("bind_resource_file");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_peos_bind_resource_file);
 
     tc = tcase_create("run");
     suite_add_tcase(s, tc);
