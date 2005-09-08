@@ -17,39 +17,24 @@
 #include "resources.h"
 #include "peos_util.h"
 
-#undef NO_TCL
-#undef PE_LOG
-#ifdef PE_LOG
-# define PE_DEBUG
-# define PE_DEBUG_A
-# define PE_DEBUG_B
-# define PE_DEBUG_LITERAL
-# define PE_RETURN
-#endif
-
-FILE* pe_log=NULL;
-int number=0;
-
-extern char *act_state_name(vm_act_state state);
-
 int get_resource_index(peos_resource_t* resources, int num_resources, char* res_name) {
     int i;
     for (i = 0; i < num_resources; i++)
         if (strcmp(res_name, resources[i].name) == 0)
             return i;
-    fprintf(stderr,"Error resource not found: aborting\n");
     return -1;
 }
 
-long get_eval_result(char* tcl_procedure, char* resource) {
+long get_eval_result(char* tcl_procedure, char* resource, int* error) {
     Tcl_Interp* interp;
     char* action;
     long result;
     char* tcl_file = find_file("peos_init.tcl");
+    *error = 0;
     
     if (!tcl_file) {
-        fprintf(stderr, "Error invalid tcl file path: aborting!\n");
-        exit(255);
+        *error = 1;
+        return 0;
     }
 
     interp = Tcl_CreateInterp();
@@ -64,23 +49,22 @@ long get_eval_result(char* tcl_procedure, char* resource) {
     if (tcl_procedure == NULL) {
         action = strdup(resource);
         if (!action) {
-            fprintf(stderr, "Error allocating memory: aborting!\n");
-            exit(255);
+            *error = 1;
+            return 0;
         }
     } else {
         action = (char*)malloc(strlen(tcl_procedure) + strlen(resource) + 2);
         if (!action) {
-            fprintf(stderr, "Error allocating memory: aborting!\n");
-            exit(255);
+            *error = 1;
+            return 0;
         }
         sprintf(action, "%s %s", tcl_procedure, resource);
     }
 
-
     Tcl_EvalFile(interp, tcl_file);
     if (Tcl_Eval(interp, action) == TCL_ERROR) {
-        fprintf(stderr, "Error evaluating tcl: aborting!\n%s\n", interp->result);
-        exit(255);
+        *error = 1;
+        return 0;
     }
     result = atol(interp->result);
     Tcl_DeleteInterp(interp);
@@ -90,6 +74,8 @@ long get_eval_result(char* tcl_procedure, char* resource) {
 
 int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
     int i;
+    int result0, result1;
+    int error;
     if (!t)
         return 1;
     if (IS_ID_TREE(t)) {
@@ -97,57 +83,117 @@ int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
             if (!strcmp(TREE_ID(t), "\"True\"") || !strcmp(TREE_ID(t), "\"true\"") ||
                  !strcmp(TREE_ID(t), "\"Passed\"") || !strcmp(TREE_ID(t), "\"passed\"") ||
                  !strcmp(TREE_ID(t), "\"1\""))
-                return 1;	
+                return 1;
             if (!strcmp(TREE_ID(t), "\"False\"") || !strcmp(TREE_ID(t), "\"false\"") ||
                  !strcmp(TREE_ID(t), "\"Failed\"") || !strcmp(TREE_ID(t), "\"failed\"") ||
                  !strcmp(TREE_ID(t), "\"0\""))
                 return 0;
         }
         if (!resources || num_resources == 0) {
-            fprintf(stderr, "Error invalid resources: aborting!\n");
-            exit(255);
+            return -1;
         }
         i = get_resource_index(resources, num_resources, TREE_ID(t));
+        if (i == -1)
+            return -1;
         if (strcmp(resources[i].qualifier, "abstract") == 0)
             return 1;
-        return (int) get_eval_result("exists", resources[i].value);
+        result0 = (int) get_eval_result("exists", resources[i].value, &error);
+        if (error)
+            return -1;
+        return result0;
     } else if (IS_OP_TREE(t)) {  //support binary operators only
         switch (TREE_OP(t)) {
             case DOT:
                 if (!resources || num_resources == 0) {
-                    fprintf(stderr, "Error invalid resources: aborting!\n");
-                    exit(255);
+                    return -1;
                 }
                 i = get_resource_index(resources, num_resources, TREE_ID(t->left));
+                if (i == -1)
+                    return -1;
                 if (strcmp(resources[i].qualifier, "abstract") == 0)
                     return 1;
-                return (int) get_eval_result(TREE_ID(t->right), resources[i].value);
+                result0 = (int) get_eval_result(TREE_ID(t->right), resources[i].value, &error);
+                if (error)
+                    return -1;
+                return result0;
             case EQ:
-                return eval_predicate(resources, num_resources, t->left) == eval_predicate(resources, num_resources, t->right);
+                result0 = eval_predicate(resources, num_resources, t->left);
+                if (result0 == -1)
+                    return -1;
+                result1 = eval_predicate(resources, num_resources, t->right);
+                if (result1 == -1)
+                    return -1;
+                return result0 == result1;
             case NE:
-                return eval_predicate(resources, num_resources, t->left) != eval_predicate(resources, num_resources, t->right);
+                result0 = eval_predicate(resources, num_resources, t->left);
+                if (result0 == -1)
+                    return -1;
+                result1 = eval_predicate(resources, num_resources, t->right);
+                if (result1 == -1)
+                    return -1;
+                return result0 != result1;
             case GE:
-                return eval_predicate(resources, num_resources, t->left) >= eval_predicate(resources, num_resources, t->right);
+                result0 = eval_predicate(resources, num_resources, t->left);
+                if (result0 == -1)
+                    return -1;
+                result1 = eval_predicate(resources, num_resources, t->right);
+                if (result1 == -1)
+                    return -1;
+                return result0 >= result1;
             case LE:
-                return eval_predicate(resources, num_resources, t->left) <= eval_predicate(resources, num_resources, t->right);
+                result0 = eval_predicate(resources, num_resources, t->left);
+                if (result0 == -1)
+                    return -1;
+                result1 = eval_predicate(resources, num_resources, t->right);
+                if (result1 == -1)
+                    return -1;
+                return result0 <= result1;
             case LT:
-                return eval_predicate(resources, num_resources, t->left) < eval_predicate(resources, num_resources, t->right);
+                result0 = eval_predicate(resources, num_resources, t->left);
+                if (result0 == -1)
+                    return -1;
+                result1 = eval_predicate(resources, num_resources, t->right);
+                if (result1 == -1)
+                    return -1;
+                return result0 < result1;
             case GT:
-                return eval_predicate(resources, num_resources, t->left) > eval_predicate(resources, num_resources, t->right);
-            case AND:  //perform short circuit
-                return eval_predicate(resources, num_resources, t->left) && eval_predicate(resources, num_resources, t->right);
-            case OR:  //perform short circuit
-                return eval_predicate(resources, num_resources, t->left) || eval_predicate(resources, num_resources, t->right);
+                result0 = eval_predicate(resources, num_resources, t->left);
+                if (result0 == -1)
+                    return -1;
+                result1 = eval_predicate(resources, num_resources, t->right);
+                if (result1 == -1)
+                    return -1;
+                return result0 > result1;
+            case AND:
+                result0 = eval_predicate(resources, num_resources, t->left);
+                if (result0 == -1)
+                    return -1;
+                result1 = eval_predicate(resources, num_resources, t->right);
+                if (result1 == -1)
+                    return -1;
+                return result0 && result0;
+            case OR:
+                result0 = eval_predicate(resources, num_resources, t->left);
+                if (result0 == -1)
+                    return -1;
+                result1 = eval_predicate(resources, num_resources, t->right);
+                if (result1 == -1)
+                    return -1;
+                return result0 || result1;
         }
     }
 }
 
 int eval_resource_list(peos_resource_t** resources, int num_resources) {
     int i;
+    Tcl_Interp* interp;
     peos_resource_t* res = *resources;
     char* buff = (char*)malloc(sizeof(char) * 255);
-
-    Tcl_Interp* interp = Tcl_CreateInterp();
+    
+    if (!res || (num_resources == 0))
+        return 0;
+    
+    interp = Tcl_CreateInterp();
     for (i = 0; i < num_resources; i++) {
         if (strcmp(res[i].value, "") == 0)
             sprintf(buff, "set %s \\${%s}", res[i].name, res[i].name);
@@ -155,8 +201,7 @@ int eval_resource_list(peos_resource_t** resources, int num_resources) {
             sprintf(buff, "set %s %s", res[i].name, res[i].value);
 
         if (Tcl_Eval(interp, buff) == TCL_ERROR) {
-            fprintf(stderr, "Error evaluating tcl: aborting!\n%s\n", interp->result);
-            exit(255);
+            return 0;
         }
         strcpy(res[i].value, interp -> result);
     }

@@ -92,6 +92,37 @@ int delete_entry(int pid) {
     return 1;
 }
 
+START_TEST(test_handle_resource_event_error)
+{
+    Graph g = (Graph) malloc(sizeof(struct graph));
+    Node source,sink,act_0,act_1;
+    source = make_node("p",ACT_NONE,PROCESS,0);
+    sink = make_node("p",ACT_NONE,PROCESS,3);
+
+    act_0 = make_node("act_0",ACT_BLOCKED,ACTION,1);
+    act_1 = make_node("act_1",ACT_NONE,ACTION,2);
+    
+    requires_index = 0;
+    requires_state[1] = -1;
+    
+    act_0 -> predecessors = (List) make_list(source,NULL,NULL,NULL,NULL);
+    act_0 -> successors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    act_1 -> predecessors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    act_1 -> successors = (List) make_list(sink,NULL,NULL,NULL,NULL);
+    sink -> predecessors = (List) make_list(act_1,NULL,NULL,NULL,NULL);
+    source -> successors = (List) make_list(act_0,NULL,NULL,NULL,NULL);
+    sink -> next = NULL;
+
+    global_graph = g;
+
+    fail_unless(handle_resource_event(0,"act_0",REQUIRES_TRUE) == VM_INTERNAL_ERROR, "Return Value");
+    
+    provides_index = 0;
+    fail_unless(handle_resource_event(0,"act_0",PROVIDES_TRUE) == VM_INTERNAL_ERROR, "Return Value");
+    
+}
+END_TEST
+
 START_TEST(test_handle_resource_event_1)
 {
     
@@ -127,7 +158,6 @@ START_TEST(test_handle_resource_event_1)
     
     fail_unless(STATE(act_0) == ACT_READY, "act_0 not ready");
     fail_unless(STATE(act_1) == ACT_NONE, "act_1 not none");
-    
 }
 END_TEST
     
@@ -173,7 +203,6 @@ START_TEST(test_handle_resource_event_2)
     
     fail_unless(STATE(act_0) == ACT_SATISFIED, "act_0  not SATISFIED");
     fail_unless(STATE(act_1) == ACT_NONE, "act_1 not none");
-    
 }
 END_TEST
 
@@ -295,10 +324,8 @@ START_TEST(test_handle_resource_event_5)
     
     fail_unless(STATE(act_0) == ACT_DONE, "act_0  DONE");
     fail_unless(STATE(act_1) == ACT_NONE, "act_1 not none");
-    
 }
 END_TEST
-
 
 START_TEST(test_update_process_state_1)
 {
@@ -336,17 +363,37 @@ START_TEST(test_update_process_state_1)
     requires_state[3] = TRUE;
     provides_state[2] = TRUE;
     provides_state[3] = FALSE;
-
+    
     global_graph = g;
 
-    
+    //test normal operation
     fail_unless(update_process_state(0) == VM_CONTINUE, "Return Value");
     fail_unless(STATE(act_0) == ACT_DONE, "act_0 not done ");
     fail_unless(STATE(act_1) == ACT_READY, "act_1 not ready");
+    
+    //test require resource error
+    requires_index = 0;
+    provides_index = 0;
+    requires_state[1] = -1;
+    fail_unless(update_process_state(0) == VM_INTERNAL_ERROR, "Return Value");
+    requires_state[1] = TRUE;
+    
+    //test provide resource error
+    requires_index = 0;
+    provides_index = 0;
+    provides_state[1] = -1;
+    fail_unless(update_process_state(0) == VM_INTERNAL_ERROR, "Return Value");
 }
 END_TEST
 
-
+START_TEST(test_mark_successors_error)
+{
+    Node n = make_node("n", ACT_NONE, ACTION, 0);
+    requires_index = 0;
+    requires_state[1] = -1;
+    fail_unless(mark_successors(n, ACT_READY) == 0, "not return error");
+}
+END_TEST
 
 START_TEST(test_mark_successors)
 {
@@ -372,7 +419,7 @@ START_TEST(test_mark_successors)
 	SUPER_NODES(a) = (List) make_list(s,NULL,NULL,NULL,NULL);
 	SUPER_NODES(b) = (List) make_list(s,NULL,NULL,NULL,NULL);
 	
-        mark_successors(s,ACT_READY);
+    fail_unless(mark_successors(s,ACT_READY), "return error");
 
 	/* Post */
     fail_unless(STATE(a) == ACT_READY,"action a  not ready");
@@ -426,6 +473,11 @@ START_TEST(test_action_done)
     fail_unless(STATE(act_0) == ACT_DONE,"action not done");
     fail_unless(STATE(act_1) == ACT_READY,"next action not ready");
 
+    //error
+    requires_index = 0;
+    provides_index = 0;
+    provides_state[1] = -1;
+    fail_unless(action_done(g,"act_0") == VM_INTERNAL_ERROR, "return value");
 }
 END_TEST
 
@@ -482,6 +534,11 @@ START_TEST(test_action_done_selection)
   fail_unless(STATE(sel) != ACT_PENDING, "selection not pending");
   fail_unless(STATE(join) != ACT_PENDING, "join not pending");
   
+  //error
+    requires_index = 0;
+    provides_index = 0;
+    provides_state[1] = -1;
+    fail_unless(action_done(g,"act_0") == VM_INTERNAL_ERROR, "return value");
 }
 END_TEST
 
@@ -817,7 +874,6 @@ START_TEST(test_propogate_join_done)
 }
 END_TEST
 
-
 START_TEST(test_set_rendezvous_state)
 {
    Graph g = (Graph) malloc (sizeof(struct graph));
@@ -1044,6 +1100,14 @@ START_TEST(test_action_done_iteration)
 	fail_unless(STATE(act_0) == ACT_DONE, "act_0 not done");
 	fail_unless(STATE(act_1) == ACT_READY, "act_1 not ready");
 	fail_unless(STATE(act_2) == ACT_NONE, "act_2 not none");
+ 
+        //error
+        requires_index = 0;
+        provides_index = 0;
+        requires_state[1] = 1;
+        requires_state[2] = 1;
+        provides_state[1] = -1;
+        fail_unless(action_done(g, act_0->name) == VM_INTERNAL_ERROR, "not return error");
 }
 END_TEST
 
@@ -1157,88 +1221,117 @@ START_TEST(test_initialize_graph)
 
 }
 END_TEST
+        
+START_TEST(test_set_node_state_error)
+{
+    int error;
+    Node n = make_node("act", ACT_NONE, ACTION, 0);
+
+    requires_index = 0;
+    provides_index = 0;
+    requires_state[1] = -1;
+    provides_state[1] = -1;
+
+    fail_unless(set_node_state(n, ACT_READY, &error) == ACT_NONE, "return value");
+    fail_unless(STATE(n) == ACT_NONE, "act changed");
+    fail_unless(error, "error not raised");
+   
+    fail_unless(set_node_state(n, ACT_DONE, &error) == ACT_NONE, "return value");
+    fail_unless(STATE(n) == ACT_NONE, "act changed");
+    fail_unless(error, "error not raised");
+}
+END_TEST
 
 
 START_TEST(test_set_node_state_ready)
 {
-   Node n = make_node("act", ACT_NONE, ACTION, 0);
+    int error;
+    Node n = make_node("act", ACT_NONE, ACTION, 0);
 
-   requires_index = 0;
-   provides_index = 0;
-   requires_state[1] = TRUE;
-   provides_state[1] = TRUE;
+    requires_index = 0;
+    provides_index = 0;
+    requires_state[1] = TRUE;
+    provides_state[1] = TRUE;
 
-   fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
-   fail_unless(STATE(n) == ACT_READY, "act not ready");
+    fail_unless(set_node_state(n, ACT_READY, &error) == ACT_READY, "return value");
+    fail_unless(STATE(n) == ACT_READY, "act not ready");
+    fail_unless(!error, "error raised");
 }
 END_TEST
 
 START_TEST(test_set_node_state_ready_1)
 {
-   Node n = make_node("act", ACT_NONE, ACTION, 0);
+    int error;
+    Node n = make_node("act", ACT_NONE, ACTION, 0);
 
-   requires_index = 0;
-   provides_index = 0;
+    requires_index = 0;
+    provides_index = 0;
 
-   requires_state[1] = TRUE;
-   provides_state[1] = FALSE;
+    requires_state[1] = TRUE;
+    provides_state[1] = FALSE;
 
-   fail_unless(set_node_state(n, ACT_READY) == ACT_READY, "return value");
-   fail_unless(STATE(n) == ACT_READY, "act not ready");
+    fail_unless(set_node_state(n, ACT_READY, &error) == ACT_READY, "return value");
+    fail_unless(STATE(n) == ACT_READY, "act not ready");
+    fail_unless(!error, "error raised");
 }
 END_TEST
    
 
 START_TEST(test_set_node_state_ready_2)
 {
-   Node n = make_node("act",ACT_NONE,ACTION,0);
+    int error;
+    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   requires_index = 0;
-   provides_index = 0;
-   requires_state[1] = FALSE;
-   provides_state[1] = FALSE;
+    requires_index = 0;
+    provides_index = 0;
+    requires_state[1] = FALSE;
+    provides_state[1] = FALSE;
 
-   fail_unless(set_node_state(n, ACT_READY) == ACT_BLOCKED, "return value");
-   fail_unless(STATE(n) == ACT_BLOCKED, "act not blocked");
+    fail_unless(set_node_state(n, ACT_READY, &error) == ACT_BLOCKED, "return value");
+    fail_unless(STATE(n) == ACT_BLOCKED, "act not blocked");
+    fail_unless(!error, "error raised");
 }
 END_TEST
 
 
 START_TEST(test_set_node_state_done)
 {
- 
-   Node n = make_node("act",ACT_NONE,ACTION,0);
+    int error;
+    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   provides_index = 0;
-   provides_state[1] = TRUE;
+    provides_index = 0;
+    provides_state[1] = TRUE;
 
-   fail_unless(set_node_state(n, ACT_DONE) == ACT_DONE, "return value");
-   fail_unless(STATE(n) == ACT_DONE, "act not done");
+    fail_unless(set_node_state(n, ACT_DONE, &error) == ACT_DONE, "return value");
+    fail_unless(STATE(n) == ACT_DONE, "act not done");
+    fail_unless(!error, "error raised");
 }
 END_TEST
 
 
 START_TEST(test_set_node_state_done_1)
 {
- 
-   Node n = make_node("act",ACT_NONE,ACTION,0);
+    int error;
+    Node n = make_node("act",ACT_NONE,ACTION,0);
 
-   provides_index = 0;
-   provides_state[1] = FALSE;
+    provides_index = 0;
+    provides_state[1] = FALSE;
    
-   fail_unless(set_node_state(n, ACT_DONE) == ACT_PENDING, "return value");
-   fail_unless(STATE(n) == ACT_PENDING, "act not pending");
+    fail_unless(set_node_state(n, ACT_DONE, &error) == ACT_PENDING, "return value");
+    fail_unless(STATE(n) == ACT_PENDING, "act not pending");
+    fail_unless(!error, "error raised");
 }
 END_TEST
 
 
 START_TEST(test_set_node_state_none)
 {
- 
-   Node n = make_node("act",ACT_READY,ACTION,0);
+    int error;
+    Node n = make_node("act",ACT_READY,ACTION,0);
 
-   fail_unless(set_node_state(n, ACT_NONE) == ACT_NONE, "return value");
-   fail_unless(STATE(n) == ACT_NONE, "act not none");
+    fail_unless(set_node_state(n, ACT_NONE, &error) == ACT_NONE, "return value");
+    fail_unless(STATE(n) == ACT_NONE, "act not none");
+    fail_unless(!error, "error raised");
 }
 END_TEST
 
@@ -1268,7 +1361,11 @@ START_TEST(test_set_act_state_graph_ready)
 
     fail_unless(set_act_state_graph(g,"act_0",ACT_READY) == VM_CONTINUE, "return value");
     fail_unless(STATE(act_0) == ACT_READY, "act 0 state not changed");
-
+    
+    //error
+    requires_index = 0;
+    requires_state[1] = -1;
+    fail_unless(set_act_state_graph(g,"act_0",ACT_READY) == VM_INTERNAL_ERROR, "return value");
 }
 END_TEST
 
@@ -1282,7 +1379,6 @@ START_TEST(test_set_act_state_graph_suspend)
 	sink = make_node("p",ACT_NONE,PROCESS,3);
 	act_0 = make_node("act_0",ACT_RUN,ACTION,1);
 	act_1 = make_node("act_1",ACT_RUN,ACTION,2);
-
 
 	g -> source = source;
 	g -> sink = sink;
@@ -1427,6 +1523,7 @@ int main(int argc, char *argv[])
 
     tc = tcase_create("set_process_state");
     suite_add_tcase(s,tc);
+    tcase_add_test(tc,test_mark_successors_error);
     tcase_add_test(tc,test_set_process_state);
     tcase_add_test(tc,test_set_process_state_iter);
 
@@ -1436,6 +1533,7 @@ int main(int argc, char *argv[])
 
     tc = tcase_create("test node state");
     suite_add_tcase(s,tc);
+    tcase_add_test(tc, test_set_node_state_error);
     tcase_add_test(tc, test_set_node_state_ready);
     tcase_add_test(tc, test_set_node_state_ready_1);
     tcase_add_test(tc, test_set_node_state_ready_2);
@@ -1445,6 +1543,7 @@ int main(int argc, char *argv[])
 
     tc = tcase_create("test handle resource event");
     suite_add_tcase(s,tc);
+    tcase_add_test(tc, test_handle_resource_event_error);
     tcase_add_test(tc, test_handle_resource_event_1);
     tcase_add_test(tc, test_handle_resource_event_2);
     tcase_add_test(tc, test_handle_resource_event_3);

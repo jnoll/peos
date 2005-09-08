@@ -272,7 +272,8 @@ int peos_eval_resource_list(int pid, peos_resource_t** resources, int num_resour
         strcpy(proc_resources[i].name, context->resources[i].name);
         strcpy(proc_resources[i].value, context->resources[i].value);
     }
-    eval_resource_list(&proc_resources, context->num_resources);
+    if (eval_resource_list(&proc_resources, context->num_resources) == 0)
+        return 0;
     fill_resource_list_value(proc_resources, context->num_resources, resources, num_resources);
     free(proc_resources);
     return 1;
@@ -390,34 +391,28 @@ peos_resource_t *peos_get_resource_list_context(int pid, int *num_resources)
         fprintf(stderr, "System Error: Cannot Save Process Table\n");
 	exit(EXIT_FAILURE);
     }
-
     return resources;
-
 }
 
 
 char *peos_get_script(int pid, char *act_name)
 {
-    char *script;	
-
+    char *script;
     if(load_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Load Process Table\n");
-	exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
-    
     script = get_script(pid,act_name);
 
     /* No need to update process state here */
 
     if(save_process_table() < 0) {
         fprintf(stderr, "System Error: Cannot Save Process Table\n");
-	exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
-
     return script;
-
 }
- 
+
 int peos_delete_process_instance(int pid)
 {
 
