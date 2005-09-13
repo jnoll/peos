@@ -24,7 +24,7 @@ int main()
     int num_unbound_resources;
     char *resource_type;
     char name[12];
-    
+    char unbound_value[256];
 
     /** First, get the CGI variables into a list of strings         **/
     cgivars = getcgivars();
@@ -61,7 +61,8 @@ int main()
             num_unbound_resources++;
 	}
 	else {
-	    if((strcmp(resources[i].value,"$$") == 0) && (strcmp(resources[i].qualifier,"abstract") != 0)) {
+            sprintf(unbound_value, "${%s}", resources[i].name);
+	    if((strcmp(resources[i].value, unbound_value) == 0) && (strcmp(resources[i].qualifier,"abstract") != 0)) {
 	        strcpy(unbound_resource_list[num_unbound_resources].name,resources[i].name);
 	        num_unbound_resources++;
 	    }

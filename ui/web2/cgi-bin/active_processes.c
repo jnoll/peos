@@ -114,6 +114,7 @@ int main()
     char **cgivars, *login_name, *action, *model, *del_list, *token;
     int i, pid, num_resources;
     peos_resource_t *resources;
+    char* res_file;
 
     /** First, get the CGI variables into a list of strings **/ 
     cgivars = getcgivars();
@@ -146,10 +147,9 @@ int main()
 	peos_set_process_table_file(process_filename);
 	peos_set_loginname(process_filename);
 	resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
-	for(i = 0; i < num_resources; i++) {
-	    strcpy(resources[i].value, "$$");
-	}
 	pid = peos_run(model,resources,num_resources);
+        if ((res_file = peos_get_resource_file(model)))
+            peos_bind_resource_file(pid, res_file);
 	free(resources);
     } else if (!strcmp(action, "delete")) {
 	process_filename = (char *)getvalue("process_filename", cgivars);

@@ -21,7 +21,13 @@ export QUERY_STRING="action=create&model=test_action.pml&process_filename=dfZRui
 
 # Create the action page
 export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=test_script"
-./action_page.cgi > /dev/null
+./action_page.cgi > output
+
+# make sure all $$ has been removed
+if (grep '\$\$' output > /dev/null)
+then
+    echo; echo '\$\$ exists'
+fi
 
 # Click the Start button
 export QUERY_STRING="action_event=Run&pid=0&act_name=test_script&process_filename=dfZRuitU82fEY.dat"
@@ -30,6 +36,12 @@ export QUERY_STRING="action_event=Run&pid=0&act_name=test_script&process_filenam
 # Check the modified action page
 export QUERY_STRING="resource_type=requires&pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
 ./action_page.cgi > output
+
+# make sure all $$ has been removed
+if (grep '\$\$' output > /dev/null)
+then
+    echo; echo '\$\$ exists'
+fi
 
 # Test the table on the left hand side
 if !(grep '>Create Process</a>]' output > /dev/null)
@@ -62,7 +74,7 @@ if !(grep '>test_resource<br></td>' output > /dev/null)
 then
   echo; echo "Binding name missing"
 fi
-if !(grep '<input type="text" size="100" name="resource0" value="$$" maxlength="256">' output > /dev/null)
+if !(grep '<input type="text" size="100" name="resource0" value="" maxlength="256">' output > /dev/null)
 then
   echo; echo "Text field missing"
 fi
@@ -124,7 +136,7 @@ if !(grep '>test_provide<br></td>' output > /dev/null)
 then
   echo; echo "Binding name missing"
 fi
-if !(grep '<input type="text" size="100" name="resource0" value="$$" maxlength="256">' output > /dev/null)
+if !(grep '<input type="text" size="100" name="resource0" value="" maxlength="256">' output > /dev/null)
 then
   echo; echo "Text field missing"
 fi

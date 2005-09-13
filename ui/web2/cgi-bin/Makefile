@@ -26,19 +26,20 @@ OBJECTS = html.o \
 TESTS = test_active_processes.sh \
 	test_create_process.sh \
 	test_action_page.sh \
-	test_action_event.sh
+	test_action_event.sh \
+	test_bind_resources.sh \
+	test_bind_resource_file.sh
 
 CGI = active_processes.cgi create_process.cgi action_page.cgi action_event.cgi bind_resources.cgi
 SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)
 
-PML = test_action.pml readme.pml cvs_add_dir.pml
+PML = test_action.pml readme.pml cvs_add_dir.pml bind_resource_file.pml bind_resource_file.res
 
 all: test
 
 test: $(CGI) create_testtable
 	cp $(KERNEL_DIR)/peos_init.tcl ./
 	@for t in $(TESTS) ; do sh $$t ; done
-	rm peos_init.tcl
 	rm event.log
 
 

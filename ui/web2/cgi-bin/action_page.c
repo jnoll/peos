@@ -17,7 +17,8 @@ char *action_name;
 char *resource_type = NULL;
 char *action = NULL;
 peos_resource_t *resources;
-peos_resource_t *unbound_resource_list;
+peos_resource_t* proc_resources;
+int num_proc_resources;
 
 static void indent(int spaces)
 {
@@ -121,7 +122,7 @@ void add_action_list(_action_page *ap)
 
 void write_content()
 {
-    int i;
+    int i, j;
     char *xml_data_filename;
     _action_page *ap;
     int action_position = -1;
@@ -129,6 +130,8 @@ void write_content()
     int cb_reqd = 0, cb_prov = 0;
     int num_unbound_resources;
     int num_resources;
+    char unbound_value[256];
+    
 
     xml_data_filename = (char *) malloc((strlen(process_filename) + strlen(".xml") + 1) * sizeof(char));
     strcpy(xml_data_filename, process_filename);
@@ -157,20 +160,17 @@ void write_content()
 	    resources = peos_get_resource_list_action_provides(pid, action_name,
 			&num_resources);
 	}
-	unbound_resource_list = (peos_resource_t *) calloc(num_resources+1,
-			sizeof(peos_resource_t));
+
 	num_unbound_resources = 0;
 	for (i=0; i < num_resources; i++) {
-	    if((strcmp(resources[i].qualifier,"any") == 0) ||
-		(strcmp(resources[i].qualifier,"new") == 0)) {
-		strcpy(unbound_resource_list[num_unbound_resources].name,
-			resources[i].name);
+	    if((strcmp(resources[i].qualifier,"any") == 0) || (strcmp(resources[i].qualifier,"new") == 0)) {
 		num_unbound_resources++;
-	    } else if ((strcmp(resources[i].value,"$$") == 0) &&
-		(strcmp(resources[i].qualifier, "abstract") != 0)) {
-		strcpy(unbound_resource_list[num_unbound_resources].name,
-			resources[i].name);
-		num_unbound_resources++;
+            } 
+            else { 
+                sprintf(unbound_value, "${%s}", resources[i].name);
+                if ((strcmp(resources[i].value,unbound_value) == 0) && (strcmp(resources[i].qualifier, "abstract") != 0)) {
+                    num_unbound_resources++;
+                }
 	    }
 	}
 
@@ -195,7 +195,13 @@ void write_content()
 		if (strcmp(resources[i].qualifier, "abstract") != 0) {
 		    printf("            <tr>\n");
 		    printf("              <td style=\"vertical-align: top;\">%s<br></td>\n", resources[i].name);
-		    printf("              <td style=\"vertical-align: top;\"><input type=\"text\" size=\"100\" name=\"resource%d\" value=\"%s\" maxlength=\"256\"><td><br><br>\n", i, resources[i].value);
+                    sprintf(unbound_value, "${%s}", resources[i].name);
+                    for (j = 0; j < num_proc_resources; j++) {
+                        if (strcmp(proc_resources[j].name, resources[i].name) == 0)
+                            break;
+                    }
+                    //display actual value not evaluated value
+                    printf("              <td style=\"vertical-align: top;\"><input type=\"text\" size=\"100\" name=\"resource%d\" value=\"%s\" maxlength=\"256\"><td><br><br>\n", i, proc_resources[j].value);
 		    printf("            </tr>\n");
 		}
 	    }
@@ -231,24 +237,19 @@ void write_content()
 	printf("              <td style=\"text-align: right;\"><b>Required Resources:</b></td>\n");
 	printf("              <td>");
 	for (i = 0; i < ap->total_reqd_resources; i++) {
-	    /*if (!strcmp(ap->reqd_resources[i]->qualifier, "new") || !strcmp(ap->reqd_resources[i]->qualifier, "")) {
-		printf("%s = %s", ap->reqd_resources[i]->name, ap->reqd_resources[i]->value);
-	    } else if ((strcmp(ap->reqd_resources[i]->qualifier, "abstract")) &&
-			(!strcmp(ap->reqd_resources[i]->value, "$$"))) {
-		printf("%s = %s", ap->reqd_resources[i]->name, ap->reqd_resources[i]->value);
-	    }*/
 	    printf("%s = %s", ap->reqd_resources[i]->name, ap->reqd_resources[i]->value);
 	    if (i < (ap->total_reqd_resources-1)) {
 		printf(", ");
 	    }
-	    if (strcmp(ap->reqd_resources[i]->value, "$$") != 0) {
+            sprintf(unbound_value, "${%s}", ap->reqd_resources[i]->name);
+	    if (strcmp(ap->reqd_resources[i]->value, unbound_value) != 0) {
 		cb_reqd = 1;
 	    }
 	}
 	if (ap->total_reqd_resources == 0) {
 	    printf("No resources required");
 	} else if (cb_reqd) {
-	    printf("&nbsp;&nbsp;&nbsp;<a href=\"action_page.cgi?resource_type=requires&action=change&process_filename=%s&pid=%d&action_name=%s\">Change bindings</a>", process_filename, pid, action_name);
+	    printf("&nbsp;&nbsp;&nbsp;<a href=\"action_page.cgi?resource_type=requires&action=change&process_filename=%s&pid=%d&action_name=%s\">Change  bindings</a>", process_filename, pid, action_name);
 	}
 	printf("</td>\n");
 	printf("            </tr>\n");
@@ -260,7 +261,8 @@ void write_content()
 	    if (i < (ap->total_prov_resources-1)) {
 		printf(", ");
 	    }
-	    if (strcmp(ap->prov_resources[i]->value, "$$") != 0) {
+            sprintf(unbound_value, "${%s}", ap->prov_resources[i]->name);
+            if (strcmp(ap->prov_resources[i]->value, unbound_value) != 0) {
 		cb_prov = 1;
 	    }
 	}
@@ -337,10 +339,15 @@ int main()
     peos_set_process_table_file(process_filename);
     peos_set_loginname(process_filename);
     
+    proc_resources = peos_get_resource_list_context(pid, &num_proc_resources);
+    
     write_content();
 
-    if(unbound_resource_list) free(unbound_resource_list);
-    if(resources) free(resources);
+    
+    if (resources)
+        free(resources);
+    if (proc_resources)
+        free(proc_resources);
 
     /** Free anything that needs to be freed **/
     for (i=0; cgivars[i]; i++) free(cgivars[i]);
