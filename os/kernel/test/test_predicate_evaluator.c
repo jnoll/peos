@@ -416,7 +416,7 @@ main(int argc, char *argv[])
     SRunner *sr;
     Suite *s = suite_create("predicate_evaluator");
     TCase *tc;
-    //system("cp -f ../tclf_*tcl `pwd`");
+
     parse_args(argc, argv);
     
     global_tcl_file = strdup("./../peos_init.tcl");
