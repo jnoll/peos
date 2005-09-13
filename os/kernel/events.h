@@ -85,4 +85,9 @@ char *peos_get_resource_qualifier(int pid, char *resource_name) ;
 
 extern char *act_state_name(vm_act_state state) ;
 
+/*
+ * Return resource file from the given pml file
+ */
+extern char* peos_get_resource_file(char* pml_file);
+
 #endif

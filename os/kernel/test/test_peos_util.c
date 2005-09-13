@@ -69,6 +69,7 @@ START_TEST(test_find_file_precedence)
     fclose(f);
     free(result);
     system("rm -R test_find_file_dir");
+    unsetenv("COMPILER_DIR");
 }
 END_TEST
 

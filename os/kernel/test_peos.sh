@@ -304,6 +304,7 @@ echo "r2: \${r1}/r2val" >> peos_test.res
 echo "r3: \${r2}/r3val" >> peos_test.res
 
 ./peos -c peos_test.pml > output
+cp proc_table.dat.xml ./a
 
 if !(grep '<req_resource name=\"r1\" value=\"r1val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then

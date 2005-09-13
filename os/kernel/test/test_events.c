@@ -43,11 +43,6 @@ char *act_state_name(vm_act_state s)
     return "action state name here";
 }
 
-char *find_model_file(char *model)
-{
-    return TEST_PROC_NAME;
-}
-
 void log_event(char *msg)
 {
     return;
@@ -195,7 +190,8 @@ START_TEST(test_peos_bind_resource_file)
     fgets(line, 600, f);
     fail_unless(strcmp(line, "res2 val2\n") == 0, "test_peos_bind_resource_file failed");
     fclose(f);
-    system("rm test_bind_resource_file.*");
+    system("rm test_bind_resource_file.res");
+    system("rm test_bind_resource_file.dat");
     
     //two resource lines with empty line in between
     system("echo res0:val0 > test_bind_resource_file.res");
@@ -208,7 +204,8 @@ START_TEST(test_peos_bind_resource_file)
     fgets(line, 600, f);
     fail_unless(strcmp(line, "res1 val1\n") == 0, "test_peos_bind_resource_file failed");
     fclose(f);
-    system("rm test_bind_resource_file.*");
+    system("rm test_bind_resource_file.res");
+    system("rm test_bind_resource_file.dat");
     
     //resource line with whitespace
     system("echo 'res0 :val0 ' > test_bind_resource_file.res");
@@ -226,7 +223,38 @@ START_TEST(test_peos_bind_resource_file)
     fgets(line, 600, f);
     fail_unless(strcmp(line, "res3 val3\n") == 0, "test_peos_bind_resource_file failed");
     fclose(f);
-    system("rm test_bind_resource_file.*");
+    system("rm test_bind_resource_file.res");
+    system("rm test_bind_resource_file.dat");
+    
+    //resource line with no value
+    system("echo res0: > test_bind_resource_file.res");
+    peos_bind_resource_file(600, "test_bind_resource_file.res");
+    f = fopen("test_bind_resource_file.dat", "r");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res0 \n") == 0, "test_peos_bind_resource_file failed");
+    fclose(f);
+    system("rm test_bind_resource_file.res");
+    system("rm test_bind_resource_file.dat");
+    
+    //resource line with more than 1 ':' per line
+    system("echo res0 : val0 : extra0 > test_bind_resource_file.res");
+    peos_bind_resource_file(600, "test_bind_resource_file.res");
+    f = fopen("test_bind_resource_file.dat", "r");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res0 val0\n") == 0, "test_peos_bind_resource_file failed");
+    fclose(f);
+    system("rm test_bind_resource_file.res");
+    system("rm test_bind_resource_file.dat");
+    
+    //resource name and resource value with white space
+    system("echo ' res 0 : val 0' > test_bind_resource_file.res");
+    peos_bind_resource_file(600, "test_bind_resource_file.res");
+    f = fopen("test_bind_resource_file.dat", "r");
+    fgets(line, 600, f);
+    fail_unless(strcmp(line, "res 0 val 0\n") == 0, "test_peos_bind_resource_file failed");
+    fclose(f);
+    system("rm test_bind_resource_file.res");
+    system("rm test_bind_resource_file.dat");
 }
 END_TEST
 
@@ -299,7 +327,7 @@ START_TEST(test_run_process)
     /* Pre: Because load_actions() and find_model_file are stubs,
      * there are no actual pre conditions.
      */
-	fail_unless(peos_run(model,resources, num_resources) != 0, "failed to create instance");
+    fail_unless(peos_run(model,resources, num_resources) != 0, "failed to create instance");
 }
 END_TEST
 
@@ -378,6 +406,21 @@ START_TEST(test_peos_get_resource_list_action_provides)
 }
 END_TEST
 
+START_TEST(test_peos_get_resource_file)
+{
+    char* result;
+    result = peos_get_resource_file("test_get_resource_file.pml");
+    fail_unless(strcmp(result, "test_get_resource_file.res") == 0, "get resource file failed");
+    free(result);
+    result = peos_get_resource_file("test_get_resource_file.xxx");
+    fail_unless(!result, "get resource file failed");
+    result = peos_get_resource_file("pml");
+    fail_unless(!result, "get resource file failed");
+    result = peos_get_resource_file(NULL);
+    fail_unless(!result, "get resource file failed");
+}
+END_TEST
+
 int
 main(int argc, char *argv[])
 {
@@ -410,6 +453,10 @@ main(int argc, char *argv[])
     tcase_add_test(tc, test_peos_get_resource_list_action);
     tcase_add_test(tc, test_peos_get_resource_list_action_requires);
     tcase_add_test(tc, test_peos_get_resource_list_action_provides);
+    
+    tc = tcase_create("get_resource_file");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_peos_get_resource_file);
     
     sr = srunner_create(s);
 

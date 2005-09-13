@@ -435,16 +435,37 @@ int peos_delete_process_instance(int pid)
     return status;
 }
 
+char* peos_get_resource_file(char* process){
+    int i;
+    char* res_file, *res_path;
+    if (process == NULL || (strlen(process) < 5))
+        return NULL;
+    i = strlen(process) - 4;
+    if (strcmp(process + i, ".pml") != 0)
+        return NULL;
+    res_file = strdup(process);
+    res_file[++i] = 'r';
+    res_file[++i] = 'e';
+    res_file[++i] = 's';
+    if ((res_path = find_file(res_file))) {
+        return res_path;
+    }
+    if (res_file)
+        free(res_file);
+    if (res_path)
+        free(res_path);
+    return NULL;
+}
+
 int peos_run(char *process, peos_resource_t *resources,int num_resources)
 {
     int pid;
     char msg[256];
     vm_exit_code update_status;
-    char *ext;
-    char res_file[256];
-    char* found_res_file;
-    char *model_file = find_file(process);
-
+    char *model_file;
+    
+    model_file = find_file(process);
+    
     if (model_file == NULL) {
         fprintf(stderr, "peos_run: can't find model file for process %s\n",process);
 	return -1;
@@ -472,7 +493,7 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
         fprintf(stderr,"System Error: Cannot Save Process Table\n");
         exit(EXIT_FAILURE);
     }
-
+    
     return pid;
 }
 

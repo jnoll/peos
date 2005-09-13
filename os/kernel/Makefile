@@ -32,11 +32,15 @@ CORE_OBJS = \
 predicate_evaluator.o \
 ${PALM_CORE_OBJS}
 
+SHELL_TESTS = \
+test_peos_with_login.sh \
+test_peos.sh
+
 # sources
 SOURCES = $(OBJS:.o=.c)
 HEADERS = $(wildcard *.h)
 
-all: test shell lib peos
+all: test shell lib peos shell_test
 
 peos: peos.o $(CORE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) 
@@ -62,6 +66,9 @@ shell: shell.o $(LIBRARY)
 # Unit tests.
 test: $(CORE_OBJS)
 	$(MAKE) -C test 
+
+shell_test:
+	@for t in $(SHELL_TESTS) ; do sh $$t ; done
 
 # Programming aids.
 xref:

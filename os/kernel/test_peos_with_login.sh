@@ -20,7 +20,7 @@ mv test_user.dat old_test_user.dat
 fi
 
 #create a process
-peos -l test_user -c peos_test.pml > output
+./peos -l test_user -c peos_test.pml > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' test_user.dat.xml > /dev/null)
@@ -52,7 +52,7 @@ then
 fi
 
 #start an action
-peos -l test_user -n 0 a start > output
+./peos -l test_user -n 0 a start > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' test_user.dat.xml > /dev/null)
@@ -84,7 +84,7 @@ then
 fi
 
 #suspend an action
-peos -l test_user -n 0 a suspend > output
+./peos -l test_user -n 0 a suspend > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' test_user.dat.xml > /dev/null)
@@ -117,8 +117,8 @@ fi
 
 #abort action
 
-peos -l test_user -n 0 a start > output
-peos -l test_user -n 0 a abort > output
+./peos -l test_user -n 0 a start > output
+./peos -l test_user -n 0 a abort > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' test_user.dat.xml > /dev/null)
@@ -151,7 +151,7 @@ fi
 
 
 #finish action
-peos -l test_user -n 0 a finish > output
+./peos -l test_user -n 0 a finish > output
 
 
 if !(grep '<process pid=\"0\" model=\"./peos_test.pml\" status=\"2\">' test_user.dat.xml > /dev/null)
@@ -182,9 +182,9 @@ then
   echo
 fi
 
-peos -l test_user -c peos_test.pml > output
+./peos -l test_user -c peos_test.pml > output
 
-peos -l test_user -d 0 > output
+./peos -l test_user -d 0 > output
 
 if (grep '<process pid=\"0\"' test_user.dat.xml > /dev/null)
 then
@@ -234,8 +234,8 @@ echo "action b {}" >> peos_test.pml
 echo "action c {}" >> peos_test.pml
 echo "}" >> peos_test.pml
 
-peos -l test_user -c peos_test.pml > output
-peos -l test_user -u
+./peos -l test_user -c peos_test.pml > output
+./peos -l test_user -u
 
 if !(grep '<action name=\"a\" state=\"READY\">' test_user.dat.xml > /dev/null)
 then
@@ -274,9 +274,9 @@ echo "requires{r1}" >> peos_test.pml
 echo "}" >> peos_test.pml
 echo "}" >> peos_test.pml
 
-peos -l test_user -c peos_test.pml > output
+./peos -l test_user -c peos_test.pml > output
 
-peos -l test_user -r 0 r1 r1val > output
+./peos -l test_user -r 0 r1 r1val > output
 
 
 if !(grep '<req_resource name=\"r1\" value=\"r1val\" qualifier=\"\">' test_user.dat.xml > stdout)
