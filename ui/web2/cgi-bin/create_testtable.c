@@ -21,10 +21,6 @@ int main()
     peos_set_process_table_file(process_filename);
 
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
-    
-    /*for(i=0; i < num_resources; i++) {
-        strcpy(resources[i].value,"$$");
-}*/	
     pid = peos_run(model, resources, num_resources);
 	
     exit(0);
