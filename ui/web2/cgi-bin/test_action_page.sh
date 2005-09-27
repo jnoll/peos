@@ -33,21 +33,25 @@ if !(grep '<li>cvs_add_dir.pml (Pid: 0)</li>' output > /dev/null)
 then
   echo; echo "Model name & PID missing"
 fi
-if !(grep '<li>create_directory</li>' output > /dev/null)
+if !(grep '<li>create directory</li>' output > /dev/null)
 then
   echo; echo "First action without link missing"
 fi
-ACTIONS="add_directory commit_directory change_permissions"
-for i in $ACTIONS
-do
-  if !(grep ">$i</a></li>" output > /dev/null)
+if !(grep '>add directory</a></li>' output > /dev/null)
   then
-    echo; echo "Action $i not found"
-  fi
-done
+    echo; echo "Action not found"
+fi
+if !(grep '>commit directory</a></li>' output > /dev/null)
+  then
+    echo; echo "Action not found"
+fi
+if !(grep '>change permissions</a></li>' output > /dev/null)
+  then
+    echo; echo "Action not found"
+fi
 
 # Test the table on the right hand side
-if !(grep '<h2>create_directory</h2>' output > /dev/null)
+if !(grep '<h2>create directory</h2>' output > /dev/null)
 then
   echo; echo "Action heading missing"
 fi

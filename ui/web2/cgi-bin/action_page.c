@@ -14,6 +14,7 @@
 char *process_filename = NULL;
 int pid;
 char *action_name;
+char *display_action_name;
 char *resource_type = NULL;
 char *action = NULL;
 peos_resource_t *resources;
@@ -47,9 +48,10 @@ void add_jscript()
 
 void add_action_list(_action_page *ap)
 {
-    int i;
+    int i, j;
     int h_sp = 5;
-
+    int action_len;
+    char* display_action;
     
     printf("        <div style=\"text-align: center;\"><small>\n");
     printf("          [<a href=\"create_process.cgi?process_filename=%s\">Create Process</a>]&nbsp;\n", process_filename);
@@ -100,11 +102,17 @@ void add_action_list(_action_page *ap)
 	    indent(--h_sp);
 	    printf("</ul>\n");
 	} else if (strcmp(ap->action_list[i], action_name)) {
-	    indent(h_sp);
-	    printf("<li><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">%s</a></li>\n", process_filename, pid, ap->action_list[i], ap->action_list[i]);
+            indent(h_sp);
+            display_action = strdup(ap->action_list[i]);
+            action_len = strlen(display_action);
+            for (j = 0; j < action_len; j++)
+                if (display_action[j] == '_')
+                    display_action[j] = ' ';
+            printf("<li><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">%s</a></li>\n", process_filename, pid, ap->action_list[i], display_action);
+            free(display_action);
 	} else {
-	    indent(h_sp);
-	    printf("<li>%s</li>\n", ap->action_list[i]);
+            indent(h_sp);
+            printf("<li>%s</li>\n", display_action_name);
 	}
     }
     printf("          </ul>\n");
@@ -213,7 +221,7 @@ void write_content()
 
             printf("      </td>\n");
             printf("      <td style=\"vertical-align: top; text-align: left;\">\n");
-            printf("        <h2>%s</h2><br>\n", action_name);
+            printf("        <h2>%s</h2><br>\n", display_action_name);
             
             
             
@@ -277,7 +285,7 @@ void write_content()
         
         printf("      </td>\n");
         printf("      <td style=\"vertical-align: top; text-align: left;\">\n");
-        printf("        <h2>%s</h2><br>\n", action_name);
+        printf("        <h2>%s</h2><br>\n", display_action_name);
         
         
         printf("        <table style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n");
@@ -380,6 +388,7 @@ int main()
     char **cgivars, *filename;
     char *tpid;
     int i;
+    int action_name_len;
 
     /** First, get the CGI variables into a list of strings **/ 
     cgivars = getcgivars();
@@ -388,6 +397,11 @@ int main()
     process_filename = (char *)malloc(strlen(filename) * sizeof(char));
     strcpy(process_filename, filename);
     action_name = (char *)getvalue("action_name", cgivars);
+    display_action_name = strdup(action_name);
+    action_name_len = strlen(display_action_name);
+    for (i = 0; i < action_name_len; i++)
+        if (display_action_name[i] == '_')
+            display_action_name[i] = ' ';
     tpid = (char *)getvalue("pid", cgivars);
     pid = atoi(tpid);
     resource_type = (char *)getvalue("resource_type", cgivars);
@@ -410,6 +424,7 @@ int main()
     for (i=0; cgivars[i]; i++) free(cgivars[i]);
     free(cgivars) ;
 
+    free(display_action_name);
     print_footer();
 
     exit(0); 

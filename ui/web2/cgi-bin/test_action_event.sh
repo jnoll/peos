@@ -56,13 +56,13 @@ if !(grep '<li>test_action.pml (Pid: 0)</li>' output > /dev/null)
 then
   echo; echo "Model name & PID missing"
 fi
-if !(grep '<li>test_script</li>' output > /dev/null)
+if !(grep '<li>test script</li>' output > /dev/null)
 then
   echo; echo "First action without link missing"
 fi
 
 # Test the table on the right hand side
-if !(grep '<h2>test_script</h2>' output > /dev/null)
+if !(grep '<h2>test script</h2>' output > /dev/null)
 then
   echo; echo "Action heading missing"
 fi
@@ -124,7 +124,7 @@ export QUERY_STRING="resource_type=provides&pid=0&action_name=test_script&proces
 ./action_page.cgi > output
 
 # Test the table on the right hand side
-if !(grep '<h2>test_script</h2>' output > /dev/null)
+if !(grep '<h2>test script</h2>' output > /dev/null)
 then
   echo; echo "Action heading missing"
 fi
