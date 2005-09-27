@@ -21,6 +21,7 @@ struct _action_page {
     int pid;
     char *model;
     char **action_list;
+    char **state_list;
     int total_actions;
     char *state;
     _resource **reqd_resources;

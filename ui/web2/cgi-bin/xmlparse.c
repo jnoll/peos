@@ -29,6 +29,7 @@ struct _action_page {
     int pid;
     char *model;
     char **action_list;
+    char **state_list;
     int total_actions;
     char *state;
     _resource **reqd_resources;
@@ -89,6 +90,14 @@ _process_list *get_proc_details(xmlNode *node)
     proct->first_action_name = NULL;
     proct->active_action_name = NULL;
     get_first_active_action_details(node, proct);
+    
+    /*if (!proct->active_action_name) {
+        if (proct->first_available_action_name)
+            proct->active_action_name = strdup(proct->first_available_action_name);
+        else if (proct->first_blocked_action_name)
+            proct->active_action_name = strdup(proct->first_blocked_action_name);
+}*/
+    
     proct->next = NULL;
     return proct;
 }
@@ -105,10 +114,12 @@ void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *a
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(tname) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], tname);
+            apage->state_list[apage->total_actions] = xmlGetProp(node, "state");
 	    if (!strcmp(tname, act_name)) {
-		tstate = xmlGetProp(node, "state");
-		apage->state = (char *) malloc((strlen(tstate) + 1) * sizeof(char));
-		strcpy(apage->state, tstate);
+		//tstate = xmlGetProp(node, "state");
+		//apage->state = (char *) malloc((strlen(tstate) + 1) * sizeof(char));
+		//strcpy(apage->state, tstate);
+                apage->state = strdup(apage->state_list[apage->total_actions]);
 		inner = node->xmlChildrenNode;
 		apage->reqd_resources[apage->total_reqd_resources] = NULL;
 		apage->prov_resources[apage->total_prov_resources] = NULL;
@@ -246,6 +257,7 @@ _action_page *get_action_page_details(char *filename, int pid, char *act_name)
 		apage->model = (char *) malloc((strlen(tmodel) + 1) * sizeof(char));
 		strcpy(apage->model, tmodel);
 		apage->action_list = (char **) malloc(sizeof(char *) * 50);
+                apage->state_list = (char **) malloc(sizeof(char*) * 50);
 		apage->reqd_resources = (_resource **) malloc(sizeof(_resource *) * 10);
 		apage->total_reqd_resources = 0;
 		apage->prov_resources = (_resource **) malloc(sizeof(_resource *) * 10);

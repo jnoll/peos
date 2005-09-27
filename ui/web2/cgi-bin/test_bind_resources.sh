@@ -63,23 +63,16 @@ then
   echo Failed Location header.
   echo
 fi
-if !(grep 'active_processes\.cgi' output > /dev/null)
+if !(grep 'action_page\.cgi' output > /dev/null)
 then
   echo
-  echo Failed active_processes_redirection.
+  echo Failed action_page_redirection.
   echo
 fi
 if !(grep 'test\.dat' output > /dev/null)
 then
   echo
   echo Failed process_filename.
-  echo
-fi
-
-if !(grep 'action=continue' output > /dev/null)
-then
-  echo
-  echo Failed start.
   echo
 fi
 

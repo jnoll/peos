@@ -33,21 +33,21 @@ if !(grep '<li>cvs_add_dir.pml (Pid: 0)</li>' output > /dev/null)
 then
   echo; echo "Model name & PID missing"
 fi
-if !(grep '<li>create directory</li>' output > /dev/null)
+if !(grep '<li>create directory <small>(READY)</small></li>' output > /dev/null)
 then
   echo; echo "First action without link missing"
 fi
-if !(grep '>add directory</a></li>' output > /dev/null)
+if !(grep '>add directory</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
   then
-    echo; echo "Action not found"
+    echo; echo "Action node 'add directory' failed"
 fi
-if !(grep '>commit directory</a></li>' output > /dev/null)
+if !(grep '>commit directory</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
   then
-    echo; echo "Action not found"
+    echo; echo "Action node 'commit directory' failed"
 fi
-if !(grep '>change permissions</a></li>' output > /dev/null)
+if !(grep '>change permissions</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
   then
-    echo; echo "Action not found"
+    echo; echo "Action node 'change permissions' failed"
 fi
 
 # Test the table on the right hand side
@@ -138,6 +138,105 @@ fi
 if !(grep "/a>&nbsp;&nbsp;Next&gt;&gt;" output > /dev/null)
 then
   echo; echo "Next failed"
+fi
+
+# test action state
+echo "process p {" > state_test.pml
+echo "  action a0 { }" >> state_test.pml
+echo "  action a1 { requires {r1} }" >> state_test.pml
+echo "  action a2 { provides{r2} }" >> state_test.pml
+echo "}" >> state_test.pml
+
+export QUERY_STRING="action=create&model=state_test.pml&process_filename=dfZRuitU82fEY.dat"
+./active_processes.cgi > /dev/null
+
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+./action_page.cgi > output
+
+if !(grep ">a0 <small>(READY)" output > /dev/null)
+then
+  echo; echo "Action 'a0' failed"
+fi
+
+if !(grep ">a1</a> <small>(NONE)" output > /dev/null)
+then
+  echo; echo "Action 'a1' failed"
+fi
+
+if !(grep ">a2</a> <small>(AVAILABLE)" output > /dev/null)
+then
+  echo; echo "Action 'a2' failed"
+fi
+
+# Click the Start button for a0
+export QUERY_STRING="action_event=Run&pid=1&act_name=a0&process_filename=dfZRuitU82fEY.dat"
+./action_event.cgi > output
+
+if !(grep "Location: action_page.cgi?resource_type=requires&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0" output > /dev/null)
+then
+  echo; echo "Action page redirect failed"
+fi
+
+export QUERY_STRING="resource_type=requires&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+./action_page.cgi > output
+
+if !(grep "action_page.cgi?process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0" output > /dev/null)
+then
+  echo; echo "Action page redirect failed"
+fi
+
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+./action_page.cgi > output
+
+if !(grep ">a0 <small>(RUN)" output > /dev/null)
+then
+  echo; echo "Action 'a0' failed"
+fi
+
+if !(grep ">a1</a> <small>(NONE)" output > /dev/null)
+then
+  echo; echo "Action 'a1' failed"
+fi
+
+if !(grep ">a2</a> <small>(AVAILABLE)" output > /dev/null)
+then
+  echo; echo "Action 'a2' failed"
+fi
+
+# Click the Finish button for a0
+export QUERY_STRING="action_event=Finish&pid=1&act_name=a0&process_filename=dfZRuitU82fEY.dat"
+./action_event.cgi > output
+
+if !(grep "Location: action_page.cgi?resource_type=provides&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0" output > /dev/null)
+then
+  echo; echo "Action page redirect failed"
+fi
+
+export QUERY_STRING="resource_type=provides&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+./action_page.cgi > output
+
+# Redirect to a1
+if !(grep "Location: action_page.cgi?process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1" output > /dev/null)
+then
+  echo; echo "Action page redirect to 'a1' failed"
+fi
+
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+./action_page.cgi > output
+
+if !(grep ">a0</a> <small>(DONE)" output > /dev/null)
+then
+  echo; echo "Action 'a0' failed"
+fi
+
+if !(grep ">a1 <small>(BLOCKED)" output > /dev/null)
+then
+  echo; echo "Action 'a1' failed"
+fi
+
+if !(grep ">a2</a> <small>(AVAILABLE)" output > /dev/null)
+then
+  echo; echo "Action 'a2' failed"
 fi
 
 #rm output

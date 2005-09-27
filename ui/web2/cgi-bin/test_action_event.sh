@@ -56,7 +56,7 @@ if !(grep '<li>test_action.pml (Pid: 0)</li>' output > /dev/null)
 then
   echo; echo "Model name & PID missing"
 fi
-if !(grep '<li>test script</li>' output > /dev/null)
+if !(grep '<li>test script <small>(BLOCKED)</small></li>' output > /dev/null)
 then
   echo; echo "First action without link missing"
 fi

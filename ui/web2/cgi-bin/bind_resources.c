@@ -5,13 +5,12 @@
 #include "kernel/events.h"
 #include "kernel/action.h"
 #include "kernel/process_table.h"
-#include "html.h" 
-
+#include "html.h"
+#include "xmlparse.h"
 
 
 int main()
 {
-    
     char **cgivars;
     int i;
     int pid;
@@ -86,8 +85,25 @@ int main()
         printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n",process_filename,pid,action_name);
     }
     else {
+        _action_page *new_ap;
+        char *xml_data_filename;
         peos_notify(pid, action_name, PEOS_EVENT_FINISH);
-        printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n",process_filename);
+        xml_data_filename = (char *) malloc((strlen(process_filename) + strlen(".xml") + 1) * sizeof(char));
+        strcpy(xml_data_filename, process_filename);
+        strcat(xml_data_filename, ".xml");
+        new_ap = get_action_page_details(xml_data_filename, pid, action_name);
+        if (!new_ap)
+            printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n",process_filename);
+        else {
+            if (strcmp(new_ap->action_list[new_ap->total_actions - 1], action_name) == 0) {
+                printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, action_name);
+            }
+            else {
+                for (i = 0; i < new_ap->total_actions; i++)
+                    if (strcmp(new_ap->action_list[i], action_name) == 0)
+                        printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, new_ap->action_list[i + 1]);
+            }
+        }
     }
 
     if(unbound_resource_list) free(unbound_resource_list);
