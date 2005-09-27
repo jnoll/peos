@@ -80,6 +80,62 @@ then
   echo; echo "Script value missing"
 fi
 
+#test Previous Next
+if !(grep "&lt;&lt;Prev&nbsp;&nbsp;<a" output > /dev/null)
+then
+  echo; echo "Previous failed"
+fi
+
+if !(grep "<a href=\"action_page.cgi?process_filename=dfZRuitU82fEY.dat&pid=0&action_name=add_directory\">Next&gt;
+&gt;</a>" output > /dev/null)
+then
+  echo; echo "Next failed"
+fi
+
+# go to next action
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=add_directory"
+./action_page.cgi > output
+
+if !(grep "<a href=\"action_page.cgi?process_filename=dfZRuitU82fEY.dat&pid=0&action_name=create_directory\">&lt;&lt;Prev</a>" output > /dev/null)
+then
+  echo; echo "Previous failed"
+fi
+
+if !(grep "<
+a href=\"action_page.cgi?process_filename=dfZRuitU82fEY.dat&pid=0&action_name=commit_directory\">Next&gt;&gt;</a>" output > /dev/null)
+then
+  echo; echo "Next failed"
+fi
+
+# go to next action
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=commit_directory"
+./action_page.cgi > output
+
+if !(grep "<a href=\"action_page.cgi?process_filename=dfZRuitU82fEY.dat&pid=0&action_name=add_directory\">&lt;&lt;Prev</a>" output > /dev/null)
+then
+  echo; echo "Previous failed"
+fi
+
+if !(grep "<
+a href=\"action_page.cgi?process_filename=dfZRuitU82fEY.dat&pid=0&action_name=change_permissions\">Next&gt;&gt;</a>" output > /dev/null)
+then
+  echo; echo "Next failed"
+fi
+
+# go to next action
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=change_permissions"
+./action_page.cgi > output
+
+if !(grep "<a href=\"action_page.cgi?process_filename=dfZRuitU82fEY.dat&pid=0&action_name=commit_directory\">&lt;&lt;Prev</a>" output > /dev/null)
+then
+  echo; echo "Previous failed"
+fi
+
+if !(grep "/a>&nbsp;&nbsp;Next&gt;&gt;" output > /dev/null)
+then
+  echo; echo "Next failed"
+fi
+
 #rm output
 #rm dfZRuitU82fEY.dat*
 echo "done"
