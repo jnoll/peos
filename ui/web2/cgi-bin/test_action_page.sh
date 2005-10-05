@@ -29,39 +29,31 @@ if !(grep '>Active Process</a>]' output > /dev/null)
 then
   echo; echo "Active process link missing"
 fi
-if !(grep '<li>cvs_add_dir.pml (Pid: 0)</li>' output > /dev/null)
+if !(grep '<li>CVS ADD DIR (PID: 0)</li>' output > /dev/null)
 then
   echo; echo "Model name & PID missing"
 fi
-if !(grep '<li>create directory <small>(READY)</small></li>' output > /dev/null)
+if !(grep '<li>Create Directory <small>(READY)</small></li>' output > /dev/null)
 then
   echo; echo "First action without link missing"
 fi
-if !(grep '>add directory</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
+if !(grep '>Add Directory</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
   then
     echo; echo "Action node 'add directory' failed"
 fi
-if !(grep '>commit directory</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
+if !(grep '>Commit Directory</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
   then
     echo; echo "Action node 'commit directory' failed"
 fi
-if !(grep '>change permissions</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
+if !(grep '>Change Permissions</a> <small>(AVAILABLE)</small></li>' output > /dev/null)
   then
     echo; echo "Action node 'change permissions' failed"
 fi
 
 # Test the table on the right hand side
-if !(grep '<h2>create directory</h2>' output > /dev/null)
+if !(grep '<h2>Create Directory (READY)</h2>' output > /dev/null)
 then
   echo; echo "Action heading missing"
-fi
-if !(grep '<b>State:</b>' output > /dev/null)
-then
-  echo; echo "State Row missing"
-fi
-if !(grep '<td>READY</td>' output > /dev/null)
-then
-  echo; echo "State value missing"
 fi
 if !(grep 'Required Resources' output > /dev/null)
 then
@@ -74,10 +66,6 @@ fi
 if !(grep '<b>Provided Resources:</b>' output > /dev/null)
 then
   echo; echo "Provided Resources Row missing"
-fi
-if !(grep '<b>Script:</b>' output > /dev/null)
-then
-  echo; echo "Script Row missing"
 fi
 if !(grep 'In your workspace, create the new directory' output > /dev/null)
 then
@@ -153,17 +141,17 @@ export QUERY_STRING="action=create&model=state_test.pml&process_filename=dfZRuit
 export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
 ./action_page.cgi > output
 
-if !(grep ">a0 <small>(READY)" output > /dev/null)
+if !(grep ">A0 <small>(READY)" output > /dev/null)
 then
   echo; echo "Action 'a0' failed"
 fi
 
-if !(grep ">a1</a> <small>(NONE)" output > /dev/null)
+if !(grep ">A1</a>" output > /dev/null)
 then
   echo; echo "Action 'a1' failed"
 fi
 
-if !(grep ">a2</a> <small>(AVAILABLE)" output > /dev/null)
+if !(grep ">A2</a> <small>(AVAILABLE)" output > /dev/null)
 then
   echo; echo "Action 'a2' failed"
 fi
@@ -188,17 +176,17 @@ fi
 export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
 ./action_page.cgi > output
 
-if !(grep ">a0 <small>(RUN)" output > /dev/null)
+if !(grep ">A0 <small>(RUN)" output > /dev/null)
 then
   echo; echo "Action 'a0' failed"
 fi
 
-if !(grep ">a1</a> <small>(NONE)" output > /dev/null)
+if !(grep ">A1</a>" output > /dev/null)
 then
   echo; echo "Action 'a1' failed"
 fi
 
-if !(grep ">a2</a> <small>(AVAILABLE)" output > /dev/null)
+if !(grep ">A2</a> <small>(AVAILABLE)" output > /dev/null)
 then
   echo; echo "Action 'a2' failed"
 fi
@@ -224,17 +212,17 @@ fi
 export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
 ./action_page.cgi > output
 
-if !(grep ">a0</a> <small>(DONE)" output > /dev/null)
+if !(grep ">A0</a> <small>(DONE)" output > /dev/null)
 then
   echo; echo "Action 'a0' failed"
 fi
 
-if !(grep ">a1 <small>(BLOCKED)" output > /dev/null)
+if !(grep ">A1 <small>(BLOCKED)" output > /dev/null)
 then
   echo; echo "Action 'a1' failed"
 fi
 
-if !(grep ">a2</a> <small>(AVAILABLE)" output > /dev/null)
+if !(grep ">A2</a> <small>(AVAILABLE)" output > /dev/null)
 then
   echo; echo "Action 'a2' failed"
 fi

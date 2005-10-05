@@ -52,23 +52,23 @@ if !(grep '>Active Process</a>]' output > /dev/null)
 then
   echo; echo "Active process link missing"
 fi
-if !(grep '<li>test_action.pml (Pid: 0)</li>' output > /dev/null)
+if !(grep '<li>TEST ACTION (PID: 0)</li>' output > /dev/null)
 then
   echo; echo "Model name & PID missing"
 fi
-if !(grep '<li>test script <small>(BLOCKED)</small></li>' output > /dev/null)
+if !(grep '<li>Test Script <small>(BLOCKED)</small></li>' output > /dev/null)
 then
   echo; echo "First action without link missing"
 fi
 
 # Test the table on the right hand side
-if !(grep '<h2>test script</h2>' output > /dev/null)
+if !(grep '<h2>Test Script (BLOCKED)</h2>' output > /dev/null)
 then
   echo; echo "Action heading missing"
 fi
-if !(grep '<h4>Supply Resource Bindings</h4>' output > /dev/null)
+if !(grep '<h4>Enter a value for the following resources:</h4>' output > /dev/null)
 then
-  echo; echo "Title \"Supply Resource Bindings\" missing"
+  echo; echo "Title \"Enter a value for the following resources:\" missing"
 fi
 if !(grep '>test_resource<br></td>' output > /dev/null)
 then
@@ -96,7 +96,7 @@ export QUERY_STRING="pid=0&process_filename=dfZRuitU82fEY.dat&act_name=test_scri
 # Load the new action page to check the behavior
 export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
 ./action_page.cgi > output
-if !(grep '<td>RUN</td>' output > /dev/null)
+if !(grep '<h2>Test Script (RUN)</h2>' output > /dev/null)
 then
   echo; echo "State incorrect after clicking Start"
 fi
@@ -110,7 +110,7 @@ export QUERY_STRING="action_event=Suspend&pid=0&act_name=test_script&process_fil
 # Check the modified action page
 export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
 ./action_page.cgi > output
-if !(grep '<td>SUSPEND</td>' output > /dev/null)
+if !(grep '<h2>Test Script (SUSPEND)</h2>' output > /dev/null)
 then
   echo; echo "State incorrect after clicking Suspend"
 fi
@@ -124,13 +124,13 @@ export QUERY_STRING="resource_type=provides&pid=0&action_name=test_script&proces
 ./action_page.cgi > output
 
 # Test the table on the right hand side
-if !(grep '<h2>test script</h2>' output > /dev/null)
+if !(grep '<h2>Test Script (SUSPEND)</h2>' output > /dev/null)
 then
   echo; echo "Action heading missing"
 fi
-if !(grep '<h4>Supply Resource Bindings</h4>' output > /dev/null)
+if !(grep '<h4>Enter a value for the following resources:</h4>' output > /dev/null)
 then
-  echo; echo "Title \"Supply Resource Bindings\" missing"
+  echo; echo "Title \"Enter a value for the following resources:\" missing"
 fi
 if !(grep '>test_provide<br></td>' output > /dev/null)
 then
@@ -158,7 +158,7 @@ export QUERY_STRING="pid=0&process_filename=dfZRuitU82fEY.dat&act_name=test_scri
 # Load the new action page to check the behavior
 export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
 ./action_page.cgi > output
-if !(grep '<td>PENDING</td>' output > /dev/null)
+if !(grep '<h2>Test Script (PENDING)</h2>' output > /dev/null)
 then
   echo; echo "State incorrect after clicking Finish"
 fi
@@ -176,7 +176,7 @@ export QUERY_STRING="pid=0&process_filename=dfZRuitU82fEY.dat&action_name=test_s
 # Check the modified action page
 export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
 ./action_page.cgi > output
-if !(grep '<td>RUN</td>' output > /dev/null)
+if !(grep '<h2>Test Script (RUN)</h2>' output > /dev/null)
 then
   echo; echo "State incorrect after clicking Start again"
 fi
@@ -190,7 +190,7 @@ export QUERY_STRING="action_event=Abort&pid=0&act_name=test_script&process_filen
 # Check the modified action page
 export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
 ./action_page.cgi > output
-if !(grep '<td>NONE</td>' output > /dev/null)
+if !(grep '<h2>Test Script</h2>' output > /dev/null)
 then
   echo; echo "State incorrect after clicking Abort"
 fi

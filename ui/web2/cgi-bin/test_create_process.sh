@@ -27,7 +27,7 @@ then
 fi
 
 # Check the table
-if !(grep '>cvs_add_dir</a></li>' output > /dev/null)
+if !(grep '>CVS ADD DIR</a></li>' output > /dev/null)
 then
   echo; echo "List missing"
 fi

@@ -76,27 +76,29 @@ _process_list *get_proc_details(xmlNode *node)
     char *action_state, *action_name;
     int lbreak = 1;
     int first = 0;
-    int i;
+    int i, len;
 
     proct = (_process_list *) malloc(sizeof(_process_list));
     proct->pid = atoi(xmlGetProp(node, "pid"));
     model = xmlGetProp(node, "model");
     tchar = strrchr(model, '/');
     tchar++;
-    proct->name = (char *) malloc((strlen(tchar) - 3) * sizeof(char));
-    for (i=0; (i < strlen(tchar)) && (tchar[i] != '.'); i++)
-	proct->name[i] = tchar[i];
-    proct->name[i] = '\0';
+    proct->name = strdup(strtok(tchar, "."));//(char *) malloc((strlen(tchar) - 3) * sizeof(char));
+    len = strlen(proct->name);
+    for (i = 0; i < len; i++) {
+        if (proct->name[i] == '_')
+            proct->name[i] = ' ';
+        else
+            proct->name[i] = toupper(proct->name[i]);
+    }
+    //for (i=0; (i < strlen(tchar)) && (tchar[i] != '.'); i++)
+//	proct->name[i] = tchar[i];
+    //proct->name[i] = '\0';
     proct->first_action_name = NULL;
     proct->active_action_name = NULL;
     get_first_active_action_details(node, proct);
     
-    /*if (!proct->active_action_name) {
-        if (proct->first_available_action_name)
-            proct->active_action_name = strdup(proct->first_available_action_name);
-        else if (proct->first_blocked_action_name)
-            proct->active_action_name = strdup(proct->first_blocked_action_name);
-}*/
+    
     
     proct->next = NULL;
     return proct;

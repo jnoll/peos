@@ -90,9 +90,13 @@ void list_processes()
 	printf("      <td>%d</td>\n", plist->pid);
 	if (plist->active_action_name) {
 	    printf("      <td><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">%s</a></td>\n", process_filename, plist->pid, plist->active_action_name, plist->name);
-	    printf("      <td><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">%s</a></td>\n", process_filename, plist->pid, plist->active_action_name, plist->active_action_name);
+            printf("      <td><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">", process_filename, plist->pid, plist->active_action_name);
+            print_action_name(plist->active_action_name);
+            printf("</a></td>\n");
 	} else {
-	    printf("      <td><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">%s</a></td>\n", process_filename, plist->pid, plist->first_action_name, plist->name);
+	    printf("      <td><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">", process_filename, plist->pid, plist->first_action_name);
+            print_action_name(plist->name);
+            printf("</a></td>\n");
 	    printf("      <td>&nbsp;</td>\n");
 	}
 	printf("    </tr>\n");
@@ -164,7 +168,7 @@ int main()
     }
  
     print_header("Process List");
-    print_banner();
+    print_banner("PEOS Process Enactment Demonstration");
  
     list_processes();
 

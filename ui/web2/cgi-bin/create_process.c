@@ -15,7 +15,8 @@ char *process_filename = NULL;
 
 void list_models()
 {
-    int i;
+    int i, j, len;
+    char* display_process_name;
     char **result = (char **)peos_list_models();
 
     printf("<h2 style=\"text-align: center;\">Create Process</h2>\n");
@@ -30,7 +31,17 @@ void list_models()
     printf("      <ul>\n");
     for (i = 0; result && result[i]; i++)
     {
-	printf("        <li><a href=\"active_processes.cgi?action=create&model=%s.pml&process_filename=%s\">%s</a></li>\n", result[i], process_filename, result[i]);
+        display_process_name = strdup(result[i]);
+        len = strlen(display_process_name);
+        for (j = 0; j < len; j++) {
+            if (display_process_name[j] == '_')
+                display_process_name[j] = ' ';
+            else
+                display_process_name[j] = toupper(display_process_name[j]);
+        }
+            
+	printf("        <li><a href=\"active_processes.cgi?action=create&model=%s.pml&process_filename=%s\">%s</a></li>\n", result[i], process_filename, display_process_name);
+        free(display_process_name);
     }
     printf("      </ul>\n");
     printf("      </td><br>\n");
@@ -56,7 +67,7 @@ int main()
     peos_set_loginname(process_filename);
     
     print_header("Process Model List");
-    print_banner();
+    print_banner("PEOS Process Enactment Demonstration");
  
     list_models();
 

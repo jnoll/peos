@@ -24,6 +24,7 @@ int main()
     char *resource_type;
     char name[12];
     char unbound_value[256];
+    int change = 0;
 
     /** First, get the CGI variables into a list of strings         **/
     cgivars = getcgivars();
@@ -76,18 +77,23 @@ int main()
     }
 
 
-    if ((action != NULL) && (strcmp(action, "change") == 0)) {
+    /*if ((action != NULL) && (strcmp(action, "change") == 0)) {
         printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n",process_filename,pid,action_name);
-    }
+}*/
 
+    if (action != NULL)
+        change = !strcmp(action, "change");
+    
     if(strcmp(resource_type,"requires") == 0) {
-        peos_notify(pid, action_name, PEOS_EVENT_START);
+        if (!change)
+            peos_notify(pid, action_name, PEOS_EVENT_START);
         printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n",process_filename,pid,action_name);
     }
     else {
         _action_page *new_ap;
         char *xml_data_filename;
-        peos_notify(pid, action_name, PEOS_EVENT_FINISH);
+        if (!change) 
+            peos_notify(pid, action_name, PEOS_EVENT_FINISH);
         xml_data_filename = (char *) malloc((strlen(process_filename) + strlen(".xml") + 1) * sizeof(char));
         strcpy(xml_data_filename, process_filename);
         strcat(xml_data_filename, ".xml");
@@ -96,12 +102,20 @@ int main()
             printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n",process_filename);
         else {
             if (strcmp(new_ap->action_list[new_ap->total_actions - 1], action_name) == 0) {
-                printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, action_name);
+                if (strcmp(new_ap->state_list[new_ap->total_actions - 1], "DONE") == 0) {
+                    peos_notify(pid, action_name, PEOS_EVENT_FINISH);
+                    printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n",process_filename);
+                }
+                else
+                    printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, action_name);
             }
             else {
                 for (i = 0; i < new_ap->total_actions; i++)
                     if (strcmp(new_ap->action_list[i], action_name) == 0)
-                        printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, new_ap->action_list[i + 1]);
+                        if (change)
+                            printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, new_ap->action_list[i]); //stay at the same action
+                        else
+                            printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, new_ap->action_list[i + 1]);  //go to next action
             }
         }
     }

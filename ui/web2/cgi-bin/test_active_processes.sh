@@ -47,11 +47,11 @@ check_for_table() {
   then
     echo; echo "Cannot find the PID"
   fi
-  if !(grep '>cvs_add_dir</a>' output > /dev/null)
+  if !(grep '>CVS ADD DIR</a>' output > /dev/null)
   then
     echo; echo "Cannot find the Process name"
   fi
-  if !(grep '>create_directory</a>' output > /dev/null)
+  if !(grep '>Create Directory</a>' output > /dev/null)
   then
     echo; echo "Cannot find the active action name"
   fi
