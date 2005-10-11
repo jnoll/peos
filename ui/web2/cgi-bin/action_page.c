@@ -319,10 +319,6 @@ void write_content()
         if (strcmp(ap->state, "NONE") != 0)
             printf(" (%s)", ap->state);
         printf("</h2><br>\n");
-        add_action_control_buttons();
-        if (ap->script) {
-            printf("%s", ap->script);
-        }
         printf("        <table style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n");
         printf("          <tbody>\n");
         printf("            <tr>\n");
@@ -369,6 +365,17 @@ void write_content()
         printf("            </tr>\n");
         printf("          </tbody>\n");
         printf("        </table><br><br>\n");
+        
+        add_action_control_buttons();
+        
+        if (ap->script && strcmp(ap->script, "\n(null)\n") != 0) {
+            int len = strlen(ap->script);
+            ap->script[len - 3] = '\0';
+            ap->script += 2;
+            printf("%s", ap->script);
+            ap->script -= 2;
+            
+        }
     }
     printf("      </td>\n");
     printf("    </tr>\n");

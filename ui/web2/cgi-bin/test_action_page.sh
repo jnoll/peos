@@ -67,6 +67,12 @@ if !(grep '<b>Provided Resources:</b>' output > /dev/null)
 then
   echo; echo "Provided Resources Row missing"
 fi
+
+if (grep '\"In your workspace, create the new directory\"' output > /dev/null)
+then
+  echo; echo "Should not show quote for script"
+fi
+
 if !(grep 'In your workspace, create the new directory' output > /dev/null)
 then
   echo; echo "Script value missing"
@@ -156,6 +162,11 @@ then
   echo; echo "Action 'a2' failed"
 fi
 
+if (grep "(null)" output > /dev/null)
+then
+  echo; echo "(null) should not show if script is empty"
+fi 
+
 # Click the Start button for a0
 export QUERY_STRING="action_event=Run&pid=1&act_name=a0&process_filename=dfZRuitU82fEY.dat"
 ./action_event.cgi > output
@@ -190,6 +201,11 @@ if !(grep ">A2</a> <small>(AVAILABLE)" output > /dev/null)
 then
   echo; echo "Action 'a2' failed"
 fi
+
+if (grep "(null)" output > /dev/null)
+then
+  echo; echo "(null) should not show if script is empty"
+fi 
 
 # Click the Finish button for a0
 export QUERY_STRING="action_event=Finish&pid=1&act_name=a0&process_filename=dfZRuitU82fEY.dat"
@@ -226,6 +242,11 @@ if !(grep ">A2</a> <small>(AVAILABLE)" output > /dev/null)
 then
   echo; echo "Action 'a2' failed"
 fi
+
+if (grep "(null)" output > /dev/null)
+then
+  echo; echo "(null) should not show if script is empty"
+fi 
 
 #rm output
 #rm dfZRuitU82fEY.dat*
