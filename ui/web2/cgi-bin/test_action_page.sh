@@ -246,9 +246,75 @@ fi
 if (grep "(null)" output > /dev/null)
 then
   echo; echo "(null) should not show if script is empty"
-fi 
+fi
+
+# test action state
+
+rm script_test.res
+
+echo "process p {"                                                              > script_test.pml
+echo "  action a0 { requires{r0} provides{r1} script{\"r0=\$r0 r1=\$r1\"} }"    >> script_test.pml
+echo "  action a1 { script{\"\$100.00 \$not_var\"} }"                           >> script_test.pml
+echo "}" >> script_test.pml
+
+export QUERY_STRING="action=create&model=script_test.pml&process_filename=dfZRuitU82fEY.dat"
+./active_processes.cgi > /dev/null
+
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=2&action_name=a0"
+./action_page.cgi > output
+cp output a
+
+if !(grep "r0=\${r0} r1=\${r1}" output > /dev/null)
+then
+  echo; echo "Rendering script failed"
+fi
+
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=2&action_name=a1"
+./action_page.cgi > output
+
+if !(grep "\$100.00 \$not_var" output > /dev/null)
+then
+  echo; echo "Rendering script failed"
+fi
+
+echo "r0: v0" > script_test.res
+echo "r1: v1" >> script_test.res
+
+export QUERY_STRING="action=create&model=script_test.pml&process_filename=dfZRuitU82fEY.dat"
+./active_processes.cgi > /dev/null
+
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=3&action_name=a0"
+./action_page.cgi > output
+
+if !(grep "r0=<a href=\"display_file.cgi?v0\">v0</a> r1=<a href=\"display_file.cgi?v1\">v1</a>" output > /dev/null)
+then
+  echo; echo "Rendering script failed"
+fi
+
+export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=3&action_name=a1"
+./action_page.cgi > output
+
+if !(grep "\$100.00 \$not_var" output > /dev/null)
+then
+  echo; echo "Rendering script failed"
+fi
+
+echo "This is PEOS test." > /tmp/peos_test.txt
+
+export QUERY_STRING="/tmp/peos_test.txt"
+./display_file.cgi > output
+if !(grep "This is PEOS test." output > /dev/null)
+then
+  echo; echo "display_file.cgi failed"
+fi
+
+export QUERY_STRING="/tmp"
+./display_file.cgi > output
+if !(grep "*** /tmp: directory ***" output > /dev/null)
+then
+  echo; echo "display_file.cgi failed"
+fi
 
 #rm output
 #rm dfZRuitU82fEY.dat*
 echo "done"
-

@@ -322,7 +322,7 @@ void write_content()
         printf("        <table style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n");
         printf("          <tbody>\n");
         printf("            <tr>\n");
-        printf("              <td style=\"text-align: right;\"><b>Required Resources:</b></td>\n");
+        printf("              <td style=\"width: 150px;\"><b>Required Resources:</b></td>\n");
         printf("              <td>");
         for (i = 0; i < ap->total_reqd_resources; i++) {
             printf("%s = %s", ap->reqd_resources[i]->name, ap->reqd_resources[i]->value);
@@ -343,7 +343,7 @@ void write_content()
         printf("</td>\n");
         printf("            </tr>\n");
         printf("            <tr>\n");
-        printf("              <td style=\"text-align: right;\"><b>Provided Resources:</b></td>\n");
+        printf("              <td style=\"width: 150px;\"><b>Provided Resources:</b></td>\n");
         printf("              <td>");
         for (i = 0; i < ap->total_prov_resources; i++) {
             printf("%s = %s", ap->prov_resources[i]->name, ap->prov_resources[i]->value);
@@ -369,17 +369,62 @@ void write_content()
         add_action_control_buttons();
         
         if (ap->script && strcmp(ap->script, "\n(null)\n") != 0) {
-            int len = strlen(ap->script);
-            ap->script[len - 3] = '\0';
-            ap->script += 2;
-            printf("%s", ap->script);
-            ap->script -= 2;
+            int len, found_res;
+            char res_name[256];
+            len = strlen(ap->script);
             
+            ap->script[len - 2] = '\0';
+            ap->script += 2;
+            len = strlen(ap->script);
+            for (i = 0, j = 0; i < len; i++, j++) {
+                if (ap->script[i] == '$') {
+                    strcpy(res_name, "");
+                    for (i++, j = 0; ap->script[i] != ' ' && ap->script[i] != '\n' && ap->script[i] != '\0' && ap->script[i] != '$'; i++, j++) {
+                        res_name[j] = ap->script[i];
+                    }
+                    res_name[j] = '\0';
+                    found_res = 0;
+                    for (j = 0; j < ap->total_reqd_resources; j++) {
+                        if (strcmp(res_name, ap->reqd_resources[j]->name) == 0) {
+                            sprintf(unbound_value, "${%s}", ap->reqd_resources[j]->name);
+                            if (strcmp(ap->reqd_resources[j]->value, unbound_value) != 0) {
+                                printf("<a href=\"display_file.cgi?%s\">%s</a>", ap->reqd_resources[j]->value, ap->reqd_resources[j]->value);
+                            }
+                            else
+                                printf("%s", ap->reqd_resources[j]->value);
+                            found_res = 1;
+                            break;
+                        }
+                    }
+                    if (!found_res) {
+                        for (j = 0; j < ap->total_prov_resources; j++) {
+                            if (strcmp(res_name, ap->prov_resources[j]->name) == 0) {
+                                sprintf(unbound_value, "${%s}", ap->prov_resources[j]->name);
+                                if (strcmp(ap->prov_resources[j]->value, unbound_value) != 0) {
+                                    printf("<a href=\"display_file.cgi?%s\">%s</a>", ap->prov_resources[j]->value, ap->prov_resources[j]->value);
+                                }
+                                else
+                                    printf("%s", ap->prov_resources[j]->value);
+                                found_res = 1;
+                                break;
+                            }
+                        }
+                    }
+                    if (!found_res) {
+                        printf("$%s", res_name);
+                    }
+                }
+                if (ap->script[i] != '\0')
+                    printf("%c", ap->script[i]);
+                    
+            }
+            ap->script -= 2;
         }
+        printf("\n");
     }
     printf("      </td>\n");
     printf("    </tr>\n");
-    printf("  </tbody>");
+    printf("  </tbody>\n");
     printf("</table>\n");
     add_prev_next(ap, prevIndex, nextIndex);
 }
@@ -406,12 +451,9 @@ int main()
     action = (char *)getvalue("action", cgivars);
 
     peos_set_process_table_file(process_filename);
-    peos_set_loginname(process_filename);    
-    
+    peos_set_loginname(process_filename);
     
     proc_resources = peos_get_resource_list_context(pid, &num_proc_resources);
-    
-    
     
     xml_data_filename = (char *) malloc((strlen(process_filename) + strlen(".xml") + 1) * sizeof(char));
     strcpy(xml_data_filename, process_filename);
@@ -428,11 +470,8 @@ int main()
             display_process_name[i] = toupper(display_process_name[i]);
     }
     
-    
-    
     write_content();
     print_footer();
-
     
     if (resources)
         free(resources);

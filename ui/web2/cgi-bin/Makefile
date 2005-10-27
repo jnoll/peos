@@ -65,6 +65,8 @@ install:
 	fi
 	cp $(KERNEL_DIR)/peos_init.tcl $(INSTALL_DIR)/cgi-bin
 	chmod 744 $(INSTALL_DIR)/cgi-bin/peos_init.tcl
+	cp display_file.cgi $(INSTALL_DIR)/cgi-bin
+	chmod 744 $(INSTALL_DIR)/cgi-bin/display_file.cgi
 
 
 create_testtable: create_testtable.o
