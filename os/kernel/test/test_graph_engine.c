@@ -65,8 +65,9 @@ peos_resource_t *get_resource_list_action_provides(int pid,char *act_name,int *n
 }
 
 int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
+    int value;
     global_resources = resources;
-    int value = flag ? requires_state[++requires_index] : provides_state[++provides_index];
+    value = flag ? requires_state[++requires_index] : provides_state[++provides_index];
     return value;
 }
 
