@@ -76,15 +76,15 @@ export REMOTE_USER=test
 check_for_notable
 
 # Create process is invoked
-export QUERY_STRING="action=create&model=cvs_add_dir.pml&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action=create&model=cvs_add_dir.pml"
 check_for_table
 
 # Continue to view the page
-export QUERY_STRING="action=continue&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action=continue"
 check_for_table
 
 # Delete the created process
-export QUERY_STRING="action=delete&process_filename=dfZRuitU82fEY.dat&list=0,"
+export QUERY_STRING="action=delete&list=0,"
 check_for_notable
 
 rm dfZRuitU82fEY.dat*

@@ -28,7 +28,8 @@ TESTS = test_active_processes.sh \
 	test_action_page.sh \
 	test_action_event.sh \
 	test_bind_resources.sh \
-	test_bind_resource_file.sh
+	test_bind_resource_file.sh \
+        test_display_file.sh 
 
 CGI = active_processes.cgi create_process.cgi action_page.cgi action_event.cgi bind_resources.cgi
 SOURCES = $(CGI:.cgi=.c) $(OBJECTS:.o=.c)

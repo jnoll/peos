@@ -35,7 +35,7 @@ void add_jscript()
     printf("    return\n");
     printf("  }\n");
     printf("  if (confirm(\"Do you want to delete the checked items?\")) {\n");
-    printf("    window.location=\"active_processes.cgi?action=delete&process_filename=%s&list=\" + delList\n", process_filename);
+    printf("    window.location=\"active_processes.cgi?action=delete&list=\" + delList\n");
     printf("  } else {\n");
     printf("    for (var i = 0; i < document.forms[0].list.length; i++) {\n");
     printf("      document.forms[0].list[i].checked = false\n");
@@ -51,8 +51,6 @@ void list_processes()
     _process_list *plist;
     int tcount = 0;
 
-    /* Create the XML data file by calling this method */
-    //peos_list_instances();
     load_process_table();
     save_process_table();
 
@@ -63,7 +61,7 @@ void list_processes()
     plist = get_processes_list(xml_data_filename);
     printf("<h2 style=\"text-align: center;\">Active Processes</h2>\n");
     printf("<div style=\"text-align: center;\">\n");
-    printf("  [<a href=\"create_process.cgi?process_filename=%s\">Create Process</a>]\n", process_filename);
+    printf("  [<a href=\"create_process.cgi?\">Create Process</a>]\n");
     printf("</div><br><br>\n");
 
     if (plist == NULL)
@@ -89,12 +87,12 @@ void list_processes()
 	printf("      </td>\n");
 	printf("      <td>%d</td>\n", plist->pid);
 	if (plist->active_action_name) {
-	    printf("      <td><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">%s</a></td>\n", process_filename, plist->pid, plist->active_action_name, plist->name);
-            printf("      <td><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">", process_filename, plist->pid, plist->active_action_name);
+	    printf("      <td><a href=\"action_page.cgi?pid=%d&action_name=%s\">%s</a></td>\n", plist->pid, plist->active_action_name, plist->name);
+            printf("      <td><a href=\"action_page.cgi?pid=%d&action_name=%s\">", plist->pid, plist->active_action_name);
             print_action_name(plist->active_action_name);
             printf("</a></td>\n");
 	} else {
-	    printf("      <td><a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">", process_filename, plist->pid, plist->first_action_name);
+	    printf("      <td><a href=\"action_page.cgi?pid=%d&action_name=%s\">", plist->pid, plist->first_action_name);
             print_action_name(plist->name);
             printf("</a></td>\n");
 	    printf("      <td>&nbsp;</td>\n");
@@ -115,7 +113,7 @@ void list_processes()
 int main()
 {
     
-    char **cgivars, *login_name, *action, *model, *del_list, *token;
+    char **cgivars, *action, *model, *del_list, *token;
     int i, pid, num_resources;
     peos_resource_t *resources;
     char* res_file;
@@ -126,30 +124,16 @@ int main()
     action = (char *)getvalue("action", cgivars);
 
     if (!strcmp(action, "continue")) {
-	login_name = (char *)getvalue("process_filename", cgivars);
-	process_filename = (char *)malloc(strlen(login_name) * sizeof(char));
-	strcpy(process_filename, login_name);
+        process_filename = get_process_filename();
 	peos_set_process_table_file(process_filename);
 	peos_set_loginname(process_filename);
     } else if (!strcmp(action, "start")) {
-	char *enc_loginname;
-	login_name = (char *)getenv("REMOTE_USER");
-	enc_loginname = (char *)crypt(login_name, "df");
-	for (i = 0; i < strlen(enc_loginname); i++) {
-	    if (enc_loginname[i] == '/')
-                enc_loginname[i] = '_';
-	    else if (enc_loginname[i] == '.')
-                enc_loginname[i] = '-';
-	}
-	process_filename = (char *)malloc((strlen(enc_loginname)
-				+ strlen(".dat") + 1) * sizeof(char));
-	strcpy(process_filename, enc_loginname);
-	strcat(process_filename, ".dat");
+        process_filename = get_process_filename();
 	peos_set_process_table_file(process_filename);
 	peos_set_loginname(process_filename);
     } else if (!strcmp(action, "create")) {
-	process_filename = (char *)getvalue("process_filename", cgivars);
-	model = (char *)getvalue("model", cgivars);
+        process_filename = get_process_filename();
+        model = (char *)getvalue("model", cgivars);
 	peos_set_process_table_file(process_filename);
 	peos_set_loginname(process_filename);
 	resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
@@ -158,7 +142,7 @@ int main()
             peos_bind_resource_file(pid, res_file);
 	free(resources);
     } else if (!strcmp(action, "delete")) {
-	process_filename = (char *)getvalue("process_filename", cgivars);
+        process_filename = get_process_filename();
 	del_list = (char *)getvalue("list", cgivars);
 	peos_set_process_table_file(process_filename);
 	peos_set_loginname(process_filename);

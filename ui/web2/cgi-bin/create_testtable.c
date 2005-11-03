@@ -17,7 +17,6 @@ int main()
     int num_resources;
     char *process_filename = "test.dat"; 
 
-
     peos_set_process_table_file(process_filename);
 
     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);

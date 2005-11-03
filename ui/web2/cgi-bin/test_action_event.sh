@@ -16,11 +16,11 @@ export REQUEST_METHOD=GET
 export REMOTE_USER=test
 ./active_processes.cgi > /dev/null
 # Invoke create process
-export QUERY_STRING="action=create&model=test_action.pml&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action=create&model=test_action.pml"
 ./active_processes.cgi > /dev/null
 
 # Create the action page
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=test_script"
+export QUERY_STRING="pid=0&action_name=test_script"
 ./action_page.cgi > output
 
 # make sure all $$ has been removed
@@ -30,11 +30,11 @@ then
 fi
 
 # Click the Start button
-export QUERY_STRING="action_event=Run&pid=0&act_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action_event=Run&pid=0&act_name=test_script"
 ./action_event.cgi > /dev/null
 
 # Check the modified action page
-export QUERY_STRING="resource_type=requires&pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="resource_type=requires&pid=0&action_name=test_script"
 ./action_page.cgi > output
 
 # make sure all $$ has been removed
@@ -94,7 +94,7 @@ export QUERY_STRING="pid=0&process_filename=dfZRuitU82fEY.dat&act_name=test_scri
 ./bind_resources.cgi > /dev/null
 
 # Load the new action page to check the behavior
-export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="pid=0&action_name=test_script"
 ./action_page.cgi > output
 if !(grep '<h2>Test Script (RUN)</h2>' output > /dev/null)
 then
@@ -104,11 +104,11 @@ fi
 rm output
 
 # Click the Suspend button
-export QUERY_STRING="action_event=Suspend&pid=0&act_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action_event=Suspend&pid=0&act_name=test_script"
 ./action_event.cgi > /dev/null
 
 # Check the modified action page
-export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="pid=0&action_name=test_script"
 ./action_page.cgi > output
 if !(grep '<h2>Test Script (SUSPEND)</h2>' output > /dev/null)
 then
@@ -116,11 +116,11 @@ then
 fi
 
 # Click the Finish button
-export QUERY_STRING="action_event=Finish&pid=0&act_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action_event=Finish&pid=0&act_name=test_script"
 ./action_event.cgi > /dev/null
 
 # Check the modified action page
-export QUERY_STRING="resource_type=provides&pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="resource_type=provides&pid=0&action_name=test_script"
 ./action_page.cgi > output
 
 # Test the table on the right hand side
@@ -156,7 +156,7 @@ export QUERY_STRING="pid=0&process_filename=dfZRuitU82fEY.dat&act_name=test_scri
 ./bind_resources.cgi > /dev/null
 
 # Load the new action page to check the behavior
-export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="pid=0&action_name=test_script"
 ./action_page.cgi > output
 if !(grep '<h2>Test Script (PENDING)</h2>' output > /dev/null)
 then
@@ -166,15 +166,15 @@ fi
 rm output
 
 # Click the Start button
-export QUERY_STRING="action_event=Run&pid=0&act_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action_event=Run&pid=0&act_name=test_script"
 ./action_event.cgi > /dev/null
 
 # Submit to the action page
-export QUERY_STRING="pid=0&process_filename=dfZRuitU82fEY.dat&action_name=test_script&resource_type=requires"
+export QUERY_STRING="pid=0&action_name=test_script&resource_type=requires"
 ./action_page.cgi > /dev/null
 
 # Check the modified action page
-export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="pid=0&action_name=test_script"
 ./action_page.cgi > output
 if !(grep '<h2>Test Script (RUN)</h2>' output > /dev/null)
 then
@@ -184,11 +184,11 @@ fi
 rm output
 
 # Click the Abort button
-export QUERY_STRING="action_event=Abort&pid=0&act_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action_event=Abort&pid=0&act_name=test_script"
 ./action_event.cgi > /dev/null
 
 # Check the modified action page
-export QUERY_STRING="pid=0&action_name=test_script&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="pid=0&action_name=test_script"
 ./action_page.cgi > output
 if !(grep '<h2>Test Script</h2>' output > /dev/null)
 then

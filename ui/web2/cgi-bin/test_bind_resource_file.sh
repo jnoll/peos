@@ -24,12 +24,12 @@ export REQUEST_METHOD=GET
 export REMOTE_USER=test
 ./active_processes.cgi > /dev/null
 # Invoke create process
-export QUERY_STRING="action=create&model=bind_resource_file.pml&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action=create&model=bind_resource_file.pml"
 ./active_processes.cgi > /dev/null
 
 # Test r0
 # Go to a0
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=a0"
+export QUERY_STRING="pid=0&action_name=a0"
 ./action_page.cgi > output
 # Test resource evaluated value
 if !(grep '<td>r0 = v0' output > /dev/null)
@@ -38,7 +38,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=requires&action=change&process_filename=dfZRuitU82fEY.dat&pid=0&action_name=a0"
+export QUERY_STRING="resource_type=requires&action=change&pid=0&action_name=a0"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="v0"' output > /dev/null)
@@ -48,7 +48,7 @@ fi
 
 # Test r1
 # Go to a0
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=a0"
+export QUERY_STRING="pid=0&action_name=a0"
 ./action_page.cgi > output
 #Test resource evaluated value
 if !(grep '<td>r1 = v1' output > /dev/null)
@@ -57,7 +57,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=provides&action=change&process_filename=dfZRuitU82fEY.dat&pid=0&action_name=a0"
+export QUERY_STRING="resource_type=provides&action=change&pid=0&action_name=a0"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="v1"' output > /dev/null)
@@ -67,7 +67,7 @@ fi
 
 # Test r2 && r3
 # Go to a1
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=a1"
+export QUERY_STRING="pid=0&action_name=a1"
 ./action_page.cgi > output
 # Test resource evaluated value
 if !(grep '<td>r2 = v2, r3 = v3' output > /dev/null)
@@ -76,7 +76,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=requires&action=change&process_filename=dfZRuitU82fEY.dat&pid=0&action_name=a1"
+export QUERY_STRING="resource_type=requires&action=change&pid=0&action_name=a1"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="v2"' output > /dev/null)
@@ -91,7 +91,7 @@ fi
 
 # Test r4 && r5
 # Go to a1
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=0&action_name=a1"
+export QUERY_STRING="pid=0&action_name=a1"
 ./action_page.cgi > output
 # Test resource evaluated value
 if !(grep '<td>r4 = v4, r5 = v5' output > /dev/null)
@@ -100,7 +100,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=provides&action=change&process_filename=dfZRuitU82fEY.dat&pid=0&action_name=a1"
+export QUERY_STRING="resource_type=provides&action=change&pid=0&action_name=a1"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="v4"' output > /dev/null)
@@ -121,12 +121,12 @@ echo "r4: \${r3}/v4" >> bind_resource_file.res
 echo "r5: \${r4}/v5" >> bind_resource_file.res
 
 # Invoke create process
-export QUERY_STRING="action=create&model=bind_resource_file.pml&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action=create&model=bind_resource_file.pml"
 ./active_processes.cgi > /dev/null
 
 # Test r0
 # Go to a0
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+export QUERY_STRING="pid=1&action_name=a0"
 ./action_page.cgi > output
 #Test resource evaluated value
 if !(grep '<td>r0 = ${r0}' output > /dev/null)
@@ -135,7 +135,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=requires&action=change&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+export QUERY_STRING="resource_type=requires&action=change&pid=1&action_name=a0"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value=""' output > /dev/null)
@@ -145,7 +145,7 @@ fi
 
 # Test r1
 # Go to a0
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+export QUERY_STRING="pid=1&action_name=a0"
 ./action_page.cgi > output
 #Test resource evaluated value
 if !(grep '<td>r1 = \${r0}/v1' output > /dev/null)
@@ -154,7 +154,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=provides&action=change&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+export QUERY_STRING="resource_type=provides&action=change&pid=1&action_name=a0"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="\${r0}/v1"' output > /dev/null)
@@ -164,7 +164,7 @@ fi
 
 # Test r2 && r3
 # Go to a1
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+export QUERY_STRING="pid=1&action_name=a1"
 ./action_page.cgi > output
 #Test resource evaluated value
 if !(grep '<td>r2 = \${r0}/v1/v2, r3 = \${r0}/v1/v2/v3' output > /dev/null)
@@ -173,7 +173,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=requires&action=change&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+export QUERY_STRING="resource_type=requires&action=change&pid=1&action_name=a1"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="\${r1}/v2"' output > /dev/null)
@@ -188,7 +188,7 @@ fi
 
 # Test r4 && r5
 # Go to a1
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+export QUERY_STRING="pid=1&action_name=a1"
 ./action_page.cgi > output
 # Test resource evaluated value
 if !(grep '<td>r4 = \${r0}/v1/v2/v3/v4, r5 = \${r0}/v1/v2/v3/v4/v5' output > /dev/null)
@@ -197,7 +197,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=provides&action=change&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+export QUERY_STRING="resource_type=provides&action=change&pid=1&action_name=a1"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="\${r3}/v4"' output > /dev/null)
@@ -212,13 +212,13 @@ fi
 
 # Test supply resource value to r0
 # Click the Start button
-export QUERY_STRING="action_event=Run&pid=1&act_name=a0&process_filename=dfZRuitU82fEY.dat"
+export QUERY_STRING="action_event=Run&pid=1&act_name=a0"
 ./action_event.cgi > /dev/null
 # Click Submmit with v0 as value for r0
 export QUERY_STRING="pid=1&process_filename=dfZRuitU82fEY.dat&act_name=a0&resource_type=requires&resource0=v0"
 ./bind_resources.cgi > /dev/null
 # Go to a0
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+export QUERY_STRING="pid=1&action_name=a0"
 ./action_page.cgi > output
 
 #Test resource evaluated value
@@ -228,7 +228,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=requires&action=change&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+export QUERY_STRING="resource_type=requires&action=change&pid=1&action_name=a0"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="v0"' output > /dev/null)
@@ -238,7 +238,7 @@ fi
 
 # Test r1
 # Go to a0
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+export QUERY_STRING="pid=1&action_name=a0"
 ./action_page.cgi > output
 #Test resource evaluated value
 if !(grep '<td>r1 = v0/v1' output > /dev/null)
@@ -247,7 +247,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=provides&action=change&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a0"
+export QUERY_STRING="resource_type=provides&action=change&pid=1&action_name=a0"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="\${r0}/v1"' output > /dev/null)
@@ -257,7 +257,7 @@ fi
 
 # Test r2 && r3
 # Go to a1
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+export QUERY_STRING="pid=1&action_name=a1"
 ./action_page.cgi > output
 #Test resource evaluated value
 if !(grep '<td>r2 = v0/v1/v2, r3 = v0/v1/v2/v3' output > /dev/null)
@@ -266,7 +266,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=requires&action=change&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+export QUERY_STRING="resource_type=requires&action=change&pid=1&action_name=a1"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="\${r1}/v2"' output > /dev/null)
@@ -281,7 +281,7 @@ fi
 
 # Test r4 && r5
 # Go to a1
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+export QUERY_STRING="pid=1&action_name=a1"
 ./action_page.cgi > output
 # Test resource evaluated value
 if !(grep '<td>r4 = v0/v1/v2/v3/v4, r5 = v0/v1/v2/v3/v4/v5' output > /dev/null)
@@ -290,7 +290,7 @@ then
 fi
 # Test resource actual value
 # Go to supply resource binding page
-export QUERY_STRING="resource_type=provides&action=change&process_filename=dfZRuitU82fEY.dat&pid=1&action_name=a1"
+export QUERY_STRING="resource_type=provides&action=change&pid=1&action_name=a1"
 ./action_page.cgi > output
 
 if !(grep 'name="resource0" value="\${r3}/v4"' output > /dev/null)

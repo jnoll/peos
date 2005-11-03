@@ -35,6 +35,8 @@ int main()
     resource_type = (char *) getvalue("resource_type", cgivars);
     action = (char *) getvalue("action", cgivars);
     
+    //process_filename = get_process_filename();
+    
     peos_set_process_table_file(process_filename);
     peos_set_loginname(process_filename);
      
@@ -87,7 +89,7 @@ int main()
     if(strcmp(resource_type,"requires") == 0) {
         if (!change)
             peos_notify(pid, action_name, PEOS_EVENT_START);
-        printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n",process_filename,pid,action_name);
+        printf("Location: action_page.cgi?&pid=%d&action_name=%s\r\n\r\n",pid,action_name);
     }
     else {
         _action_page *new_ap;
@@ -99,23 +101,23 @@ int main()
         strcat(xml_data_filename, ".xml");
         new_ap = get_action_page_details(xml_data_filename, pid, action_name);
         if (!new_ap)
-            printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n",process_filename);
+            printf("Location: active_processes.cgi?action=continue\r\n\r\n");
         else {
             if (strcmp(new_ap->action_list[new_ap->total_actions - 1], action_name) == 0) {
                 if (strcmp(new_ap->state_list[new_ap->total_actions - 1], "DONE") == 0) {
                     peos_notify(pid, action_name, PEOS_EVENT_FINISH);
-                    printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n",process_filename);
+                    printf("Location: active_processes.cgi?action=continue\r\n\r\n");
                 }
                 else
-                    printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, action_name);
+                    printf("Location: action_page.cgi?pid=%d&action_name=%s\r\n\r\n", pid, action_name);
             }
             else {
                 for (i = 0; i < new_ap->total_actions; i++)
                     if (strcmp(new_ap->action_list[i], action_name) == 0)
                         if (change)
-                            printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, new_ap->action_list[i]); //stay at the same action
+                            printf("Location: action_page.cgi?pid=%d&action_name=%s\r\n\r\n", pid, new_ap->action_list[i]); //stay at the same action
                         else
-                            printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, new_ap->action_list[i + 1]);  //go to next action
+                            printf("Location: action_page.cgi?pid=%d&action_name=%s\r\n\r\n", pid, new_ap->action_list[i + 1]);  //go to next action
             }
         }
     }

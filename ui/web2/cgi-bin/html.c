@@ -62,3 +62,21 @@ void print_action_name(char* action_name)
     printf("%s",   display_action);
     free(display_action);       
 }
+
+void get_process_filename()
+{
+    int i;
+    char *login_name, *enc_loginname, *result;
+    login_name = (char *)getenv("REMOTE_USER");
+    enc_loginname = (char *)crypt(login_name, "df");
+    for (i = 0; i < strlen(enc_loginname); i++) {
+        if (enc_loginname[i] == '/' || enc_loginname[i] == '.')
+            enc_loginname[i] = '_';
+    }
+    result = (char *)malloc((strlen(enc_loginname) + strlen(".dat") + 1) * sizeof(char));
+    strcpy(result, enc_loginname);
+    strcat(result, ".dat");
+    //free(enc_loginname);
+    //free(login_name);
+    return result;
+}

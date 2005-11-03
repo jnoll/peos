@@ -25,31 +25,30 @@ int main()
     action_event = (char *) getvalue("action_event", cgivars);
     pid = atoi((char *) getvalue("pid", cgivars));
     action_name = (char *) getvalue("act_name", cgivars);
-    process_filename = (char *) getvalue("process_filename", cgivars);
-    
+    process_filename = get_process_filename();
     peos_set_process_table_file(process_filename);
     peos_set_loginname(process_filename);
   
 
     if(strcmp(action_event, "Abort") == 0) {
         peos_notify(pid, action_name, PEOS_EVENT_ABORT);
-	printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n", process_filename);
+	printf("Location: active_processes.cgi?action=continue\r\n\r\n");
     }
     
 
     if(strcmp(action_event, "Suspend") == 0) {
         peos_notify(pid, action_name, PEOS_EVENT_SUSPEND);
-	printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n", process_filename);
+	printf("Location: active_processes.cgi?action=continue\r\n\r\n");
     }
 
 
     if(strcmp(action_event, "Run") == 0) {
-	printf("Location: action_page.cgi?resource_type=requires&process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, action_name);
+	printf("Location: action_page.cgi?resource_type=requires&pid=%d&action_name=%s\r\n\r\n", pid, action_name);
     }
     
     
     if(strcmp(action_event, "Finish") == 0) {
-	printf("Location: action_page.cgi?resource_type=provides&process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, action_name);
+	printf("Location: action_page.cgi?resource_type=provides&pid=%d&action_name=%s\r\n\r\n", pid, action_name);
     }
     
     

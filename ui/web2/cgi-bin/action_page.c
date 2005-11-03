@@ -49,14 +49,12 @@ void add_jscript()
 
 void add_action_list()
 {
-    int i;//, j;
+    int i;
     int h_sp = 5;
-    //int action_len;
-    //char* display_action;
     
     printf("        <div style=\"text-align: center;\"><small>\n");
-    printf("          [<a href=\"create_process.cgi?process_filename=%s\">Create Process</a>]&nbsp;\n", process_filename);
-    printf("          [<a href=\"active_processes.cgi?action=continue&process_filename=%s\">Active Process</a>]&nbsp;\n", process_filename);
+    printf("          [<a href=\"create_process.cgi\">Create Process</a>]&nbsp;\n");
+    printf("          [<a href=\"active_processes.cgi?action=continue\">Active Process</a>]&nbsp;\n");
     printf("        </small></div><br>\n");
     printf("        <ul>\n");
     printf("          <li>%s (PID: %d)</li>\n", display_process_name, ap->pid);
@@ -105,7 +103,7 @@ void add_action_list()
 	} else if (strcmp(ap->action_list[i], action_name)) {
             indent(h_sp);
             printf("<li>");
-            printf("<a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">", process_filename, pid, ap->action_list[i]);
+            printf("<a href=\"action_page.cgi?pid=%d&action_name=%s\">", pid, ap->action_list[i]);
             print_action_name(ap->action_list[i]);
             printf("</a>");
             if (strcmp(ap->state_list[i], "NONE") != 0)
@@ -132,12 +130,12 @@ void add_prev_next(_action_page *ap, int prevIndex, int nextIndex) {
     if (prevIndex == -1)
         printf("&lt;&lt;Prev");
     else
-        printf("<a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">&lt;&lt;Prev</a>", process_filename, pid, ap->action_list[prevIndex]);
+        printf("<a href=\"action_page.cgi?pid=%d&action_name=%s\">&lt;&lt;Prev</a>", pid, ap->action_list[prevIndex]);
     printf("&nbsp;&nbsp;");
     if (nextIndex == -1)
         printf("Next&gt;&gt;\n");
     else
-        printf("<a href=\"action_page.cgi?process_filename=%s&pid=%d&action_name=%s\">Next&gt;&gt;</a>", process_filename, pid, ap->action_list[nextIndex]);
+        printf("<a href=\"action_page.cgi?pid=%d&action_name=%s\">Next&gt;&gt;</a>", pid, ap->action_list[nextIndex]);
     printf("&nbsp;&nbsp;");
     printf("<a href=\"http://www.cse.scu.edu/~jnoll/286/projects/index.html\">Home</a>\n");
     printf("      </td>\n");
@@ -152,19 +150,19 @@ void add_action_control_buttons() {
     printf("          <tbody>\n");
     printf("            <tr>\n");
     printf("              <td>\n");
-    printf("                <input type=\"button\" value=\"Start\" onclick='window.location=\"action_event.cgi?action_event=Run&pid=%d&act_name=%s&process_filename=%s\"'\n", pid, action_name, process_filename);
+    printf("                <input type=\"button\" value=\"Start\" onclick='window.location=\"action_event.cgi?action_event=Run&pid=%d&act_name=%s\"'\n", pid, action_name);
     if (!strcmp(ap->state, "RUN"))
         printf(" disabled");
     printf(">&nbsp;\n");
-    printf("                <input type=\"button\" value=\"Finish\" onclick='window.location=\"action_event.cgi?action_event=Finish&pid=%d&act_name=%s&process_filename=%s\"'\n", pid, action_name, process_filename);
+    printf("                <input type=\"button\" value=\"Finish\" onclick='window.location=\"action_event.cgi?action_event=Finish&pid=%d&act_name=%s&\"'\n", pid, action_name);
     if (!strcmp(ap->state, "DONE"))
         printf(" disabled");
     printf(">&nbsp;\n");
-    printf("                <input type=\"button\" value=\"Suspend\" onclick='window.location=\"action_event.cgi?action_event=Suspend&pid=%d&act_name=%s&process_filename=%s\"'\n", pid, action_name, process_filename);
+    printf("                <input type=\"button\" value=\"Suspend\" onclick='window.location=\"action_event.cgi?action_event=Suspend&pid=%d&act_name=%s\"'\n", pid, action_name);
     if (strcmp(ap->state, "RUN"))
         printf(" disabled");
     printf(">&nbsp;\n");
-    printf("                <input type=\"button\" value=\"Abort\" onclick='window.location=\"action_event.cgi?action_event=Abort&pid=%d&act_name=%s&process_filename=%s\"'\n", pid, action_name, process_filename);
+    printf("                <input type=\"button\" value=\"Abort\" onclick='window.location=\"action_event.cgi?action_event=Abort&pid=%d&act_name=%s\"'\n", pid, action_name);
     if (strcmp(ap->state, "RUN"))
         printf(" disabled");
     printf(">\n");
@@ -224,19 +222,19 @@ void write_content()
         if (((num_unbound_resources == 0) || (num_resources == 0)) && (action == NULL)) {
             if(strcmp(resource_type,"requires") == 0) {
                 peos_notify(pid, action_name, PEOS_EVENT_START);
-                printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, action_name);
+                printf("Location: action_page.cgi?pid=%d&action_name=%s\r\n\r\n", pid, action_name);
             }
             else {
                 _action_page *new_ap;
                 peos_notify(pid, action_name, PEOS_EVENT_FINISH);
                 new_ap = get_action_page_details(xml_data_filename, pid, action_name);
                 if (!new_ap)
-                    printf("Location: active_processes.cgi?action=continue&process_filename=%s\r\n\r\n", process_filename);
+                    printf("Location: active_processes.cgi?action=continue\r\n\r\n");
                 else {
                     if (nextIndex != -1)
-                        printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, ap->action_list[nextIndex]);
+                        printf("Location: action_page.cgi?pid=%d&action_name=%s\r\n\r\n", pid, ap->action_list[nextIndex]);
                     else
-                        printf("Location: action_page.cgi?process_filename=%s&pid=%d&action_name=%s\r\n\r\n", process_filename, pid, ap->action_list[ap->total_actions - 1]);
+                        printf("Location: action_page.cgi?pid=%d&action_name=%s\r\n\r\n", pid, ap->action_list[ap->total_actions - 1]);
                 }
             }
         }
@@ -338,7 +336,7 @@ void write_content()
             printf("No resources required");
         }
         else if (cb_reqd) {
-            printf("&nbsp;&nbsp;&nbsp;<a href=\"action_page.cgi?resource_type=requires&action=change&process_filename=%s&pid=%d&action_name=%s\">Change  bindings</a>", process_filename, pid, action_name);
+            printf("&nbsp;&nbsp;&nbsp;<a href=\"action_page.cgi?resource_type=requires&action=change&pid=%d&action_name=%s\">Change  bindings</a>", pid, action_name);
         }
         printf("</td>\n");
         printf("            </tr>\n");
@@ -359,7 +357,7 @@ void write_content()
             printf("No resources provided");
         }
         else if (cb_prov) {
-            printf("&nbsp;&nbsp;&nbsp;<a href=\"action_page.cgi?resource_type=provides&action=change&process_filename=%s&pid=%d&action_name=%s\">Change bindings</a>", process_filename, pid, action_name);
+            printf("&nbsp;&nbsp;&nbsp;<a href=\"action_page.cgi?resource_type=provides&action=change&pid=%d&action_name=%s\">Change bindings</a>", pid, action_name);
         }
         printf("</td>\n");
         printf("            </tr>\n");
@@ -432,7 +430,7 @@ void write_content()
 int main()
 {
     
-    char **cgivars, *filename;
+    char **cgivars;//, *filename;
     char *tpid;
     int i;
     int len;
@@ -440,9 +438,7 @@ int main()
     /** First, get the CGI variables into a list of strings **/ 
     cgivars = getcgivars();
 
-    filename = (char *)getvalue("process_filename", cgivars);
-    process_filename = (char *)malloc(strlen(filename) * sizeof(char));
-    strcpy(process_filename, filename);
+    process_filename = get_process_filename();
     action_name = (char *)getvalue("action_name", cgivars);
     
     tpid = (char *)getvalue("pid", cgivars);

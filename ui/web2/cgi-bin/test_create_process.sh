@@ -13,7 +13,6 @@ export REQUEST_METHOD=GET
 export REMOTE_USER=test
 ./active_processes.cgi > /dev/null
 # Create model list
-export QUERY_STRING="process_filename=dfZRuitU82fEY.dat"
 ./create_process.cgi > output
 
 # Check the title
