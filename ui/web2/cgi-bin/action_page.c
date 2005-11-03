@@ -145,7 +145,6 @@ void add_prev_next(_action_page *ap, int prevIndex, int nextIndex) {
 }
 
 void add_action_control_buttons() {
-    
     printf("        <table style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n");
     printf("          <tbody>\n");
     printf("            <tr>\n");
@@ -367,52 +366,44 @@ void write_content()
         add_action_control_buttons();
         
         if (ap->script && strcmp(ap->script, "\n(null)\n") != 0) {
-            int len, found_res;
+            int len, res_not_found;
             char res_name[256];
             len = strlen(ap->script);
             
             ap->script[len - 2] = '\0';
             ap->script += 2;
             len = strlen(ap->script);
+            
+            peos_eval_resource_list(pid, &proc_resources, num_proc_resources);
+            
             for (i = 0, j = 0; i < len; i++, j++) {
                 if (ap->script[i] == '$') {
                     strcpy(res_name, "");
-                    for (i++, j = 0; ap->script[i] != ' ' && ap->script[i] != '\n' && ap->script[i] != '\0' && ap->script[i] != '$'; i++, j++) {
+                    for (i++, j = 0;
+                         ap->script[i] != ' ' && ap->script[i] != '\n' && ap->script[i] != '\0' && ap->script[i] != '$' && ap->script[i] != '.' && ap->script[i] != ',' && ap->script[i] != '!' && ap->script[i] != '?' && ap->script[i] != ':' && ap->script[i] != ';';
+                         i++, j++) {
                         res_name[j] = ap->script[i];
                     }
                     res_name[j] = '\0';
-                    found_res = 0;
-                    for (j = 0; j < ap->total_reqd_resources; j++) {
-                        if (strcmp(res_name, ap->reqd_resources[j]->name) == 0) {
-                            sprintf(unbound_value, "${%s}", ap->reqd_resources[j]->name);
-                            if (strcmp(ap->reqd_resources[j]->value, unbound_value) != 0) {
-                                printf("<a href=\"display_file.cgi?%s\">%s</a>", ap->reqd_resources[j]->value, ap->reqd_resources[j]->value);
-                            }
+                    res_not_found = 1;
+                    for (j = 0; j < num_proc_resources; j++) {
+                        if (strcmp(res_name, proc_resources[j].name) == 0) {
+                            sprintf(unbound_value, "${%s}", res_name);
+                            if (strcmp(proc_resources[j].value, unbound_value) == 0)
+                                printf("%s", unbound_value);
                             else
-                                printf("%s", ap->reqd_resources[j]->value);
-                            found_res = 1;
-                            break;
+                                printf("<a href=\"display_file.cgi?%s\">%s</a>", proc_resources[j].value, proc_resources[j].value);
+                            res_not_found = 0;
                         }
                     }
-                    if (!found_res) {
-                        for (j = 0; j < ap->total_prov_resources; j++) {
-                            if (strcmp(res_name, ap->prov_resources[j]->name) == 0) {
-                                sprintf(unbound_value, "${%s}", ap->prov_resources[j]->name);
-                                if (strcmp(ap->prov_resources[j]->value, unbound_value) != 0) {
-                                    printf("<a href=\"display_file.cgi?%s\">%s</a>", ap->prov_resources[j]->value, ap->prov_resources[j]->value);
-                                }
-                                else
-                                    printf("%s", ap->prov_resources[j]->value);
-                                found_res = 1;
-                                break;
-                            }
-                        }
-                    }
-                    if (!found_res) {
+                    if (res_not_found) {
                         printf("$%s", res_name);
                     }
                 }
-                if (ap->script[i] != '\0')
+                if (ap->script[i] == '$') {
+                    i--; j--;
+                }
+                else if (ap->script[i] != '\0')
                     printf("%c", ap->script[i]);
                     
             }
@@ -429,7 +420,6 @@ void write_content()
 
 int main()
 {
-    
     char **cgivars;//, *filename;
     char *tpid;
     int i;

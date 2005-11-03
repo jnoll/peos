@@ -255,6 +255,7 @@ rm script_test.res
 echo "process p {"                                                              > script_test.pml
 echo "  action a0 { requires{r0} provides{r1} script{\"r0=\$r0 r1=\$r1\"} }"    >> script_test.pml
 echo "  action a1 { script{\"\$100.00 \$not_var\"} }"                           >> script_test.pml
+echo "  action a2 { script{\"\$r0.\$r0,\$r0!\$r0?\$r0:\$r0;\$r0\$r1\"} }"       >> script_test.pml
 echo "}" >> script_test.pml
 
 export QUERY_STRING="action=create&model=script_test.pml"
@@ -262,7 +263,6 @@ export QUERY_STRING="action=create&model=script_test.pml"
 
 export QUERY_STRING="pid=2&action_name=a0"
 ./action_page.cgi > output
-cp output a
 
 if !(grep "r0=\${r0} r1=\${r1}" output > /dev/null)
 then
@@ -299,6 +299,12 @@ then
   echo; echo "Rendering script failed"
 fi
 
+export QUERY_STRING="pid=3&action_name=a2"
+./action_page.cgi > output
+if !(grep "<a href=\"display_file.cgi?v0\">v0</a>.<a href=\"display_file.cgi?v0\">v0</a>,<a href=\"display_file.cgi?v0\">v0</a>!<a href=\"display_file.cgi?v0\">v0</a>?<a href=\"display_file.cgi?v0\">v0</a>:<a href=\"display_file.cgi?v0\">v0</a>;<a href=\"display_file.cgi?v0\">v0</a><a href=\"display_file.cgi?v1\">v1</a>" output > /dev/null)
+then
+  echo; echo "Rendering script failed"
+fi
 #rm output
 #rm dfZRuitU82fEY.dat*
 echo "done"
