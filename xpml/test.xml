@@ -1,4 +1,6 @@
 <process name="test">
+  <title>This TITLE field should be stripped out of pml output.</title>
+  <abstract>This ABSTRACT field should be stripped out of pml output.</abstract>
   <iteration name="i1">
     <action name="act_1">
       <requires> req_res.value == "expression1" </requires>

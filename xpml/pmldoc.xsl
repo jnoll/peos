@@ -1,4 +1,4 @@
-<!-- $Id: pmldoc.xsl,v 1.3 2005/06/28 22:25:07 jnoll Exp $ -->
+<!-- $Id: pmldoc.xsl,v 1.4 2005/11/28 21:47:13 jnoll Exp $ -->
 <!-- Convert XPML to HTML ``Tutorial'' format. -->
 
 <xsl:stylesheet version="1.0"
@@ -8,6 +8,7 @@
 <xsl:import href="html.xsl"/>
 <xsl:import href="style.xsl"/>
 
+<xsl:strip-space elements="*"/>
 <xsl:output method="html" indent="yes" />
 
 <xsl:template match="/">
