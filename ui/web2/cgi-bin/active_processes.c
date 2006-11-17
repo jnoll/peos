@@ -154,7 +154,7 @@ int main()
     }
  
     print_header("Process List");
-    print_banner("PEOS Process Enactment Demonstration");
+    print_banner("PEOS Process Enactment Demonstration", -1);
  
     list_processes();
 

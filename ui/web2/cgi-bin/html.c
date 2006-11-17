@@ -7,13 +7,28 @@ void print_header(char *title)
     printf("<head>\n");
     printf("  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">\n");
     printf("  <title>%s</title>\n", title);
+    printf("<STYLE TYPE=\"text/css\">\n");
+    printf(" TABLE { border: 1px solid white; }\n");
+    printf(" H1  {  text-transform: uppercase }\n");
+    printf(" H2 { text-transform: capitalize }\n");
+    printf(" H3 { text-transform: capitalize }\n");
+    printf("\n");
+    printf(" scroll {overflow: auto; height: 100px;}\n");
+    printf("\n");
+    printf("\n");
+    printf(" OL.index { list-style-type: decimal ; \n");
+    printf("	  list-style-position: inside; \n");
+    printf(" } \n");
+    printf(" UL.index { list-style-type: none ; list-style-position: inside} \n");
+    printf(" LI.index { text-transform: capitalize; }\n");
+    printf("</STYLE>\n");
     printf("</head>\n");
     printf("<body>\n");
 }
 
-void print_banner(char *text)
+void print_banner(char *text, int pid)
 {
-    printf("<table style=\"text-align: left; background-color: rgb(255, 204, 51); width: 100%;\"\n");
+    printf("<table style=\"text-align: left; background-color: rgb(255, 204, 51); width: 100%; \"\n");
     printf(" border=\"0\" cellspacing=\"0\" cellpadding=\"1\">\n");
     printf("  <tbody>\n");
     printf("    <tr>\n");
@@ -21,10 +36,12 @@ void print_banner(char *text)
     printf("        <img style=\"width: 100px; height: 100px;\" alt=\"PEOS Logo\"\n");
     printf("        src=\"../images/peos_logo.jpg\">\n");
     printf("      </td>\n");
-    printf("      <td style=\"text-align: center; vertical-align: middle;\">\n");
-    printf("        <h1>%s</h1>\n", text);
+    printf("      <td style=\"vertical-align: middle;\">\n");
+    printf("        <h3><i>COEN 286, Fall 2005</i></h3>\n");
+    printf("        <h1 style=\"text-align: center;\">%s (%d)</h1>\n", text, pid);
     printf("      </td>\n");
     printf("    </tr>\n");
+
     printf("  </tbody>\n");
     printf("</table>\n");
 }

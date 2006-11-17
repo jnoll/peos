@@ -266,7 +266,7 @@ export QUERY_STRING="pid=2&action_name=a0"
 
 if !(grep "r0=\${r0} r1=\${r1}" output > /dev/null)
 then
-  echo; echo "Rendering script failed"
+  echo; echo "Rendering script (embedded unbound resources) failed"
 fi
 
 export QUERY_STRING="pid=2&action_name=a1"
@@ -274,7 +274,7 @@ export QUERY_STRING="pid=2&action_name=a1"
 
 if !(grep "\$100.00 \$not_var" output > /dev/null)
 then
-  echo; echo "Rendering script failed"
+  echo; echo "Rendering script (non-resource w/\$) failed"
 fi
 
 echo "r0: v0" > script_test.res
@@ -288,7 +288,7 @@ export QUERY_STRING="pid=3&action_name=a0"
 
 if !(grep "r0=<a href=\"display_file.cgi?v0\">v0</a> r1=<a href=\"display_file.cgi?v1\">v1</a>" output > /dev/null)
 then
-  echo; echo "Rendering script failed"
+  echo; echo "Rendering script (embedded bound resource) failed"
 fi
 
 export QUERY_STRING="pid=3&action_name=a1"
@@ -296,14 +296,14 @@ export QUERY_STRING="pid=3&action_name=a1"
 
 if !(grep "\$100.00 \$not_var" output > /dev/null)
 then
-  echo; echo "Rendering script failed"
+  echo; echo "Rendering script (non-resource w/\$) failed"
 fi
 
 export QUERY_STRING="pid=3&action_name=a2"
 ./action_page.cgi > output
 if !(grep "<a href=\"display_file.cgi?v0\">v0</a>.<a href=\"display_file.cgi?v0\">v0</a>,<a href=\"display_file.cgi?v0\">v0</a>!<a href=\"display_file.cgi?v0\">v0</a>?<a href=\"display_file.cgi?v0\">v0</a>:<a href=\"display_file.cgi?v0\">v0</a>;<a href=\"display_file.cgi?v0\">v0</a><a href=\"display_file.cgi?v1\">v1</a>" output > /dev/null)
 then
-  echo; echo "Rendering script failed"
+  echo; echo "Rendering script (embedded resource w/punctuation) failed"
 fi
 #rm output
 #rm dfZRuitU82fEY.dat*

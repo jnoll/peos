@@ -380,7 +380,8 @@ void write_content()
                 if (ap->script[i] == '$') {
                     strcpy(res_name, "");
                     for (i++, j = 0;
-                         ap->script[i] != ' ' && ap->script[i] != '\n' && ap->script[i] != '\0' && ap->script[i] != '$' && ap->script[i] != '.' && ap->script[i] != ',' && ap->script[i] != '!' && ap->script[i] != '?' && ap->script[i] != ':' && ap->script[i] != ';';
+			 !(ispunct(ap->script[i]));
+//                         ap->script[i] != ' ' && ap->script[i] != '\n' && ap->script[i] != '\0' && ap->script[i] != '$' && ap->script[i] != '.' && ap->script[i] != ',' && ap->script[i] != '!' && ap->script[i] != '?' && ap->script[i] != ':' && ap->script[i] != ';' && ap->script[i] != '<' && ap->script[i] != '>';
                          i++, j++) {
                         res_name[j] = ap->script[i];
                     }

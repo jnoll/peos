@@ -201,7 +201,7 @@ void create_action_list(xmlDoc *doc, xmlNode *node, _action_page *apage, char *a
 	    strcpy(apage->action_list[apage->total_actions], temp1);
 	    apage->total_actions++;
 	    create_action_list(doc, node, apage, act_name, parent);
-	    if (parent == NODE_SELECTION) temp1 = "!!sequences!!";
+	    if (parent == NODE_SELECTION) temp2 = "!!sequences!!";
 	    apage->action_list[apage->total_actions] =
 		    (char *) malloc((strlen(temp2) + 1) * sizeof(char));
 	    strcpy(apage->action_list[apage->total_actions], temp2);

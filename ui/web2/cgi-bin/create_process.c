@@ -21,7 +21,7 @@ void list_models()
 
     printf("<h2 style=\"text-align: center;\">Create Process</h2>\n");
     printf("<div style=\"text-align: center;\">\n");
-    printf("  [<a href=\"active_processes.cgi?action=continue\">Active Process</a>]\n");
+    printf("  [<a href=\"active_processes.cgi?action=continue\">Active Processes</a>]\n");
     printf("</div><br><br>\n");
 
     printf("<table border=\"1\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">\n");
@@ -59,7 +59,7 @@ int main()
     peos_set_process_table_file(process_filename);
     peos_set_loginname(process_filename);
     print_header("Process Model List");
-    print_banner("PEOS Process Enactment Demonstration");
+    print_banner("PEOS Process Enactment Demonstration", -1);
     list_models();
     print_footer();
     exit(0); 
