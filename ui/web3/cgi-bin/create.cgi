@@ -1,33 +1,22 @@
 #!/usr/bin/perl
-# $Id: create.cgi,v 1.3 2007/04/29 18:54:27 jnoll Exp $  -*-perl-*-
-# Create process instance.
+# $Id: create.cgi,v 1.4 2007/04/29 19:23:51 jnoll Exp $  -*-perl-*-
+# Create a process instance.
 
-use CGI qw/:standard/;
+use CGI qw(-debug :standard);
 
-print header;
-print start_html('create process');
-print h1('I Hate Everybody');
+# Redirect to process instance list.  This solves two problems:
+# 1. Reloading the page doesn't create another instance.
+# 2. This script doesn't have to create any content; we just redirect
+#    to whatever page seems appropriate as a result page.
+print redirect('http://localhost/~jnoll/peos_test/list_procs.cgi');
+
 # Get form variables.
 param;
 my $model = param('model');
 
-print start_pre; print "model: $model\n"; print end_pre;
-
-print start_pre;
-
-
 if (-r "${model}.pml" ) {
-    print "executing cmd\n";
     $result = `./peos -c ${model}.pml 2>&1`;
 }
 
-$content=`/usr/bin/xsltproc list_procs.xsl proc_table.dat.xml 2>&1`;
-print end_pre;
 
-print $content;
 
-print start_pre;
-print "model: $model result: $result\n";
-print end_pre;
-
-print end_html;
