@@ -1,0 +1,23 @@
+<document name="test_action">
+    <head>
+    <title>Test action process.</title>
+    <subtitle>A simple two action process</subtitle>
+    <author>John Noll</author>
+    <institution>SCU</institution>
+    <abstract>$Id: test_action.xpml,v 1.1 2007/04/29 05:08:21 jnoll Exp $</abstract>
+  </head>
+  <body>
+    <process>
+      <action name="test_action">
+	<requires>test_resource</requires>
+	<provides>test_provide</provides>
+	<script>this is a script</script>
+      </action>
+      <action name="test_script">
+	<requires>test_resource</requires>
+	<provides>test_provide</provides>
+	<script>this is a script</script>
+      </action>
+    </process>
+  </body>
+</document>

@@ -1,0 +1,11 @@
+Thursday, April 26 2007  23:23
+Everything seems to be working, as far as it goes.  
+
+The process layout is not very interesting; needs some color and
+better placement of update buttons and checkboxes.  Probably, look at
+moodle for ideas, and perhaps DU LIS web site for folding.
+
+The test harness leaves a lot of crap around, and output isn't very
+easy to understand. 
+
+Need some documentation as to how the whole mess works.

@@ -1,36 +1,52 @@
-process readme {
-iteration  {
-action Introduction {
-requires { README }
-provides { README }
-script { "Welcome to PEOS.
+<document name="readme">
+    <head>
+    <title>Introduction to PEOS</title>
+    <subtitle>How to use this web site</subtitle>
+    <author>John Noll</author>
+    <institution>SCU</institution>
+    <abstract>$Id: readme.xpml,v 1.1 2007/04/29 05:08:21 jnoll Exp $</abstract>
+  </head>
+  <body>
+    <process>
+    <iteration>
+      <action name="Introduction">
+	<requires>README</requires>
+	<provides>README</provides>
+	<script>Welcome to PEOS.
 	<p>This system maintains a list of tasks to perform.
-</p><p>The initial page (``Active Processes'') shows all of your pending tasks, 
+</p>
+<p>The initial page (``Active Processes'') shows all of your pending tasks, 
 grouped by process model.  The  ``Process Name'' column identifies the process
 model that describes the tasks, and the ``Action Name'' column identifies the 
 current task to perform.  Clicking either of these links will take you to a
 page that presents details about the process and action.
-</p><p> The left pane of this ``action detail'' page lists all of the tasks to
+</p>
+<p> The left pane of this ``action detail'' page lists all of the tasks to
 be performed for this particular model.  The right pane shows information
 about the current task, including the task name (``Introduction'' in 
 this case),  task status (``READY''), task inputs (required resources), outputs (provided resources), and a description of how to perform the task (this text).
-</p><p> The START button allows you to notify PEOS that you are about to begin
+</p>
+<p> The START button allows you to notify PEOS that you are about to begin
 peforming this task.  If the task requires input, you will be prompted to 
 enter a value for each required resource.  The value should be a filename; 
 if you specify a filename that exists (or will exist) on the server that 
 is running the PEOS web site, PEOS will be able to determine certain 
 information about the specified file that will help keep track of tasks
 that you have completed or are still pending.
-</p><p> The FINISH button lets you notify PEOS that you have completed the task.
+</p>
+<p> The FINISH button lets you notify PEOS that you have completed the task.
 If the task involves creating some output file, you will be prompted to supply
 the name of the file you created.  If this file exists on the server that 
 is running PEOS, PEOS can detect its existence and verify that you have indeed
 done the task correctly.  In this case, PEOS will set the task's state to 
 ``DONE.''  If PEOS cannot verify that the file exists, the task's state will
 be set to ``PENDING.''
-</p><p> After you have FINISHed the last task in the process, if it's state becomes
+</p>
+<p> After you have FINISHed the last task in the process, if it's state becomes
 ``DONE'' PEOS will delete the process and return to the Active Processes page.
-</p>" }
-}
-}
-}
+</p></script>
+      </action>
+    </iteration>
+    </process>
+  </body>
+</document>

@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+# $Id: list.test,v 1.1 2007/04/29 05:08:21 jnoll Exp $
+# Test list processes cgi script.
+use CGI::Test;                 # exports ok()
+require CGI::Test::Input::URL;
+use HTML::Element; 
+
+# Setup process table.
+$r = `rm -f ../proc_table.dat`;
+$r = `rm -f ../proc_table.dat.xml`;
+for $p ("readme.pml", "test.pml", "test_action.pml")  {
+    `cd .. && peos -c $p`;
+}
+
+# Create a URL for the list query.
+my $input = CGI::Test::Input::URL->new() ;
+$input->add_field("login", "guest");
+print $input->data, " ", $input->length, "\n";
+
+
+# Create a test object to run the test.
+my $basedir = "http://localhost/peos_test/cgi-bin";
+my $t = CGI::Test->new(
+			-base_url   => $basedir,
+			-cgi_dir    => "..",
+			);
+
+my $result = $t->POST("${basedir}/list_procs.cgi", $input);
+print $result->raw_content;
+ok "result: defined", defined $result;
+ok "result: is ok",  $result->is_ok;
+ok "result: content_type", $result->content_type =~ m|text/html\b|;
+ok "result: contains readme", $result->raw_content =~ m|readme|;
+ok "result: contains test", $result->raw_content =~ m|test|;
+ok "result: contains test_action", $result->raw_content =~ m|test_action|;
+ok "result: doesn't contain test_foobar", !($result->raw_content !~ m|test_action|);
+
+
