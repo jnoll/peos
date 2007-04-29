@@ -1,8 +1,6 @@
+TESTS=$(wildcard *.test)
 
-test: test_list
-
-test_list:
-	perl list.test
-
-test_update:
-	perl update.test
+test: 
+	@for t in $(TESTS); do \
+		perl $$t | grep "not ok" || echo "$$t done"; \
+	done

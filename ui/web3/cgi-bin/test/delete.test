@@ -1,0 +1,64 @@
+#!/usr/bin/perl
+# $Id: delete.test,v 1.1 2007/04/29 07:14:47 jnoll Exp $ -*-perl-*-
+# Test update cgi script.
+use CGI::Test;                 # exports ok()
+require CGI::Test::Input::URL;
+use CGI::Test::Form;
+
+
+# Initialize process table.
+$r = `rm -f ../proc_table.dat`;
+$r = `rm -f ../proc_table.dat.xml`;
+`cd .. && peos -c readme.pml`;
+`cd .. && peos -c test.pml`;
+`cd .. && peos -c test_action.pml`;
+
+# Create a test object to run the test.
+my $basedir = "http://localhost/peos_test/cgi-bin";
+my $t = CGI::Test->new(
+			-base_url   => $basedir,
+			-cgi_dir    => "..",
+			);
+
+# Create a URL to invoke the script.
+my $input = CGI::Test::Input::URL->new() ;
+$input->add_field("PID", "1");
+print $input->data, " ", $input->length, "\n";
+
+my $result = $t->POST("${basedir}/delete.cgi", $input);
+print $result->raw_content;
+ok "result: defined", defined $result;
+ok "result: is ok",  $result->is_ok;
+ok "result: content_type", $result->content_type =~ m|text/html\b|;
+ok "result: readme.pml present", $result->raw_content =~ m|PID=0.*/readme.pml|;
+ok "result: test.pml not present", $result->raw_content !~ m|PID=1.*/test.pml|;
+ok "result: test_action.pml present", $result->raw_content =~ m|PID=2.*/test_action.pml|;
+
+# Create a URL to invoke the script.
+my $input = CGI::Test::Input::URL->new() ;
+$input->add_field("PID", "2");
+print $input->data, " ", $input->length, "\n";
+
+my $result = $t->POST("${basedir}/delete.cgi", $input);
+print $result->raw_content;
+ok "result: defined", defined $result;
+ok "result: is ok",  $result->is_ok;
+ok "result: content_type", $result->content_type =~ m|text/html\b|;
+ok "result: readme.pml present", $result->raw_content =~ m|PID=0.*/readme.pml|;
+ok "result: test.pml not present", $result->raw_content !~ m|PID=1.*/test.pml|;
+ok "result: test_action.pml not present", $result->raw_content !~ m|PID=2.*/test_action.pml|;
+
+# Create a URL to invoke the script.
+my $input = CGI::Test::Input::URL->new() ;
+$input->add_field("PID", "0");
+print $input->data, " ", $input->length, "\n";
+
+my $result = $t->POST("${basedir}/delete.cgi", $input);
+print $result->raw_content;
+ok "result: defined", defined $result;
+ok "result: is ok",  $result->is_ok;
+ok "result: content_type", $result->content_type =~ m|text/html\b|;
+ok "result: readme.pml not present", $result->raw_content !~ m|PID=0.*/readme.pml|;
+ok "result: test.pml not present", $result->raw_content !~ m|PID=1.*/test.pml|;
+ok "result: test_action.pml not present", $result->raw_content !~ m|PID=2.*/test_action.pml|;
+

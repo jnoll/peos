@@ -1,6 +1,6 @@
 #!/bin/sh
-# $Id: list_procs.cgi,v 1.1 2007/04/29 05:08:21 jnoll Exp $ 
-# Generate clickable active process list.
+# $Id: list_procs.cgi,v 1.2 2007/04/29 07:14:45 jnoll Exp $ 
+# Generate clickable active process instance list.
 
 printf "Content-type: text/html\r\n"
 printf "\r\n"
@@ -14,5 +14,3 @@ eval "`./parsecgi $*`"
 echo "<pre>"
 echo "status: $? result: $result"
 echo "</pre>"
-
-

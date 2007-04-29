@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: update.test,v 1.1 2007/04/29 05:08:21 jnoll Exp $ -*-perl-*-
+# $Id: update.test,v 1.2 2007/04/29 07:14:47 jnoll Exp $ -*-perl-*-
 # Test update cgi script.
 use CGI::Test;                 # exports ok()
 require CGI::Test::Input::URL;
@@ -40,7 +40,7 @@ ok "result: content_type", $result->content_type =~ m|text/html\b|;
 ok "result: test_action is not finished", $result->raw_content !~ m|\"test_action\".*checked|;
 ok "result: test_action is not finished", $result->raw_content !~ m|\"test_action\".*checked|;
 ok "result: test_script is not finished", $result->raw_content !~ m|\"test_script\".*checked|;
-#print $result->raw_content;
+print $result->raw_content;
 
 my $form = $result->forms->[0];
 ok "form: exists", defined $form;
