@@ -1,16 +1,20 @@
-#!/bin/sh
-# $Id: list_procs.cgi,v 1.2 2007/04/29 07:14:45 jnoll Exp $ 
-# Generate clickable active process instance list.
+#!/usr/bin/perl
+# $Id: list_procs.cgi,v 1.3 2007/04/29 18:54:27 jnoll Exp $  -*-perl-*-
+# List process instances.
 
-printf "Content-type: text/html\r\n"
-printf "\r\n"
+use CGI qw/:standard/;
 
-# Get form variables.  
-# XXX eventually these will include login and possible proc_table name.
-eval "`./parsecgi $*`"
+print header;
+print start_html('Process Instances');
+print h1('Process Instances');
 
-/usr/bin/xsltproc list_procs.xsl proc_table.dat.xml 2>&1
 
-echo "<pre>"
-echo "status: $? result: $result"
-echo "</pre>"
+$content=`/usr/bin/xsltproc list_procs.xsl proc_table.dat.xml 2>&1`;
+$result=$?;
+print $content;
+
+print start_pre;
+print "model: $model result: $result\n";
+print end_pre;
+
+print end_html;

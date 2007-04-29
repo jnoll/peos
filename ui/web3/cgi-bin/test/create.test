@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: create.test,v 1.1 2007/04/29 07:14:46 jnoll Exp $ -*-perl-*-
+# $Id: create.test,v 1.2 2007/04/29 18:54:27 jnoll Exp $ -*-perl-*-
 # Test update cgi script.
 use CGI::Test;                 # exports ok()
 require CGI::Test::Input::URL;
@@ -41,7 +41,7 @@ ok "result: is ok",  $result->is_ok;
 ok "result: content_type", $result->content_type =~ m|text/html\b|;
 ok "result: test.pml present", $result->raw_content =~ m|PID=1.*/test.pml|;
 
-#print $result->raw_content;
+print $result->raw_content;
 
 
 my $input = CGI::Test::Input::URL->new() ;
@@ -54,4 +54,4 @@ ok "result: is ok",  $result->is_ok;
 ok "result: content_type", $result->content_type =~ m|text/html\b|;
 ok "result: test_action.pml present", $result->raw_content =~ m|PID=2.*/test_action.pml|;
 
-#print $result->raw_content;
+print $result->raw_content;

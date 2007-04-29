@@ -1,5 +1,6 @@
-<!-- $Id: list_procs.xsl,v 1.2 2007/04/29 17:27:26 jnoll Exp $ -->
+<!-- $Id: list_procs.xsl,v 1.3 2007/04/29 18:54:27 jnoll Exp $ -->
 <!-- Convert proc_table.dat.xml into html process list with links to instances. -->
+<!-- Output must be inserted into a surrounding body/form element. -->
 
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -7,19 +8,13 @@
                 extension-element-prefixes="exsl">
 
 <xsl:output method="html" indent="yes" />
+
 <xsl:strip-space elements="*"/>
 
-
 <xsl:template match="process_table">
-  <xsl:element name="html">
-    <xsl:element name="head">
-    </xsl:element>
-    <xsl:element name="body">
       <xsl:element name="ol">
 	<xsl:apply-templates/>
       </xsl:element>
-    </xsl:element>
-  </xsl:element>
 </xsl:template>
 
 <xsl:template match="process">

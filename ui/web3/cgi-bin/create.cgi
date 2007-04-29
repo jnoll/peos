@@ -1,23 +1,33 @@
-#!/bin/sh
-# $Id: create.cgi,v 1.2 2007/04/29 07:14:43 jnoll Exp $ 
+#!/usr/bin/perl
+# $Id: create.cgi,v 1.3 2007/04/29 18:54:27 jnoll Exp $  -*-perl-*-
 # Create process instance.
 
-printf "Content-type: text/html\r\n"
-printf "\r\n"
+use CGI qw/:standard/;
 
+print header;
+print start_html('create process');
+print h1('I Hate Everybody');
 # Get form variables.
-eval "`./parsecgi $*`"
-echo "model: $FORM_model"
+param;
+my $model = param('model');
 
-echo "<pre>"
-if [ ${FORM_model} ] ; then
-   if [ ${FORM_model}.pml ] ; then
-      result=`./peos -c ${FORM_model}.pml 2>&1`
-   fi
-fi
-echo "</pre>"
+print start_pre; print "model: $model\n"; print end_pre;
 
-/usr/bin/xsltproc list_procs.xsl proc_table.dat.xml 2>&1
-echo "<pre>"
-echo "status: $? result: $result"
-echo "</pre>"
+print start_pre;
+
+
+if (-r "${model}.pml" ) {
+    print "executing cmd\n";
+    $result = `./peos -c ${model}.pml 2>&1`;
+}
+
+$content=`/usr/bin/xsltproc list_procs.xsl proc_table.dat.xml 2>&1`;
+print end_pre;
+
+print $content;
+
+print start_pre;
+print "model: $model result: $result\n";
+print end_pre;
+
+print end_html;

@@ -34,7 +34,7 @@ OBJECTS =
 
 TESTS = 
 
-CGI = update.cgi list_procs.cgi test_init.cgi list_models.cgi create.cgi
+CGI = update.cgi list_procs.cgi test_init.cgi list_models.cgi create.cgi delete.cgi
 XSL = get_model.xsl list_procs.xsl merge_instance.xsl pmldoc.xsl style.xsl html.xsl
 XPML = test_action.xpml readme.xpml test.xpml
 PML = $(XPML:xpml=pml)
