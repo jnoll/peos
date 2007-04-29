@@ -1,4 +1,4 @@
-<!-- $Id: list_procs.xsl,v 1.1 2007/04/29 05:08:21 jnoll Exp $ -->
+<!-- $Id: list_procs.xsl,v 1.2 2007/04/29 17:27:26 jnoll Exp $ -->
 <!-- Convert proc_table.dat.xml into html process list with links to instances. -->
 
 <xsl:stylesheet version="1.0"
@@ -11,17 +11,19 @@
 
 
 <xsl:template match="process_table">
-  <xsl:apply-templates/>
   <xsl:element name="html">
     <xsl:element name="head">
     </xsl:element>
     <xsl:element name="body">
+      <xsl:element name="ol">
+	<xsl:apply-templates/>
+      </xsl:element>
     </xsl:element>
   </xsl:element>
 </xsl:template>
 
 <xsl:template match="process">
-  <xsl:element name="ol">
+  <xsl:element name="li">
     <xsl:element name="a">
       <xsl:attribute name="href">
 	<xsl:text>update.cgi?PID=</xsl:text><xsl:value-of select="@pid"/>

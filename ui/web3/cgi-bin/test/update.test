@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: update.test,v 1.2 2007/04/29 07:14:47 jnoll Exp $ -*-perl-*-
+# $Id: update.test,v 1.3 2007/04/29 17:27:26 jnoll Exp $ -*-perl-*-
 # Test update cgi script.
 use CGI::Test;                 # exports ok()
 require CGI::Test::Input::URL;
@@ -37,9 +37,9 @@ my $result = $t->POST("${basedir}/update.cgi", $input);
 ok "result: defined", defined $result;
 ok "result: is ok",  $result->is_ok;
 ok "result: content_type", $result->content_type =~ m|text/html\b|;
-ok "result: test_action is not finished", $result->raw_content !~ m|\"test_action\".*checked|;
-ok "result: test_action is not finished", $result->raw_content !~ m|\"test_action\".*checked|;
-ok "result: test_script is not finished", $result->raw_content !~ m|\"test_script\".*checked|;
+ok "result: test_action is not finished", $result->raw_content !~ /\"test_action\".*checked/;
+ok "result: test_action is not finished", $result->raw_content !~ /\"test_action\".*checked/;
+ok "result: test_script is not finished", $result->raw_content !~ /\"test_script\".*checked/;
 print $result->raw_content;
 
 my $form = $result->forms->[0];
@@ -56,9 +56,9 @@ print $input->data, " ", $input->length, "\n";
 my $result = $t->POST("${basedir}/update.cgi", $input);
 ok "result: defined", defined $result;
 ok "result: is ok",  $result->is_ok;
-ok "result: content_type", $result->content_type =~ m|text/html\b|;
-ok "result: test_action is finished", $result->raw_content =~ m|\"test_action\".*checked|;
-ok "result: test_script is not finished", $result->raw_content !~ m|\"test_script\".*checked|;
+ok "result: content_type", $result->content_type =~ /text/html\b/;
+ok "result: test_action is finished", $result->raw_content =~ /\"test_action\".*checked/;
+ok "result: test_script is not finished", $result->raw_content !~ /\"test_script\".*checked/;
 #print $result->raw_content;
 
 # Create a URL to invoke the script.
@@ -72,7 +72,7 @@ $input->add_field("test_script", "finish");
 my $result = $t->POST("${basedir}/update.cgi", $input);
 ok "result: defined", defined $result;
 ok "result: is ok",  $result->is_ok;
-ok "result: content_type", $result->content_type =~ m|text/html\b|;
-ok "result: test_action is finished", $result->raw_content =~ m|\"test_action\".*checked|;
-ok "result: test_script is finished", $result->raw_content =~ m|\"test_script\".*checked|;
+ok "result: content_type", $result->content_type =~ /text/html\b/;
+ok "result: test_action is finished", $result->raw_content =~ /\"test_action\".*checked/;
+ok "result: test_script is finished", $result->raw_content =~ /\"test_script\".*checked/;
 #print $result->raw_content;
