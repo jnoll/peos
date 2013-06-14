@@ -1,7 +1,7 @@
-CFLAGS = -g -I../../..
+CFLAGS = -g -I../../../pml
 DFLAGS = -g -DDOT_BIN=\"dot\"
 
-LIBS = ../../../pml/libpml.a
+LIBS = ../../../pml/pml/libpml.a
 
 proc_graph:
 	gcc $(CFLAGS) $(DFLAGS) -g -c -o  proc_graph.o proc_graph.c

@@ -49,7 +49,10 @@ install:
 	for p in $(CGI); do chmod a+rx $(INSTALL_DIR)/cgi-bin/$$p; done
 	[ -d $(INSTALL_DIR)/cgi-bin ] && cp $(PML) $(INSTALL_DIR)/cgi-bin
 	chmod a+r $(INSTALL_DIR)/cgi-bin/*.pml
-	echo "order deny,allow" > htaccess
+	echo "Options +ExecCGI" > htaccess
+	echo "AddHandler cgi-script .cgi" >> htaccess
+
+	echo "order deny,allow" >> htaccess
 	echo " " >> htaccess
 	echo "AuthName \"PEOS Enactment Demonstration\" " >> htaccess
 	echo "Authtype Basic" >> htaccess

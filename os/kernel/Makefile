@@ -11,7 +11,7 @@ CFLAGS = -g -I$(PML_DIR) -Wall
 LIBRARY = libpeos.a
 LIBS = $(LIBRARY) $(PML_DIR)/pml/libpml.a 
 
-CORE_LIBS = -ltcl
+CORE_LIBS = 
 LDFLAGS = -g -L../../lib
 
 # objects
@@ -43,7 +43,7 @@ HEADERS = $(wildcard *.h)
 all: test shell lib peos shell_test
 
 peos: peos.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) 
+	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -ltcl
 
 palmpeos: peos.o $(PALM_CORE_OBJS)
 	$(CC) $(LDFLAGS) -dPALM -o $@ $^ $(LIBS) 
@@ -61,7 +61,7 @@ $(LIBRARY): $(OBJS)
 
 # Compile the program
 shell: shell.o $(LIBRARY)
-	$(CC) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
+	$(CC) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap -ltcl	
 
 # Unit tests.
 test: $(CORE_OBJS)

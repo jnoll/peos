@@ -496,7 +496,7 @@ main(int argc, char *argv[])
     srunner_run_all(sr, verbosity);
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
-    suite_free(s);
+    /*suite_free(s);*/
     if (global_tcl_file)
         free(global_tcl_file);
     return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;

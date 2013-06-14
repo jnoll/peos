@@ -239,7 +239,7 @@ void write_content()
         }
         else {
             print_header("Action page");
-            print_banner(display_process_name);
+            print_banner(display_process_name, -1); /* XXX what is right pid? */
             add_prev_next(ap, prevIndex, nextIndex);
             printf("<table style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n");
             printf("  <tbody>\n");
@@ -302,7 +302,7 @@ void write_content()
     }
     else {
         print_header("Action page");
-        print_banner(display_process_name);
+        print_banner(display_process_name, -1); /* XXX what is right pid? */
         add_prev_next(ap, prevIndex, nextIndex);
         printf("<table style=\"width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n");
         printf("  <tbody>\n");
