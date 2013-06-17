@@ -1,0 +1,5 @@
+.depend
+pelog
+*.cgi
+proc_table.dat*
+event.log
