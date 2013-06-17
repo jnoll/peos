@@ -31,9 +31,9 @@ source code for this is found in the following sub-directories:
 
 To build and install these subsystems, follow these steps:
 
-1. install the TCL libraries (see http://www.activestate.com/activetcl).
-2. if libtcl.a is not installed in the normal library directory
-expected by the linker on your platform (_/usr/lib/libtcl.a_ on Linux
+1. Install the TCL libraries (see http://www.activestate.com/activetcl).
+2. If _libtcl.a_ is not installed in the normal library directory
+expected by the linker on your platform ( _/usr/lib/libtcl.a_ on Linux
 platforms), edit the following Makefiles to set _LDFLAGS_ to include the 
 directory where _libtcl.a_ can be found:
 
@@ -45,12 +45,12 @@ directory where _libtcl.a_ can be found:
 found).  This will invoke _make_ recursively in _pml_, _os/kernel_,
 _ui/web2_, and _ui/ajax-cgi_.  
 
-4. Edit _ui/web2/cgi-bin/Makefile_ and/or _ui/ajax-cgi/Makefile_  to
+4. Edit _ui/web2/Makefile_ and/or _ui/ajax-cgi/Makefile_  to
 set the installation directory for the CGI program(s), html, and
 javascript files.  The default is _$(HOME)/public_html/PEOS_ which is
 appropriate for most Linux installations.
 
-5. Change directory to _ui/web2/cgi-bin/_ and/or _ui/ajax-cgi/_ and
+5. Change directory to _ui/web2/_ and/or _ui/ajax-cgi/_ and
 type "make install"; this will install the CGI program(s), html,
 javascript, and other configuration files needed to run the PEOS web
 application.

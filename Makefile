@@ -9,11 +9,11 @@ TREETOP= peos
 INSTALL_DIR=$(HTML_DIR)/PEOS
 TCLF_DIR=peos/src/os/kernel
 
-SUBDIRS = pml os/kernel ui/GUI ui/java-gui ui/web2 
+SUBDIRS = pml os/kernel ui/ajax-cgi ui/web2 
 
 V = @ 
 
-all:  build install
+all:  build #install
 
 build: dummy
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i; done
@@ -87,7 +87,7 @@ dist:
 	${TREEBUILD}/${TREETOP}/install-sh \
 	${TREEBUILD}/${TREETOP}/config.sub \
 	${TREEBUILD}/${TREETOP}/config.guess
-	
+
 	${V}chmod 0644 ${TREEBUILD}/${TREETOP}/ui/java-gui/*.java \
 		${TREEBUILD}/${TREETOP}/ui/java-gui/*.in \
 		${TREEBUILD}/${TREETOP}/Makefile.in
@@ -103,7 +103,7 @@ dist:
 		${TREEBUILD}/${TREETOP}/ui/java-gui/help/*.db \
 		${TREEBUILD}/${TREETOP}/config.h.in
 
-		
+
 	${V}chmod 0644 ${TREEBUILD}/${TREETOP}/ui/java-gui/help/images/*.jpg \
 		${TREEBUILD}/${TREETOP}/ui/java-gui/help/images/*.gif \
 		${TREEBUILD}/${TREETOP}/ui/java-gui/help/images/*.GIF \

@@ -33,7 +33,7 @@ To build and install these subsystems, follow these steps:
 
 1. install the TCL libraries (see http://www.activestate.com/activetcl).
 2. if libtcl.a is not installed in the normal library directory
-expected by the linker on your platform (_/usr/lib/libtcl.a_ on Linux
+expected by the linker on your platform ( _/usr/lib/libtcl.a_ on Linux
 platforms), edit the following Makefiles to set _LDFLAGS_ to include the 
 directory where _libtcl.a_ can be found:
 
