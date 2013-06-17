@@ -31,15 +31,23 @@ source code for this is found in the following sub-directories:
 
 To build and install these subsystems, follow these steps:
 
-1. Install the TCL libraries (see http://www.activestate.com/activetcl).
-2. If _libtcl.a_ is not installed in the normal library directory
-expected by the linker on your platform ( _/usr/lib/libtcl.a_ on Linux
-platforms), edit the following Makefiles to set _LDFLAGS_ to include the 
-directory where _libtcl.a_ can be found:
+1. Install library dependencies
+   - TCL (see http://www.activestate.com/activetcl).
+   - check (http://check.sourceforge.net/).  Check is only required to
+   run the unit tests, but the kernel build will fail if check is not
+   present. 
+   - libxml2 from (http://www.xmlsoft.org/)
 
-   - os/kernel/Makefile
-   - ui/web2/cgi-bin/Makefile
-   - ui/ajax-cgi/Makefile
+2. If the header and libary files  are not installed in the normal 
+directory expected by the compiler on your platform (
+_/usr/include_ and _/usr/lib_ on Linux platforms),
+edit the following Makefiles to set _CFLAGS_ and _LDFLAGS_ to point to
+the include and library directories.
+
+   - os/kernel/Makefile (TCL and check)
+   - ui/web2/cgi-bin/Makefile (TCL and libxml2)
+   - ui/ajax-cgi/Makefile (TCL)
+
 
 3. Execute _make_ in the root directory (where this _README_ file is
 found).  This will invoke _make_ recursively in _pml_, _os/kernel_,
