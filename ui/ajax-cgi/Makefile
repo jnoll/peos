@@ -3,9 +3,11 @@ INSTALL_DIR=$(HTML_DIR)/PEOS
 PML_DIR=../../pml
 KERNEL_DIR=../../os/kernel
 
-CGI=peos.cgi peos_init.tcl
-HTML=
-JS=
+CGI=peos.cgi 
+HTML=index.html
+JS=peos.js
+PML=$(wildcard *.pml)
+SUPPORT=peos_init.tcl proc_table.dat proc_table.dat.xml
 
 # compiler:
 CC = gcc 
@@ -27,14 +29,14 @@ OBJS = peos.o getcgi.c
 SOURCES = $(OBJS:.o=.c) 
 HEADERS = $(wildcard *.h)
 
-all: peos.cgi
-
+all: build
+build: peos.cgi
 peos.cgi: $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) -ltcl
 
-install:
+install: build
 	install -d $(INSTALL_DIR)
-	install $(CGI) $(JS) $(HTML) $(INSTALL_DIR)
+	install $(CGI) $(JS) $(HTML) $(PML) $(SUPPORT) $(INSTALL_DIR)
 	install htaccess $(INSTALL_DIR)/.htaccess
 
 # Unit tests.

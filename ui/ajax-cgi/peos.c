@@ -67,9 +67,14 @@ void emit_xml() {
 
     strcpy(xml_data_filename, process_table_filename);
     strcat(xml_data_filename, ".xml");
-    in = fopen(xml_data_filename, "r");
-    while ((c = getc(in)) != EOF) {
-	putchar(c);
+    printf("Content-type: text/xml; charset=UTF-8\r\n\r\n");
+    if(in = fopen(xml_data_filename, "r")) {
+	while ((c = getc(in)) != EOF) {
+	    putchar(c);
+	} 
+	fclose(in);
+    } else {
+	printf("<process_table/>\r\n");
     }
 }
 
