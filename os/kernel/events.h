@@ -90,4 +90,5 @@ extern char *act_state_name(vm_act_state state) ;
  */
 extern char* peos_get_resource_file(char* pml_file);
 
+extern int peos_bind_resource_file(int pid, char *res_file);
 #endif

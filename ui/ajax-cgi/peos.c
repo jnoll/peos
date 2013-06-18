@@ -8,12 +8,13 @@
 #include <stdio.h>
 #include <unistd.h>
 /* Kernel includes */
-#include "events.h"
-#include "process_table.h"
-#include "pmlheaders.h"
-#include "graph_engine.h"
-#include "process.h"
-#include "peos_util.h"
+#include <events.h>
+#include <process_table.h>
+#include <pmlheaders.h>
+#include <graph_engine.h>
+#include <process.h>
+#include <peos_util.h>
+#include "getcgi.h"
 
 /* XXX This is a hack made possible by the fact that process_table_filename defined in process_table.c is not static. */
 extern char *process_table_filename;
@@ -62,13 +63,21 @@ void set_login_name(char *loginname)
 void emit_xml() {
     FILE *in;
     int c;
-    char *xml_data_filename = (char *) calloc((strlen(process_table_filename) + strlen(".xml") + 1), sizeof(char));
-
+    char **p, **models, *xml_data_filename = (char *) calloc((strlen(process_table_filename) + strlen(".xml") + 1), sizeof(char));
 
     strcpy(xml_data_filename, process_table_filename);
     strcat(xml_data_filename, ".xml");
     printf("Content-type: text/xml; charset=UTF-8\r\n\r\n");
-    if(in = fopen(xml_data_filename, "r")) {
+    printf("<peos>\n");
+    printf("<models>\n");
+    if ((models = peos_list_models())) {
+	for (p = models; *p; p++) {
+	    printf("<model>%s</model>\n", *p);
+	}
+    }
+    printf("</models>\n");
+
+    if ((in = fopen(xml_data_filename, "r"))) {
 	while ((c = getc(in)) != EOF) {
 	    putchar(c);
 	} 
@@ -76,6 +85,7 @@ void emit_xml() {
     } else {
 	printf("<process_table/>\r\n");
     }
+    printf("</peos>\n");
 }
 
 
@@ -85,12 +95,12 @@ main (int argc, char **argv)
     int status;
     char *pid;
     char *action;
-    char *event;
     char *model;
     char *login = "proc_table"; /* default login name */
-    char *res_file;
     char *request_method= getenv("REQUEST_METHOD") ;
     char *op, **cgivars = getcgivars();
+
+    setenv("COMPILER_DIR", ".", 1);
 
     if (strcmp(request_method, "POST") == 0) {
 	set_login_name(login);
@@ -126,7 +136,7 @@ main (int argc, char **argv)
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
-	    if ((status = peos_notify(pid, action,PEOS_EVENT_FINISH)) == VM_ERROR 
+	    if ((status = peos_notify(atoi(pid), action,PEOS_EVENT_FINISH)) == VM_ERROR 
 		|| status == VM_INTERNAL_ERROR) {
 		printf("process executed an illegal instruction and has been terminated\n");
 		return -1;
@@ -136,7 +146,7 @@ main (int argc, char **argv)
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
-	    if ((status = peos_notify(pid, action,PEOS_EVENT_ABORT)) == VM_ERROR 
+	    if ((status = peos_notify(atoi(pid), action,PEOS_EVENT_ABORT)) == VM_ERROR 
 		|| status == VM_INTERNAL_ERROR) {
 		printf("process encountered an illegal event and has been terminated\n");
 		return -1;
@@ -146,7 +156,7 @@ main (int argc, char **argv)
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
-	    if ((status = peos_notify(pid, action,PEOS_EVENT_SUSPEND)) == VM_ERROR 
+	    if ((status = peos_notify(atoi(pid), action,PEOS_EVENT_SUSPEND)) == VM_ERROR 
 		|| status == VM_INTERNAL_ERROR) {
 		printf("process encountered an illegal event and has been terminated\n");
 		return -1;
@@ -156,5 +166,6 @@ main (int argc, char **argv)
 
     /* GET method means just emit XML. */
     emit_xml();
+    return (0);
 }
 
