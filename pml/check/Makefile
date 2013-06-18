@@ -1,8 +1,12 @@
+LEX     = flex
+LFLAGS  = -l
 CC	= gcc
 CFLAGS	= -I.. -g -Wall
 LIBS	= ../pml/libpml.a  ../expr/libexpr.a 
+LDFLAGS = 
 OBJS	= common.o local.o global.o qualifier.o main.o link/link.o link/lexer.o link/link_parser.o
 SRCS	= 
+LDFLAGS = 
 PROG	= pmlcheck
 YFLAGS	= -d
 

@@ -14,9 +14,10 @@ link_parser.c:	link_parser.y
 		cat y.tab.h.temp | sed -f link.sed > y.tab.h
 		cat y.tab.c | sed -f link.sed > link_parser.c
 		rm -f y.tab.c y.tab.h.temp
-		
+
 lexer.c:	lexer.l
-		lex -t lexer.l | sed -f link.sed > lexer.c
+		lex -l  -t lexer.l | sed -f link.sed > lexer.c
+
 		rm -f lexer.h.temp
 
 

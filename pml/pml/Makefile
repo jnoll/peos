@@ -1,3 +1,5 @@
+LEX     = flex
+LFLAGS  = -l
 CC	= gcc 
 CFLAGS	= -I.. -g -Wall
 LIB	= libpml.a
