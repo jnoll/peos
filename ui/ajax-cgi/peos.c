@@ -23,26 +23,29 @@ int create_process(char *model) {
     int pid;
     int num_resources;
     peos_resource_t *resources;
-    char* res_file;
+    char *res_file;
+    char *model_file = calloc(strlen(model) + strlen(".pml") + 1, sizeof(char));
     
-    resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);    //see events.c
+    strcpy(model_file, model);
+    strcat(model_file, ".pml");
+    resources = (peos_resource_t *) peos_get_resource_list(model_file,&num_resources);    //see events.c
 
     if (resources == NULL) {
-        printf("error getting resources\n");
+        fprintf(stderr, "error getting resources for model '%s'\n", model_file);
         return -1;
     }
     
-    printf("Executing %s:\n", model);
+    fprintf(stderr, "Executing %s:\n", model);
     
-    if ((pid = peos_run(model,resources,num_resources)) < 0) {    //see events.c
-        printf("couldn't create process\n");
+    if ((pid = peos_run(model_file,resources,num_resources)) < 0) {    //see events.c
+        fprintf(stderr, "couldn't create process\n");
         return -1;
     }
     
-    if ((res_file = peos_get_resource_file(model)))
+    if ((res_file = peos_get_resource_file(model_file)))
         peos_bind_resource_file(pid, res_file);
 
-    printf("Created pid = %d\n", pid);
+    fprintf(stderr, "created pid = %d\n", pid);
     return 1;
 }
 
@@ -98,16 +101,16 @@ main (int argc, char **argv)
     char *model;
     char *login = "proc_table"; /* default login name */
     char *request_method= getenv("REQUEST_METHOD") ;
-    char *op, **cgivars = getcgivars();
+    char *event, **cgivars = getcgivars();
 
     setenv("COMPILER_DIR", ".", 1);
 
     if (strcmp(request_method, "POST") == 0) {
 	set_login_name(login);
-	op = getvalue("op", cgivars);
+	event = getvalue("event", cgivars);
 
 
-	if (strcmp(op, "create") == 0) {
+	if (strcmp(event, "create") == 0) {
 	    model = getvalue("model", cgivars);
 
 	    if (create_process(model) != 1) {
@@ -115,50 +118,50 @@ main (int argc, char **argv)
 		exit(EXIT_FAILURE);
 	    }
 
-	} else if (strcmp(op, "delete") == 0) {
+	} else if (strcmp(event, "delete") == 0) {
 	    pid = getvalue("pid", cgivars);
 
 	    if (peos_delete_process_instance(atoi(pid)) < 0) {
 		fprintf(stderr, "Could not delete process instance\n");
 		exit(EXIT_FAILURE);
 	    }
-	} else if (strcmp(op, "start") == 0) {
+	} else if (strcmp(event, "start") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
 	    if ((status = peos_notify(atoi(pid), action, PEOS_EVENT_START)) == VM_ERROR 
 		|| (status == VM_INTERNAL_ERROR)) {
-		printf("process executed an illegal instruction and has been terminated\n");
+		fprintf(stderr, "unable to start action '%s' in process instance '%d'\n", action, atoi(pid));
 		return -1;
 	    }
 
-	} else if (strcmp(op, "finish") == 0) {
+	} else if (strcmp(event, "finish") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
 	    if ((status = peos_notify(atoi(pid), action,PEOS_EVENT_FINISH)) == VM_ERROR 
 		|| status == VM_INTERNAL_ERROR) {
-		printf("process executed an illegal instruction and has been terminated\n");
+		fprintf(stderr, "process executed an illegal instruction and has been terminated\n");
 		return -1;
 	    }
 
-	} else if (strcmp(op, "abort") == 0) {
+	} else if (strcmp(event, "abort") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
 	    if ((status = peos_notify(atoi(pid), action,PEOS_EVENT_ABORT)) == VM_ERROR 
 		|| status == VM_INTERNAL_ERROR) {
-		printf("process encountered an illegal event and has been terminated\n");
+		fprintf(stderr, "process encountered an illegal event and has been terminated\n");
 		return -1;
 	    }
 
-	} else if (strcmp(op, "suspend") == 0) {
+	} else if (strcmp(event, "suspend") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
 	    if ((status = peos_notify(atoi(pid), action,PEOS_EVENT_SUSPEND)) == VM_ERROR 
 		|| status == VM_INTERNAL_ERROR) {
-		printf("process encountered an illegal event and has been terminated\n");
+		fprintf(stderr, "process encountered an illegal event and has been terminated\n");
 		return -1;
 	    }
 	}

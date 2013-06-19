@@ -1,11 +1,12 @@
-function actionForm(pid, action, op) {
+function actionForm(pid, action, event) {
     var newTxt = [];
     var i = 0;
     newTxt[i++] = "<td>";
-    newTxt[i++] = "<form>";
+    newTxt[i++] = "<form action='#' class='peos-op' method=POST>";
     newTxt[i++] = "<input type='hidden' name='pid' value='" + pid + "'/>";
-    newTxt[i++] = "<input type='hidden' name='pid' value='" + action + "'/>";
-    newTxt[i++] = "<input type='submit' name='op' value='" + op + "'/>";
+    newTxt[i++] = "<input type='hidden' name='action' value='" + action + "'/>";
+    newTxt[i++] = "<input type='hidden' name='event' value='" + event + "'/>"; // So serialize() will include a hidden 'event' input.
+    newTxt[i++] = "<input type='submit' class='peos-submit' name='submit' value='" + event + "'/>";
     newTxt[i++] = "</form>";
     newTxt[i++] = "</td>";
     return newTxt.join("\n");
@@ -30,10 +31,11 @@ function processXML(responseXML) {
     models.children('model').each(function() {
 	    newTxt[i++] = "<tr>"; 
 	    newTxt[i++] = "<td>" ;
-	    newTxt[i++] = "<form>";
+	    newTxt[i++] = "<form action='#' class='peos-op' method=POST>";
 	    newTxt[i++] =  $(this).text();
 	    newTxt[i++] = "<input type='hidden' name='model' value='" + $(this).text() + "'/>";
-	    newTxt[i++] = "<input type='submit' name='op' value='create'/>";
+	    newTxt[i++] = "<input type='hidden' name='event' value='create'/>";
+	    newTxt[i++] = "<input type='submit' class='peos-submit' name='submit' value='create'/>";
 	    newTxt[i++] = "</form>";
 	    newTxt[i++] = "</td>";
 	    newTxt[i++] = "</tr>"; 
@@ -42,9 +44,11 @@ function processXML(responseXML) {
 
     newTxt[i++] = "<h2>Process Instances</h2>";
     newTxt[i++] = "<table id='proc_table'>";
-    var recs = $('process_table', responseXML);
-    recs.children('process').each(function() {
-	    console.log($(this).attr("pid"))
+    var procTable = $('process_table', responseXML);
+    procTable.children('process').each(function() {
+	    var pid  = $(this).attr("pid");
+
+	    console.log(pid)
 	    newTxt[i++] = "<tr>"; 
 	    newTxt[i++] = "<td>" + $(this).attr("pid") + "</td>";
 	    newTxt[i++] = "<td>" + $(this).attr("model") + "</td>";
@@ -53,9 +57,8 @@ function processXML(responseXML) {
 
 	    var actions = $('action', this).each(function() {
 		    var name = $(this).attr("name");
-		    var pid  = $(this).attr("pid");
 
-		    console.log($(this).attr("name"))
+		    //console.log($(this).attr("name"))
 		    newTxt[i++] = "<tr>"; 
 		    newTxt[i++] = "<td>" + name + "</td>";
 		    newTxt[i++] = "<td>" + $(this).attr("state") + "</td>";
@@ -76,10 +79,25 @@ function processXML(responseXML) {
     newTxt[i++] = "</table>";
     newTxt[i++] = "</div>"; 
     target.replaceWith(newTxt.join("\n"));
+    // Bind an action to the submit button.
+    $('form').submit(function(e){
+	    e.preventDefault(); 
+	    $.ajax({
+		type: "POST",
+		url: "peos.cgi",
+		data: $(this).serialize(),
+		processData: false,
+		success: processXML,
+		//	dataType: "xml",
+		})
+		.fail(function(e, status, msg) { alert(":submitEvent:error: " + status + " : " + msg + " : " + e); })
+		return false; 
+	});
 }
 
-function submitEvent() {
-    //alert("submitEvent");
+
+function loadProcessTable() {
+    //alert("loadProcessTable");
     $.ajax({
 	type: "GET",
 	url: "peos.cgi",
@@ -87,16 +105,13 @@ function submitEvent() {
 	success: processXML,
 	//	dataType: "xml",
 	})
-	.fail(function(e, status, msg) { alert(":submitEvent:error: " + status + " : " + msg + " : " + e); })
+	.fail(function(e, status, msg) { alert(":loadProcessTable:error: " + status + " : " + msg + " : " + e); })
 
     return false; 
 }
 
 // Wait for the DOM to be loaded. 
 $(document).ready(function() { 
-	// Bind an action to the submit button.
-	$('#sg-advisor-consult').submit(function(e){ submitEvent(); return e.preventDefault(); });
-	// Load the questions.
-	submitEvent();
+	loadProcessTable();
     }); 
 

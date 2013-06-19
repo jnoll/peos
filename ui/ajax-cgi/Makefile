@@ -29,14 +29,19 @@ OBJS = peos.o getcgi.c
 SOURCES = $(OBJS:.o=.c) 
 HEADERS = $(wildcard *.h)
 
+DIR_MODE  = ug+rwX,o+rX
+SCRIPT_MODE  = ug+rwx,o+rX
+FILE_MODE = ug+rw,o+r
+
 all: build
 build: peos.cgi
 peos.cgi: $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) -ltcl
 
 install: build
-	install -d $(INSTALL_DIR)
-	install $(CGI) $(JS) $(HTML) $(PML) $(SUPPORT) $(INSTALL_DIR)
+	install -m $(DIR_MODE) -d $(INSTALL_DIR)
+	install -m $(SCRIPT_MODE) $(CGI) $(INSTALL_DIR)
+	install -m $(FILE_MODE) $(JS) $(HTML) $(PML) $(SUPPORT) $(INSTALL_DIR)
 	install htaccess $(INSTALL_DIR)/.htaccess
 
 # Unit tests.

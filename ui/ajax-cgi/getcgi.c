@@ -63,7 +63,8 @@ char **getcgivars() {
     }
     else if (!strcmp(request_method, "POST")) {
         /* strcasecmp() is not supported in Windows-- use strcmpi() instead */
-        if ( strcasecmp(getenv("CONTENT_TYPE"), "application/x-www-form-urlencoded")) {
+	char *content_type = "application/x-www-form-urlencoded";
+        if ( strncasecmp(getenv("CONTENT_TYPE"), content_type, strlen(content_type)) != 0) {
 	    printf("Content-Type: text/plain\n\n") ;
             printf("getcgivars(): Unsupported Content-Type.\n") ;
             exit(1) ;
