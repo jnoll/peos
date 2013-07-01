@@ -1,0 +1,33 @@
+CC	= gcc
+CFLAGS	= -I.. -g -Wall
+LIB	= libpml.a
+OBJS	= graph.o list.o parser.o scanner.o tree.o
+SRCS	= parser.c scanner.c y.tab.h
+YFLAGS	= -d
+V       = @
+
+
+all: build
+
+build: $(LIB)
+
+$(LIB):		$(SRCS) $(OBJS)
+		${V}rm -f $(LIB)
+		${V}ar cru $(LIB) $(OBJS)
+		${V}ranlib $(LIB) || true
+
+
+traverse:	traverse.o $(LIB)
+	${V}$(CC) -o $@ $< $(LIB)
+
+ee: 		ee.o $(LIB)
+	${V}$(CC) -o $@ $< $(LIB)
+
+t:              t.o $(LIB)
+	${V}$(CC) -o $@ $< $(LIB)
+
+
+
+clean:;		rm -f $(LIB) $(OBJS)
+
+clobber:;	rm -f $(LIB) $(OBJS) Makefile libpml.a

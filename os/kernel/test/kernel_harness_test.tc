@@ -1,0 +1,28 @@
+# example of a test case.
+shell: kernel_wrapper
+model: simple.pml
+iterations: 1
+script:
+create_proc simple
+create_proc simple
+assert 0 act_1 READY 
+notify 0 act_1 start
+assert 0 act_1 RUN
+notify 0 act_1 finish
+assert 0 act_1 DONE
+assert 0 act_2 READY
+notify 0 act_2 start
+assert 0 act_2 RUN
+notify 0 act_2 finish
+assert_done 0 $model
+
+assert 1 act_1 READY 
+notify 1 act_1 start
+assert 1 act_1 RUN
+notify 1 act_1 finish
+assert 1 act_1 DONE
+assert 1 act_2 READY
+notify 1 act_2 start
+assert 1 act_2 RUN
+notify 1 act_2 finish
+assert_done 1 $model

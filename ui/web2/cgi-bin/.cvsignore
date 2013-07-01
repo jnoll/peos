@@ -1,0 +1,8 @@
+*.cgi
+core
+core.*
+*.dat
+create_testtable
+event.log
+*.dot *.gif *.jpg *.map
+htaccess

@@ -1,0 +1,73 @@
+SHELL= /bin/sh
+
+# Export all variables to sub- 'make' and be compatable with old 'make'
+
+#.EXPORT_ALL_VARIABLES:
+
+export INSTALL_PREFIX=@prefix@
+export XERCES_PATH=@xerces@
+export share=${INSTALL_PREFIX}/share/
+export peos_gui=${share}/peos_gui/
+export bin=${INSTALL_PREFIX}/bin/
+export images=${peos_gui}/images/
+export help=${peos_gui}/help/
+export pml=${share}/models/
+export runpeos=${bin}/runpeos
+export JAVAGUI_JAR=${peos_gui}/java-gui.jar
+export gtkpeos=${bin}/gtkpeos
+export peos-gui=${bin}/peos-gui
+export PEOS_HOME=${HOME}/.peos
+
+TREETOP= ../peos
+
+JAVA_PATH= @JAVAPATH@
+GTK_PATH= @GTKPATH@
+
+GUI_PATH= ${JAVA_PATH} ${GTK_PATH}
+
+V= @
+
+CC= gcc
+
+MAKE= make
+
+SUBDIRS= pml os ui
+
+all: build
+
+build clean clobber:
+	${V}for subdir in ${SUBDIRS}; \
+	do \
+		echo "...start $@ing in $$subdir..."; \
+		${MAKE} $@ -C $$subdir; \
+		echo ".....end $@ing in $$subdir..."; \
+		echo "" ; \
+	done;	
+	${V}if [ -f "${INSTALL_PREFIX}/peos.tar.gz" ]; then \
+		chmod -f 0444 ${INSTALL_PREFIX}/peos.tar.gz; fi; 	
+
+install: uninstall
+	${V}[ -d "${INSTALL_PREFIX}" ] || mkdir -p ${INSTALL_PREFIX}
+	${V}chmod 0755 ${INSTALL_PREFIX}
+	${V}for subdir in ${GUI_PATH}; \
+	do \
+		${MAKE} $@ -C $$subdir; \
+	done;
+	${V}chmod 0755 ${bin} ${pml} ${share} ${peos_gui} ${PEOS_HOME} ${help} \
+		${images} ${images}/gtk ${images}/image ${help}/images
+	${V}chmod 0755 ${bin}/* ${images}/gtk/gtkrc
+	${V}chmod 0644 ${help}/*.jpg ${help}/*.htm ${help}/*.db ${help}/*.doc \
+		${images}/*.gif ${images}/*.jpg ${images}/gtk/*.png \
+		${images}/image/* ${pml}/* ${peos_gui}/java-gui.jar \
+		${help}/images/*.jpg ${help}/images/*.GIF ${help}/images/*.gif \
+		${help}/images/*.png
+	
+uninstall:
+	${V}for subdir in ${GUI_PATH}; \
+	do \
+		${MAKE} $@ -C $$subdir; \
+	done;	
+	${V}rm -rf ${peos_gui}
+	
+clobber-all: clean clobber
+	${V}rm -f config.cache config.h config.log config.status core.*

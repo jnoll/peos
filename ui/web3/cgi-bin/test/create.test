@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+# $Id: create.test,v 1.3 2007/04/29 19:23:51 jnoll Exp $ -*-perl-*-
+# Test update cgi script.
+use CGI::Test;                 # exports ok()
+
+
+# Clear process table.
+$r = `rm -f ../proc_table.dat`;
+$r = `rm -f ../proc_table.dat.xml`;
+
+# We have to use command line debugging, because redirects don't work with CGI::Test.
+# Create a test object to run the test.
+
+$result = `../create.cgi model=readme`;
+print "$result";
+ok "model = readme", $result =~ 'list_procs.cgi';
+$result = `../create.cgi model=test`;
+print "$result";
+ok "model = test", $result =~ 'list_procs.cgi';
+$result = `../create.cgi model=test_action`;
+print "$result";
+ok "model = test_action", $result =~ 'list_procs.cgi';

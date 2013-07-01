@@ -1,0 +1,4 @@
+process p {
+     action a {}
+     acti b {}
+       }

@@ -1,0 +1,78 @@
+#!/usr/bin/perl
+# $Id: update.test,v 1.3 2007/04/29 17:27:26 jnoll Exp $ -*-perl-*-
+# Test update cgi script.
+use CGI::Test;                 # exports ok()
+require CGI::Test::Input::URL;
+use CGI::Test::Form;
+#use CGI::Test::Form::Widget; 
+#require CGI::Test::Form::Widget; 
+#require CGI::Test::Form::Widget::Button; 
+#use HTML::Element; 
+
+
+# Setup process table.
+$r = `rm -f ../proc_table.dat`;
+$r = `rm -f ../proc_table.dat.xml`;
+for $p ("test_action.pml")  {
+    `cd .. && peos -c $p`;
+}
+
+# Create a test object to run the test.
+my $basedir = "http://localhost/peos_test/cgi-bin";
+my $t = CGI::Test->new(
+			-base_url   => $basedir,
+			-cgi_dir    => "..",
+			);
+
+# Create a URL to invoke the script.
+my $input = CGI::Test::Input::URL->new() ;
+$input->add_field("login", "guest");
+$input->add_field("PID", "0");
+$input->add_field("actions", "test_action test_script");
+$input->add_field("test_action", "start"); # Note: this value is not possible with current form.
+print $input->data, " ", $input->length, "\n";
+
+my $result = $t->POST("${basedir}/update.cgi", $input);
+
+ok "result: defined", defined $result;
+ok "result: is ok",  $result->is_ok;
+ok "result: content_type", $result->content_type =~ m|text/html\b|;
+ok "result: test_action is not finished", $result->raw_content !~ /\"test_action\".*checked/;
+ok "result: test_action is not finished", $result->raw_content !~ /\"test_action\".*checked/;
+ok "result: test_script is not finished", $result->raw_content !~ /\"test_script\".*checked/;
+print $result->raw_content;
+
+my $form = $result->forms->[0];
+ok "form: exists", defined $form;
+
+# Create a URL to invoke the script.
+my $input = CGI::Test::Input::URL->new() ;
+$input->add_field("login", "guest");
+$input->add_field("PID", "0");
+$input->add_field("actions", "test_action test_script");
+$input->add_field("test_action", "finish");
+print $input->data, " ", $input->length, "\n";
+
+my $result = $t->POST("${basedir}/update.cgi", $input);
+ok "result: defined", defined $result;
+ok "result: is ok",  $result->is_ok;
+ok "result: content_type", $result->content_type =~ /text/html\b/;
+ok "result: test_action is finished", $result->raw_content =~ /\"test_action\".*checked/;
+ok "result: test_script is not finished", $result->raw_content !~ /\"test_script\".*checked/;
+#print $result->raw_content;
+
+# Create a URL to invoke the script.
+my $input = CGI::Test::Input::URL->new() ;
+$input->add_field("login", "guest");
+$input->add_field("PID", "0");
+$input->add_field("actions", "test_action test_script");
+$input->add_field("test_script", "finish");
+#print $input->data, " ", $input->length, "\n";
+
+my $result = $t->POST("${basedir}/update.cgi", $input);
+ok "result: defined", defined $result;
+ok "result: is ok",  $result->is_ok;
+ok "result: content_type", $result->content_type =~ /text/html\b/;
+ok "result: test_action is finished", $result->raw_content =~ /\"test_action\".*checked/;
+ok "result: test_script is finished", $result->raw_content =~ /\"test_script\".*checked/;
+#print $result->raw_content;

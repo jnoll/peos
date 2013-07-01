@@ -1,0 +1,34 @@
+<process_table>
+<process pid="0" model="/users/student/sbeeby/cvstest/iter4b/testfiles/oldtimeb.pml" status="2">
+<action name="Fill_name" state="BLOCKED">
+<script>
+"Fill in your name and other details in the $time_sheet"
+</script>
+<req_resource name="time_sheet" value="$$" qualifier=""></req_resource>
+</action>
+<action name="Fill_hours" state="NONE">
+<script>
+"Fill in the hours in the $time_sheet"
+</script>
+<req_resource name="time_sheet" value="$$" qualifier=""></req_resource>
+</action>
+<action name="Fill_total_hours" state="NONE">
+<script>
+"THE $time_sheet DEMANDS THAT YOU Fill in total hours"
+</script>
+<req_resource name="time_sheet" value="$$" qualifier=""></req_resource>
+</action>
+<action name="Sign_and_date" state="NONE">
+<script>
+"Sign and Date the timesheet"
+</script>
+<req_resource name="time_sheet" value="$$" qualifier=""></req_resource>
+</action>
+<action name="Turn_it_in" state="NONE">
+<script>
+"Hand it to your supervisor"
+</script>
+<req_resource name="time_sheet" value="$$" qualifier=""></req_resource>
+</action>
+</process>
+</process_table>

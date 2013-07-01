@@ -1,0 +1,106 @@
+#these lines are for modification.
+# Path to peos binary.  Only change this if peos is not in users' PATH or
+# you want to use a specific instance of the binary.
+path=peos
+
+#these lines are used by the makefile. Do not modify.
+XERCES=${XERCES_PATH}/xercesImpl.jar:${XERCES_PATH}/xmlParserAPIs.jar
+JUNIT=${JUNIT_PATH}/junit.jar
+JFLAGS=-classpath ${CLASSPATH}:${XERCES}:${JUNIT}:include/java-gui.jar:.
+
+V= @
+
+all: build
+
+build: jar script
+
+jar: PeosApp.class ProcessContent.class displayPO.class ActiveList.class DisabledPreferences.class \
+	DisabledPreferencesFactory.class Help.class ActionMap.class LinkedList.class LinkNode.class \
+	SetupPath.class MyFileFilter.class ResourceMap.class SpecLoader.class \
+	ActionViewer.class ActionList.class
+	${V}jar cf java-gui.jar *.class
+	${V}mv java-gui.jar ./include
+
+disp:
+	java ${JFLAGS} displayPO
+
+# Run the java gui from working directory.
+run:
+	${V}java -classpath ${CLASSPATH}:${XERCES}:${JUNIT}:include:${CLASSPATH} -Dpeos.images=./images -Dpeos.path=../../os/kernel/peos -Dpeos.help=./help PeosApp
+
+setup: SetupPath.class
+	${V}java ${JFLAGS} SetupPath
+	xprop -root -remove _MOTIF_DEFAULT_BINDINGS
+
+# Note: doesn't uninstall models.
+uninstall: 
+	${V}echo "...uninstalling java-gui........"
+	${V}rm -rf ${bin}/peos
+	${V}rm -rf ${images} 
+	${V}rm -rf ${help} 
+	${V}rm -f ${runpeos}
+	${V}rm -f ${JAVAGUI_JAR}
+	${V}rm -f ${PEOS_HOME}/proc*
+	${V}echo "...done uninstalling java-gui..."
+
+install: script
+	${V}echo "...installing java-gui........"
+	${V}[ -d "${bin}" ] || mkdir -p ${bin}
+	${V}cp -fu ../../os/kernel/peos ${bin} 
+	${V}[ -d "${PEOS_HOME}" ] || mkdir -p ${PEOS_HOME}
+	${V}[ -d "${share}" ] || mkdir -p ${share}
+	${V}[ -d "${peos_gui}" ] || mkdir -p ${peos_gui}
+	${V}[ -d "${pml}" ] || mkdir -p ${pml} 
+	${V}cp -fu ../../models/* ${pml}
+	${V}cp -u ./runpeos ${runpeos}
+	${V}cp -u ./include/java-gui.jar ${JAVAGUI_JAR}
+	${V}[ -d "${images}" ] || mkdir -p ${images}
+	${V}cp -u ./images/*.gif images/*.jpg ${images}
+	${V}[ -d "${help}" ] || mkdir -p ${help} 
+	${V}cp -ru ./help/* ${help}
+	${V}echo "...done installing java-gui..."
+	${V}echo ""
+
+script: 
+	${V}echo "" >runpeos
+	${V}echo "runApp=0" >>runpeos
+	${V}echo "test -w ." >>runpeos
+	${V}echo 'if test $$? -eq 1'>>runpeos
+	${V}echo "then" >>runpeos
+	${V}echo "	echo Working directory must have write-permission.">>runpeos
+	${V}echo "	runApp=1;" >>runpeos
+	${V}echo "fi" >>runpeos
+	${V}echo "which ${path} > /dev/null" >>runpeos
+	${V}echo "if test $$? -eq 1" >>runpeos
+	${V}echo "then" >>runpeos
+	${V}echo "	echo 'peos' binary does not have execute permissions or does not exist." >>runpeos
+	${V}echo "	runApp=1" >>runpeos
+	${V}echo "fi" >>runpeos
+	${V}echo "test -r ${pml}">>runpeos
+	${V}echo 'if test $$? -eq 1' >>runpeos
+	${V}echo "then" >>runpeos
+	${V}echo "echo '<Warning>Default PML directory is not readable or does not exist.'" >>runpeos
+	${V}echo "fi" >>runpeos
+	${V}echo 'if test $$runApp -eq 0' >>runpeos
+	${V}echo "then" >>runpeos
+	${V}echo "[ -d '~/.peos' ] || mkdir -p ~/.peos" >>runpeos
+	${V}echo "cd ~/.peos" >>runpeos 
+	${V}echo "chmod -f 0644 proc* pelog message event.log" >>runpeos
+	${V}echo "rm -f proc_table.dat.xml" >>runpeos
+	${V}echo "	xprop -root -remove _MOTIF_DEFAULT_BINDINGS" >>runpeos
+	${V}echo "java -classpath $${CLASSPATH}:${JUNIT}:${XERCES}:${JAVAGUI_JAR} -Dpeos.images=${images} -Dpeos.path=${path} -Dpeos.help=${help} -Dpeos.pml=${pml}  PeosApp" >>runpeos
+	${V}echo "fi" >>runpeos
+	${V}chmod +x runpeos
+	${V}echo "" 
+
+%.class : %.java
+	  javac ${JFLAGS} $<
+
+clean:
+	rm -rf *.class
+	rm -f event.log
+	rm -f proc_table*
+	rm -f include/java-gui.jar
+
+clobber:
+	rm -f runpeos

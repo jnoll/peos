@@ -1,0 +1,72 @@
+Compiler test plan:
+
+This test plan should be used to verify that the baselined compiler functions
+properly.
+
+
+/******************************************************************************
+** test command line parameter validation 
+******************************************************************************/
+
+__X__  1) run the compiler without specifying any command line arguments.  
+          Verify that the default output (a GDBM file) is generated.
+
+__X__  2) run the compiler with an invalid format parameter (not "text" or 
+          "gdbm").  Verify that a meaningful error is generated.
+
+__X__  3) run the compiler with a pml file that does not exist or cannot be seen
+          by the compiler.  Verify that a meaningful error is generated.
+
+__X__  4) run the compiler with more than 4 arguments. 
+          Verify that a meaningful error is generated.
+
+__X__  5) run the compiler with a valid pml file and the "text" format option.
+          Verify that a CPML file is generated in plain text.
+
+__X__  6) run the compiler with a valid pml file and the "gdbm" format option.
+          Verify that a CPML file is generated in gdbm format.
+
+
+
+/******************************************************************************
+** test ability to detect errors in the PML file 
+******************************************************************************/
+
+__X__  7) Run the compiler with a PML file that has at least one entry for every
+          tc-type and spectype as defined by the official PML grammar.  Verify
+          that the file is converted correctly.
+
+__X__  8) Run the compiler with a PML file that does not specify an action type.
+          Verify that the CPML file assumes the action has type "manual". 
+
+__X__  9) Run the compiler with a PML file that provides an invalid action type.
+          Verify that the error is detected and a meaningful error is reported.
+
+__X__ 10) Run the compiler with a PML file that contains an invalid tc-type.
+          Verify that the error is detected and a meaningful error is reported.
+
+__X__ 11) Run the compiler with a PML file that contains an invalid spectype.
+          Verify that the error is detected and a meaningful error is reported.
+
+__X__ 12) Run the compiler with a PML file that does not specify a "process".
+          Verify that the error is detected and a meaningful error is reported.
+
+__X__ 13) Run the compiler with a PML file that does not specify a process name.
+          Verify that the error is detected and a meaningful error is reported.
+
+__X__ 14) Run the compiler with a PML file that does not specify a speclist for
+          a particular action.  Verify that the error is detected and a 
+          meaningful error is reported.
+
+__X__ 15) Run the compiler with a PML file that does not specify a name for a
+          particular tc-type name.  Verify that a unique name is generated and
+          associated with the corresponding entry in the CPML file.
+
+
+/******************************************************************************
+** test compiler's CPML gdbm file correctness 
+******************************************************************************/
+
+__X__ 16) Run the compiler with a valid PML file and "gdbm" format options.
+          Verify that the engine can read the gdbm file.
+

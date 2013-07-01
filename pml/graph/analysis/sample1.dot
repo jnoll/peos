@@ -1,0 +1,21 @@
+digraph sample1 {
+process [shape=plaintext, label="sample1"];
+legend1 [shape=box, style=filled, label="grey fill - black hole"];
+legend2 [shape=box, style=filled, color=cornflowerblue, label="blue fill - miracle"];
+legend3 [shape=box, style=dotted, label="dotted outline - empty"];
+legend4 [shape=plaintext, fontcolor=blue, label="blue text - transform"];
+legend5 [shape=plaintext, fontcolor=red, label="red text - output?"];
+legend6 [shape=plaintext, fontcolor=green, label="green text - input?"];
+process -> legend1 -> legend2 -> legend3 -> legend4 -> legend5 -> legend6 [style=invis];
+163423904 [shape=diamond, label="start"]
+163424264 [shape=box, style=rounded, fontcolor="blue", fontcolor="blue", label="a"];
+163424520 [shape=box, style=rounded, fontcolor="blue", fontcolor="blue", label="b"];
+163424264 [shape=box, style=rounded, fontcolor="blue", fontcolor="blue", label="a"];
+163425072 [shape=box, style="rounded", style="dotted", label="c"];
+163424048 [shape=diamond, label="end"]
+163423904 -> 163424264 [weight=1, style=solid, labelfloat="true", fontcolor="BLACK", label="r:x "] ;
+163424264 -> 163424520 [weight=1, style=solid, labelfloat="true", labelfontcolor="red", taillabel="p:y ", labelfloat="true", fontcolor="green", label="r:c modified true "] ;
+163424520 -> 163424264 [weight=0] ;
+163424520 -> 163425072 [weight=1, style=solid, labelfloat="true", labelfontcolor="red", taillabel="p:d modified false ", labelfloat="true", fontcolor="BLACK", label="r:[]"] ;
+163425072 -> 163424048 [weight=1, style=solid, labelfloat="true", labelfontcolor="black", taillabel="p:[]"] ;
+}

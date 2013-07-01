@@ -1,0 +1,7 @@
+sample1.pml:12: action 'c' has no resources
+sample1.pml:4: "x" in action 'a' is unprovided
+sample1.pml:8: c in action 'b' is unprovided
+sample1.pml:5: "y" in action 'a' is not consumed
+sample1.pml:9: d in action 'b' is not consumed
+sample1.pml:5: action 'a' provides but does not require '"y"'
+sample1.pml:9: action 'b' provides but does not require 'd'

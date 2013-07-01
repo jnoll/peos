@@ -1,0 +1,183 @@
+#include "../rsc/AppResources.h"
+
+APPLICATIONICONNAME ID 1000 "PalmPEOS"
+APPLICATION ID 1 "1783"
+
+ICONFAMILY "../rsc/bitmaps/AppIcon_Large-1.bmp" "../rsc/bitmaps/AppIcon_Large-2.bmp" "../rsc/bitmaps/AppIcon_Large-8.bmp" TRANSPARENT 0 255 0
+SMALLICONFAMILY "../rsc/bitmaps/AppIcon_Small-1.bmp" "../rsc/bitmaps/AppIcon_Small-2.bmp" "../rsc/bitmaps/AppIcon_Small-8.bmp" TRANSPARENT 0 255 0
+BITMAP ID 9001 "../rsc/bitmaps/pic-phoenix3.bmp" COMPRESS
+
+//alerts
+ALERT ID CheckSelection
+DEFAULTBUTTON 0
+ERROR
+BEGIN
+	TITLE "No Selection"
+	MESSAGE "Please select ^1 in order for PalmPEOS to proceed!"
+	BUTTONS "OK"
+END
+
+ALERT ID ConfirmDelete
+DEFAULTBUTTON 1
+CONFIRMATION
+BEGIN
+	TITLE "Confirm Process Deletion"
+	MESSAGE "Are you sure you want to delete selected process instance?"
+	BUTTONS "OK" "CANCEL"
+END
+
+Alert ID ConfirmDeleteLastAction
+DEFAULTBUTTON 1
+CONFIRMATION
+BEGIN
+	TITLE "Delete last action?"
+	MESSAGE "Deleting last action will automatically delete the whole process. Continue?"
+	BUTTONS "OK" "CANCEL"
+END
+
+
+//forms
+FORM ID MainForm AT (0 0 160 160)
+USABLE
+HELPID 0
+MENUID 1000
+DEFAULTBTNID 0
+BEGIN
+	TITLE "PalmPEOS Menu"
+	LABEL "Welcome To PalmPEOS!" AUTOID AT (20 25) USABLE FONT 7
+	LABEL "From vision to reality!" AUTOID AT (19 50) USABLE FONT 2
+	FORMBITMAP AT  (28 63) BITMAP 9001
+
+END
+
+FORM ID AboutForm AT (2 2 156 156)
+USABLE
+MODAL
+SAVEBEHIND
+HELPID 0
+MENUID 0
+DEFAULTBTNID 0
+BEGIN
+	TITLE "About PalmPEOS"
+	LABEL "PalmPEOS" AUTOID AT (54 25) USABLE FONT 2
+	LABEL "Thank you for using PalmPEOS" AUTOID AT (5 54) USABLE FONT 1
+	LABEL "Development team:" AUTOID AT (5 70) USABLE FONT 1
+	LABEL "Steve Beeby, Arkadiy Shapiro" AUTOID AT (5 80) USABLE FONT 1
+	LABEL "Version 1.0" AUTOID AT (50 104) USABLE FONT 2
+	BUTTON "OK" ID 1105 AT (58 140 40 12) USABLE FRAME FONT 1
+END
+
+FORM ID AvailableProcessesForm AT (0 0 160 160)
+USABLE
+HELPID 0
+MENUID AvailableProcessesMenuBar
+BEGIN
+	TITLE "Available Processes"
+	BUTTON "Create and Go To Process" ID 1201 AT (9 146 AUTO AUTO) USABLE FRAME FONT 1
+	SCROLLBAR ID 1002 AT (151 19 7 141) USABLE VALUE 0 MIN 0 MAX 0 PAGESIZE 0
+	LIST ID AvailableProcessesList AT (17 21 123 AUTO) USABLE FONT 1 VISIBLEITEMS 10
+END
+
+FORM ID CurrentProcessForm AT (0 0 160 160)
+USABLE HELPID 0
+MENUID CurrentProcessFormMenuBar
+BEGIN
+	TITLE "Current Process"
+	BUTTON "Go To Action" ID ActionButton AT (18 146 120 AUTO) USABLE FRAME FONT 1
+	PUSHBUTTON "To do" ID 1410 AT (25 130 50 AUTO) USABLE GROUP 1
+	PUSHBUTTON "All" ID 1411 AT (76 130 50 AUTO) USABLE GROUP 1
+	SCROLLBAR ID 1002 AT (151 19 7 141) USABLE VALUE 0 MIN 0 MAX 0 PAGESIZE 10
+	//TABLE ID actionsTable AT (10 35 141 111) ROWS numTableRows COLUMNS 2 COLUMNWIDTHS 15 115
+	LIST ID ActionsList AT (17 35 123 AUTO) USABLE FONT 1 VISIBLEITEMS 8
+	LABEL "Actions: To Do / ALL" ID CurrentProcessLabel AT (17 17) USABLE FONT 2
+END
+
+
+FORM ID CurrentActionForm AT (0 0 160 160)
+USABLE HELPID 0
+MENUID CurrentActionFormMenuBar
+BEGIN
+	TITLE "Current Action"
+	FIELD ID 1901 AT (5 20 130 110) USABLE NONEDITABLE MULTIPLELINES HASSCROLLBAR DYNAMICSIZE MAXCHARS 1024
+	BUTTON "PREV" ID 1902 AT (8 146 AUTO AUTO) USABLE FRAME FONT 1
+	BUTTON "NEXT" ID 1903 AT (110 146 AUTO AUTO) USABLE FRAME FONT 1
+	BUTTON "FINISH" ID 1904 AT (57 146 AUTO AUTO) USABLE FRAME FONT 1 
+	SCROLLBAR ID 123 AT (151 20 8 110) VALUE 0 MIN 0 MAX 100 PAGESIZE 10
+END	
+	
+
+FORM ID StartedProcessesForm AT (0 0 160 160)
+USABLE 
+HELPID 0
+MENUID StartedProcessesMenuBar
+BEGIN
+	TITLE "Started Processes"
+	BUTTON "Finish selected process" ID 1301 AT (14 147 AUTO AUTO) USABLE FRAME FONT 1
+	BUTTON "Delete selected process" ID 1311 AT (11 127 AUTO AUTO) USABLE FRAME FONT 1
+	SCROLLBAR ID 1302 AT (151 19 7 141) USABLE VALUE 0 MIN 0 MAX 0 PAGESIZE 0
+	LIST ID StartedProcessesList AT (17 21 123 AUTO) USABLE FONT 1 VISIBLEITEMS 9
+END
+
+
+MENU ID MainFormMenuBar 
+BEGIN
+  PULLDOWN "Options"
+  BEGIN
+    MENUITEM "About" 					ID 1000 
+    MENUITEM "View Available Processes" ID 1001 
+    MENUITEM "Finish started processes" ID 1002
+    MENUITEM SEPARATOR
+  END
+END 
+
+
+MENU ID CurrentProcessFormMenuBar
+BEGIN
+	PULLDOWN "Options"
+	BEGIN
+    MENUITEM "About" 					ID 1601
+    MENUITEM "Back To Main"				ID 1602
+    MENUITEM "View Available Processes" ID 1603
+    MENUITEM "Finish started processes" ID 1604 
+    MENUITEM SEPARATOR
+  END
+END 
+
+MENU ID AvailableProcessesMenuBar
+BEGIN
+	PULLDOWN "Options"
+	BEGIN
+    MENUITEM "About" 					ID 1701 
+    MENUITEM "Back To Main"				ID 1702
+    MENUITEM "Finish started processes" ID 1703 
+    MENUITEM SEPARATOR
+  END
+END 
+
+MENU ID StartedProcessesMenuBar
+BEGIN
+	PULLDOWN "Options"
+	BEGIN
+    MENUITEM "About" 					ID 1801 
+    MENUITEM "Back To Main"				ID 1802
+    MENUITEM "View Available Processes" ID 1803
+    MENUITEM SEPARATOR
+  END
+END 
+
+MENU ID CurrentActionFormMenuBar
+BEGIN
+	PULLDOWN "Options"
+	BEGIN
+    MENUITEM "About" 					ID 2001 
+    MENUITEM "Back To Main"				ID 2002
+    MENUITEM "View Available Processes" ID 2003 
+    MENUITEM "Finish started processes" ID 2004 
+    MENUITEM "Back to list of actions"  ID 2005
+    MENUITEM SEPARATOR
+  END
+END 
+	
+STRING 1000 "Welcome to PalmPEOS!"
+
+

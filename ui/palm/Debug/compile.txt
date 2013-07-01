@@ -1,0 +1,1 @@
+m68k-palmos-gcc -O0 -g -fexceptions -UNDEBUG  -I"C:/Program Files/PalmSource/Palm OS Developer Suite/PalmOSTools/include/stlport" -I ../../../os/kernel  -I ../../../os/palm   -I ../../../pml -Wall -palmos5r4 -o palmpeos.o  ../src/AppMain.c ../src/AvailProcesses.c ../src/StartedProcesses.c

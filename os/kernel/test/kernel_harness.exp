@@ -1,0 +1,274 @@
+#!/usr/bin/env expect
+# $ID$
+# Expect script to test kernel via shell.
+# John Noll, Santa Clara University.
+
+proc parse_args {argv argc} {
+    uplevel 1 {
+	set i 0
+	while {$i < $argc} {
+	    set arg [lindex $argv $i]
+	    switch -re -- $arg {
+		-gdb {
+		    set gdb 1
+		    incr i
+		    set gdb_script [lindex $argv $i]
+		}
+		^\[\-\]\[A-Za-z\]+ {
+		    incr i
+		    set [string trimleft $arg "-"] [lindex $argv $i]
+		}
+		default {
+		    set tc_name $arg
+		}
+	    }
+	    incr i
+	}
+    }
+}
+
+# Read test case definition.  A test case consists of a number of fields, 
+# identified by names of the form field_name: value.  The script field 
+# defines a sequence of lines with commands to drive the kernel_wrapper, 
+# one command per line, and therefore must come at the end of the file. 
+proc read_tc {tc_name} {
+    set input [open $tc_name "r"]
+
+    while {![eof $input]} {
+	set line [gets $input]
+	set field [lindex $line 0]
+	set data [lrange $line 1 end]
+	switch -re $field {
+	    "^\#.*$" {
+		#puts stdout "A comment: $line"
+		continue
+	    }
+
+	    script: {
+		upvar script script
+		set script [read $input]
+	    }
+
+	    default {
+		set var [string trimright $field ":"]
+		upvar $var $var
+		set $var $data
+	    }
+	}
+    }
+}
+
+proc trace {level msg} {
+    global verbosity expect_out
+    if {$verbosity >= $level} {
+	puts stdout "$msg: '$expect_out(0,string)'"
+    }
+}
+
+proc error_msg {op act {msg {}}} {
+    global expect_out interactive
+
+    puts -nonewline "FAILURE: while performing '$op' on '$act': ${msg}: "
+    flush stdout
+    if [info exists expect_out(0,string)] {
+	puts "'$expect_out(0,string)'"
+    } else {
+	puts ""
+    }
+    if {[info exists interactive]} {
+	interact
+    } else {
+	exit
+    }
+}
+
+proc gdb_interact {} {
+    interact {
+	go { return }
+    }
+}
+
+proc create_proc {model} {
+    send "create $model\r\n"
+
+    expect {
+      -re "pid \(\[0-9\]+\)" {
+	upvar pid pid
+	set pid $expect_out(1,string)
+	trace 1 "$model created pid=$pid"
+	set done 1
+      }
+      "error\[^\r\n\]*\[\r\n\]" {
+	error_msg create $model "error"
+      }
+
+      -ex "(gdb)" {
+	  gdb_interact
+      }
+
+      timeout {
+	error_msg create $model "timeout"
+      }
+      default {
+	error_msg create $model
+      }
+    }
+
+    expect "\n> "
+}
+
+proc notify {pid act event} {
+    send "notify $pid $act $event\r\n"
+    expect {
+	"error:" {
+	    error_msg $event $act
+	} 
+	"\n> " {
+	    trace 2 "$event $act"
+	} 
+
+	-ex "(gdb)" {
+	    gdb_interact
+	}
+
+	timeout {
+	    error_msg $event $act "timeout"
+	}
+
+	default {
+	    error_msg $event $act 
+	}
+    }  
+}
+
+
+# Assert act of pid is in state.
+proc assert {pid act state} {
+    send "actions $pid\r\n"
+
+    expect {
+	-ex "\{${pid} ${act} ${state}\}"  {
+	    trace 1 "${act} ${pid} found to be ${state}" 
+	}
+
+	-re "\[{\]${pid}\[ \]${act}\[ \]\(\[A-Z\]+\)\[}\]" {
+	    error_msg assert "$pid $act $state" \
+	      "${act} ${pid} found to be in $expect_out(1,string), not ${state}" 
+	}
+
+	-ex "\{ \}" {
+	   error_msg assert "$pid $act $state" \
+	      "process appears to have exited" 
+	}
+
+	-ex "(gdb)" {
+	    gdb_interact
+	}
+
+	full_buffer {
+	    error_msg assert "$pid $act $state" "full buffer before status."
+	}
+	timeout {
+	    error_msg assert "$pid $act $state" "timeout before status."
+	}
+
+	default {
+	    error_msg assert "$pid $act $state"
+	}
+    }
+
+    expect "\n> "
+}
+
+proc assert_done {pid model} {
+    send "actions ${pid}\r\n"
+    expect {
+	-ex "\{ \}\r\n> " {
+	    trace 1 "$model completed successfully."
+	}
+
+	-re "\{ \(\{\[0-9\]+ \[_0-9A-Za-z\]+ \[A-Z\]+\} \)+\}" {
+	    error_msg assert_done "$pid $model" "some actions still found" 
+	}
+
+	-ex "(gdb)" {
+	    gdb_interact
+	}
+
+	timeout {
+	    error_msg assert_done $model timeout
+	}
+
+	default {
+	  error_msg assert_done $model
+	}
+    }
+}
+
+
+# defaults
+set timeout 10
+log_user 0
+set verbosity 0
+set gdb 0
+set shell "kernel_wrapper"
+set iterations 1
+set match_max 12000
+
+parse_args $argv $argc
+
+puts -nonewline "$tc_name: "
+flush stdout
+read_tc $tc_name
+set shell "/home/jnoll/projects/peos/src/os/kernel/test/kernel_wrapper"
+
+if {$verbosity > 0} {
+    puts stdout "shell: $shell"
+    puts stdout "model: $model"
+    puts stdout "script: $script"
+    puts stdout "iterations: $iterations"
+}
+
+# Reset process table.
+set proc_table [open "proc_table.dat" "w"]
+puts $proc_table ""
+close $proc_table
+
+if {$verbosity >= 3} {
+    log_user 1
+}
+
+
+if {$gdb == 1} {
+    # Run test script in gdb.
+    spawn "gdb"
+    send "file ${shell}\r\n"
+    expect -ex "(gdb)"
+    send "$gdb_script\r\n"
+    expect -ex "(gdb)"
+    send "run\r\n"
+    
+} else {
+    # Run in test harness.
+    spawn $shell
+}
+
+expect {
+    "> " {}
+    -ex "(gdb)" {
+	gdb_interact
+    }
+    timeout {
+	error_msg shell-spawn timeout
+    }
+}
+
+
+for {set i 0} {$i < $iterations} {incr i} {
+    eval $script
+}
+
+send "quit\n"
+
+log_user 1
+puts "done."

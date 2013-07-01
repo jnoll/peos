@@ -1,0 +1,6 @@
+*.tc
+*.pml
+*.dat
+event.log
+proc_table.dat
+core*

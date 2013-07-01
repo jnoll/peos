@@ -1,0 +1,16 @@
+/usr/local/java/jdk1.2.2/bin/javac -classpath .:/usr/local/java/jdk1.2.2/lib:./pml/ui:\
+.:./pml:\
+./pml/datamodel:\
+./pml/Exceptions:\
+./java/util:\
+./javax/swing:\
+./javax/swing/application/datamodel: \
+./pml/*.java \
+./pml/Exceptions/*.java \
+./javax/swing/application/datamodel/*.java \
+./pml/ui/*.java \
+./java/util/*.java \
+./javax/swing/*.java \
+./pml/datamodel/*.java \
+./*.java
+

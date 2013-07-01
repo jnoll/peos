@@ -1,0 +1,10 @@
+port 14523 -- see webui.cfg
+Use this:
+gcc webui.c SMTP.c getcgivars.c interface.c smpsock.c strlib.c config.c -o
+webui.cgi  
+To get:
+webui.cgi
+
+chmod 755 public_html/form.html 
+chmod 755 cgi-bin/webui.cgi
+

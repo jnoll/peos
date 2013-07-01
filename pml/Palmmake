@@ -1,0 +1,38 @@
+CC	= m68k-palmos-gcc 
+CFLAGS	= -DPALM -I.. -I../os/palm -I/usr/m68k-palmos -g -Wall
+
+LIB = libpml.a
+
+OBJS	= graph.o list.o parser.o tree.o scanner.o
+SRCS	= parser.c scanner.c y.tab.h
+TEST_OBJS = ${OBJS} ${PalmCUnit}/PalmCUnit.o ${PalmCUnit}/TestParser.o \
+		${PalmCUnit}/TestRun.o ${PalmCUnit}/TestDB.o ${PalmCUnit}/AssertImpl.o \
+		${PalmCUnit}/Util.o
+YFLAGS	= -d
+
+
+all:		$(LIB)
+
+$(LIB):		$(SRCS) $(OBJS)		
+		rm -f $(LIB)
+		m68k-palmos-ar cru $(LIB) $(OBJS)
+		m68k-palmos-ranlib $(LIB) || true
+
+traverse:	traverse.o $(LIB)
+	$(CC) -o $@ $< $(LIB)
+
+ee: 		ee.o $(LIB)
+	$(CC) -o $@ $< $(LIB)
+
+t:              t.o $(LIB)
+	$(CC) -o $@ $< $(LIB)
+
+
+
+clean:;		rm -f $(LIB) $(TEST_OBJS)
+		rm -f PalmCU*
+
+clobber:;	rm -f $(LIB) $(OBJS) $(SRCS) y.tab.h libpml.a
+
+
+

@@ -1,0 +1,16 @@
+ID e
+ID EQ
+ID Q
+ID ,
+ID .
+ID GT
+ID LT
+ID EQ file:
+ID EQ file:/
+ID EQ file://
+ID EQ file:///
+ID EQ file:////
+ID EQ file:// 
+ID EQ file;
+NAME GT
+NAME LT

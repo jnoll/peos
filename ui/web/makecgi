@@ -1,0 +1,88 @@
+#!/usr/bin/perl
+
+print "This script does NOT allow you to pass arguments to 'make'.\n";
+print "If you need to pass arguments to make you will have to execute the commands manually.\n\n";
+print "Making webui.cgi \n";
+system("make -f Make.webui");
+print "Making login.cgi \n";
+system("make -f Make.login");
+
+if (!($ENV{HOME})) {
+   die "Environment varialbe HOME is not set. Set HOME to your home directory example: /home/jdoe";
+}                                                   
+
+if ($ARGV[0]) {
+   $InstallDir = $ARGV[0] . "/";
+   print "Install Directory = $InstallDir\n";
+} else {
+   $InstallDir = $ENV{HOME} . "/public_html/webui/";
+   print "No install directory passed to script Defaulting to $InstallDir\n";
+}
+$InstallDir =~ s/\/\//\//;
+
+if (!(-d "$InstallDir")) {
+   do {
+     print "$InstallDir is not a directory.  Create it? (y/n)\n";
+     $input = <STDIN>;
+   } until ($input =~ /(y|n)/i);
+
+   if ($input =~ /y/i) {
+      system("mkdir $InstallDir");
+   } else {
+      die "ERROR: $ARGV[0] is not a directory check your command line args.\n";
+   } 
+   print "Created $InstallDir for the webui directory.\n";
+}
+
+if ($ARGV[1]) {
+   $InstallFromDir = $ARGV[1] . "/";
+   print "Installing From Directory = $InstallDir\n";
+} else {
+   $InstallFromDir = $ENV{HOME} . "/peos/src/ui/web/";
+   print "No directory to install from passed to script Defaulting to $InstallFromDir\n";
+}
+$InstallFromDir =~ s/\/\//\//;
+
+if (!(-d "$InstallFromDir")) {
+   die "ERROR the directory $InstallFromDir does not exit.\n";
+}
+
+
+if (-e "webui.cgi") {
+   print "webui.cgi exits ";
+   if (-x "webui.cgi") {
+      print "and is being copied to $InstallDir\n";
+      system ("cp webui.cgi $InstallDir");
+    } else {
+      print "but it is not executable; ERROR: Check permissions it will not be copied.\n";
+    }
+} else {
+   print "ERROR: webui.cgi does not exit check build info.\n";
+}
+
+if (-e "login.cgi") {
+   print "login.cgi exits ";
+   if (-x "login.cgi") {
+      print "and is being copied to $InstallDir\n";
+      system ("cp login.cgi $InstallDir");
+    } else {
+      print "but it is not executable. ERROR: Check permissions it will not be copied.\n";
+    }
+} else {
+   print "ERROR: login.cgi does not exit check build info.\n";
+}
+
+open (configFileH, "<cgiConfigFiles.cfg");
+@configLines = <configFileH>;
+
+$fileDir = $InstallFromDir . "/public_html/";
+$fileDir =~ s/\/\//\//;
+foreach $line (@configLines) {
+   chomp($line);
+   if (-e "$fileDir$line") {
+      print "Copying file $fileDir$line to $InstallDir$line\n";
+      system("cp $fileDir$line $InstallDir");
+   } else {
+      print "ERROR: The file $fileDir$line does not exist\n";
+   }
+}

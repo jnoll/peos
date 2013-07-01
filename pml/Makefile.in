@@ -1,0 +1,20 @@
+SHELL= /bin/sh
+
+CC= gcc
+
+MAKE= make
+
+SUBDIRS= pml expr check graph
+
+V= @
+
+all: build
+
+build clean clobber:	
+	${V}for subdir in ${SUBDIRS}; \
+	do \
+		echo "...start $@ing in $$subdir..." ; \
+		${MAKE} $@ -C $$subdir; \
+		echo ".....end $@ing in $$subdir..." ; \
+		echo "" ; \
+	done; 

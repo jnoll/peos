@@ -1,0 +1,114 @@
+#!/bin/sh
+# Create a process instance and send email notification to actor.
+# John Noll Thursday, August 12 2004
+
+# XXX
+# XXX THIS IS A COMPLETELY UNTESTED PROTOTYPE INTENDED TO ILLUSTRATE
+# XXX THE CONCEPT ONLY!
+# XXX
+
+# User's home directory prefix.
+PREFIX=
+EXPORT=export
+HOME_PREFIX=$HOME
+WHEREIS=whereis
+
+# XXX There will have to be an installation mechanism that sets this
+# path appropriately.  We can't rely on the user's environment, since
+# this script may be invoked from programs like cron or CVS's loginfo
+# that don't necessarily create a full version of the user's environment.
+
+# May need to use this command to find out where peos resides.
+#`$WHEREIS peos`
+
+#XXX THESE ARE SET DOWN BELOW - I DON'T KNOW HOW THE INSTALLATION MECH. WORKS CURRENTLY
+#PEOS=/home/jnoll/bin/peos
+#PEOS=/home/jmontana/bin/peos
+#$EXPORT PATH=$PATH:/bin:/usr/bin:$HOME/bin
+#PATH=/bin:/usr/bin
+
+
+# Arguments.  First is process to create; second is optional user
+# name.
+MODEL=$1
+
+# Need to do a check to see if the pml file exists.
+if [ -f $MODEL ]
+then	echo "$MODEL file exists." 
+else    	
+	echo "$MODEL file does not exist.  Need to specify a correct file path for $MODEL"
+	exit
+fi	
+
+# The user must specify a process name.
+if [ $# -lt 1 ]; then
+	echo "Invalid Invocation. Specify: <program> <process-name> [user-name]"
+	exit
+fi	
+
+# The user has specified a user name.
+if [ $# -gt 1 ] ; then 
+   USER=$2
+else
+# Default user name.
+   USER=`whoami`
+fi
+
+PEOS=/home/jmontana/bin/peos
+$EXPORT PATH=$PATH:/bin:/usr/bin:$HOME/bin
+
+# Create model.  Model must be a full path, since the process is
+# likely not being invoked from a directory containing models.
+# Rather, have to use a known directory in the user's account, so 
+# the process table can be found.
+# XXX need error handling: what if the dir is not there?  What if home
+# directories are not in /home?
+
+# Fail and require prefix to users directory.
+
+PEOS_DIR=/home/${USER}/.peos
+
+# Need to check to see if PEOS_DIR is a valid directory.
+if [ -d $PEOS_DIR ]
+then 
+	# Defualt path to known directory.
+        cd "/home/${USER}/.peos" && $PEOS -c $MODEL
+else
+	# Need to set prefix if home directory files are not in /home .
+	if [ "$PREFIX" = "" ]; then 
+
+		# Check to see if root directory of $HOME path exists.
+		if [ -d $HOME_PREFIX ]
+		then
+			# Setting prefix to root directory of $HOME path.
+			PREFIX=`dirname $HOME_PREFIX`
+   			PEOS=/$PREFIX/${USER}/bin/peos
+   			export PATH=$PATH:/bin:/usr/bin:/$PREFIX/${USER}/bin
+		else
+			echo "$HOME_PREFIX does not exist.  Set the HOME envirnment variable to the correct home directory."
+		fi	
+	fi
+
+	#check to see if directory exists
+	if [ -d $PREFIX/$USER/.peos ]
+	then
+        	cd "${PREFIX}/${USER}/.peos" && $PEOS -c $MODEL
+	else
+		echo "Directory ${PEFIX}/${USER}/.peos does not exist"
+		exit
+	fi
+
+fi 
+
+# XXX Should check exit code before sending mail, but unfortunately
+# peos doesn't return 0 on successful create.
+MODEL_NAME=`basename $MODEL`
+
+# Set PREFIX to the default home directory prefix.
+if [ "$PREFIX" = "" ]
+then 
+	PREFIX=/home
+fi	
+	
+cat "${PREFIX}/${USER}/.peos/proc_table.dat.xml"|/bin/mail -s "new instance of '$MODEL_NAME' created" $USER
+
