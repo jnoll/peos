@@ -1,0 +1,100 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+div#supportsystem{
+	resize: both;
+	width: 300px;
+	height: 500px;
+	border-style: groove;
+	/*float: right;*/
+	padding: 0px;
+	background-color: #FFC;
+	overflow: scroll;
+	position: relative;
+}
+
+ul.process {
+	width: auto;
+	overflow: visible;
+	margin-top: 60px;
+}
+
+#process-header {
+	background: #CCC;
+	width: inherit;
+	margin: 0px;
+	padding: 0px;
+	height: 50px;
+}
+
+h1 {
+	font-size: 24px;
+	padding: 10px;
+	margin-top: 0px;
+}
+	
+li {
+	list-style: none;
+	margin-bottom: 9px;
+	cursor: pointer;
+	border-bottom: 1px dashed #666;
+	white-space: nowrap;
+}
+
+/*li span {
+	height: 24px;
+	display: inline-block;
+	background-color: #09C;
+}*/
+
+ul {
+	margin-top: 9px;
+}
+
+li.action.ready {
+	list-style: url(../images/ready.png);
+}
+
+li.action.available {
+	list-style: url(../images/available.png);
+}
+
+li.action.blocked {
+	list-style: url(../images/blocked.png);
+}
+
+li.action.none {
+	list-style: url(../images/none.png);
+}
+
+li.action.done {
+	list-style: url(../images/done.png);
+}
+
+li.iteration.ready {
+	list-style: url(../images/iteration-ready.png);
+}
+
+li.iteration.available {
+	list-style: url(../images/iteration-available.png);
+}
+
+li.iteration.blocked {
+	list-style: url(../images/iteration-blocked.png);
+}
+
+li.iteration.none {
+	list-style: url(../images/iteration-none.png);
+}
+
+li.branch.available {
+	list-style: url(../images/branch-available.png);
+}
+
+li.branch.none {
+	list-style: url(../images/branch-none.png);
+}
