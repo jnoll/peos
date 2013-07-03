@@ -1,14 +1,17 @@
 #HTML_DIR=$(HOME)/public_html
 HTML_DIR=C:/xampp/htdocs
-INSTALL_DIR=$(HTML_DIR)/PEOS1
+INSTALL_DIR=$(HTML_DIR)/carepathways
 PML_DIR=../../pml
 KERNEL_DIR=../../os/kernel
 
 CGI=peos.cgi 
 HTML=index.html
-JS=peos.js
+JS=$(wildcard scripts/*.*)
+COOKIE_JS=$(wildcard scripts/jquery_cookie/*.*)
 PML=$(wildcard *.pml)
-SUPPORT=peos_init.tcl proc_table.dat proc_table.dat.xml
+SUPPORT=peos_init.tcl
+CSS=$(wildcard css/*.css)
+IMAGES=$(wildcard images/*.*)
 
 # compiler:
 CC = gcc 
@@ -41,8 +44,16 @@ peos.cgi: $(OBJS)
 
 install: build
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)
+	install -m $(DIR_MODE) -d $(INSTALL_DIR)/scripts
+	install -m $(DIR_MODE) -d $(INSTALL_DIR)/scripts/jquery_cookie
+	install -m $(DIR_MODE) -d $(INSTALL_DIR)/images
+	install -m $(DIR_MODE) -d $(INSTALL_DIR)/css
 	install -m $(SCRIPT_MODE) $(CGI) $(INSTALL_DIR)
-	install -m $(FILE_MODE) $(JS) $(HTML) $(PML) $(SUPPORT) $(INSTALL_DIR)
+	install -m $(FILE_MODE) $(HTML) $(PML) $(SUPPORT) $(INSTALL_DIR)
+	install -m $(FILE_MODE) $(JS) $(INSTALL_DIR)/scripts
+	install -m $(FILE_MODE) $(COOKIE_JS) $(INSTALL_DIR)/scripts/jquery_cookie
+	install -m $(FILE_MODE) $(IMAGES) $(INSTALL_DIR)/images
+	install -m $(FILE_MODE) $(CSS) $(INSTALL_DIR)/css
 	install htaccess $(INSTALL_DIR)/.htaccess
 
 # Unit tests.
