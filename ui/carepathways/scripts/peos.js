@@ -1,18 +1,3 @@
-function actionForm(pid, action, event) {
-    var newTxt = [];
-    var i = 0;
-    newTxt[i++] = "<div>";
-    newTxt[i++] = "<form action='#' class='peos-op' method=POST>";
-    newTxt[i++] = "<input type='hidden' name='pid' value='" + pid + "'/>";
-    newTxt[i++] = "<input type='hidden' name='action' value='" + action + "'/>";
-    newTxt[i++] = "<input type='hidden' name='event' value='" + event + "'/>"; // So serialize() will include a hidden 'event' input.
-    newTxt[i++] = "<input type='submit' class='peos-submit' name='submit' value='" + event + "'/>";
-    newTxt[i++] = "</form>";
-    newTxt[i++] = "</div>";
-	//alert (newTxt.join("\n"));
-    return newTxt.join("\n");
-}
-
 function loadModels(modelsXML) { 
 
     target = $("#carepathways");
@@ -23,64 +8,98 @@ function loadModels(modelsXML) {
 		var carepathwayLi = $('<li></li>', {"class": "carepathway"});
 		carepathwayLi.attr("name", carepathway);
 		carepathwayLi.attr("id", carepathway);
-		carepathwayLi.text(carepathway);
+		carepathwayLi.append($('<a></a>', {"class": "carepathwaylink"}).text(carepathway));
 		$('#carepathways').append(carepathwayLi, "\n");
 	});
 
-	$('#carepathways li.carepathway').click(function(){
-       openCarePathway($(this));
+	$('#carepathways li.carepathway a.carepathwaylink').click(function(){
+       openCarePathway($(this).parent());
     });
-	console.log($('html').html());
+	//console.log($('html').html());
 }
 
-function createAction(action, parent) {	
+function createAction(action, parent, pid) {	
+	var actionName = action.attr("name");
 	var actionLi = $('<li></li>', {"class": "action"});
 	actionLi.addClass(action.attr("state").toLowerCase());
 	//actionLi.text(action.attr("name") + " (" + action.attr("state").toLowerCase() + ")");
-	actionLi.text(action.attr("name"));
+	actionLi.text(actionName);
 	//alert(action.attr("name"));
 	//actionLi.appendTo(parent);
 	parent.append("\n", actionLi);
+	var actionDetailsDiv = $('<div></div>', {"data-cp-action": actionName, "class": "actiondetails"});
+	actionLi.append("  \n", actionDetailsDiv);
+	var actionDetailsDl = $('<dl></dl>');
+	actionDetailsDiv.append("    \n", actionDetailsDl);
+	actionDetailsDl.append("      \n", $('<dt></dt>').text("State: "));
+	actionDetailsDl.append($('<dd></dd>').text(action.attr("state")));
 	
-	// Bind an action to the submit button.
-   /* $('form').submit(function(e){
-	    e.preventDefault(); 
-	    $.ajax({
-		type: "POST",
-		url: "peos.cgi",
-		data: $(this).serialize(),
-		processData: false,
-		success: processXML,
-		//	dataType: "xml",
-		})
-		.fail(function(e, status, msg) { alert(":submitEvent:error: " + status + " : " + msg + " : " + e); })
-		return false; 
-	});*/
+	if (action.children("req_resource").length > 0) {
+		actionDetailsDl.append("      \n", $('<dt></dt>').text("Required resources: "));
+		var reqResourcesUl = $('<ul></ul>');
+		actionDetailsDl.append($('<dd></dd>').append(reqResourcesUl));
+		action.children("req_resource").each(function() {
+				var text = $(this).attr("name");
+				text += " = ";
+				text += $(this).attr("value");
+				if ($(this).attr("qualifier") != "") {
+					text += " (" + $(this).attr("qualifier") + ")";
+				}
+				reqResourcesUl.append("      \n", $('<li></li>').text(text)); 
+			});	
+	}
+	
+	if (action.children("prov_resource").length > 0) {
+		actionDetailsDl.append("      \n", $('<dt></dt>').text("Provided resources: "));
+		var reqResourcesUl = $('<ul></ul>');
+		actionDetailsDl.append($('<dd></dd>').append(reqResourcesUl));
+		action.children("prov_resource").each(function() {
+				var text = $(this).attr("name");
+				text += " = ";
+				text += $(this).attr("value");
+				if ($(this).attr("qualifier") != "") {
+					text += " (" + $(this).attr("qualifier") + ")";
+				}
+				reqResourcesUl.append("      \n", $('<li></li>').text(text)); 
+			});	
+	}
+	if (action.children("script").text().search("null") < 0) {
+		actionDetailsDl.append("      \n", $('<dt></dt>').text("Script: "));
+		actionDetailsDl.append($('<dd></dd>').text(action.children("script").text()));
+	}
+	
+	var actionButtonsDiv = $('<div></div>', {"class": "actionButtons"});
+	actionDetailsDiv.append("    \n", actionButtonsDiv);
+	var buttons = ["Start", "Suspend", "Finish", "Abort"];
+	
+	for (i in buttons) {
+		actionButtonsDiv.append($('<input />', {"type": "button", "value": buttons[i]}));	
+	}
+
 	return;
 }
 
-function createElement(element, type, parent) {	
+function createElement(element, type, parent, pid) {	
 	var elementLi = $('<li></li>', {"class": type});
 	//elementLi.text(element.attr("name"));
 	parent.append("\n", elementLi); 
 	var elementUl = $('<ul></ul>').appendTo(elementLi);
-	processElements(element, elementUl);
+	processElements(element, elementUl, pid);
 	return;
 }
 
-function processElements(node, parent) {
+function processElements(node, parent, pid) {
 	node.children().each(function() {
 		var element = $(this);
 		var nodeType = element[0].nodeName;
 		if (nodeType == "action") {
-			createAction(element, parent);	
+			createAction(element, parent, pid);	
 		} else {
-			createElement(element, nodeType, parent)
+			createElement(element, nodeType, parent, pid)
 		}
 	});
 	return;
 }
-
 
 function getModelsXML() {
     //alert("loadProcessTable");
@@ -119,14 +138,22 @@ function openCarePathway(carepathway) {
 				},
 			dataType: "xml"
 		});
-		//alert('created');
+		//alert('created');		
 	}	
+	//console.log("openCarePathway html: \n");
+	//console.log($('html').html());
 }
 
 
-function loadProcess(processXML, process, pid) {
-	var processUl = $('<ul></ul>', {"class": "process"});
-	processUl.appendTo(process);
+function loadProcess(processXML, carepathway, pid) {
+	console.log("loadProcess pid: " + pid);
+	var processUl;
+	if (carepathway.children('ul.process').length == 0) {
+		processUl = $('<ul></ul>', {"class": "process"}).appendTo(carepathway);
+	} else {
+		processUl = carepathway.children('ul.process');
+		processUl.empty();
+	}
 	var procTable = $('process_table', processXML);
 	//alert("pid: " +  pid);
 	if (pid < 0) {
@@ -135,25 +162,55 @@ function loadProcess(processXML, process, pid) {
 			//alert($(this).attr('model'));
 			//alert(process.attr("name") + ".pml");
 			
-				var processName = process.attr("name");
+				var processName = carepathway.attr("name");
 				if ($(this).attr('model').search(processName + ".pml")>=0) {
-					processElements($(this), processUl);	
+					pid = $(this).attr("pid");
+					processElements($(this), processUl, pid);	
 					//alert(processName);
 					//alert($(this).attr("pid"));
-					$.cookie(processName, $(this).attr("pid"));
+					$.cookie(processName, pid);
 					//alert("cookie: " + $.cookie(processName));
 				}
 			
 		});	
 	} else {
-		processElements(procTable.children("process[pid='" + pid + "']"), processUl);	
+		processElements(procTable.children("process[pid='" + pid + "']"), processUl, pid);	
 	}
+	
+	// Bind a function to the action buttons.
+	carepathway.attr("data-cp-pid", pid);
+	carepathway.find('.actiondetails input').click(function(){
+		//alert("button");
+		var event = $(this).attr("value").toLowerCase();
+		var actionName = $(this).parents('.actiondetails').attr("data-cp-action");
+		var data = "pid=" + pid + "&action=" + actionName + "&event=" + event;
+		console.log("query string: " + data);
+		$.ajax({
+			async: false,
+			type: "POST",
+			url: "peos.cgi",
+			data: data,
+			processData: false,
+			success: function(data) {  
+				   loadProcess(data, carepathway, pid);
+				},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+				},
+			dataType: "xml"
+		});
+		console.log("@clicked action button");
+	});
+	
+	
 	//alert(process.html());
+	console.log("loadProcess html: \n");
+	console.log($('html').html());
 }
 
 function deleteProcess(pid) {
-	console.log('deleting');
-	console.log("pid=" + pid+ "&event=delete");
+	//console.log('deleting');
+	//console.log("pid=" + pid+ "&event=delete");
 	$.ajax({
 			async: false,
 			type: "POST",
@@ -182,8 +239,8 @@ $(document).ready(function() {
 	$(window).bind('beforeunload', function() {
 		for (cookieName in $.cookie()) {
 			if (cookieName != "") {
-				console.log("cookie name: " + cookieName);
-				console.log("pid: " + $.cookie(cookieName));
+				//console.log("cookie name: " + cookieName);
+				//console.log("pid: " + $.cookie(cookieName));
 				var pid = $.cookie(cookieName);
 				$.removeCookie(cookieName);
 				deleteProcess(pid);

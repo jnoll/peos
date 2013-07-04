@@ -5,25 +5,25 @@ body {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
-div#supportsystem{
+div#supportsystem {
 	resize: both;
-	width: 300px;
-	height: 500px;
+	/*width: 300px;
+	height: 500px;*/
 	border-style: groove;
 	/*float: right;*/
 	padding: 0px;
-	background-color: #FFC;
+	background-color: #EFE7F6;  /*#F5F5F5 - #CC99FF*/ 
 	overflow: scroll;
 	position: relative;
 }
 
-ul.process {
+#supportsystem ul.process {
 	width: auto;
 	overflow: visible;
 	margin-top: 60px;
 }
 
-#process-header {
+#supportsystem #process-header {
 	background: #CCC;
 	width: inherit;
 	margin: 0px;
@@ -31,18 +31,32 @@ ul.process {
 	height: 50px;
 }
 
-h1 {
+#supportsystem h1 {
 	font-size: 24px;
 	padding: 10px;
 	margin-top: 0px;
 }
+
+#supportsystem li a{
+	margin-left: -50px;
+	padding-left: 50px;
+	cursor: pointer;
+	display: inline-block;
+	margin-bottom: 10px;
+}
 	
-li {
+#supportsystem li {
 	list-style: none;
 	margin-bottom: 9px;
-	cursor: pointer;
-	border-bottom: 1px dashed #666;
+	/*border-bottom: 1px dashed #666;*/
 	white-space: nowrap;
+}
+
+#supportsystem ul.process {
+	border: 1px dotted #666;
+	margin-left: 10px;
+	margin-top: 10px;
+	background-color: #F1ECF6;
 }
 
 /*li span {
@@ -51,50 +65,88 @@ li {
 	background-color: #09C;
 }*/
 
-ul {
+#supportsystem ul {
 	margin-top: 9px;
 }
 
-li.action.ready {
+#supportsystem ul.process {
+	margin-top: 0px;
+}
+
+#supportsystem li.action.ready {
 	list-style: url(../images/ready.png);
 }
 
-li.action.available {
+#supportsystem li.action.available {
 	list-style: url(../images/available.png);
 }
 
-li.action.blocked {
+#supportsystem li.action.blocked {
 	list-style: url(../images/blocked.png);
 }
 
-li.action.none {
+#supportsystem li.action.none {
 	list-style: url(../images/none.png);
 }
 
-li.action.done {
+#supportsystem li.action.done {
 	list-style: url(../images/done.png);
 }
 
-li.iteration.ready {
-	list-style: url(../images/iteration-ready.png);
-}
-
-li.iteration.available {
-	list-style: url(../images/iteration-available.png);
-}
-
-li.iteration.blocked {
-	list-style: url(../images/iteration-blocked.png);
-}
-
-li.iteration.none {
+#supportsystem li.iteration {
 	list-style: url(../images/iteration-none.png);
 }
 
-li.branch.available {
+#supportsystem li.iteration.ready {
+	list-style: url(../images/iteration-ready.png);
+}
+
+#supportsystem li.iteration.available {
+	list-style: url(../images/iteration-available.png);
+}
+
+#supportsystem li.iteration.blocked {
+	list-style: url(../images/iteration-blocked.png);
+}
+
+#supportsystem li.iteration.none {
+	list-style: url(../images/iteration-none.png);
+}
+
+#supportsystem li.branch {
+	list-style: url(../images/branch-none.png);
+}
+
+#supportsystem li.branch.available {
 	list-style: url(../images/branch-available.png);
 }
 
-li.branch.none {
+#supportsystem li.branch.none {
 	list-style: url(../images/branch-none.png);
+}
+
+#supportsystem li.selection {
+	list-style: square;
+}
+
+#supportsystem li.sequence {
+	list-style: disc;
+}
+
+#supportsystem li.action .actiondetails {
+	border: 1px dashed #666;
+	width: 300px;
+	background-color: #F3F0F6;  /*#F5F5F5 - #CC99FF*/ 
+	padding: 10px;
+	margin-top: 10px;
+	white-space: normal;
+	font-size: 0.9em;
+}
+
+#supportsystem .actionButtons {
+	margin-top: 20px;
+}
+
+#carepathways .actionButtons input {
+	background-color: #E7D5F8;
 }
