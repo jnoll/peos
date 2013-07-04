@@ -1,0 +1,5 @@
+process p {
+action a {}
+action b {}
+action c {}
+}
