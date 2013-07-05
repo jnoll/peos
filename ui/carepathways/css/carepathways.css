@@ -37,12 +37,13 @@ div#supportsystem {
 	margin-top: 0px;
 }
 
-#supportsystem li a{
-	margin-left: -50px;
-	padding-left: 50px;
+#supportsystem li a {
+	/*margin-left: -50px;*/
+	padding-left: 20px;
 	cursor: pointer;
 	display: inline-block;
 	margin-bottom: 10px;
+	min-width: 20px;
 }
 	
 #supportsystem li {
@@ -73,28 +74,28 @@ div#supportsystem {
 	margin-top: 0px;
 }
 
-#supportsystem li.action.ready {
-	list-style: url(../images/ready.png);
+#supportsystem li.action[data-cp-state=ready] a.toggle {
+	background: url(../images/ready.png) no-repeat;
 }
 
-#supportsystem li.action.available {
-	list-style: url(../images/available.png);
+#supportsystem li.action[data-cp-state=available] a.toggle {
+	background: url(../images/available.png) no-repeat;
 }
 
-#supportsystem li.action.blocked {
-	list-style: url(../images/blocked.png);
+#supportsystem li.action[data-cp-state=blocked] a.toggle {
+	background: url(../images/blocked.png) no-repeat;
 }
 
-#supportsystem li.action.none {
-	list-style: url(../images/none.png);
+#supportsystem li.action[data-cp-state=none] a.toggle {
+	background: url(../images/none.png) no-repeat;
 }
 
-#supportsystem li.action.done {
-	list-style: url(../images/done.png);
+#supportsystem li.action[data-cp-state=done] a.toggle {
+	background: url(../images/done.png) no-repeat;
 }
 
-#supportsystem li.iteration {
-	list-style: url(../images/iteration-none.png);
+#supportsystem li.iteration>a.toggle {
+	background: url(../images/iteration-none.png) no-repeat;
 }
 
 #supportsystem li.iteration.ready {
@@ -113,8 +114,12 @@ div#supportsystem {
 	list-style: url(../images/iteration-none.png);
 }
 
-#supportsystem li.branch {
-	list-style: url(../images/branch-none.png);
+#supportsystem li.branch>a.toggle {
+	background: url(../images/branch-none.png) no-repeat;
+}
+
+#supportsystem li.branch>ul>li {
+	list-style: url(../images/branch-none-item.png);
 }
 
 #supportsystem li.branch.available {
@@ -125,12 +130,16 @@ div#supportsystem {
 	list-style: url(../images/branch-none.png);
 }
 
-#supportsystem li.selection {
-	list-style: square;
+#supportsystem li.selection a.toggle {
+	background: url(../images/selection-none.png) no-repeat;
 }
 
-#supportsystem li.sequence {
-	list-style: disc;
+#supportsystem li.selection>ul>li {
+	list-style: url(../images/selection-none-item.png);
+}
+
+#supportsystem li.sequence a.toggle {
+	background: url(../images/sequence-none.png) no-repeat;
 }
 
 #supportsystem li.action .actiondetails {

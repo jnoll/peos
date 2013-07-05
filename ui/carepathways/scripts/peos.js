@@ -8,37 +8,40 @@ function loadModels(modelsXML) {
 		var carepathwayLi = $('<li></li>', {"class": "carepathway"});
 		carepathwayLi.attr("name", carepathway);
 		carepathwayLi.attr("id", carepathway);
-		carepathwayLi.append($('<a></a>', {"class": "carepathwaylink"}).text(carepathway));
+		carepathwayLi.append($('<a></a>', {"class": "toggle"}).text(carepathway));
 		$('#carepathways').append(carepathwayLi, "\n");
 	});
 
-	$('#carepathways li.carepathway a.carepathwaylink').click(function(){
+	$('#carepathways li.carepathway').children('a').click(function(){
        openCarePathway($(this).parent());
     });
 	//console.log($('html').html());
 }
 
-function createAction(action, parent, pid) {	
+function createAction(action, parent, pid) {
 	var actionName = action.attr("name");
-	var actionLi = $('<li></li>', {"class": "action"});
-	actionLi.addClass(action.attr("state").toLowerCase());
+	//console.log("@createAction: " + actionName);
+	var actionLi = $('<li></li>', {"data-cp-action": actionName, "class": "action"});
+	actionLi.attr("data-cp-state", action.attr("state").toLowerCase());
 	//actionLi.text(action.attr("name") + " (" + action.attr("state").toLowerCase() + ")");
-	actionLi.text(actionName);
+	actionLi.append($('<a></a>', {"class": "toggle"}).text(actionName));
 	//alert(action.attr("name"));
 	//actionLi.appendTo(parent);
 	parent.append("\n", actionLi);
-	var actionDetailsDiv = $('<div></div>', {"data-cp-action": actionName, "class": "actiondetails"});
+	var actionDetailsDiv = $('<div></div>', {"class": "actiondetails"});
 	actionLi.append("  \n", actionDetailsDiv);
 	var actionDetailsDl = $('<dl></dl>');
 	actionDetailsDiv.append("    \n", actionDetailsDl);
 	actionDetailsDl.append("      \n", $('<dt></dt>').text("State: "));
-	actionDetailsDl.append($('<dd></dd>').text(action.attr("state")));
+	actionDetailsDl.append($('<dd></dd>', {"class": "state"}).text(action.attr("state")));
 	
 	if (action.children("req_resource").length > 0) {
+		//console.log("req_resource");
 		actionDetailsDl.append("      \n", $('<dt></dt>').text("Required resources: "));
 		var reqResourcesUl = $('<ul></ul>');
 		actionDetailsDl.append($('<dd></dd>').append(reqResourcesUl));
 		action.children("req_resource").each(function() {
+				console.log($(this).attr("name"));
 				var text = $(this).attr("name");
 				text += " = ";
 				text += $(this).attr("value");
@@ -79,11 +82,25 @@ function createAction(action, parent, pid) {
 	return;
 }
 
+function updateActionsState(data, carepathway, pid) {
+	console.log("@updateActionsState");
+	$('process_table', data).find("process[pid='" + pid + "']").find('action').each(function() {
+		var state = $(this).attr("state");
+		var actionName = $(this).attr("name");
+		console.log("state: " + state + " - action: " + actionName);
+		var actionLi = carepathway.find('.action[data-cp-action=' + actionName + ']');
+		actionLi.attr("data-cp-state", state.toLowerCase());
+		actionLi.find('dd.state').text(state);
+	});
+	console.log(carepathway.html());
+}
+
 function createElement(element, type, parent, pid) {	
 	var elementLi = $('<li></li>', {"class": type});
 	//elementLi.text(element.attr("name"));
+	elementLi.append($('<a></a>', {"class": "toggle"}).text(element[0].nodeName));
 	parent.append("\n", elementLi); 
-	var elementUl = $('<ul></ul>').appendTo(elementLi);
+	var elementUl = $('<ul></ul>', {"class": "toggle"}).appendTo(elementLi);
 	processElements(element, elementUl, pid);
 	return;
 }
@@ -138,7 +155,7 @@ function openCarePathway(carepathway) {
 				},
 			dataType: "xml"
 		});
-		//alert('created');		
+		//alert('created');	
 	}	
 	//console.log("openCarePathway html: \n");
 	//console.log($('html').html());
@@ -177,12 +194,26 @@ function loadProcess(processXML, carepathway, pid) {
 		processElements(procTable.children("process[pid='" + pid + "']"), processUl, pid);	
 	}
 	
+	$('#carepathways ul.process li ul.toggle').hide();
+		
+	carepathway.find('li a.toggle').click(function(){
+		$(this).parent().children('ul').toggle();
+	});
+	
+	carepathway.find('li.action div.actiondetails').hide();
+	
+	carepathway.find('li.action a.toggle').click(function(){
+		//alert("action");
+		$(this).parent().children('div.actiondetails').toggle();
+	});
+	
+	
 	// Bind a function to the action buttons.
 	carepathway.attr("data-cp-pid", pid);
 	carepathway.find('.actiondetails input').click(function(){
 		//alert("button");
 		var event = $(this).attr("value").toLowerCase();
-		var actionName = $(this).parents('.actiondetails').attr("data-cp-action");
+		var actionName = $(this).parents('.action').attr("data-cp-action");
 		var data = "pid=" + pid + "&action=" + actionName + "&event=" + event;
 		console.log("query string: " + data);
 		$.ajax({
@@ -192,7 +223,7 @@ function loadProcess(processXML, carepathway, pid) {
 			data: data,
 			processData: false,
 			success: function(data) {  
-				   loadProcess(data, carepathway, pid);
+				   updateActionsState(data, carepathway, pid);
 				},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
 					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
@@ -207,6 +238,7 @@ function loadProcess(processXML, carepathway, pid) {
 	console.log("loadProcess html: \n");
 	console.log($('html').html());
 }
+
 
 function deleteProcess(pid) {
 	//console.log('deleting');
