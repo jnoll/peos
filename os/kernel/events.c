@@ -451,7 +451,7 @@ char* peos_get_resource_file(char* process){
         return res_path;
     }
     if (res_file)
-        free(res_file);
+        free(res_file);		/* XXX should be freed above? */
     if (res_path)
         free(res_path);
     return NULL;
