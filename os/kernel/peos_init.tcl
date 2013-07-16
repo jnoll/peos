@@ -1,12 +1,20 @@
+proc isTrue { v } {
+  return [expr {![string is false ${v}]}]
+}
+
 proc default { path } {
     exists $path
 }
 
 proc exists { path } {
     if {[catch {set r $path}]} {
-        return 1
+        return 0
     }
     expr [file exists $path]
+}
+
+proc ax { path } {
+    return 5
 }
 
 proc filecount { path } {

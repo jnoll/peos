@@ -15,19 +15,21 @@ model without being concerned with the real-world objects (files,
 database records, documents,  web pages, etc.) to which these names refer.
 
 When the kernel creates a running instance of a process model, the
-resource names are unbound: they don't refer to any real-world
-object.  The kernel provides a facility (_set_resource_binding()_) for
+resource names are unbound: they don't refer to any real-world object.
+The kernel provides a facility (_set_resource_binding()_) for
 *binding* resources to *values*.  This allows client programs to
 specify what real-world objects resource names refer to, by binding
-the resource name to an object's identifier.  Identifiers can be any
-ASCII string: a file path, database key, url, or any string that
-uniquely identifies an object within the context that the process is
-executing.   Each process instance has its own set of bindings, to the
-same resource name can refer to two different objects in two different
-instances. 
+the resource name to an object's identifier.  Object identifiers can
+be any ASCII string: a file path, database key, url, or any string
+that uniquely identifies an object within the context that the process
+is executing.  Each process instance has its own set of bindings, to
+the same resource name can refer to two different objects in two
+different instances.
+
+
 
 Once a resource name is bound to a value, the kernel can evaluate
-requires and provides predicates specified in the model.  This is
+_requires_ and _provides_ predicates specified in the model.  This is
 achieved with the aid of Tool Command Language (TCL) commands that are
 specified in the _peos_init.tcl_ file.  
 
@@ -114,7 +116,66 @@ predicate will automatically be false.
 2. There must be a corresponding TCL command for *every* attribute; if
 this is not the case, the kernel will return an error (this is a bug).
 
+## Derived Resource Bindings
 
+The kernel also allows resources to be bound to *expressions*, so that
+resource values can be derived at runtime.  For example, the web test
+process (_models/web_test.pml_) has an action to create the working
+directory, and a subsequent action to create a _Makefile_ and _README_ file:
+
+~~~~~
+action create_working_directory {
+    /* requires nothing */
+    provides { working_directory }
+}
+
+action create_makefile {
+    requires { working_directory }
+    provides { Makefile }
+}
+
+action create_readme {
+    requires { working_directory }
+    provides { readme }
+}
+
+~~~~~
+
+The value of the  _working_directory_ resource can be used to derive
+the values of the _Makefile_ and _readme_ resources:
+
+    Makefile : ${working_directory}/Makefile
+    readme : ${working_directory}/README
+
+These expressions should be written in a file with the model name as
+basename, and _.res_ extension.  Then, when an instance of the model
+is created, the kernel will look for a an associated _.res_ file and
+create any resource bindings found there; then, these resource binding
+expressions will be evaluated before _requires_ and _provides_
+predicates are evaluated to determine the state of actions.
+
+Note: resource value expressions must be valid _TCL_ expressions; the
+kernel does not (at present) understand PML resource expressions.  So,
+if you want to bind a resource to another resource's attribute, you
+must write `[attr ${resource}]` rather than `resource.attr`.  For
+example, suppose an action requires a "patient history"  resource:
+
+~~~~~
+action review_history
+    requires { patient_history }
+}
+~~~~~
+
+Now, we want this to be bound to the _patient_history_ attribute of an
+electronic medical record ; the way to express this in a _.res_ file
+is:
+
+    patient_history : [patient_history ${emr}]
+
+Then, at runtime, the _patient_history_ resource will be bound to
+_emr.patient_history_.  In this way, a client program only needs to
+specify a value for _emr_, and other resources will be derived from
+this value.
 
 
 
