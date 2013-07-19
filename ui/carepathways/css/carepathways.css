@@ -15,6 +15,7 @@ div#supportsystem {
 	background-color: #EFE7F6;  /*#F5F5F5 - #CC99FF*/ 
 	overflow: scroll;
 	position: relative;
+	font-size: 14px;
 }
 
 #supportsystem ul.process {
@@ -74,6 +75,14 @@ div#supportsystem {
 	margin-top: 0px;
 }
 
+#supportsystem li a.toggle {
+	padding-right: 20px;
+}
+
+#supportsystem li.action a.toggle {
+	padding-right: 10px;
+}
+
 #supportsystem li.action[data-cp-state=ready] a.toggle {
 	background: url(../images/ready.png) no-repeat;
 }
@@ -95,7 +104,7 @@ div#supportsystem {
 }
 
 #supportsystem li.iteration>a.toggle {
-	background: url(../images/iteration-none.png) no-repeat;
+	background: url(../images/iteration-none.png) no-repeat right;
 }
 
 #supportsystem li.iteration.ready {
@@ -115,7 +124,8 @@ div#supportsystem {
 }
 
 #supportsystem li.branch>a.toggle {
-	background: url(../images/branch-none.png) no-repeat;
+	background: url(../images/branch-none.png) no-repeat right;
+	
 }
 
 #supportsystem li.branch>ul>li {
@@ -130,16 +140,16 @@ div#supportsystem {
 	list-style: url(../images/branch-none.png);
 }
 
-#supportsystem li.selection a.toggle {
-	background: url(../images/selection-none.png) no-repeat;
+#supportsystem li.selection>a.toggle {
+	background: url(../images/selection-none.png) no-repeat right;
 }
 
 #supportsystem li.selection>ul>li {
 	list-style: url(../images/selection-none-item.png);
 }
 
-#supportsystem li.sequence a.toggle {
-	background: url(../images/sequence-none.png) no-repeat;
+#supportsystem li.sequence>a.toggle {
+	background: url(../images/sequence-none.png) no-repeat right;
 }
 
 #supportsystem li.action .actiondetails {

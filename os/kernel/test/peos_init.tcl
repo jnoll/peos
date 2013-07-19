@@ -13,10 +13,6 @@ proc exists { path } {
     expr [file exists $path]
 }
 
-proc diagnosis { path } {
-	return "diabetes"
-}
-
 proc ax { path } {
     return 5
 }

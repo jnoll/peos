@@ -9,6 +9,10 @@ proc exists { path } {
     expr [file exists $path]
 }
 
+proc diagnosis { path } {
+	return "diabetes"
+}
+
 proc filecount { path } {
     if {[catch {set r $path}]} {
         return 0

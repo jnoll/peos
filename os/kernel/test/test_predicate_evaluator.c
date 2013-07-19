@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "../predicate_evaluator.h"
 #undef TEST_PREDICATE_VERBOSE
 #include "test_util.h"
 
@@ -43,6 +44,86 @@ START_TEST(test_get_resource_index)
     fail_unless(get_resource_index(resources, 3, "res1") == 1, "get_resource_index failed");
     fail_unless(get_resource_index(resources, 3, "res2") == 2, "get_resource_index failed");
     free(resources);
+}
+END_TEST
+
+START_TEST(test_gen_expr)
+{
+    Tree t_and, t_or, t_eq, t_ne, t_lt, t_gt, t_le, t_ge, t_dot0, t_dot1,  t_res0, t_res1, t_attr0, t_attr1, t_true, t_string;
+    Tcl_DString buf;
+    char *e;
+
+    t_true = make_tree("\"true\"", 0, NULL, NULL);
+    t_string = make_tree("\"a string\"", 0, NULL, NULL);
+    t_res0 = make_tree("res0", 0, NULL, NULL);
+    t_attr0 = make_tree("filesize", 0, NULL, NULL);
+    t_dot0 = make_tree(NULL, DOT, t_res0, t_attr0);
+    
+    t_res1 = make_tree("res1", 0, NULL, NULL);
+    t_attr1 = make_tree("filesize", 0, NULL, NULL);
+    t_dot1 = make_tree(NULL, DOT, t_res1, t_attr1);
+    
+    t_eq = make_tree(NULL, EQ, t_dot0, t_dot1); // res0.filesize == res1.filesize
+    t_ne = make_tree(NULL, NE, t_dot0, t_dot1); // res0.filesize != res1.filesize
+    t_lt = make_tree(NULL, LT, t_dot0, t_dot1); // res0.filesize < res1.filesize
+    t_gt = make_tree(NULL, GT, t_dot0, t_dot1); // res0.filesize > res1.filesize
+    t_le = make_tree(NULL, LE, t_dot0, t_dot1); // res0.filesize <= res1.filesize
+    t_ge = make_tree(NULL, GE, t_dot0, t_dot1); // res0.filesize >= res1.filesize
+
+    t_and = make_tree(NULL, AND, t_eq, t_ne);
+    t_or = make_tree(NULL, OR, t_eq, t_ne);
+
+    Tcl_DStringInit(&buf);
+    e = gen_expr(t_res0, &buf); 
+    fail_unless(strcmp(e, "${res0}") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_dot0, &buf);
+    fail_unless(strcmp(e, "[filesize ${res0}]") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_eq, &buf);
+    fail_unless(strcmp(e, "([filesize ${res0}] == [filesize ${res1}])") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_ne, &buf);
+    fail_unless(strcmp(e, "([filesize ${res0}] != [filesize ${res1}])") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_lt, &buf);
+    fail_unless(strcmp(e, "([filesize ${res0}] < [filesize ${res1}])") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_gt, &buf);
+    fail_unless(strcmp(e, "([filesize ${res0}] > [filesize ${res1}])") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_le, &buf);
+    fail_unless(strcmp(e, "([filesize ${res0}] <= [filesize ${res1}])") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_ge, &buf);
+    fail_unless(strcmp(e, "([filesize ${res0}] >= [filesize ${res1}])") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_and, &buf);
+    fail_unless(strcmp(e, "(([filesize ${res0}] == [filesize ${res1}]) && ([filesize ${res0}] != [filesize ${res1}]))") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(t_or, &buf);
+    fail_unless(strcmp(e, "(([filesize ${res0}] == [filesize ${res1}]) || ([filesize ${res0}] != [filesize ${res1}]))") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(make_tree(NULL, EQ, t_dot0, t_true), &buf);
+    fail_unless(strcmp(e, "[isTrue [filesize ${res0}]]") == 0, e);
+
+    Tcl_DStringFree(&buf); Tcl_DStringInit(&buf); 
+    e = gen_expr(make_tree(NULL, EQ, t_dot0, t_string), &buf);
+    fail_unless(strcmp(e, "([filesize ${res0}] == \"a string\")") == 0, e);
+
+
+
+    Tcl_DStringFree(&buf);
 }
 END_TEST
 
@@ -177,7 +258,7 @@ START_TEST(test_eval_resource_list_bound) {
     strcpy(resources[2].name, "res2");
     strcpy(resources[2].value, "${res1}/val2");
     
-    fail_unless(eval_resource_list(&resources, 3), "eval_resource_list_bound failed");
+    fail_unless(eval_resource_list(&resources, 3) == 1, "eval_resource_list_bound failed");
     
     fail_unless(strcmp(resources[0].value, "val0") == 0, "eval_resource_list_bound failed");
     fail_unless(strcmp(resources[1].value, "val0/val1") == 0, "eval_resource_list_bound failed");
@@ -194,7 +275,7 @@ START_TEST(test_eval_resource_list_unbound) {
     strcpy(resources[2].name, "res2");
     strcpy(resources[2].value, "${res1}/val2");
     
-    fail_unless(eval_resource_list(&resources, 3), "eval_resource_list_unbound failed");
+    fail_unless(eval_resource_list(&resources, 3) == 1, "eval_resource_list_unbound failed");
     
     fail_unless(strcmp(resources[0].value, "${res0}") == 0, "eval_resource_list_unbound failed");
     fail_unless(strcmp(resources[1].value, "${res0}/val1") == 0, "eval_resource_list_unbound failed");
@@ -215,58 +296,63 @@ START_TEST(test_eval_predicate_abstract)
 
     t_res = make_tree("res", 0, NULL, NULL);
     
-    fail_unless(eval_predicate(resources, 1, t_res), "eval_predicate_abstract_0 failed");
+    fail_unless(eval_predicate(resources, 1, t_res) == 1, "eval_predicate_abstract_0 failed");
     free(resources);
 }
 END_TEST
 
 START_TEST(test_eval_predicate_null_tree)
 {
-    fail_unless(eval_predicate(NULL, 0, NULL), "eval_predicate_null_tree failed");
+    fail_unless(eval_predicate(NULL, 0, NULL) == 1, "eval_predicate_null_tree failed");
 }
 END_TEST
 
 START_TEST(test_eval_predicate_error)
 {
-    //test resources == NULL
-    peos_resource_t* resources;
+
+    peos_resource_t* resources = NULL;
     Tree t_dot, t_op, t0, t1, t_true;
     t0 = make_tree("res", 0, NULL, NULL);
-    fail_unless(eval_predicate(resources, 1, t0) == -1, "eval_predicate_error failed");
+    //test resources == NULL
+    fail_unless(eval_predicate(resources, 0, t0) == -1, "null resource list failed");
     //test num_resources == 0
     resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-    fail_unless(eval_predicate(resources, 0, t0) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 0, t0) == -1, "empty resource list failed");
     //resource name not found
     t1 = make_tree("exists", 0, NULL, NULL);
     t_dot = make_tree(NULL, DOT, t0, t1);
     strcpy(resources[0].name, "res_not_in_tree");
-    fail_unless(eval_predicate(resources, 1, t_dot) == -1, "eval_predicate_error failed");
-    //test tcl procedure not exists
+    strcpy(resources[0].value, "res_not_in_tree");
+    fail_unless(eval_predicate(resources, 1, t_dot) == -1, "unbound resource failed");
+
+    //test tcl attr procedure not exists
     strcpy(resources[0].name, "res");
     strcpy(resources[0].value, "val");
     free(t1);
     free(t_dot);
     t1 = make_tree("not_exist_tcl_proc", 0, NULL, NULL);
     t_dot = make_tree(NULL, DOT, t0, t1);
-    fail_unless(eval_predicate(resources, 1, t_dot) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 1, t_dot) == -1, "missing tcl attr procedure failed");
+
     //test operators that operate on error tree
     t_true = make_tree("\"True\"", 0, NULL, NULL);
     t_op = make_tree(NULL, EQ, t_true, t_dot);
-    fail_unless(eval_predicate(resources, 1, t_op) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 1, t_op) == -1, "missing tcl attr procedure EQ failed");
     t_op->ival = NE;
-    fail_unless(eval_predicate(resources, 1, t_op) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 1, t_op) == -1, "missing tcl attr procedure NE failed");
     t_op->ival = LT;
-    fail_unless(eval_predicate(resources, 1, t_op) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 1, t_op) == -1, "missing tcl attr procedure LT failed");
     t_op->ival = GT;
-    fail_unless(eval_predicate(resources, 1, t_op) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 1, t_op) == -1, "missing tcl attr procedure GT failed");
     t_op->ival = LE;
-    fail_unless(eval_predicate(resources, 1, t_op) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 1, t_op) == -1, "missing tcl attr procedure LE failed");
     t_op->ival = GE;
-    fail_unless(eval_predicate(resources, 1, t_op) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 1, t_op) == -1, "missing tcl attr procedure GE failed");
     t_op->ival = AND;
-    fail_unless(eval_predicate(resources, 1, t_op) == -1, "eval_predicate_error failed");
+    fail_unless(eval_predicate(resources, 1, t_op) == -1, "missing tcl attr procedure AND failed");
     t_op->ival = OR;
-    fail_unless(eval_predicate(resources, 1, t_op) == -1, "eval_predicate_error failed");
+    /* "True" || res.not_exist_tcl_proc is true */
+    fail_unless(eval_predicate(resources, 1, t_op) == 1, "missing tcl attr procedure OR failed");
     free(resources);
 }
 END_TEST
@@ -274,31 +360,44 @@ END_TEST
 START_TEST(test_eval_predicate_single_node)
 {
     peos_resource_t* resources;
-    Tree t0, t1, t2, t3, t4, t5, t6;
+    Tree t;
     
     resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
     strcpy(resources[0].name, "res");
     strcpy(resources[0].value, "my_file");
     
-    t0 = make_tree("\"True\"", 0, NULL, NULL);
-    t1 = make_tree("\"Passed\"", 0, NULL, NULL);
-    t2 = make_tree("\"1\"", 0, NULL, NULL);
-    t3 = make_tree("\"False\"", 0, NULL, NULL);
-    t4 = make_tree("\"Failed\"", 0, NULL, NULL);
-    t5 = make_tree("\"0\"", 0, NULL, NULL);
-    t6 = make_tree("res", 0, NULL, NULL);
-    
-    fail_unless(eval_predicate(NULL, 0, t0), "eval_predicate_single_node failed");
-    fail_unless(eval_predicate(NULL, 0, t1), "eval_predicate_single_node failed");
-    fail_unless(eval_predicate(NULL, 0, t2), "eval_predicate_single_node failed");
-    fail_unless(!eval_predicate(NULL, 0, t3), "eval_predicate_single_node failed");
-    fail_unless(!eval_predicate(NULL, 0, t4), "eval_predicate_single_node failed");
-    fail_unless(!eval_predicate(NULL, 0, t5), "eval_predicate_single_node failed");
-    
+
+    t = make_tree("\"True\"", 0, NULL, NULL);
+    fail_unless(eval_predicate(NULL, 0, t) == 1, "\"True\" failed");
+    free(t);
+
+    t = make_tree("\"true\"", 0, NULL, NULL); 
+    fail_unless(eval_predicate(NULL, 0, t) == 1, "\"true\" failed");
+    free(t);
+
+    t = make_tree("\"1\"", 0, NULL, NULL);
+    fail_unless(eval_predicate(NULL, 0, t) == 1, "\"1\" failed");
+    free(t);
+
+    t = make_tree("\"False\"", 0, NULL, NULL);
+    fail_unless(eval_predicate(NULL, 0, t) == 0, "\"False\" failed");
+    free(t);
+
+    t = make_tree("\"false\"", 0, NULL, NULL);
+    fail_unless(eval_predicate(NULL, 0, t) == 0, "\"false\" failed");
+    free(t);
+
+    t = make_tree("\"0\"", 0, NULL, NULL);
+    fail_unless(eval_predicate(NULL, 0, t) == 0, "\"0\" failed");
+    free(t);
+
+    t = make_tree("res", 0, NULL, NULL);
     system("touch my_file");
-    fail_unless(eval_predicate(resources, 1, t6), "eval_predicate_single_node failed");
+    fail_unless(eval_predicate(resources, 1, t) == 1, "[exists ${res}] (= my_file) failed");
     system("rm my_file");
-    fail_unless(!eval_predicate(resources, 1, t6), "eval_predicate_single_node failed");
+    fail_unless(eval_predicate(resources, 1, t) == 0, "not [exists ${res}] (= my_file0) failed");
+    free(t);    
+
     free(resources);
 }
 END_TEST
@@ -316,10 +415,17 @@ START_TEST(test_eval_predicate_dot)
     t_exists = make_tree("exists", 0, NULL, NULL);
     t_dot = make_tree(NULL, DOT, t_res, t_exists);
     
+    /* Happy path: requires { res.exists } */
     system("touch my_file");
-    fail_unless(eval_predicate(resources, 1, t_dot), "eval_predicate_dot failed");
+    fail_unless(eval_predicate(resources, 1, t_dot) == 1, "eval_predicate_dot 1 failed");
     system("rm my_file");
-    fail_unless(!eval_predicate(resources, 1, t_dot), "eval_predicate_dot failed");
+    fail_unless(eval_predicate(resources, 1, t_dot) == 0, "eval_predicate_dot 2 failed");
+
+
+    /* requires { doc.title } -> [isTrue [title ${doc}]] */
+    /* requires { doc.spellchecked } -> [isTrue [spellchecked ${doc}] */
+    /* requires { doc.spellchecked == "True" } [spellchecked ${doc}] == true */
+
     free(resources);
 }
 END_TEST
@@ -342,14 +448,14 @@ START_TEST(test_eval_predicate_and_or)
     
     system("touch my_file0");
     system("touch my_file1");
-    fail_unless(eval_predicate(resources, 2, t_and), "eval_predicate_and_or failed");
-    fail_unless(eval_predicate(resources, 2, t_or), "eval_predicate_and_or failed");
+    fail_unless(eval_predicate(resources, 2, t_and) == 1, "res0 AND res1 (both exist) failed");
+    fail_unless(eval_predicate(resources, 2, t_or) == 1, "res0 OR res1 (both exist) failed");
     system("rm my_file0");
-    fail_unless(!eval_predicate(resources, 2, t_and), "eval_predicate_and_or failed");
-    fail_unless(eval_predicate(resources, 2, t_or), "eval_predicate_and_or failed");
+    fail_unless(eval_predicate(resources, 2, t_and) == 0, "res0 AND res1 (res0 doesn't exist) failed");
+    fail_unless(eval_predicate(resources, 2, t_or) == 1, "res0 OR res1 (res0 doesn't exist) failed");
     system("rm my_file1");
-    fail_unless(!eval_predicate(resources, 2, t_and), "eval_predicate_and_or failed");
-    fail_unless(!eval_predicate(resources, 2, t_or), "eval_predicate_and_or failed");
+    fail_unless(eval_predicate(resources, 2, t_and) == 0, "res0 AND res1 (neither exists) failed");
+    fail_unless(eval_predicate(resources, 2, t_or) == 0, "res0 OR res1 (neither exists) failed");
     free(resources);
 }
 END_TEST
@@ -357,7 +463,7 @@ END_TEST
 START_TEST(test_eval_predicate_eq_ne_gt_le_ge)
 {
     peos_resource_t* resources;
-    Tree t_eq, t_ne, t_lt, t_gt, t_le, t_ge, t_dot0, t_dot1, t_res0, t_res1, t_fz0, t_fz1;
+    Tree t_eq, t_ne, t_lt, t_gt, t_le, t_ge, t_dot0, t_dot1, t_res0, t_res1, t_attr0, t_attr1;
     
     resources = (peos_resource_t *) calloc(2, sizeof(peos_resource_t));
     strcpy(resources[0].name, "res0");
@@ -366,12 +472,12 @@ START_TEST(test_eval_predicate_eq_ne_gt_le_ge)
     strcpy(resources[1].value, "my_file1");
 
     t_res0 = make_tree("res0", 0, NULL, NULL);
-    t_fz0 = make_tree("filesize", 0, NULL, NULL);
-    t_dot0 = make_tree(NULL, DOT, t_res0, t_fz0);
+    t_attr0 = make_tree("filesize", 0, NULL, NULL);
+    t_dot0 = make_tree(NULL, DOT, t_res0, t_attr0);
     
     t_res1 = make_tree("res1", 0, NULL, NULL);
-    t_fz1 = make_tree("filesize", 0, NULL, NULL);
-    t_dot1 = make_tree(NULL, DOT, t_res1, t_fz1);
+    t_attr1 = make_tree("filesize", 0, NULL, NULL);
+    t_dot1 = make_tree(NULL, DOT, t_res1, t_attr1);
     
     t_eq = make_tree(NULL, EQ, t_dot0, t_dot1); // res0.filesize == res1.filesize
     t_ne = make_tree(NULL, NE, t_dot0, t_dot1); // res0.filesize != res1.filesize
@@ -382,28 +488,28 @@ START_TEST(test_eval_predicate_eq_ne_gt_le_ge)
     
     system("touch my_file0");
     system("touch my_file1");
-    fail_unless(eval_predicate(resources, 2, t_eq), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(!eval_predicate(resources, 2, t_ne), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(!eval_predicate(resources, 2, t_lt), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(!eval_predicate(resources, 2, t_gt), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(eval_predicate(resources, 2, t_le), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(eval_predicate(resources, 2, t_ge), "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_eq)  == 1, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_ne) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_lt) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_gt) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_le) == 1, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_ge) == 1, "eval_predicate_eq_ne_gt_le_ge failed");
     system("echo \"12\" > my_file0");
     system("echo \"1234\" > my_file1");
-    fail_unless(!eval_predicate(resources, 2, t_eq), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(eval_predicate(resources, 2, t_ne), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(eval_predicate(resources, 2, t_lt), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(!eval_predicate(resources, 2, t_gt), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(eval_predicate(resources, 2, t_le), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(!eval_predicate(resources, 2, t_ge), "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_eq) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_ne) == 1, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_lt) == 1, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_gt) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_le) == 1, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_ge) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
     system("echo \"1234\" > my_file0");
     system("echo \"12\" > my_file1");
-    fail_unless(!eval_predicate(resources, 2, t_eq), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(eval_predicate(resources, 2, t_ne), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(!eval_predicate(resources, 2, t_lt), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(eval_predicate(resources, 2, t_gt), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(!eval_predicate(resources, 2, t_le), "eval_predicate_eq_ne_gt_le_ge failed");
-    fail_unless(eval_predicate(resources, 2, t_ge), "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_eq) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_ne) == 1, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_lt) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_gt) == 1, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_le) == 0, "eval_predicate_eq_ne_gt_le_ge failed");
+    fail_unless(eval_predicate(resources, 2, t_ge) == 1, "eval_predicate_eq_ne_gt_le_ge failed");
     system("rm my_file0");
     system("rm my_file1");
 }
@@ -425,6 +531,10 @@ main(int argc, char *argv[])
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_get_resource_index);
     
+    tc = tcase_create("gen_expr");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_gen_expr);
+       
     tc = tcase_create("get_eval_result_error");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_get_eval_result_error);

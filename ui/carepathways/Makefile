@@ -21,7 +21,7 @@ CFLAGS = -g -I$(PML_DIR) -I$(KERNEL_DIR) -Wall
 .KEEP_STATE:
 
 # lib
-LIBS = $(KERNEL_DIR)/libpeos.a $(PML_DIR)/pml/libpml.a 
+LIBS = $(KERNEL_DIR)/libpeos.a $(PML_DIR)/pml/libpml.a C:/cygwin/lib/libxml2.dll.a
 
 CORE_LIBS = 
 LDFLAGS = -g

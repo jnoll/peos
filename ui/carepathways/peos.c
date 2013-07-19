@@ -29,7 +29,10 @@ int create_process(char *model) {
     strcpy(model_file, model);
     strcat(model_file, ".pml");
     resources = (peos_resource_t *) peos_get_resource_list(model_file,&num_resources);    //see events.c
-
+	
+	log_event("\n***create process");
+	log_event(model_file);
+	
     if (resources == NULL) {
         fprintf(stderr, "error getting resources for model '%s'\n", model_file);
         return -1;
