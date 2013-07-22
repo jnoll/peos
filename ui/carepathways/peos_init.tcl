@@ -1,3 +1,5 @@
+source "hl7_parser.tcl"
+
 proc default { path } {
     exists $path
 }

@@ -1,5 +1,6 @@
  proc processData { channel } {
     #Do we have a full message?
+	#The socket/channel must be [fconfigure $channel -translation binary -blocking 0 -buffering none] in your accept connection [proc], otherwise it won't work.
     set begin [string first \xb $::peers($channel.data)]
     set end [string first \x1c $::peers($channel.data)]
     set sender ""
@@ -36,6 +37,48 @@
     }
  }
  
+proc getMsgFromFile { filename } {
+
+	set hl7file [open $filename r]
+	set msg  [read $hl7file]	
+	close $hl7file
+	return $msg
+
+ }
+ 
+ proc getObx { msg } {
+	puts "getObx\n"
+	puts $msg
+	#first split the message into individual segments.
+    #set segments [split $msg \xd]
+	set segments [split $msg "\n"]
+    foreach segment $segments {
+			#as it is unlikely that we don't need to split on fields, I split
+			#every segment on level one (|).
+			puts "segment:\n"
+
+		set fields [split $segment |]
+
+			
+		
+		switch [lindex $fields 0] {
+			OBX {
+				#and for easy access everything goes into an array keyed on segment ID
+				#which is, of course, a list!
+				#lappend obxs([lindex $fields 0]) $fields
+				#hl7_set_segment_variables $fields
+				puts [lindex $fields 3]
+				return [lindex $fields 3]
+			}
+			default {
+
+			}
+		}
+    }
+	#return $obxs
+ 
+ }
+ 
  
  proc processMsg { msg } {
     global db
@@ -43,24 +86,24 @@
     #first split the message into individual segments.
     set segments [split $msg \xd]
     foreach segment $segments {
-        #as it is unlikely that we don't need to split on fields, I split
-        #every segment on level one (|).
+			#as it is unlikely that we don't need to split on fields, I split
+			#every segment on level one (|).
 
-	set fields [split $segment |]
+		set fields [split $segment |]
 
-        #and for easy access everything goes into an array keyed on segment ID
-        #which is, of course, a list!
-	lappend seg([lindex $fields 0]) $fields
-	switch [lindex $fields 0] {
-	    MSH {
-                #this will set some variables in my environment prefixed MSH_
-                #more on this later.
-		hl7_set_segment_variables $fields
-	    }
-            default {
+			#and for easy access everything goes into an array keyed on segment ID
+			#which is, of course, a list!
+		lappend seg([lindex $fields 0]) $fields
+		switch [lindex $fields 0] {
+			MSH {
+					#this will set some variables in my environment prefixed MSH_
+					#more on this later.
+			hl7_set_segment_variables $fields
+			}
+				default {
 
-            }
-	}
+				}
+		}
     }
 
     #Choose what to do based on the message type from the MSH header segment.
@@ -173,6 +216,26 @@
 		23 birthplace
 		26 citizenship
 	    }
+	OBX {
+	    set fields {
+		1 setId
+		2 dataType
+		3 observationIdentifier
+		4 observationValue
+		5 units
+		6 referencesRange
+		7 abnormalFlags
+		8 probability
+		9	natureOfAbnormalTest
+		10 resultStatus
+		11 dateOfLastNormalValues
+		12 userDefinedAccessCheck
+		13 dateTimeOfObservation
+		14 producerId
+		15 responsibleObserver
+		16 observationMethod
+	    }
+	}	
 	}
 	default {
             #error or return for unknow segment types?
@@ -238,3 +301,9 @@
     regexp {^0+(.+)$} $s -> s
     return $s
  }
+ 
+ 
+ getObx [getMsgFromFile "glucose_test.hl7"]
+ 
+ 
+ 
