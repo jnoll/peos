@@ -19,20 +19,20 @@ process diabetes_assessment {
 	branch {
 		action glucose_test {
 			/*requires {patient_symptoms.suspect_diabetes == "true"}*/
-			requires {patient_symptoms.diagnosis == "diabetes"}
-			provides {blood_test.glucose}
+			/*requires {patient_symptoms.diagnosis == "diabetes"}*/
+			provides {blood_test.glucose_test}
 		}
 		
 		action cholesterol_test {
 			requires {patient_symptoms.suspect_diabetes == "true"}
 			/* requires {patient_symptoms.diagnosis == "suspect diabetes"} */
-			provides {blood_test.cholesterol}
+			provides {blood_test.cholesterol_test}
 		}	
 	}
 	
 	action assess_diabetes {
-		requires {blood_test.glucose}
-		requires {(optional) blood_test.cholesterol}
+		requires {blood_test.glucose_test == "true"}
+		/*requires {(optional) blood_test.cholesterol_test}*/
 		provides {diagnosis}
 	}
 }

@@ -37,48 +37,6 @@
     }
  }
  
-proc getMsgFromFile { filename } {
-
-	set hl7file [open $filename r]
-	set msg  [read $hl7file]	
-	close $hl7file
-	return $msg
-
- }
- 
- proc getObx { msg } {
-	puts "getObx\n"
-	puts $msg
-	#first split the message into individual segments.
-    #set segments [split $msg \xd]
-	set segments [split $msg "\n"]
-    foreach segment $segments {
-			#as it is unlikely that we don't need to split on fields, I split
-			#every segment on level one (|).
-			puts "segment:\n"
-
-		set fields [split $segment |]
-
-			
-		
-		switch [lindex $fields 0] {
-			OBX {
-				#and for easy access everything goes into an array keyed on segment ID
-				#which is, of course, a list!
-				#lappend obxs([lindex $fields 0]) $fields
-				#hl7_set_segment_variables $fields
-				puts [lindex $fields 3]
-				return [lindex $fields 3]
-			}
-			default {
-
-			}
-		}
-    }
-	#return $obxs
- 
- }
- 
  
  proc processMsg { msg } {
     global db
@@ -303,7 +261,53 @@ proc getMsgFromFile { filename } {
  }
  
  
- getObx [getMsgFromFile "glucose_test.hl7"]
+ proc getMsgFromFile { filename } {
+
+	set hl7file [open $filename r]
+	set msg  [read $hl7file]	
+	close $hl7file
+	return $msg
+
+ }
+ 
+ proc getObxIdentifiers { msg } {
+	#first split the message into individual segments.
+    #set segments [split $msg \xd]
+	set segments [split $msg "\n"]
+    foreach segment $segments {
+			#as it is unlikely that we don't need to split on fields, I split
+			#every segment on level one (|).
+
+		set fields [split $segment |]			
+		
+		switch [lindex $fields 0] {
+			OBX {
+				#and for easy access everything goes into an array keyed on segment ID
+				#which is, of course, a list!
+				lappend obxIds [lindex $fields 3]
+				#hl7_set_segment_variables $fields
+				#puts [lindex $fields 3]
+				#return [lindex $fields 3]
+
+			}
+			default {
+
+			}
+		}
+    }
+
+	return $obxIds
+ 
+ }
+ 
+ 
+ 
+ 
+ #puts [getObxIdentifiers [getMsgFromFile "cholesterol_test.hl7"]]
+ #puts [glucose_test "glucose_test.hl7"]
+ #puts [glucose_test "cholesterol_test.hl7"]
+ #puts [cholesterol_test "glucose_test.hl7"]
+ #puts [cholesterol_test "cholesterol_test.hl7"]
  
  
  

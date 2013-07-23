@@ -9,7 +9,8 @@ HTML=index.html
 JS=$(wildcard scripts/*.*)
 COOKIE_JS=$(wildcard scripts/jquery_cookie/*.*)
 PML=$(wildcard *.pml)
-SUPPORT=peos_init.tcl
+RES=$(wildcard *.res)
+SUPPORT=peos_init.tcl hl7_parser.tcl
 CSS=$(wildcard css/*.css)
 IMAGES=$(wildcard images/*.*)
 
@@ -49,7 +50,7 @@ install: build
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)/images
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)/css
 	install -m $(SCRIPT_MODE) $(CGI) $(INSTALL_DIR)
-	install -m $(FILE_MODE) $(HTML) $(PML) $(SUPPORT) $(INSTALL_DIR)
+	install -m $(FILE_MODE) $(HTML) $(PML) $(RES) $(SUPPORT) $(INSTALL_DIR)
 	install -m $(FILE_MODE) $(JS) $(INSTALL_DIR)/scripts
 	install -m $(FILE_MODE) $(COOKIE_JS) $(INSTALL_DIR)/scripts/jquery_cookie
 	install -m $(FILE_MODE) $(IMAGES) $(INSTALL_DIR)/images
