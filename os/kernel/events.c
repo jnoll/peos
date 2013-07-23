@@ -17,18 +17,12 @@
 #include <PalmOS.h>
 #endif
 #include "process.h"
+#include "error.h"
 #include "events.h"
 #include "resources.h"
 #include "graph_engine.h"
 #include "process_table.h"
 #include "peos_util.h"
-
-
-void error_msg(char *s) 
-{
-    fprintf(stderr, "error: %s\n", s);
-}
-
 
 #ifdef PALM
 

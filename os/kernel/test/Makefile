@@ -12,9 +12,9 @@ TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib -L$(PML_DIR)/pml/
 
 # objects
-CORE_OBJS = action.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o peos_util.o
+CORE_OBJS = action.o error.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o peos_util.o
 CORE_SOURCES = $(addprefix ../, $(CORE_OBJS:.o=.c))
-TEST_OBJS = test_util.o action.o graph.o
+TEST_OBJS = test_util.o action.o graph.o error.o
 
 # sources
 SOURCES = $(wildcard *.c) $(CORE_SOURCES)
@@ -72,6 +72,9 @@ test_%.o: ../%.c test_%.c test_util.o test_util.h
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) -DUNIT_TEST $< 
+
+%.o: ../%.c
+	$(CC) -c $(CFLAGS) $< 
 
 xref:
 	ctags -x $(SOURCES) > $@

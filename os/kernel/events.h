@@ -4,7 +4,7 @@
 
 /* This file contains the kernel API  */
 
-extern void error_msg(char *s);
+
 
 /* This function lists all the models (.pml files). */
 extern char **peos_list_models(void) KRNL_SECTION;

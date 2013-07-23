@@ -20,6 +20,7 @@ $(CORE_OBJS)
 
 PALM_CORE_OBJS = \
 action.o \
+error.o \
 events.o \
 graph.o \
 graph_engine.o \
