@@ -62,7 +62,7 @@ test_%: test_%.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) $(TEST_LIBS) 
 
 kernel_wrapper: kernel_wrapper.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -g -o $@ $< $(CORE_OBJS) $(LIBS) -lreadline -lhistory -ltermcap
+	$(CC) $(LDFLAGS) -g -o $@ $< $(CORE_OBJS) $(LIBS) -lreadline -lhistory -lncurses
 
 %.o: ../%.c test_%.c
 	$(CC) -c $(CFLAGS) $< 

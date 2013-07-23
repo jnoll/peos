@@ -50,7 +50,7 @@ palmpeos: peos.o $(PALM_CORE_OBJS)
 	$(CC) $(LDFLAGS) -dPALM -o $@ $^ $(LIBS) 
 
 daemon: enactment_daemon.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
+	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -lncurses
 
 # Make the kernel library.
 lib: $(LIBRARY)
@@ -62,7 +62,7 @@ $(LIBRARY): $(OBJS)
 
 # Compile the program
 shell: shell.o $(LIBRARY)
-	$(CC) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap -ltcl	
+	$(CC) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -lncurses -ltcl	
 
 # Unit tests.
 test: $(CORE_OBJS)
