@@ -12,9 +12,9 @@ TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib -L$(PML_DIR)/pml/
 
 # objects
-CORE_OBJS = action.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o peos_util.o
+CORE_OBJS = action.o error.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o peos_util.o
 CORE_SOURCES = $(addprefix ../, $(CORE_OBJS:.o=.c))
-TEST_OBJS = test_util.o action.o graph.o
+TEST_OBJS = test_util.o action.o graph.o error.o
 
 # sources
 SOURCES = $(wildcard *.c) $(CORE_SOURCES)
@@ -62,10 +62,13 @@ test_%: test_%.o $(TEST_OBJS)
 	$(CC) $(LDFLAGS) -g -o $@ $< $(TEST_OBJS) $(TEST_LIBS) 
 
 kernel_wrapper: kernel_wrapper.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -g -o $@ $< $(CORE_OBJS) $(LIBS) -lreadline -lhistory -lncurses
+	$(CC) $(LDFLAGS) -g -o $@ $< $(CORE_OBJS) $(LIBS) -lreadline -lhistory -ltermcap
 
 %.o: ../%.c test_%.c
 	$(CC) -c $(CFLAGS) $< 
+
+%.o: ../%.c
+	$(CC) -c $(CFLAGS) -DUNIT_TEST $< 
 
 test_%.o: ../%.c test_%.c test_util.o test_util.h
 	$(CC) -o $@ -c $(CFLAGS) -DUNIT_TEST $<  

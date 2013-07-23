@@ -20,6 +20,7 @@ $(CORE_OBJS)
 
 PALM_CORE_OBJS = \
 action.o \
+error.o \
 events.o \
 graph.o \
 graph_engine.o \
@@ -49,7 +50,7 @@ palmpeos: peos.o $(PALM_CORE_OBJS)
 	$(CC) $(LDFLAGS) -dPALM -o $@ $^ $(LIBS) 
 
 daemon: enactment_daemon.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -lncurses
+	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
 
 # Make the kernel library.
 lib: $(LIBRARY)
@@ -61,7 +62,7 @@ $(LIBRARY): $(OBJS)
 
 # Compile the program
 shell: shell.o $(LIBRARY)
-	$(CC) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -lncurses -ltcl	
+	$(CC) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap -ltcl	
 
 # Unit tests.
 test: $(CORE_OBJS)

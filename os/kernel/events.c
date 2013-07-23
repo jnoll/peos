@@ -17,18 +17,12 @@
 #include <PalmOS.h>
 #endif
 #include "process.h"
+#include "error.h"
 #include "events.h"
 #include "resources.h"
 #include "graph_engine.h"
 #include "process_table.h"
 #include "peos_util.h"
-
-
-void error_msg(char *s) 
-{
-    fprintf(stderr, "error: %s\n", s);
-}
-
 
 #ifdef PALM
 
@@ -451,7 +445,7 @@ char* peos_get_resource_file(char* process){
         return res_path;
     }
     if (res_file)
-        free(res_file);
+        free(res_file);		/* XXX should be freed above? */
     if (res_path)
         free(res_path);
     return NULL;

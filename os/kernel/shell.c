@@ -20,6 +20,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <fcntl.h>
+#include "error.h"
 #include "events.h"
 #include "process_table.h"
 #include "pmlheaders.h"
