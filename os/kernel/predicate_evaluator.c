@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "error.h"
 #include "events.h"
 #include "process_table.h"
 #include "pmlheaders.h"
@@ -48,7 +49,7 @@ long get_eval_result(char* tcl_procedure, char* resource, int* error) {
     if (Tcl_VarEval(interp, "set ", "dummyVar ", resource, NULL) == TCL_ERROR) {
 	/* 'resource' probably contains a string like $var or ${var},
 	   which means it's a non-value; clause is therefore false.*/ 
-
+	error_msg(Tcl_GetStringResult(interp));
 	Tcl_DeleteInterp(interp);
 	return 0;
     }
@@ -71,6 +72,7 @@ long get_eval_result(char* tcl_procedure, char* resource, int* error) {
     Tcl_EvalFile(interp, tcl_file);
     if (Tcl_Eval(interp, action) == TCL_ERROR) {
         *error = 1;
+	error_msg(Tcl_GetStringResult(interp));
         return 0;
     }
     result = atol(interp->result);
@@ -180,6 +182,10 @@ char* gen_expr(Tree t, Tcl_DString *buf)
 	    buf_append("]", buf);
 	    break;
 
+	case QUALIFIER:
+	    gen_expr(t->right, buf); /* XXX completely ignores qualifier. */
+	    break;
+
 	case EQ:
 	case NE:
 	    gen_eq_expr(t, TREE_OP(t), buf);
@@ -194,6 +200,7 @@ char* gen_expr(Tree t, Tcl_DString *buf)
 	case AND:
 	case OR:
 	    gen_boolean_expr(t, buf);
+	    break;
 	default: 
 	    /* Should never happen since all operators are accounted for. */
 	    return NULL;
@@ -237,6 +244,10 @@ char* gen_boolean_expr(Tree t, Tcl_DString *buf)
 	    buf_append("[isTrue ", buf);
 	    gen_expr(t, buf);
 	    buf_append("]", buf);
+	    break;
+
+	case QUALIFIER:
+	    gen_boolean_expr(t->right, buf); /* XXX completely ignores qualifier. */
 	    break;
 
 	case AND:
@@ -300,12 +311,15 @@ int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
     
     if (Tcl_Eval(interp, Tcl_DStringValue(&buf)) == TCL_ERROR) {
 	result = -1;
+	error_msg(Tcl_GetStringResult(interp));
     } else {
 	Tcl_DStringFree(&buf);
 	Tcl_DStringInit(&buf);
 	cmd = gen_boolean_expr(t, &buf);
 	if (Tcl_ExprBoolean(interp, cmd, &result) == TCL_ERROR) {
 	    result = -1;
+	    error_msg(cmd);
+	    error_msg(Tcl_GetStringResult(interp));
 	}
     }
     Tcl_DeleteInterp(interp);
@@ -324,15 +338,22 @@ int eval_resource_list(peos_resource_t** resources, int num_resources) {
     
     interp = Tcl_CreateInterp();
     for (i = 0; i < num_resources; i++) {
-        if (strcmp(res[i].value, "") == 0)
-            sprintf(buff, "set %s \\${%s}", res[i].name, res[i].name);
-        else
+        if (strcmp(res[i].value, "") == 0) {
+            sprintf(res[i].value, "{}");
+            sprintf(buff, "set %s %s", res[i].name, "{}");
+	    /* ensure res[i].name is defined in case it's de-referenced later. */
+	    if (Tcl_Eval(interp, buff) == TCL_ERROR) {
+		error_msg(Tcl_GetStringResult(interp));
+		return 0;
+	    }
+        } else {
             sprintf(buff, "set %s %s", res[i].name, res[i].value);
-
-        if (Tcl_Eval(interp, buff) == TCL_ERROR) {
-            return 0;
+	    if (Tcl_Eval(interp, buff) == TCL_ERROR) {
+		error_msg(Tcl_GetStringResult(interp));
+		return 0;
+	    }
+	    strcpy(res[i].value, Tcl_GetStringResult(interp));
         }
-        strcpy(res[i].value, interp -> result);
     }
     Tcl_DeleteInterp(interp);
     free(buff);
