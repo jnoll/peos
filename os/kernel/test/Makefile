@@ -67,14 +67,14 @@ kernel_wrapper: kernel_wrapper.o $(CORE_OBJS)
 %.o: ../%.c test_%.c
 	$(CC) -c $(CFLAGS) $< 
 
+%.o: ../%.c
+	$(CC) -c $(CFLAGS) -DUNIT_TEST $< 
+
 test_%.o: ../%.c test_%.c test_util.o test_util.h
 	$(CC) -o $@ -c $(CFLAGS) -DUNIT_TEST $<  
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) -DUNIT_TEST $< 
-
-%.o: ../%.c
-	$(CC) -c $(CFLAGS) $< 
 
 xref:
 	ctags -x $(SOURCES) > $@

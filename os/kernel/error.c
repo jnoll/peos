@@ -9,7 +9,9 @@
 
 void error_msg(const char *s) 
 {
+#ifndef UNIT_TEST    
     fprintf(stderr, "error: %s\n", s);
+#endif
 }
 
 
