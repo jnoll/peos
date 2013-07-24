@@ -6,8 +6,8 @@ KERNEL_DIR=../../os/kernel
 CGI=peos.cgi 
 HTML=index.html
 JS=peos.js
-PML=$(wildcard *.pml)
-SUPPORT=peos_init.tcl proc_table.dat proc_table.dat.xml
+PML=$(wildcard *.pml) 
+SUPPORT=$(wildcard *.tcl) proc_table.dat proc_table.dat.xml
 
 # compiler:
 CC = gcc 
@@ -42,6 +42,7 @@ install: build
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)
 	install -m $(SCRIPT_MODE) $(CGI) $(INSTALL_DIR)
 	install -m $(FILE_MODE) $(JS) $(HTML) $(PML) $(SUPPORT) $(INSTALL_DIR)
+	install -m $(FILE_MODE) ${KERNEL_DIR}/peos_init.tcl $(INSTALL_DIR)/kernel_init.tcl
 	install htaccess $(INSTALL_DIR)/.htaccess
 
 # Unit tests.
