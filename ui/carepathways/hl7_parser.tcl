@@ -262,22 +262,24 @@
  
  
  proc getMsgFromFile { filename } {
-
+	if {![file exists $filename]} {
+	  return ""
+	}
 	set hl7file [open $filename r]
 	set msg  [read $hl7file]	
 	close $hl7file
 	return $msg
-
  }
  
  proc getObxIdentifiers { msg } {
 	#first split the message into individual segments.
     #set segments [split $msg \xd]
 	set segments [split $msg "\n"]
+	set obxIds ""
+
     foreach segment $segments {
 			#as it is unlikely that we don't need to split on fields, I split
 			#every segment on level one (|).
-
 		set fields [split $segment |]			
 		
 		switch [lindex $fields 0] {
@@ -295,7 +297,6 @@
 			}
 		}
     }
-
 	return $obxIds
  
  }

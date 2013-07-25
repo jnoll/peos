@@ -10,7 +10,8 @@ JS=$(wildcard scripts/*.*)
 COOKIE_JS=$(wildcard scripts/jquery_cookie/*.*)
 PML=$(wildcard *.pml)
 RES=$(wildcard *.res)
-SUPPORT=peos_init.tcl hl7_parser.tcl
+HL7=$(wildcard *.hl7)
+SUPPORT=$(wildcard *.tcl) proc_table.dat proc_table.dat.xml
 CSS=$(wildcard css/*.css)
 IMAGES=$(wildcard images/*.*)
 
@@ -50,11 +51,12 @@ install: build
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)/images
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)/css
 	install -m $(SCRIPT_MODE) $(CGI) $(INSTALL_DIR)
-	install -m $(FILE_MODE) $(HTML) $(PML) $(RES) $(SUPPORT) $(INSTALL_DIR)
+	install -m $(FILE_MODE) $(HTML) $(PML) $(RES) $(HL7) $(SUPPORT) $(INSTALL_DIR)
 	install -m $(FILE_MODE) $(JS) $(INSTALL_DIR)/scripts
 	install -m $(FILE_MODE) $(COOKIE_JS) $(INSTALL_DIR)/scripts/jquery_cookie
 	install -m $(FILE_MODE) $(IMAGES) $(INSTALL_DIR)/images
 	install -m $(FILE_MODE) $(CSS) $(INSTALL_DIR)/css
+	install -m $(FILE_MODE) ${KERNEL_DIR}/peos_init.tcl $(INSTALL_DIR)/kernel_init.tcl
 	install htaccess $(INSTALL_DIR)/.htaccess
 
 # Unit tests.

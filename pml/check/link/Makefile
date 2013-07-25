@@ -1,10 +1,10 @@
-LEX = flex
 CC      = gcc
 CFLAGS  = -I../.. -g -Wall
 LIBS    = ../pml/libpml.a
 OBJS    = link_parser.o lexer.o link.o
 SRCS    = link_parser.c lexer.c y.tab.h
 YFLAGS  = -d
+LEX = flex
 
 
 all:		$(SRCS) $(OBJS)		

@@ -1,6 +1,5 @@
 # Where the cgi programs get installed.
-#HTML_DIR=$(HOME)/public_html
-HTML_DIR=C:/xampp/htdocs
+HTML_DIR=$(HOME)/public_html
 INSTALL_DIR=$(HTML_DIR)/PEOS
 KERNEL_DIR = ../../../os/kernel
 
