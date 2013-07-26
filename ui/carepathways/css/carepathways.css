@@ -99,7 +99,8 @@ div#supportsystem {
 	background: url(../images/none.png) no-repeat;
 }
 
-#supportsystem li.action[data-cp-state=done] a.toggle {
+#supportsystem li.action[data-cp-state=done] a.toggle, 
+#supportsystem li.action[data-cp-state=satisfied] a.toggle {
 	background: url(../images/done.png) no-repeat;
 }
 

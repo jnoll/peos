@@ -275,7 +275,7 @@
 	#first split the message into individual segments.
     #set segments [split $msg \xd]
 	set segments [split $msg "\n"]
-	set obxIds ""
+	set obxIds {}
 
     foreach segment $segments {
 			#as it is unlikely that we don't need to split on fields, I split
@@ -284,12 +284,7 @@
 		
 		switch [lindex $fields 0] {
 			OBX {
-				#and for easy access everything goes into an array keyed on segment ID
-				#which is, of course, a list!
 				lappend obxIds [lindex $fields 3]
-				#hl7_set_segment_variables $fields
-				#puts [lindex $fields 3]
-				#return [lindex $fields 3]
 
 			}
 			default {
@@ -301,6 +296,34 @@
  
  }
  
+  proc getDiagnoses { msg } {
+	#first split the message into individual segments.
+    #set segments [split $msg \xd]
+	set segments [split $msg "\n"]
+	set diagnoses {}
+
+    foreach segment $segments {
+			#as it is unlikely that we don't need to split on fields, I split
+			#every segment on level one (|).
+		set fields [split $segment |]			
+		
+		switch [lindex $fields 0] {
+			DG1 {			
+				#puts [lindex $fields 3]
+				set diagnosisFields [split [lindex $fields 3] "^"]
+				#puts [lindex $diagnosisFields 1]
+				lappend diagnoses [lindex $diagnosisFields 1]
+
+			}
+			default {
+
+			}
+		}
+    }
+	return $diagnoses
+ 
+ }
+ 
  
  
  
@@ -309,6 +332,7 @@
  #puts [glucose_test "cholesterol_test.hl7"]
  #puts [cholesterol_test "glucose_test.hl7"]
  #puts [cholesterol_test "cholesterol_test.hl7"]
+ #puts [getDiagnoses [getMsgFromFile "patient_record.hl7"]]
  
  
  

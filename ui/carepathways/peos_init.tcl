@@ -10,12 +10,6 @@ proc get_patient_record { patientID } {
 	return "${patientID}.hl7"
 }
 
-proc suspect_diabetes { resource } {
-	set logfile [open "log.txt" a+]
-	puts $logfile "suspect_diabetes"
-	puts $logfile $resource
-	return true
-}
 
 proc glucose_test { resource } {
 	set logfile [open "log.txt" a+]
@@ -74,16 +68,41 @@ proc glucose_test { resource } {
 }
 
 
+proc suspect_diabetes { resource } {
+	set logfile [open "log.txt" a+]
+	puts $logfile "suspect_diabetes"
+	puts $logfile $resource
+	set diagnoses [getDiagnoses [getMsgFromFile $resource]]
+	foreach diagnosis $diagnoses {
+		set diagnosis [string tolower $diagnosis]
+		if {$diagnosis == "suspect diabetes"} {
+			return true
+		}
+	}
+	return false
+}
+
 proc diagnosis {resource} {
-  return true
+	set diagnoses [getDiagnoses [getMsgFromFile $resource]]
+	if {$diagnoses=={}} {
+		return false
+	} else {
+		return true
+	}
 }
 
-proc glucose {resource} {
-  return true
+proc diabetes {resource} {
+  set logfile [open "log.txt" a+]
+	puts $logfile "diabetes"
+	puts $logfile $resource
+	set diagnoses [getDiagnoses [getMsgFromFile $resource]]
+	foreach diagnosis $diagnoses {
+		set diagnosis [string tolower $diagnosis]
+		if {$diagnosis == "diabetes"} {
+			return true
+		}
+	}
+	return false
 }
 
-
-proc cholesterol {resource} {
-  return true
-}
 

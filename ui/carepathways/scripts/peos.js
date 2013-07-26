@@ -8,7 +8,7 @@ function loadModels(modelsXML) {
 		var carepathwayLi = $('<li></li>', {"class": "carepathway"});
 		carepathwayLi.attr("name", carepathway);
 		carepathwayLi.attr("id", carepathway);
-		carepathwayLi.append($('<a></a>', {"class": "toggle"}).text(carepathway));
+		carepathwayLi.append($('<a></a>', {"class": "toggle"}).text(carepathway.replace(/_/g," ")));
 		$('#carepathways').append(carepathwayLi, "\n");
 	});
 
@@ -24,7 +24,7 @@ function createAction(action, parent, pid) {
 	var actionLi = $('<li></li>', {"data-cp-action": actionName, "class": "action"});
 	actionLi.attr("data-cp-state", action.attr("state").toLowerCase());
 	//actionLi.text(action.attr("name") + " (" + action.attr("state").toLowerCase() + ")");
-	actionLi.append($('<a></a>', {"class": "toggle"}).text(actionName));
+	actionLi.append($('<a></a>', {"class": "toggle"}).text(actionName.replace(/_/g," ")));
 	//alert(action.attr("name"));
 	//actionLi.appendTo(parent);
 	parent.append("\n", actionLi);
@@ -68,7 +68,9 @@ function createAction(action, parent, pid) {
 	}
 	if (action.children("script").text().search("null") < 0) {
 		actionDetailsDl.append("      \n", $('<dt></dt>').text("Script: "));
-		actionDetailsDl.append($('<dd></dd>').html(action.children("script").text()));
+		var scriptText = action.children("script").text();
+		scriptText = scriptText.substring(2, scriptText.length-2)
+		actionDetailsDl.append($('<dd></dd>').html(scriptText));
 	}
 	
 	var actionButtonsDiv = $('<div></div>', {"class": "actionButtons"});
@@ -250,7 +252,6 @@ function loadProcess(processXML, carepathway, pid) {
 	console.log($('html').html());
 }
 
-
 function deleteProcess(pid) {
 	//console.log('deleting');
 	//console.log("pid=" + pid+ "&event=delete");
@@ -266,6 +267,7 @@ function deleteProcess(pid) {
 		});
 		//alert('deleted');
 }
+
 
 // Wait for the DOM to be loaded. 
 $(document).ready(function() { 
