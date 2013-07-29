@@ -465,8 +465,8 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
 	return -1;
     }
 
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+        fprintf(stderr, "peos_run: cannot load process table\n");
 	exit(EXIT_FAILURE);
     }
     // this is the only change in peos_run
@@ -480,11 +480,13 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
         return -1;
     }
     
-    if ((update_status = update_process_state(pid)) == VM_INTERNAL_ERROR)
+    if ((update_status = update_process_state(pid)) == VM_INTERNAL_ERROR) {
+	fprintf(stderr, "peos_run: error updating process state\n");
         return -1;
+    }
     
     if (save_process_table() < 0) {
-        fprintf(stderr,"System Error: Cannot Save Process Table\n");
+        fprintf(stderr, "peos_run: cannot save process table\n");
         exit(EXIT_FAILURE);
     }
     
