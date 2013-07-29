@@ -96,7 +96,7 @@ main (int argc, char **argv)
 
 	    /* First, print the HTTP header, in this case just the
 	       all-important content type. */
-	    printf("Content-type: text/xml; charset=UTF-8\r\n\r\n");
+	    printf("Content-type: text/plain; charset=UTF-8\r\n\r\n");
 
             /* Make the pipe ends into stdio FILE pointers.  */
 	    close(input_pipe[0]); /* Close read end; parent is writing. */
@@ -113,7 +113,6 @@ main (int argc, char **argv)
 	    fputc('\n', input_stream);
 	    fclose(input_stream);
 	    while((c = fgetc(result_stream)) != EOF) {
-		putchar('>');
 		putchar(c);
 	    }
 
