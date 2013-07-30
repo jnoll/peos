@@ -6,7 +6,7 @@ KERNEL_DIR=../../os/kernel
 CGI=peos.cgi check.cgi
 HTML=index.html pmlcheck.html
 PMLCHECK=$(PML_DIR)/check/pmlcheck
-JS=peos.js
+JS=$(wildcard *.js) 
 PML=$(wildcard *.pml) 
 SUPPORT=$(wildcard *.tcl) proc_table.dat proc_table.dat.xml
 
