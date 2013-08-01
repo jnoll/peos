@@ -4,9 +4,10 @@ INSTALL_DIR=$(HTML_DIR)/PEOS1
 PML_DIR=../../pml
 KERNEL_DIR=../../os/kernel
 
-CGI=peos.cgi 
-HTML=index.html
-JS=peos.js
+CGI=peos.cgi check.cgi
+HTML=index.html pmlcheck.html
+PMLCHECK=$(PML_DIR)/check/pmlcheck
+JS=$(wildcard *.js) 
 PML=$(wildcard *.pml) 
 SUPPORT=$(wildcard *.tcl) proc_table.dat proc_table.dat.xml
 
@@ -24,7 +25,7 @@ CORE_LIBS =
 LDFLAGS = -g
 
 # objects
-OBJS = peos.o getcgi.c
+OBJS = getcgi.o util.o
 
 # sources
 SOURCES = $(OBJS:.o=.c) 
@@ -35,13 +36,17 @@ SCRIPT_MODE  = ug+rwx,o+rX
 FILE_MODE = ug+rw,o+r
 
 all: build
-build: peos.cgi
-peos.cgi: $(OBJS)
+build: $(PML_DIR)/check/pmlcheck peos.cgi check.cgi
+$(PMLCHECK):
+	$(MAKE) -c $(PML_DIR)/check pmlcheck
+
+%.cgi: %.o $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) -ltcl
 
 install: build
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)
 	install -m $(SCRIPT_MODE) $(CGI) $(INSTALL_DIR)
+	install -m $(SCRIPT_MODE) $(PMLCHECK) $(INSTALL_DIR)
 	install -m $(FILE_MODE) $(JS) $(HTML) $(PML) $(SUPPORT) $(INSTALL_DIR)
 	install -m $(FILE_MODE) ${KERNEL_DIR}/peos_init.tcl $(INSTALL_DIR)/kernel_init.tcl
 	install htaccess $(INSTALL_DIR)/.htaccess

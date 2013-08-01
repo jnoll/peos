@@ -10,10 +10,6 @@ proc glucose {resource} {
   return true
 }
 
-proc suspect_diabetes {resource} {
-  return true
-}
-
 proc cholesterol {resource} {
   return true
 }

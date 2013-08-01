@@ -1,0 +1,46 @@
+<html>
+ <head>
+  <title>PMLcheck Submit Form </title>
+  <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+  <script src="codemirror/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="codemirror/theme/eclipse.css">
+  <link rel="stylesheet" href="codemirror/addon/lint/lint.css">
+  <script src="codemirror-3.13/mode/tcl/tcl.js"></script>
+  <script src="pmlcheck.js"></script>
+
+ </head>
+
+ <body>
+   <h1>PMLcheck Submit Form</h1>
+
+   <p>This is a very minimal pmlcheck interface designed to
+   demonstrate the round-trip process for submitting pml code to a
+   server-side cgi program.  It submits the PML code from the editor
+   window to the server via jquery's <em>ajax()</em> method, then
+   parses the pmlcheck output and inserts error messages into the
+   editor display.</p>
+
+   <p>The editor is <a url="http://codemirror.net/">codemirror</a>,
+   which has <em>textarea</em> replacement built-in; in principle
+   there is no reason why Ace or any other javascript-based editor
+   could be used.</p>
+
+   <p>For this demo to work properly, you must install
+   the <a href="http://codemirror.net/codemirror.zip">codemirror
+   distribution</a> into the same directory where this page is found,
+   in a subdirectory called "codemirror".</p>
+
+   <p>At present the icons for the error messages do not display
+   correctly, even though I used the code from
+   the <a href="http://codemirror.net/demo/widget.html">demo</a>
+   almost verbatim.</p>
+
+  <form METHOD=POST id="pmlcheck">
+  <p> PML code to check: <textarea id="editedText" name="editedText" cols="80" value=""></textarea>
+  <p> <input type="submit" name="op" value="submit"> 
+  <input type=reset>
+  </form>
+ </body>
+</html>
+

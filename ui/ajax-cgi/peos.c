@@ -15,6 +15,7 @@
 #include <process.h>
 #include <peos_util.h>
 #include "getcgi.h"
+#include "util.h"
 
 /* XXX This is a hack made possible by the fact that process_table_filename defined in process_table.c is not static. */
 extern char *process_table_filename;
@@ -38,7 +39,7 @@ int create_process(char *model) {
     fprintf(stderr, "Executing %s:\n", model);
     
     if ((pid = peos_run(model_file,resources,num_resources)) < 0) {    //see events.c
-        fprintf(stderr, "couldn't create process\n");
+        fprintf(stderr, "error running process\n");
         return -1;
     }
     
@@ -50,17 +51,6 @@ int create_process(char *model) {
 }
 
 
-void set_login_name(char *loginname)
-{
-    char *process_filename;
-
-    process_filename = (char *) malloc((strlen(loginname) + strlen(".dat") +1) * sizeof(char));
-    strcpy(process_filename, loginname);
-    strcat(process_filename, ".dat"); 
-
-    peos_set_process_table_file(process_filename);
-    peos_set_loginname(loginname);
-}
 
 
 void emit_xml() {
