@@ -166,7 +166,7 @@ function openCarePathway(carepathway) {
 		//alert('created');	
 	}	
 	//console.log("openCarePathway html: \n");
-	//console.log($('html').html());
+	console.log($('html').html());
 }
 
 
@@ -268,6 +268,20 @@ function deleteProcess(pid) {
 		//alert('deleted');
 }
 
+function toggleDecisionSupport(button) {
+	if ($("#supportsystem").css('display') == 'none') {
+		$("#patientrecord").addClass("narrow");
+		$("#supportsystem").css('display', 'block');
+		button.addClass('pressed');
+		button.attr('title', "Hide Decision support");
+	} else {
+		$("#patientrecord").removeClass("narrow");
+		$("#supportsystem").css('display', 'none');
+		button.removeClass('pressed');
+		button.attr('title', "Display Decision support");
+	}
+		
+}
 
 // Wait for the DOM to be loaded. 
 $(document).ready(function() { 
@@ -275,11 +289,9 @@ $(document).ready(function() {
 	
 	getModelsXML();
 	
-	//$.cookie(test, 1);	
-	
-	//$.removeCookie('test');
-	
-	
+	$("#decisionsupport_btn").click(function(){
+	  toggleDecisionSupport($(this));
+	});
 	
 	$(window).bind('beforeunload', function() {
 		for (cookieName in $.cookie()) {

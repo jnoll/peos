@@ -4,13 +4,14 @@ INSTALL_DIR=$(HTML_DIR)/carepathways
 PML_DIR=../../pml
 KERNEL_DIR=../../os/kernel
 
-CGI=peos.cgi 
-HTML=index.html
+CGI=peos.cgi check.cgi 
+HTML=$(wildcard *.html)
+PMLCHECK=$(PML_DIR)/check/pmlcheck 
 JS=$(wildcard scripts/*.*)
 COOKIE_JS=$(wildcard scripts/jquery_cookie/*.*)
 PML=$(wildcard *.pml)
-RES=$(wildcard *.res)
-HL7=$(wildcard *.hl7)
+RES=$(wildcard *._res)
+HL7=$(wildcard *._hl7)
 SUPPORT=$(wildcard *.tcl) proc_table.dat proc_table.dat.xml
 CSS=$(wildcard css/*.css)
 IMAGES=$(wildcard images/*.*)
@@ -29,7 +30,7 @@ CORE_LIBS =
 LDFLAGS = -g
 
 # objects
-OBJS = peos.o getcgi.c
+OBJS = getcgi.o util.o
 
 # sources
 SOURCES = $(OBJS:.o=.c) 
@@ -40,8 +41,11 @@ SCRIPT_MODE  = ug+rwx,o+rX
 FILE_MODE = ug+rw,o+r
 
 all: build
-build: peos.cgi
-peos.cgi: $(OBJS)
+build: $(PML_DIR)/check/pmlcheck peos.cgi check.cgi
+$(PMLCHECK):
+	$(MAKE) -c $(PML_DIR)/check pmlcheck
+
+%.cgi: %.o $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) -ltcl
 
 install: build
@@ -51,6 +55,7 @@ install: build
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)/images
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)/css
 	install -m $(SCRIPT_MODE) $(CGI) $(INSTALL_DIR)
+	install -m $(SCRIPT_MODE) $(PMLCHECK) $(INSTALL_DIR)
 	install -m $(FILE_MODE) $(HTML) $(PML) $(RES) $(HL7) $(SUPPORT) $(INSTALL_DIR)
 	install -m $(FILE_MODE) $(JS) $(INSTALL_DIR)/scripts
 	install -m $(FILE_MODE) $(COOKIE_JS) $(INSTALL_DIR)/scripts/jquery_cookie

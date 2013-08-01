@@ -83,39 +83,41 @@ void emit_xml() {
 
 
 int
-main (int argc, char **argv)
-{
+main (int argc, char **argv) {
     int status;
     char *pid;
     char *action;
-    char *model;
-    char *login = "proc_table"; /* default login name */
-    char *request_method= getenv("REQUEST_METHOD") ;
-    char *event, **cgivars = getcgivars();
+    char *patientId;
+	char *symptoms;
+	char *bloodtest;
+	
+    //char *login = "proc_table"; /* default login name */
+    //char *request_method= getenv("REQUEST_METHOD") ;
+    char **cgivars = getcgivars();
 
     setenv("COMPILER_DIR", ".", 1);
 
-    if (strcmp(request_method, "POST") == 0) {
-	set_login_name(login);
-	event = getvalue("event", cgivars);
+    //if (strcmp(request_method, "POST") == 0) {
+	//set_login_name(login);
+	action = getvalue("action", cgivars);
+	patientId = getvalue("patientid", cgivars);
 
+	if (strcmp(action, "sbmt_symptoms") == 0) {
+	    symptoms = getvalue("symptoms", cgivars);
 
-	if (strcmp(event, "create") == 0) {
-	    model = getvalue("model", cgivars);
-
-	    if (create_process(model) != 1) {
-		fprintf(stderr, "Could not Create Process\n");
-		exit(EXIT_FAILURE);
+	    if (add_symptoms(symptoms) != 1) {
+		fprintf(stderr, "Could not add symptoms\n");
+		return -1;
 	    }
 
-	} else if (strcmp(event, "delete") == 0) {
-	    pid = getvalue("pid", cgivars);
+	} else if (strcmp(action, "req_bloodtest") == 0) {
+	    bloodtest = getvalue("bloodtest", cgivars);
 
 	    if (peos_delete_process_instance(atoi(pid)) < 0) {
 		fprintf(stderr, "Could not delete process instance\n");
-		exit(EXIT_FAILURE);
+		return -1;
 	    }
-	} else if (strcmp(event, "start") == 0) {
+	} else if (strcmp(action, "start") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
@@ -125,7 +127,7 @@ main (int argc, char **argv)
 		return -1;
 	    }
 
-	} else if (strcmp(event, "finish") == 0) {
+	} else if (strcmp(action, "finish") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
@@ -135,7 +137,7 @@ main (int argc, char **argv)
 		return -1;
 	    }
 
-	} else if (strcmp(event, "abort") == 0) {
+	} else if (strcmp(action, "abort") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
@@ -145,7 +147,7 @@ main (int argc, char **argv)
 		return -1;
 	    }
 
-	} else if (strcmp(event, "suspend") == 0) {
+	} else if (strcmp(action, "suspend") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
@@ -155,10 +157,9 @@ main (int argc, char **argv)
 		return -1;
 	    }
 	}
-    }
+    //}
 
-    /* GET method means just emit XML. */
-    emit_xml();
+    return_patient_record(patientId);
     return (0);
 }
 

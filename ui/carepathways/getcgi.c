@@ -66,7 +66,7 @@ char **getcgivars() {
 	char *content_type = "application/x-www-form-urlencoded";
         if ( strncasecmp(getenv("CONTENT_TYPE"), content_type, strlen(content_type)) != 0) {
 	    printf("Content-Type: text/plain\n\n") ;
-            printf("getcgivars(): Unsupported Content-Type.\n") ;
+            printf("getcgivars(): Unsupported Content-Type: %s\n", getenv("CONTENT_TYPE")) ;
             exit(1) ;
         }
         if ( !(content_length = atoi(getenv("CONTENT_LENGTH"))) ) {

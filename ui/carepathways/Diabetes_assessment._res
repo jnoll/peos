@@ -1,0 +1,4 @@
+patient_symptoms: patientId.spt :
+blood_test: patientId.hl7 :
+assessment : patientId.hl7 :
+diagnosis : patientId.hl7 :
