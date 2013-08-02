@@ -1,0 +1,386 @@
+@charset "utf-8";
+/* Color scheme: http://www.w3schools.com/tags/ref_colormixer.asp?colorbottom=156eaa&colortop=FFFFFF */
+body, div, ul {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: baseline;
+}
+
+body {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+
+div#container, div#header, div#footer {
+	width: 1200px;
+	border: 3px groove;
+	position: relative;
+	overflow: hidden;
+	background-color: #FFFFFF;
+}
+
+div#container {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+
+#container h3 {
+	margin: 10px;
+	margin-bottom: 20px;
+	font-size: 18px;
+}
+
+
+div#header{
+	width: 100%;
+	height: 100px;
+}
+
+div#footer {
+	width: 100%;
+	height: 140px;
+	background-color: #156eaa;
+}
+
+div#patientslist {
+	width: 160px;
+	height: 500px;
+	border: 3px groove;
+	float: left;
+	/*background-color: #EFE7F6; */ 
+	/*overflow: scroll;*/
+	position: relative;
+}
+
+
+#patientslist li {
+	cursor: pointer;
+	list-style-type:circle;
+	margin: 10px 10px 10px 20px;
+	/*background-color: #EFE7F6;*/
+}
+
+div#main {
+	float: left;
+	overflow: hidden;
+}
+
+ul.menu li {
+	cursor: pointer;
+	list-style-type: none;
+}
+
+#patientrecord {
+	/*min-width: 200px;*/
+	/*width: 688px;*/
+	width: 994px;
+	height: 443px;
+	border-bottom: 3px groove;
+	padding: 10px 20px 10px;
+	/*background-color: #EFE7F6;  */ 
+	overflow-y: scroll;
+	position: relative;
+	display: none;
+}
+
+#patientrecord.narrow {
+	width: 688px;
+}
+
+#patientrecord.short {
+	height: 240px;
+	border-bottom: 0px;
+}
+
+#patientrecord #patientname {
+	font-size: 21px;
+	margin-left: 100px;
+	margin-bottom: 30px;
+}
+
+#patientrecord #patientinfo div {
+	display: inline-block;
+	width: 200px;
+}
+
+#patientrecord #patientdata {
+	margin-top: 20px;
+}
+
+#patientrecord dt {
+	margin-top: 10px;
+}
+
+
+
+div#inputsarea {
+	width: 728px;
+	display: none;
+	/*background-color: green;*/
+}
+
+
+#inputsarea ul#inputsmenu {
+	height: 40px;
+}
+
+#inputsarea input, #inputsarea textarea {
+	margin: 10px;
+}
+
+#inputsarea div {
+	/*margin: 10px;*/
+	height: 160px;
+	border: 3px groove;
+	padding: 20px;
+	display: none;
+	
+}
+
+#inputsarea #inputsmenu li {
+	margin: 10px 0px 10px 20px;
+	display: inline-block;
+	text-decoration: underline;
+}
+
+#footer h3 {
+	margin-bottom: 10px;
+}
+
+#footer #demomenu li {
+	margin: 3px 10px;
+	width: 140px;
+	padding: 5px;
+	background-color: #5092BF;
+	border: 1px outset;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+#footer #demomenu li:hover {
+	background-color: #73A8CC;
+	border: 1px inset;
+	position: relative;
+	top: 1px;
+}
+
+div#decisionsupport_btn {
+	background: #156eaa;
+	color: #ffffff;
+	border: 3px outset;
+	cursor: pointer;
+	float: right;
+	text-align: center;
+	border-radius:8px;
+	-moz-border-radius:8px;
+	-webkit-border-radius:8px;
+	padding: 5px;
+	margin-right: 180px;
+	margin-top: 50px;
+}
+
+div#decisionsupport_btn.pressed {
+	border: 3px inset;
+	background: #67A1C8;
+	position:relative;
+	top:3px;
+	color: #fqq;
+}
+
+div#supportsystem {
+	resize: both;
+	width: 300px;
+	height: 500px;
+	border: 3px groove;
+	float: right;
+	padding: 0px;
+	background-color: #E8F0F6;
+	overflow: scroll;
+	position: relative;
+	display: none;
+}
+
+/*#supportsystem ul.process {
+	width: auto;
+	overflow: visible;
+	margin-top: 60px;
+}*/
+
+#supportsystem #process-header {
+	background: #CCC;
+	width: inherit;
+	margin: 0px;
+	padding: 0px;
+	height: 50px;
+}
+
+#supportsystem h1 {
+	font-size: 24px;
+	padding: 10px;
+	margin-top: 0px;
+}
+
+#supportsystem li a {
+	/*margin-left: -50px;*/
+	padding-left: 20px;
+	cursor: pointer;
+	display: inline-block;
+	margin-bottom: 10px;
+	min-width: 20px;
+}
+	
+#supportsystem li {
+	list-style: none;
+	margin-bottom: 9px;
+	/*border-bottom: 1px dashed #666;*/
+	white-space: nowrap;
+}
+
+
+
+/*li span {
+	height: 24px;
+	display: inline-block;
+	background-color: #09C;
+}*/
+
+#supportsystem ul {
+	margin-top: 9px;
+}
+
+#supportsystem li ul {
+	padding-left: 40px;
+	/*background-color: #09C;*/
+}
+
+#supportsystem ul.process {
+	border: 1px dotted #666;
+	margin-left: 20px;
+	margin-top: 0px;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 0px;
+	background-color: #D0E2EE;
+}
+
+#supportsystem ul#carepathways {
+	margin-left: 0px;
+	padding-left: 0px;
+	margin-right: 10px;
+}
+
+#supportsystem li a.toggle {
+	padding-right: 20px;
+}
+
+#supportsystem li.action a.toggle {
+	padding-right: 10px;
+}
+
+#supportsystem li.action[data-cp-state=ready] a.toggle {
+	background: url(../images/ready.png) no-repeat;
+}
+
+#supportsystem li.action[data-cp-state=available] a.toggle {
+	background: url(../images/available.png) no-repeat;
+}
+
+#supportsystem li.action[data-cp-state=blocked] a.toggle {
+	background: url(../images/blocked.png) no-repeat;
+}
+
+#supportsystem li.action[data-cp-state=none] a.toggle {
+	background: url(../images/none.png) no-repeat;
+}
+
+#supportsystem li.action[data-cp-state=done] a.toggle, 
+#supportsystem li.action[data-cp-state=satisfied] a.toggle {
+	background: url(../images/done.png) no-repeat;
+}
+
+#supportsystem li.iteration>a.toggle {
+	background: url(../images/iteration-none.png) no-repeat right;
+}
+
+#supportsystem li.iteration.ready {
+	list-style: url(../images/iteration-ready.png);
+}
+
+#supportsystem li.iteration.available {
+	list-style: url(../images/iteration-available.png);
+}
+
+#supportsystem li.iteration.blocked {
+	list-style: url(../images/iteration-blocked.png);
+}
+
+#supportsystem li.iteration.none {
+	list-style: url(../images/iteration-none.png);
+}
+
+#supportsystem li.branch>a.toggle {
+	background: url(../images/branch-none.png) no-repeat right;
+	
+}
+
+#supportsystem li.branch>ul>li {
+	list-style: url(../images/branch-none-item.png);
+}
+
+#supportsystem li.branch.available {
+	list-style: url(../images/branch-available.png);
+}
+
+#supportsystem li.branch.none {
+	list-style: url(../images/branch-none.png);
+}
+
+#supportsystem li.selection>a.toggle {
+	background: url(../images/selection-none.png) no-repeat right;
+}
+
+#supportsystem li.selection>ul>li {
+	list-style: url(../images/selection-none-item.png);
+}
+
+#supportsystem li.sequence>a.toggle {
+	background: url(../images/sequence-none.png) no-repeat right;
+}
+
+#supportsystem li.action .actiondetails {
+	border: 1px dashed #666;
+	/*width: 300px;*/
+	background-color: #E8F0F6; 
+	padding: 10px;
+	margin-top: 10px;
+	white-space: normal;
+	font-size: 0.9em;
+}
+
+#supportsystem li.action .actiondetails li {
+	white-space: normal;
+}
+
+#supportsystem .actionButtons {
+	margin-top: 20px;
+}
+
+#supportsystem #carepathways .actionButtons input {
+	background-color: #F3F8FB;
+}
+
+#supportsystem #carepathways ul.process li ul.toggle {
+	display: none;
+}
+
+#supportsystem #carepathways li.action div.actiondetails {
+	display: none;
+}
+
+#supportsystem #carepathways ul.process {
+	display: none;
+}

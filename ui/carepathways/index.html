@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Care pathways</title>
+<link rel="stylesheet" type="text/css" href="css/carepathways.css">
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="scripts/jquery_cookie/jquery.cookie.js"></script>
+<script type="text/javascript" src="scripts/peos.js"></script>
+<script type="text/javascript" src="scripts/demo.js"></script>
+</head>
+
+<body>
+<div id="container">
+	<div id="header">
+	<img src="images/arch.png">
+	<div id="decisionsupport_btn" title="Display Decision support">Decision support</div>
+	</div>
+	<div id="patientslist"> 
+		<h3>Patients</h3>
+		<ul>
+			<li data-cp-patientid="001671458" 
+				data-cp-dob="24-06-1975" 
+				data-cp-age="38"
+				data-cp-gender="M">Brown, Mark</li>
+			<li data-cp-patientid="001677980" 
+				data-cp-dob="19-02-1968" 
+				data-cp-age="45"
+				data-cp-gender="F">Curtis, Eva</li>
+			<li data-cp-patientid="001677693" 
+				data-cp-dob="07-12-2001" 
+				data-cp-age="11"
+				data-cp-gender="M">Hayes, Liam</li>
+			<li data-cp-patientid="001661972" 
+				data-cp-dob="12-09-1954" 
+				data-cp-age="60"
+				data-cp-gender="F">O'Connor, Jane</li>
+			<li data-cp-patientid="001671560" 
+				data-cp-dob="23-06-1998" 
+				data-cp-age="15"
+				data-cp-gender="F">Tieney, Judith</li>
+		</ul>
+	</div>
+	<div id="main">
+		<div id="patientrecord">
+			<h3>Patient record</h3>
+			<div id="patientname">
+			</div>
+			<div id="patientinfo">
+				<div id="dob"></div>
+				<div id="age"></div>
+				<div id="gender"></div>
+			</div>
+			<div id="patientdata">
+				<dl>
+				</dl> 
+			</div>			
+		</div>
+		<div id="inputsarea">
+			<div id="sbmt_symptoms">
+				Enter patient symptoms:<br> 
+				<textarea rows="4" cols="80"></textarea><br>
+				<input data-cp-action="sbmt_symptoms" type="submit" value="Submit">
+			</div>
+			<div id="req_bloodtest">
+				<p><strong>Request blood test</strong></p>
+				Enter blood test type:<br> 
+				<input type="text" name="bloodtest"><br>
+				<input data-cp-action="req_bloodtest" type="submit" value="Submit">
+			</div>
+			<div id="sbmt_diagnosis">
+				Enter diagnosis:<br> 
+				<input type="text" name="diagnosis"><br>
+				<input data-cp-action="sbmt_diagnosis" type="submit" value="Submit">
+			</div>
+			<ul id="inputsmenu" class="menu">
+				<li data-cp-action="sbmt_symptoms">Enter patient symptoms</li>
+				<li data-cp-action="req_bloodtest">Request blood test</li>
+				<li data-cp-action="sbmt_diagnosis">Enter diagnosis</li>
+				<li data-cp-action="update_patient_record">Update patient record</li>
+			</ul>
+			
+		</div>
+	</div>
+	<div id="supportsystem">
+		<h3>Decision support</h3>
+		<ul id="carepathways"></ul>
+	</div>
+	<div id="footer">
+		<h3>Demo</h3>
+		<ul id="demomenu" class="menu">
+			<li data-cp-action="reset">Reset patient record</li>
+			<li data-cp-action="get_testresult" data-cp-testtype="cholesterol">Get cholesterol test</li>
+			<li data-cp-action="get_testresult" data-cp-testtype="glucose">Get glucose test</li>
+		</ul>
+	</div>
+</div>
+
+</body>
+</html>

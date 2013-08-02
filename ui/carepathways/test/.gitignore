@@ -1,0 +1,4 @@
+*.log
+*.tcl
+*.pml
+proc_table.*
