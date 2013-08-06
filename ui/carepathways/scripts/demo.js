@@ -114,4 +114,21 @@ $(document).ready(function() {
 	  //alert('submit');
 	  demoAction($(this));
 	});
+	
+	//All cookies and processes when the page in closed or reloaded
+	$(window).bind('beforeunload', function() {
+		var postData = "&action=reset_resourcefile";
+		
+		$.ajax({
+			async: false,
+			type: "POST",
+			url: "demo.php",
+			data: postData,
+			processData: false,
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+				},
+			dataType: "text"
+		});				
+	});
 }); 

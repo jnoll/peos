@@ -22,6 +22,9 @@ switch ($action) {
 	case "reset":
 		resetPatientRecord($patientId);
 		break;
+	case "reset_resourcefile":
+		updateResourceFiles("");
+		break;		
 } 
 
 returnPatientRecord($patientId);

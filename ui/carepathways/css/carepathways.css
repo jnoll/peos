@@ -187,7 +187,6 @@ div#decisionsupport_btn.pressed {
 	background: #67A1C8;
 	position:relative;
 	top:3px;
-	color: #fqq;
 }
 
 div#supportsystem {
@@ -231,6 +230,10 @@ div#supportsystem {
 	margin-bottom: 10px;
 	min-width: 20px;
 }
+
+#supportsystem li.loading a {
+	cursor: progress;
+}
 	
 #supportsystem li {
 	list-style: none;
@@ -273,8 +276,25 @@ div#supportsystem {
 	margin-right: 10px;
 }
 
+/*#supportsystem li.carepathway {
+	list-style: url(../images/closed.png);
+	margin-left: 30px;
+}
+
+#supportsystem li.carepathway.opened {
+	list-style: url(../images/opened.png);
+}*/
+
+#supportsystem li.carepathway>a {
+	background: url(../images/closed.png) no-repeat;
+}
+
+#supportsystem li.carepathway.opened>a {
+	background: url(../images/opened.png) no-repeat;
+}
+
 #supportsystem li a.toggle {
-	padding-right: 20px;
+	text-transform:capitalize;
 }
 
 #supportsystem li.action a.toggle {
@@ -297,58 +317,57 @@ div#supportsystem {
 	background: url(../images/none.png) no-repeat;
 }
 
-#supportsystem li.action[data-cp-state=done] a.toggle, 
-#supportsystem li.action[data-cp-state=satisfied] a.toggle {
+#supportsystem li.action[data-cp-state=done] a.toggle {
 	background: url(../images/done.png) no-repeat;
 }
 
+#supportsystem li.action[data-cp-state=satisfied] a.toggle {
+	background: url(../images/satisfied.png) no-repeat;
+}
+
+#supportsystem li.action[data-cp-state=run] a.toggle {
+	background: url(../images/run.png) no-repeat;
+}
+
+#supportsystem li.expand>a{
+	display: inline-block;
+	width: 0px;
+	height: 20px;
+	cursor: pointer;
+}
+
+#supportsystem li.expand>a.expand {
+	background: url(../images/closed.png) no-repeat;
+}
+
+#supportsystem li.expand>a.expand.opened {
+	background: url(../images/opened.png) no-repeat;
+}
+
 #supportsystem li.iteration>a.toggle {
-	background: url(../images/iteration-none.png) no-repeat right;
+	background: url(../images/iteration.png) no-repeat;
 }
 
-#supportsystem li.iteration.ready {
-	list-style: url(../images/iteration-ready.png);
-}
-
-#supportsystem li.iteration.available {
-	list-style: url(../images/iteration-available.png);
-}
-
-#supportsystem li.iteration.blocked {
-	list-style: url(../images/iteration-blocked.png);
-}
-
-#supportsystem li.iteration.none {
-	list-style: url(../images/iteration-none.png);
-}
 
 #supportsystem li.branch>a.toggle {
-	background: url(../images/branch-none.png) no-repeat right;
-	
+	background: url(../images/branch.png) no-repeat;
 }
 
-#supportsystem li.branch>ul>li {
-	list-style: url(../images/branch-none-item.png);
-}
+/*#supportsystem li.branch>ul>li {
+	list-style: url(../images/branch-item.png);
+}*/
 
-#supportsystem li.branch.available {
-	list-style: url(../images/branch-available.png);
-}
-
-#supportsystem li.branch.none {
-	list-style: url(../images/branch-none.png);
-}
 
 #supportsystem li.selection>a.toggle {
-	background: url(../images/selection-none.png) no-repeat right;
+	background: url(../images/selection.png) no-repeat;
 }
 
-#supportsystem li.selection>ul>li {
-	list-style: url(../images/selection-none-item.png);
-}
+/*#supportsystem li.selection>ul>li {
+	list-style: url(../images/selection-item.png);
+}*/
 
 #supportsystem li.sequence>a.toggle {
-	background: url(../images/sequence-none.png) no-repeat right;
+	background: url(../images/sequence.png) no-repeat;
 }
 
 #supportsystem li.action .actiondetails {
@@ -383,4 +402,8 @@ div#supportsystem {
 
 #supportsystem #carepathways ul.process {
 	display: none;
+}
+
+#supportsystem dd {
+	text-transform:capitalize;
 }
