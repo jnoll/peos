@@ -1,3 +1,6 @@
+ # Code from http://wiki.tcl.tk/8893
+ # A good doc about HL7 that explains the different fields: http://www.hosinc.com/products/interfaces/interface_documentation.htm
+ 
  proc processData { channel } {
     #Do we have a full message?
 	#The socket/channel must be [fconfigure $channel -translation binary -blocking 0 -buffering none] in your accept connection [proc], otherwise it won't work.
@@ -261,6 +264,9 @@
  }
  
  
+ #From here below are the functions actually used in the demo
+ 
+ #Gets the content of the hl7 file and returns it as a string
  proc getMsgFromFile { filename } {
 	if {![file exists $filename]} {
 	  return ""
@@ -271,6 +277,8 @@
 	return $msg
  }
  
+ #Gets the observation identifier field in all the observation segments OBX present in the input string
+ #and returns them in an array
  proc getObxIdentifiers { msg } {
 	#first split the message into individual segments.
     #set segments [split $msg \xd]
@@ -296,7 +304,9 @@
  
  }
  
-  proc getDiagnoses { msg } {
+ #Gets the diagnosis description field in all the diagnosis present DG1 in the input string
+ #and returns them in an array
+ proc getDiagnoses { msg } {
 	#first split the message into individual segments.
     #set segments [split $msg \xd]
 	set segments [split $msg "\n"]
@@ -324,15 +334,6 @@
  
  }
  
- 
- 
- 
- #puts [getObxIdentifiers [getMsgFromFile "cholesterol_test.hl7"]]
- #puts [glucose_test "glucose_test.hl7"]
- #puts [glucose_test "cholesterol_test.hl7"]
- #puts [cholesterol_test "glucose_test.hl7"]
- #puts [cholesterol_test "cholesterol_test.hl7"]
- #puts [getDiagnoses [getMsgFromFile "patient_record.hl7"]]
  
  
  

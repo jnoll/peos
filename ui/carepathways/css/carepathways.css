@@ -293,6 +293,10 @@ div#supportsystem {
 	background: url(../images/opened.png) no-repeat;
 }
 
+#supportsystem li.carepathway.ready>a {
+	color: #007500;
+}
+
 #supportsystem li a.toggle {
 	text-transform:capitalize;
 }

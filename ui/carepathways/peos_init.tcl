@@ -69,9 +69,9 @@ proc glucose_test { resource } {
 
 
 proc suspect_diabetes { resource } {
-	set logfile [open "log.txt" a+]
-	puts $logfile "suspect_diabetes"
-	puts $logfile $resource
+	#set logfile [open "log.txt" a+]
+	#puts $logfile "suspect_diabetes"
+	#puts $logfile $resource
 	set diagnoses [getDiagnoses [getMsgFromFile $resource]]
 	foreach diagnosis $diagnoses {
 		set diagnosis [string tolower $diagnosis]

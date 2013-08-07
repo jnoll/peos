@@ -1,5 +1,5 @@
-//Loads a list of all the pathway (pml files) available on the server
-//If not already started, it starts a process for aech pathway associated with the curent user
+/*Loads a list of all the pathway (pml files) available on the server
+If not already started, it starts a process for aech pathway associated with the curent user*/
 function loadModels(modelsXML) { 
 	console.log("loadModels");
 	var patientId = getPatientId();
@@ -24,6 +24,8 @@ function loadModels(modelsXML) {
 	//console.log($('html').html());
 }
 
+/*Gets xml data from the server with a list of all the pathway available
+then executes loadModels*/
 function getModelsXML() {
     console.log("getModelsXML");
     $.ajax({
@@ -37,22 +39,27 @@ function getModelsXML() {
     return false; 
 }
 
+/*Generates the html code for to display an action on the page*/
 function createAction(action, parent, pid) {
 	var actionName = action.attr("name");
 	//console.log("@createAction: " + actionName);
 	var actionLi = $('<li></li>', {"data-cp-action": actionName, "class": "action"});
+	//the status of the action is saved in data-cp-state attribute
 	actionLi.attr("data-cp-state", action.attr("state").toLowerCase());
+	//the status of the action is saved also in the title attribute that is displayed as a toltip
 	actionLi.children('a.toggle').attr("title", "Status: " + action.attr("state").toLowerCase());
-	//actionLi.text(action.attr("name") + " (" + action.attr("state").toLowerCase() + ")");
 	actionLi.append($('<a></a>', {"class": "toggle"}).text(convertText(actionName)));
-	//alert(action.attr("name"));
-	//actionLi.appendTo(parent);
 	parent.append("\n", actionLi);
+	
+	//all the details about the action (required resource, provided resources, script) are 
+	//put in a div with class actiondetails. This div is normally hidden and is displayed
+	//when clicking on the action name (this behaviour is implemented in loadProcess)
 	var actionDetailsDiv = $('<div></div>', {"class": "actiondetails"});
 	actionLi.append("  \n", actionDetailsDiv);
 	var actionDetailsDl = $('<dl></dl>');
 	actionDetailsDiv.append("    \n", actionDetailsDl);
 	
+	//gets and display all the required resources
 	if (action.children("req_resource").length > 0) {
 		//console.log("req_resource");
 		actionDetailsDl.append("      \n", $('<dt></dt>').text("Requires: "));
@@ -68,6 +75,7 @@ function createAction(action, parent, pid) {
 			});	
 	}
 	
+	//gets and display all the provided resources
 	if (action.children("prov_resource").length > 0) {
 		actionDetailsDl.append("      \n", $('<dt></dt>').text("Provides: "));
 		var reqResourcesUl = $('<ul></ul>');
@@ -80,12 +88,16 @@ function createAction(action, parent, pid) {
 				reqResourcesUl.append("      \n", $('<li></li>').text(text)); 
 			});	
 	}
+	
+	//display the script if present
 	if (action.children("script").text().search("null") < 0) {
 		var scriptText = action.children("script").text();
 		scriptText = scriptText.substring(2, scriptText.length-2)
 		actionDetailsDiv.append("\n", $('<p></p>').html(scriptText));
 	}
 	
+	//displays button for submitting the action events.
+	//The binding of the buttons is implemented in loadProcess
 	var actionButtonsDiv = $('<div></div>', {"class": "actionButtons"});
 	actionDetailsDiv.append("    \n", actionButtonsDiv);
 	var buttons = ["Start", "Finish", "Cancel"];
@@ -98,6 +110,7 @@ function createAction(action, parent, pid) {
 	return;
 }
 
+/*Updates the state of all actions in a process*/
 function updateActionsState(data, carepathwayElement, pid) {
 	console.log("@updateActionsState");
 	$('process_table', data).find("process[pid='" + pid + "']").find('action').each(function() {
@@ -108,9 +121,12 @@ function updateActionsState(data, carepathwayElement, pid) {
 		actionLi.attr("data-cp-state", state.toLowerCase());
 		actionLi.children('a.toggle').attr("title", "Status: " + state.toLowerCase());
 	});
+	updateCarepathwaysStatus(carepathwayElement);
+	displayRelevantActions();
 	//console.log(carepathwayElement.html());
 }
 
+/*Generates the html code for displaying branch, selection, iteraction and sequence*/
 function createElement(element, type, parent, pid) {	
 	var elementLi = $('<li></li>', {"class": type});
 	elementLi.addClass('expand');
@@ -123,6 +139,11 @@ function createElement(element, type, parent, pid) {
 	return;
 }
 
+/*Evaluetes the node type (coming from the xml data) and redirects to the 
+apropriate function to create the html code.
+Note that a sequence node would be displayed on the page only if has more
+then one element inside, otherwise the inner element is diplayed directly;
+this is done to semplify the user interface*/
 function processElements(node, parent, pid) {
 	node.children().each(function() {
 		var element = $(this);
@@ -142,8 +163,8 @@ function processElements(node, parent, pid) {
 	return;
 }
 
-//Display or hide the care pathway on the page i.e. all the details of a process.
-//If the process if not already loaded in the page, it gets it from the server and loads it 
+/*Display or hide the care pathway on the page i.e. all the details of a process.
+If the process if not already loaded in the page, it gets it from the server and loads it */
 function openCarePathway(carepathwayElement) {
 	console.log("openCarePathway");
 	var carepathwayName = carepathwayElement.attr("name");
@@ -169,15 +190,23 @@ function openCarePathway(carepathwayElement) {
 	}	
 	
 	//all the ready, run, avalaible and satisfied actions will be visible
-	$('#carepathways li.action[data-cp-state=ready]').parents('ul.toggle').show();
-	$('#carepathways li.action[data-cp-state=available]').parents('ul.toggle').show();
-	$('#carepathways li.action[data-cp-state=satisfied]').parents('ul.toggle').show();
-	$('#carepathways li.action[data-cp-state=run]').parents('ul.toggle').show();
+	displayRelevantActions();
 	
 	//console.log("openCarePathway html: \n");
 	//console.log($('html').html());
 }
 
+/*Makes visible all the ready, run, avalaible and satisfied actions */
+function displayRelevantActions() {
+	$('#carepathways li.action[data-cp-state=ready]').parents('ul.toggle').show();
+	$('#carepathways li.action[data-cp-state=available]').parents('ul.toggle').show();
+	$('#carepathways li.action[data-cp-state=satisfied]').parents('ul.toggle').show();
+	$('#carepathways li.action[data-cp-state=run]').parents('ul.toggle').show();
+}
+
+/*Gets the xml data for a process. 
+The process id realted to a specific carepathway for a patient is saved in a cokie.
+If the cookie is not present, a new process is created */
 function getProcessXML(carepathway, patientId) {
 	console.log("getProcessXML: start");
     //check if a process id is saved in the cookies
@@ -221,8 +250,8 @@ function getProcessXML(carepathway, patientId) {
     return false; 
 }
 
-//Load the procress on the page. 
-//Process are saved in the cookies as patientId_carepathwayName = pid
+/*Load the procress on the page. 
+Process are saved in the cookies as patientId_carepathwayName = pid */
 function loadProcess(processXML, carepathway, patientId) {
 	//console.log(processXML);
 	//console.log("loadProcess pid: " + pid);
@@ -276,7 +305,7 @@ function loadProcess(processXML, carepathway, patientId) {
 		}
 	});
 	
-	//bind all action in the pathway so that they display or hide the action details
+	//bind all actions in the pathway so that they display or hide the action details
 	carepathwayElement.find('li.action a.toggle').click(function(){
 		//alert("action");
 		$(this).parent().children('div.actiondetails').toggle();
@@ -289,23 +318,8 @@ function loadProcess(processXML, carepathway, patientId) {
 		//alert("button");
 		var event = $(this).attr("data-cp-event").toLowerCase();
 		var actionName = $(this).parents('.action').attr("data-cp-action");
-		var data = "pid=" + pid + "&action=" + actionName + "&event=" + event;
-		console.log("query string: " + data);
-		$.ajax({
-			async: false,
-			type: "POST",
-			url: "peos.cgi",
-			data: data,
-			processData: false,
-			success: function(data) {  
-				   updateActionsState(data, carepathwayElement, pid);
-				   updateAllProcesses(data, getPatientId());
-				},
-			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
-				},
-			dataType: "xml"
-		});
+		submitEvent(pid, actionName, event, carepathwayElement);
+		updateAllProcesses(getPatientId());
 		console.log("@clicked action button");
 	});
 	
@@ -315,12 +329,36 @@ function loadProcess(processXML, carepathway, patientId) {
     });
 	
 	carepathwayElement.removeClass('loading');
+	updateCarepathwaysStatus(carepathwayElement);
+	console.log("loadProcess-end class: " + carepathwayElement.attr("class") + "\n");
 	console.log("loadProcess-end carepathway: " + carepathway + "\n");
 	//alert(process.html());
 	//console.log("loadProcess html: \n");
 	//console.log($('html').html());
 }
 
+/*Submites an event to the server, gets the xml and calls updateActionStates*/
+function submitEvent(pid, action, event, carepathwayElement) {
+	var data = "pid=" + pid + "&action=" + action + "&event=" + event;
+		console.log("query string: " + data);
+		$.ajax({
+			async: false,
+			type: "POST",
+			url: "peos.cgi",
+			data: data,
+			processData: false,
+			success: function(data) {  
+				   updateActionsState(data, carepathwayElement, pid);
+				   //finishActions(data, pid, carepathwayElement);
+				},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+				},
+			dataType: "xml"
+		});
+}
+
+/*Deletes a process*/
 function deleteProcess(pid) {
 	//console.log('deleting');
 	//console.log("pid=" + pid+ "&event=delete");
@@ -337,6 +375,7 @@ function deleteProcess(pid) {
 		//alert('deleted');
 }
 
+/*Display or hide the decision support */
 function toggleDecisionSupport(button) {
 	if ($("#supportsystem").css('display') == 'none') { //decision support is not visible
 		console.log("toggleDecisionSupport: not visible");
@@ -345,6 +384,7 @@ function toggleDecisionSupport(button) {
 		console.log($("#carepathways li").length);
 		console.log(patientId);
 		console.log($("#carepathways").attr("data-cp-patientid"));
+		//if the carepathways are not already present, they are reloaded from the server
 		if (($("#carepathways li").length < 1) || !($("#carepathways").attr("data-cp-patientid") == patientId)) {
 			console.log("toggleDecisionSupport: reloading");
 			getModelsXML();
@@ -365,40 +405,62 @@ function toggleDecisionSupport(button) {
 		
 }
 
+/*Sets the carepathway in a ready state (adds a ready class to it) if any of the action is ready*/
+function updateCarepathwaysStatus(carepathwayElement) {
+		//console.log("updateCarepathwaysStatus");
+		var ready = false;
+		carepathwayElement.find('li.action').each(function() {
+			//console.log("updateCarepathwaysStatus state: " + $(this).attr("data-cp-state"));
+			if ($(this).attr("data-cp-state") == "ready") {
+				ready = true;
+				//console.log("updateCarepathwaysStatus ready");
+			}
+		});
+		
+		if (ready) {
+			carepathwayElement.addClass('ready');
+		} else {
+			carepathwayElement.removeClass('ready');
+		}
+}
+
+/*Updates the status of the actions for all the carepathway processes associated to a specific patient*/
 function updateAllProcesses(patientId) {
     $('#carepathways').children('li.carepathway').each(function() {
 		//gets the pid for the current carepathway/patientId from the cookie 
 		var carepathway = $(this).attr('name');
 		var key = patientId + '_' + carepathway;
 		var pid = $.cookie(key);
+		console.log("updateAllProcesses: key: " + key);
 		console.log("updateAllProcesses: pid: " + pid);
 		var carepathwayElement = $('#' + carepathway);
 		//if pid is found update the status of all actions
 		if  (pid != undefined ) {
-			var data = "pid=" + pid + "&event=update";
-			//console.log("query string: " + data);
-			$.ajax({
-				type: "POST",
-				url: "peos.cgi",
-				data: data,
-				processData: false,
-				success: function(data) {  
-					   updateActionsState(data, carepathwayElement, pid);
-					},
-				error: function(XMLHttpRequest, textStatus, errorThrown) { 
-						alert("Status: " + textStatus); alert("Error: " + errorThrown); 
-					},
-				dataType: "xml"
-			});
+			submitEvent(pid, "", "update", carepathwayElement);
+			updateCarepathwaysStatus(carepathwayElement);
 		}
 	});
 	
 }
 
+/*Issues a finish event on all actions that are in satisfied state (recursively)
+and the update the actions state on the page */
+function finishActions(data, pid, carepathwayElement) {
+	var action = $('process_table', data).find("process[pid='" + pid + "']").find('action[state="SATISFIED"]');
+	console.log("finishActions action: " + action);
+	if (action != 'undefined') {
+		var actionName = action.attr("name");
+		submitEvent(pid, actionName, 'finish', carepathwayElement);
+	}
+	updateActionsState(data, carepathwayElement, pid);	
+}
+
+/*Gets the id of the current patient*/
 function getPatientId() {
 	return $("#patientrecord").attr("data-cp-patientid");
 }
 
+/*Removes underscore in a string*/
 function convertText(text) {
 	return text.replace(/_/g," ")
 }

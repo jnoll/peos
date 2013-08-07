@@ -22,7 +22,7 @@ function updatePatientRecord(patientId, data, action) {
 	if (data != "") {
 		postData += "&" + data;
 	}
-	//alert(postData);
+	console.log("updatePatientRecord postData:" + postData);
 	$.ajax({
 		type: "POST",
 		url: "demo.php",
@@ -31,6 +31,7 @@ function updatePatientRecord(patientId, data, action) {
 		success: function(data) {  
 				//alert(data);
 				$("#patientdata").html(data);
+				updateAllProcesses(patientId);
 			},
 		error: function(XMLHttpRequest, textStatus, errorThrown) { 
 				alert("Status: " + textStatus); alert("Error: " + errorThrown); 
@@ -77,6 +78,8 @@ function demoAction(button) {
 			data = "testtype=" + button.attr("data-cp-testtype");;
 			break;
 	}
+	
+	console.log("demoAction data:" + data);
 	
 	updatePatientRecord(patientId, data, action);
 	
