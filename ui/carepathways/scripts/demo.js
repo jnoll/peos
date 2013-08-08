@@ -38,7 +38,7 @@ function updatePatientRecord(patientId, data, action) {
 				updateAllProcesses(patientId);
 			},
 		error: function(XMLHttpRequest, textStatus, errorThrown) { 
-				alert("Status: " + textStatus + "/nError: " + errorThrown); 
+				alert("updatePatientRecord \nStatus: " + textStatus + "\nError: " + errorThrown); 
 			},
 		dataType: "text"
 	});
@@ -79,7 +79,7 @@ function demoAction(button) {
 			data = "diagnosis=" + $("#" + action + " input[name='diagnosis']").val();
 			break;
 		case "get_testresult":
-			data = "testtype=" + button.attr("data-cp-testtype");;
+			data = "testtype=" + button.attr("data-cp-testtype");
 			break;
 	}
 	
@@ -93,6 +93,26 @@ function demoAction(button) {
 		$("#" + action + " input[type='text']").val('');
 	}
 	
+	//issue finish event for some actions so that they get to done
+	if (action == "get_testresult") {
+		var key = getPatientId() + '_' + 'Diabetes_assessment';
+		console.log("demoAction get_testresult: key: " + key);
+		var pid = $.cookie(key);
+		console.log("demoAction get_testresult: pid: " + pid);
+		if  (!(pid == undefined)) { //if the cookie is present
+			var testtype = button.attr("data-cp-testtype");
+			if (testtype == "cholesterol") {
+				//finish cholesterol_test action
+				console.log("demoAction get_testresult: submitEvent: " + testtype);
+				submitEvent(pid, 'Cholesterol_test', 'finish', $('#Diabetes_assessment'));
+			} else {
+				//finish glucose_test action
+				console.log("demoAction get_testresult: submitEvent: " + testtype);
+				submitEvent(pid, 'Glucose_test', 'finish', $('#Diabetes_assessment'));
+			}	
+		}
+	}
+	
 	resetPatientRecordDisplayArea();
 }
 
@@ -103,7 +123,7 @@ $(document).ready(function() {
 	
 	$("#patientslist li").click(function(){
 		displayPatientRecord($(this));
-		//loads the decision support, if it is visible
+		//loads the pathway support, if it is visible
 		if (!($("#supportsystem").css('display') == 'none')) {
 			getModelsXML();
 		}
@@ -134,7 +154,7 @@ $(document).ready(function() {
 			data: postData,
 			processData: false,
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus + "/nError: " + errorThrown); 
+					alert("reset_resourcefile beforeunload \nStatus: " + textStatus + "\nError: " + errorThrown); 
 				},
 			dataType: "text"
 		});				

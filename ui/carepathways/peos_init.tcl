@@ -12,10 +12,11 @@ proc get_patient_record { patientID } {
 
 
 proc glucose_test { resource } {
+	#logging for debug
 	set logfile [open "log.txt" a+]
 	puts $logfile "glucose_test 3"
 	puts $logfile $resource
-	puts $logfile "glucose_test after resource"
+	
 	# checks that glucose is present in the OBX of the hl7 file
 	set obxIds [getObxIdentifiers [getMsgFromFile $resource]]
 	puts $logfile "glucose_test after set obxIds"
@@ -33,12 +34,12 @@ proc glucose_test { resource } {
 }
 
  proc cholesterol_test { resource } {
-	#return 1
+	#file logging for debug
 	set logfile [open "log.txt" a+]
 	puts $logfile "cholesterol_test 2"
-	# checks that ldl, cholesterol, hdl and triglycerides are present in the OBXs of the hl7 file
 	puts $logfile $resource
-	puts $logfile "cholesterol_test after resource"
+
+	# checks that ldl, cholesterol, hdl and triglycerides are present in the OBXs of the hl7 file
 	set obxIds [getObxIdentifiers [getMsgFromFile $resource]]
 	puts $logfile "cholesterol_test after set obxIds"
 	set ldl false
@@ -69,9 +70,11 @@ proc glucose_test { resource } {
 
 
 proc suspect_diabetes { resource } {
-	#set logfile [open "log.txt" a+]
-	#puts $logfile "suspect_diabetes"
-	#puts $logfile $resource
+	#logging for debug
+	set logfile [open "log.txt" a+]
+	puts $logfile "suspect_diabetes"
+	puts $logfile $resource
+	
 	set diagnoses [getDiagnoses [getMsgFromFile $resource]]
 	foreach diagnosis $diagnoses {
 		set diagnosis [string tolower $diagnosis]
@@ -83,18 +86,32 @@ proc suspect_diabetes { resource } {
 }
 
 proc diagnosis {resource} {
+	#logging for debug
+	set logfile [open "log.txt" a+]
+	puts $logfile "diagnosis"
+	puts $logfile $resource
+
 	set diagnoses [getDiagnoses [getMsgFromFile $resource]]
+	
+	puts $logfile "diagnosis after getting diagnoses"
+	foreach diagnosis $diagnoses {
+		puts $logfile $diagnosis
+	}
 	if {$diagnoses=={}} {
+		puts $logfile "false"
 		return false
 	} else {
+		puts $logfile "true"
 		return true
 	}
 }
 
 proc diabetes {resource} {
-  set logfile [open "log.txt" a+]
+	#logging for debug
+	set logfile [open "log.txt" a+]
 	puts $logfile "diabetes"
 	puts $logfile $resource
+	
 	set diagnoses [getDiagnoses [getMsgFromFile $resource]]
 	foreach diagnosis $diagnoses {
 		set diagnosis [string tolower $diagnosis]

@@ -112,11 +112,11 @@ function createAction(action, parent, pid) {
 
 /*Updates the state of all actions in a process*/
 function updateActionsState(data, carepathwayElement, pid) {
-	console.log("@updateActionsState");
+	console.log("updateActionsState");
 	$('process_table', data).find("process[pid='" + pid + "']").find('action').each(function() {
 		var state = $(this).attr("state");
 		var actionName = $(this).attr("name");
-		console.log("state: " + state + " - action: " + actionName);
+		console.log("updateActionsState state: " + state + " - action: " + actionName);
 		var actionLi = carepathwayElement.find('.action[data-cp-action=' + actionName + ']');
 		actionLi.attr("data-cp-state", state.toLowerCase());
 		actionLi.children('a.toggle').attr("title", "Status: " + state.toLowerCase());
@@ -199,9 +199,13 @@ function openCarePathway(carepathwayElement) {
 /*Makes visible all the ready, run, avalaible and satisfied actions */
 function displayRelevantActions() {
 	$('#carepathways li.action[data-cp-state=ready]').parents('ul.toggle').show();
+	$('#carepathways li.action[data-cp-state=ready]').parents('li.expand').children('a.expand').addClass('opened');
 	$('#carepathways li.action[data-cp-state=available]').parents('ul.toggle').show();
+	$('#carepathways li.action[data-cp-state=available]').parents('li.expand').children('a.expand').addClass('opened');
 	$('#carepathways li.action[data-cp-state=satisfied]').parents('ul.toggle').show();
+	$('#carepathways li.action[data-cp-state=satisfied]').parents('li.expand').children('a.expand').addClass('opened');
 	$('#carepathways li.action[data-cp-state=run]').parents('ul.toggle').show();
+	$('#carepathways li.action[data-cp-state=run]').parents('li.expand').children('a.expand').addClass('opened');
 }
 
 /*Gets the xml data for a process. 
@@ -225,7 +229,7 @@ function getProcessXML(carepathway, patientId) {
 				   loadProcess(data, carepathway, patientId);
 				},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					alert("getProcessXML \nStatus: " + textStatus + "\nError: " + errorThrown); 
 				},
 			dataType: "xml"
 		});
@@ -241,7 +245,7 @@ function getProcessXML(carepathway, patientId) {
 				   loadProcess(data, carepathway, patientId);
 				},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					alert("getProcessXML \nStatus: " + textStatus + "\nError: " + errorThrown); 
 				},
 			dataType: "xml"
 		});
@@ -339,8 +343,8 @@ function loadProcess(processXML, carepathway, patientId) {
 
 /*Submites an event to the server, gets the xml and calls updateActionStates*/
 function submitEvent(pid, action, event, carepathwayElement) {
-	var data = "pid=" + pid + "&action=" + action + "&event=" + event;
-		console.log("query string: " + data);
+	var data = "pid=" + pid + "&event=" + event + "&action=" + action;
+		console.log("submitEvent querystring: " + data);
 		$.ajax({
 			async: false,
 			type: "POST",
@@ -352,7 +356,7 @@ function submitEvent(pid, action, event, carepathwayElement) {
 				   //finishActions(data, pid, carepathwayElement);
 				},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					alert("submitEvent \nStatus: " + textStatus + "\nError: " + errorThrown);  
 				},
 			dataType: "xml"
 		});
@@ -369,16 +373,16 @@ function deleteProcess(pid) {
 			data: "pid=" + pid+ "&event=delete",
 			processData: false,
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					alert("deleteProcess \nStatus: " + textStatus + "\nError: " + errorThrown);  
 				},
 		});
 		//alert('deleted');
 }
 
-/*Display or hide the decision support */
-function toggleDecisionSupport(button) {
-	if ($("#supportsystem").css('display') == 'none') { //decision support is not visible
-		console.log("toggleDecisionSupport: not visible");
+/*Display or hide the pathway support */
+function togglePathwaySupport(button) {
+	if ($("#supportsystem").css('display') == 'none') { //pathway support is not visible
+		console.log("togglePathwaySupport: not visible");
 		//check if the models for the current use are loaded; if not, load them
 		var patientId = getPatientId();
 		console.log($("#carepathways li").length);
@@ -386,21 +390,21 @@ function toggleDecisionSupport(button) {
 		console.log($("#carepathways").attr("data-cp-patientid"));
 		//if the carepathways are not already present, they are reloaded from the server
 		if (($("#carepathways li").length < 1) || !($("#carepathways").attr("data-cp-patientid") == patientId)) {
-			console.log("toggleDecisionSupport: reloading");
+			console.log("togglePathwaySupport: reloading");
 			getModelsXML();
 		}
-		//display decision support
+		//display pathway support
 		$("#patientrecord").addClass("narrow");
 		$("#supportsystem").css('display', 'block');
 		button.addClass('pressed');
-		button.attr('title', "Hide Decision support");
+		button.attr('title', "Hide Pathway support");
 	} else {
-		console.log("toggleDecisionSupport: visible");
-		//hide decision support
+		console.log("togglePathwaySupport: visible");
+		//hide pathway support
 		$("#patientrecord").removeClass("narrow");
 		$("#supportsystem").css('display', 'none');
 		button.removeClass('pressed');
-		button.attr('title', "Display Decision support");
+		button.attr('title', "Display Pathway support");
 	}
 		
 }
@@ -469,11 +473,11 @@ function convertText(text) {
 $(document).ready(function() { 
 	console.log("********* ready ********");
 	
-	$("#decisionsupport_btn").click(function(){
-		toggleDecisionSupport($(this));
+	$("#pathwaysupport_btn").click(function(){
+		togglePathwaySupport($(this));
 	});
 	
-	//loads the decision support, if it is visible
+	//loads the pathway support, if it is visible
 	if (!($("#supportsystem").css('display') == 'none')) {
 		getModelsXML();
 	}

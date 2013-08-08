@@ -113,6 +113,7 @@ function addDiagnosis($patientId, $diagnosis) {
 	$data = "<dt>Diagnosis:</dt>\n";
 	$data = $data."<dd>".$diagnosis."</dd>\n";
 	file_put_contents($patientId.".rec", $data, FILE_APPEND);
+	$data = "";
 	$diagnosis = strtolower($diagnosis);
 	if ($diagnosis == "suspect diabetes") {
 		$data = "DG1|1||5409^SUSPECT DIABETES^I9CDX|||W\n";

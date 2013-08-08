@@ -202,7 +202,7 @@ div#inputsarea {
 
 
 
-div#decisionsupport_btn {
+div#pathwaysupport_btn {
 	background: #156eaa;
 	color: #ffffff;
 	border: 3px outset;
@@ -217,7 +217,7 @@ div#decisionsupport_btn {
 	margin-top: 50px;
 }
 
-div#decisionsupport_btn.pressed {
+div#pathwaysupport_btn.pressed {
 	border: 3px inset;
 	background: #67A1C8;
 	position:relative;
