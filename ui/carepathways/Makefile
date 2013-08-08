@@ -12,7 +12,8 @@ COOKIE_JS=$(wildcard scripts/jquery_cookie/*.*)
 PML=$(wildcard *.pml)
 RES=$(wildcard *._res)
 HL7=$(wildcard *._hl7)
-SUPPORT=$(wildcard *.tcl) proc_table.dat proc_table.dat.xml
+PHP=$(wildcard *.php)
+SUPPORT=$(wildcard *.tcl)
 CSS=$(wildcard css/*.css)
 IMAGES=$(wildcard images/*.*)
 
@@ -56,7 +57,7 @@ install: build
 	install -m $(DIR_MODE) -d $(INSTALL_DIR)/css
 	install -m $(SCRIPT_MODE) $(CGI) $(INSTALL_DIR)
 	install -m $(SCRIPT_MODE) $(PMLCHECK) $(INSTALL_DIR)
-	install -m $(FILE_MODE) $(HTML) $(PML) $(RES) $(HL7) $(SUPPORT) $(INSTALL_DIR)
+	install -m $(FILE_MODE) $(HTML) $(PML) $(RES) $(HL7) $(PHP) $(SUPPORT) $(INSTALL_DIR)
 	install -m $(FILE_MODE) $(JS) $(INSTALL_DIR)/scripts
 	install -m $(FILE_MODE) $(COOKIE_JS) $(INSTALL_DIR)/scripts/jquery_cookie
 	install -m $(FILE_MODE) $(IMAGES) $(INSTALL_DIR)/images
