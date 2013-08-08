@@ -1,3 +1,4 @@
+/*Displays on the page all data about the patient*/
 function displayPatientRecord(patient) {
 	$("#patientrecord #patientname").text(patient.text());
 	var dob = patient.attr("data-cp-dob");
@@ -16,6 +17,9 @@ function displayPatientRecord(patient) {
 	$("#inputsarea").show();
 }
 
+/*Send a command to the server to update the patient record depending on action and data.
+Displays the updated are in the parient record area.
+Also updates all the carepathway processes for the specific patient.*/
 function updatePatientRecord(patientId, data, action) {
 	var postData = "patientid=" + patientId + "&action=" + action;
 	
@@ -34,32 +38,32 @@ function updatePatientRecord(patientId, data, action) {
 				updateAllProcesses(patientId);
 			},
 		error: function(XMLHttpRequest, textStatus, errorThrown) { 
-				alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+				alert("Status: " + textStatus + "/nError: " + errorThrown); 
 			},
 		dataType: "text"
 	});
 }
 
+/*Implements the action for the input menu area. 
+Displays or hide the corresponding div.*/
 function inputMenuAction(inputItem) {
 	var action = inputItem.attr("data-cp-action");
-	if (action == "update_patient_record") {
-		alert("update_patient_record");
+	if ($("#"+action).css('display') == 'none') {
+		$('#patientrecord').addClass("short");
+		$('#inputsarea div').hide();
+		$('#'+action).show();
 	} else {
-		if ($("#"+action).css('display') == 'none') {
-			$('#patientrecord').addClass("short");
-			$('#inputsarea div').hide();
-			$('#'+action).show();
-		} else {
-			resetPatientRecordDisplayArea();
-		}		
-	}
+		resetPatientRecordDisplayArea();
+	}		
 }
 
+/*Reset the patient record area to the original size */
 function resetPatientRecordDisplayArea() {
 	$('#patientrecord').removeClass("short");
 	$('#inputsarea div').hide();
 }
 
+/*Issue to the server command for the various buttons in the demo.*/
 function demoAction(button) {
 	var action = button.attr("data-cp-action");
 	var patientId =$("#patientrecord").attr("data-cp-patientid");
@@ -130,7 +134,7 @@ $(document).ready(function() {
 			data: postData,
 			processData: false,
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					alert("Status: " + textStatus + "/nError: " + errorThrown); 
 				},
 			dataType: "text"
 		});				
