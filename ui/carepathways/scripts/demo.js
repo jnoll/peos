@@ -92,6 +92,7 @@ function demoAction(button) {
 	resetPatientRecordDisplayArea();
 }
 
+
 // Wait for the DOM to be loaded. 
 $(document).ready(function() { 
 	console.log("********* ready ********");
