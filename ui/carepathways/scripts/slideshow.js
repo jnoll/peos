@@ -18,6 +18,7 @@ function slideshow(position, update) {
 		case 15: 
 		case 17: 
 		case 19:
+		case 21:
 			//go to the slide
 			showSlide(position);
 			break;
@@ -27,6 +28,7 @@ function slideshow(position, update) {
 		case 9: 
 		case 11: 
 		case 13:
+		case 20:
 			//go to the system
 			hideSlideShow();
 			break;
@@ -79,9 +81,21 @@ function showSlide(num) {
 	displaySlideShow();
 }
 
+function setSlidesBackground() {
+	
+	$('#slideshow').children('div.slide').each(function() {
+		console.log("setSlidesBackground: " + 'url(images/slides/' + $(this).attr('id') + '.jpg) no-repeat');
+		$(this).css('background', 'url(images/slides/' + $(this).attr('id') + '.jpg) no-repeat');
+	});
+}
+
+
 
 // Wait for the DOM to be loaded. 
 $(document).ready(function() { 
+	
+	setSlidesBackground();
+	
 	$("#navbuttons #startbtn").click(function(){
 		startSlideShow();
 	});
@@ -94,6 +108,10 @@ $(document).ready(function() {
 	$("#navbuttons #nextbtn").click(function(){
 		slidenum++;
 		slideshow(slidenum, false);
+	});
+	
+	$("#slideshow div.slide button.hint").click(function(){
+		$(this).parents('div.hint').children('p').toggle();
 	});
 	
 }); 

@@ -38,11 +38,6 @@ div#header{
 	height: 100px;
 }
 
-div#footer {
-	width: 100%;
-	height: 140px;
-	background-color: #156eaa;
-}
 
 div#patientslist {
 	width: 160px;
@@ -70,6 +65,12 @@ div#main {
 ul.menu li {
 	cursor: pointer;
 	list-style-type: none;
+}
+
+#frontscreen {
+	width: 600px;
+	height: 400px;
+	background: url(../images/frontscreen.png) repeat;
 }
 
 #patientrecord {
@@ -107,6 +108,7 @@ ul.menu li {
 
 #patientrecord #patientdata {
 	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 #patientrecord dt {
@@ -145,6 +147,13 @@ div#inputsarea {
 	text-decoration: underline;
 }
 
+div#footer {
+	width: 100%;
+	height: 60px;
+	padding: 20px;
+	background-color: #156eaa;
+}
+
 #footer h3 {
 	margin-bottom: 10px;
 }
@@ -158,6 +167,7 @@ div#inputsarea {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	display: inline-block;
 }
 
 #footer #demomenu li:hover {
@@ -186,6 +196,25 @@ div#inputsarea {
     padding: 10px;
 	background: #fff;
 	display: none;
+}
+
+#slideshow .slide div.hint {
+	position: absolute;
+	width: 300px;
+	bottom: 20px;
+	right: 20px;
+}
+
+#slideshow .slide div.hint p {
+	background: #fff;
+	padding: 10px;
+	width: 280px;
+	display: none;
+}
+
+#slideshow .slide div.hint button.hint {
+	position: relative;
+	left: 250px;
 }
 
 #navbuttons {
@@ -366,6 +395,10 @@ div#supportsystem {
 
 #supportsystem li.action[data-cp-state=run] a.toggle {
 	background: url(../images/run.png) no-repeat;
+}
+
+#supportsystem li.action[data-cp-state=pending] a.toggle {
+	background: url(../images/pending.png) no-repeat;
 }
 
 #supportsystem li.expand>a{

@@ -15,6 +15,7 @@ function displayPatientRecord(patient) {
 	$("#inputsarea textarea").val('');
 	$("#inputsarea input[type='text']").val('');
 	$("#inputsarea").show();
+	$("#frontscreen").hide();
 }
 
 /*Send a command to the server to update the patient record depending on action and data.

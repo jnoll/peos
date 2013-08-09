@@ -131,7 +131,23 @@ function createElement(element, type, parent, pid) {
 	var elementLi = $('<li></li>', {"class": type});
 	elementLi.addClass('expand');
 	//elementLi.text(element.attr("name"));
-	elementLi.append($('<a></a>', {"class": "toggle"}).attr('title', element[0].nodeName));
+	var title = "";
+	switch (element[0].nodeName) {
+		case 'branch':
+			title = "Do concurrently";
+			break;
+		case 'selection':
+			title = "Select one";
+			break;
+		case 'sequence':
+			title = "Do in sequence";
+			break;
+		case 'iteration':
+			title = "Repeat";
+			break;
+	}
+	elementLi.append($('<a></a>', {"class": "toggle"}).attr('title', title));
+	//elementLi.append($('<a></a>', {"class": "toggle"}).attr('title', element[0].nodeName));
 	elementLi.append($('<a></a>', {"class": "expand"}).attr('title', 'open'));
 	parent.append("\n", elementLi); 
 	var elementUl = $('<ul></ul>', {"class": "toggle"}).appendTo(elementLi);

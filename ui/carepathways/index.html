@@ -43,6 +43,8 @@
 		</ul>
 	</div>
 	<div id="main">
+		<div id="frontscreen">		
+		</div>
 		<div id="patientrecord">
 			<h3>Patient record</h3>
 			<div id="patientname">
@@ -87,7 +89,6 @@
 		<ul id="carepathways"></ul>
 	</div>
 	<div id="footer">
-		<h3>Demo</h3>
 		<ul id="demomenu" class="menu">
 			<li data-cp-action="reset">Reset patient record</li>
 			<li data-cp-action="get_testresult" data-cp-testtype="cholesterol">Get cholesterol test</li>
@@ -96,47 +97,64 @@
 	</div>
 	<div id="slideshow">
 		<div id="slide1" class="slide">
-			<p>Dr John is a junior doctor that is replacing a GP.</p>
 		</div>
 		<div id="slide2" class="slide">
-			<p>Eva goes to Dr John complaining on a wound difficult to heal.</p>
-			<p>... hide the slide an go to the system.. Dr John start entering the symptoms </p>
+			<div class="hint">
+				<p>Dr John opens Eva record and starts entering the symptoms</p>
+				<button class="hint">Hint</button>
+			</div>
 		</div>
 		<div id="slide4" class="slide">
-			<p>Dr John ask for other symptoms</p>
-			<p>Eva says that she has problems with her sight and she is going to the optitian next week</p>
-			<p>... hide the slide an go to the system.. Dr John start entering the symptoms </p>
+			<div class="hint">
+				<p>Dr John enters the other symptoms</p>
+				<button class="hint">Hint</button>
+			</div>
 		</div>
 		<div id="slide6" class="slide">
-			<p>Dr John suspect that she can have diabetes (images of Dr John thinkig)</p>
-			<p>... hide the slide an go to the system.. Dr John open pathway support</p>
+			<div class="hint">
+				<p>Dr John opens pathway support and checks in the diabetes assessment pathway the diabetes symptoms</p>
+				<button class="hint">Hint</button>
+			</div>
 		</div>
 		<div id="slide8" class="slide">
-			<p>Dr John ask for other symptoms for diabetes in the carepathway</p>
-			<p>Eva confirms that she is going to the toilet more often for urination and that she is more thirsty and she feels more tyred that usual</p>
-			<p>... hide the slide an go to the system.. Dr John start entering the symptoms</p>
+			<div class="hint">
+				<p>Dr John enters the other symptoms and submit them</p>
+				<button class="hint">Hint</button>
+			</div>
 		</div>
 		<div id="slide10" class="slide">
-			<p>Dr John thinks that definetely she may have diabetes (images of Dr John thinkig)</p>
-			<p>... hide the slide an go to the system.. Dr John enters the diagnosis and looks at the carepathway, see that he needs blood test</p>
+			<div class="hint">
+				<p>Dr John enters the enters a "suspect diabetes" diagnosis and finishes the Assess Patient Symptoms action in Diabetes Assessment pathway</p>
+				<button class="hint">Hint</button>
+			</div>
 		</div>
 		<div id="slide12" class="slide">
-			<p>Dr John tells Eva of the suspect diagnoses and she needs to do the tests</p>
-			<p>... hide the slide an go to the system.. Dr John request the tests</p>
+			<div class="hint">
+				<p>Dr John requests cholesterol and glucose tests</p>
+				<button class="hint">Hint</button>
+			</div>
 		</div>
 		<div id="slide14" class="slide">
-			<p>Eva goes to take the blood samples and tests are sent to the lab</p>
 		</div>
 		<div id="slide15" class="slide">
-			<p>The cholesterol test is back.</p>
-			<p>... hide the slide an go to the system.. Dr John looks at them but he still need the glucose test</p>
+			<div class="hint">
+				<p>Dr John looks at cholesterol test results, checks the Diabetes Assessment pathway and confims that he needs still to wait for the glucose test</p>
+				<button class="hint">Hint</button>
+			</div>
 		</div>
 		<div id="slide17" class="slide">
-			<p>The glucose test is back.</p>
-			<p>... hide the slide an go to the system.. Dr John looks at them but and confirm the diabetes diagnosis</p>
+			<div class="hint">
+				<p>Dr John looks at glucose test results and notices that the value are high</p>
+				<button class="hint">Hint</button>
+			</div>
 		</div>
 		<div id="slide19" class="slide">
-			<p>Thanks!</p>
+			<div class="hint">
+				<p>Dr John enters a diagnosis of "diabetes"</p>
+				<button class="hint">Hint</button>
+			</div>
+		</div>
+		<div id="slide21" class="slide">
 		</div>
 	</div>
 	<div id="navbuttons">
