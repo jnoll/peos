@@ -23,6 +23,7 @@ function updatePatientRecord(patientId, data, action) {
 		postData += "&" + data;
 	}
 	//alert(postData);
+	console.log("updatePatientRecord: submitting " + postData);
 	$.ajax({
 		type: "POST",
 		url: "demo.php",
@@ -30,10 +31,11 @@ function updatePatientRecord(patientId, data, action) {
 		processData: false,
 		success: function(data) {  
 				//alert(data);
+		                console.log("updatePatientRecord: success");
 				$("#patientdata").html(data);
 			},
 		error: function(XMLHttpRequest, textStatus, errorThrown) { 
-				alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+				console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 			},
 		dataType: "text"
 	});
@@ -42,7 +44,8 @@ function updatePatientRecord(patientId, data, action) {
 function inputMenuAction(inputItem) {
 	var action = inputItem.attr("data-cp-action");
 	if (action == "update_patient_record") {
-		alert("update_patient_record");
+	    // alert("update_patient_record");
+	    console.log("update_patient_record: updated");
 	} else {
 		if ($("#"+action).css('display') == 'none') {
 			$('#patientrecord').addClass("short");

@@ -17,7 +17,7 @@ switch ($action) {
 		addDiagnosis($patientId, $_POST["diagnosis"]);
 		break;
 	case "get_testresult":
-		returnBloodTest($patientId, $patientId, $_POST["testtype"]);
+		returnBloodTest($patientId, $_POST["testtype"]);
 		break;
 	case "reset":
 		resetPatientRecord($patientId);
@@ -71,8 +71,8 @@ function requestBloodTest($patientId, $testtype) {
 
 function returnBloodTest($patientId, $testtype) {
 	if ($patientId == "001677980") {
-		$data = "";	
-		$hl7data = "";
+		$data = $testtype;	
+		$hl7data = $patientId;
 		switch ($testtype) {
 			case "cholesterol":
 				$data = "<dt>Cholesterol blood test:</dt>\n
@@ -80,21 +80,17 @@ function returnBloodTest($patientId, $testtype) {
 							LDL  (CALCULATED) 49.000 MG/DL (0.000 - 100.000 MG/DL) Normal<br>\n
 							HDL 24.000 MG/DL (45.000 - 150.000 MG/DL) Low<br>\n
 							TRIGLYCERIDES 324.000 MG/DL (0.000 - 150.000 MG/DL) High</dd>\n";
-				$hl7data = "OBR|1|||80061^LIPID PROFILE^CPT-4||20070911||||||||||\n
-						OBX|1|NM|13457-7^LDL (CALCULATED)^LOINC|49.000|MG/DL| 0.000 - 100.000|N|||F|\n
-						OBX|2|NM|2093-3^CHOLESTEROL^LOINC|138.000|MG/DL|100.000 - 200.000|N|||F|\n
-						OBX|3|NM|2086-7^HDL^LOINC|24.000|MG/DL|45.000 - 150.000|L|||F|\n
-						OBX|4|NM|2571-8^TRIGLYCERIDES^LOINC|324.000|MG/DL| 0.000 - 150.000|H|||F|\n";
+				$hl7data = "OBR|1|||80061^LIPID PROFILE^CPT-4||20070911||||||||||\nOBX|1|NM|13457-7^LDL (CALCULATED)^LOINC|49.000|MG/DL| 0.000 - 100.000|N|||F|\nOBX|2|NM|2093-3^CHOLESTEROL^LOINC|138.000|MG/DL|100.000 - 200.000|N|||F|\nOBX|3|NM|2086-7^HDL^LOINC|24.000|MG/DL|45.000 - 150.000|L|||F|\nOBX|4|NM|2571-8^TRIGLYCERIDES^LOINC|324.000|MG/DL| 0.000 - 150.000|H|||F|\n";
 				break;
 			case "glucose":
 				$data = "<dt>Glucose blood test:</dt>\n
 						<dd>Glucose Lvl 140 MG/DL (65 - 99 MG/DL) High</dd>\n";
-				$hl7data = "OBR|2|341856649^HNAM_ORDERID|000002006326002362|648088^Basic Metabolic Panel|||20061122151600|||||||||1620^Hooker^Robert^L||||||20061122154733|||F|||||||||||20061122140000|
-							OBX|5|NM|GLU^Glucose Lvl|140|mg/dL|65-99^65^99|H|||F|||20061122154733|\n";
+				$hl7data = "OBR|2|341856649^HNAM_ORDERID|000002006326002362|648088^Basic Metabolic Panel|||20061122151600|||||||||1620^Hooker^Robert^L||||||20061122154733|||F|||||||||||20061122140000|\nOBX|5|NM|GLU^Glucose Lvl|140|mg/dL|65-99^65^99|H|||F|||20061122154733|\n";
 				break;
 		}
 		
 		file_put_contents($patientId.".rec", $data, FILE_APPEND);
+		file_put_contents($patientId.".hl7", $hl7data, FILE_APPEND);//XXXjn
 	}
 
 }

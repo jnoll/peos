@@ -97,6 +97,7 @@ proc diabetes {resource} {
 	puts $logfile $resource
 	set diagnoses [getDiagnoses [getMsgFromFile $resource]]
 	foreach diagnosis $diagnoses {
+	        puts $logfile $diagnosis
 		set diagnosis [string tolower $diagnosis]
 		if {$diagnosis == "diabetes"} {
 			return true

@@ -1,3 +1,4 @@
+
 function loadModels(modelsXML) { 
 
     target = $("#carepathways");
@@ -135,7 +136,7 @@ function getModelsXML() {
 	success: loadModels,
 	dataType: "xml",
 	})
-	.fail(function(e, status, msg) { alert(":getModelsXML:error: " + status + " : " + msg + " : " + e); })
+	.fail(function(e, status, msg) { console.log(":getModelsXML:error: " + status + " : " + msg + " : " + e); })
     return false; 
 }
 
@@ -159,7 +160,7 @@ function openCarePathway(carepathway) {
 				   loadProcess(data, carepathway, pid);
 				},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 				},
 			dataType: "xml"
 		});
@@ -239,7 +240,7 @@ function loadProcess(processXML, carepathway, pid) {
 				   updateActionsState(data, carepathway, pid);
 				},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 				},
 			dataType: "xml"
 		});
@@ -262,7 +263,7 @@ function deleteProcess(pid) {
 			data: "pid=" + pid+ "&event=delete",
 			processData: false,
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
-					alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+					console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
 				},
 		});
 		//alert('deleted');
