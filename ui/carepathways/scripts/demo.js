@@ -16,21 +16,22 @@ function displayPatientRecord(patient) {
 	$("#inputsarea").show();
 }
 
+
 function updatePatientRecord(patientId, data, action) {
+        console.log("@updatePatientRecord");
 	var postData = "patientid=" + patientId + "&action=" + action;
 	
 	if (data != "") {
 		postData += "&" + data;
 	}
-	//alert(postData);
-	console.log("updatePatientRecord: submitting " + postData);
+
+	console.log("updatePatientRecord: submitting "); // + postData);
 	$.ajax({
 		type: "POST",
 		url: "demo.php",
 		data: postData,
 		processData: false,
 		success: function(data) {  
-				//alert(data);
 		                console.log("updatePatientRecord: success");
 				$("#patientdata").html(data);
 			},
@@ -41,10 +42,17 @@ function updatePatientRecord(patientId, data, action) {
 	});
 }
 
+function resetPatientRecordDisplayArea() {
+        console.log("@resetPatientDisplayArea");
+	$('#patientrecord').removeClass("short");
+	$('#inputsarea div').hide();
+}
+
+// Handle patient record actions.
 function inputMenuAction(inputItem) {
+        console.log("@inputMenuAction");
 	var action = inputItem.attr("data-cp-action");
 	if (action == "update_patient_record") {
-	    // alert("update_patient_record");
 	    console.log("update_patient_record: updated");
 	} else {
 		if ($("#"+action).css('display') == 'none') {
@@ -55,33 +63,31 @@ function inputMenuAction(inputItem) {
 			resetPatientRecordDisplayArea();
 		}		
 	}
+	updateProcessState();
 }
 
-function resetPatientRecordDisplayArea() {
-	$('#patientrecord').removeClass("short");
-	$('#inputsarea div').hide();
-}
-
-function demoAction(button) {
+// Handle submit from textareas opened by inputMenuActions.
+function inputDataAction(button) {
+        console.log("@inputDataAction");
 	var action = button.attr("data-cp-action");
 	var patientId =$("#patientrecord").attr("data-cp-patientid");
 	var data = "";
 	switch (action) {
-		case "sbmt_symptoms":
-			data = "symptoms=" + $("#" + action + " textarea").val();
-			break;
-		case "req_bloodtest":
-			data = "testtype=" + $("#" + action + " input[name='bloodtest']").val();
-			break;
+	        case "sbmt_symptoms":
+		    // Handle "Enter patient symptoms" input form.
+		    data = "symptoms=" + $("#" + action + " textarea").val();
+		    break;
+	        case "req_bloodtest":
+		    // Handle "Request blood test" input form.
+		    data = "testtype=" + $("#" + action + " input[name='bloodtest']").val();
+		    break;
 		case "sbmt_diagnosis":
-			data = "diagnosis=" + $("#" + action + " input[name='diagnosis']").val();
-			break;
-		case "get_testresult":
-			data = "testtype=" + button.attr("data-cp-testtype");;
-			break;
+		    // Handle "Enter diagnosis" input form.
+		    data = "diagnosis=" + $("#" + action + " input[name='diagnosis']").val();
+		    break;
 	}
 	
-	updatePatientRecord(patientId, data, action);
+ 	updatePatientRecord(patientId, data, action);
 	
 	if (action == "sbmt_symptoms") {
 		$("#" + action + " textarea").val('');
@@ -90,11 +96,30 @@ function demoAction(button) {
 	}
 	
 	resetPatientRecordDisplayArea();
+	updateProcessState();
+}
+
+// Handle events from "Demo" menu buttons.
+function demoAction(button) {
+        console.log("@demoAction");
+	var action = button.attr("data-cp-action");
+	var patientId =$("#patientrecord").attr("data-cp-patientid");
+	var data = "";
+	switch (action) {
+	        case "get_testresult": 
+		    // Respond to "Demo" menu "Get ... test" buttons
+			data = "testtype=" + button.attr("data-cp-testtype");;
+			break;
+	}
+	
+ 	updatePatientRecord(patientId, data, action);
+	resetPatientRecordDisplayArea();
+	updateProcessState();
 }
 
 // Wait for the DOM to be loaded. 
 $(document).ready(function() { 
-	console.log("********* ready ********");
+	//console.log("********* ready ********");
 	
 	$("#patientslist li").click(function(){
 	  displayPatientRecord($(this));
@@ -109,8 +134,9 @@ $(document).ready(function() {
 	});
 	
 	$("#inputsarea input[type='submit']").click(function(){
-	  //inputMenuAction($(this));
-	  //alert('submit');
-	  demoAction($(this));
+	  inputDataAction($(this));
+	  //	  demoAction($(this));
 	});
+
+	console.log("********* document ready ********");
 }); 

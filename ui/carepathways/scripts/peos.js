@@ -21,7 +21,7 @@ function loadModels(modelsXML) {
 
 function createAction(action, parent, pid) {
 	var actionName = action.attr("name");
-	//console.log("@createAction: " + actionName);
+	console.log("@createAction: " + actionName);
 	var actionLi = $('<li></li>', {"data-cp-action": actionName, "class": "action"});
 	actionLi.attr("data-cp-state", action.attr("state").toLowerCase());
 	//actionLi.text(action.attr("name") + " (" + action.attr("state").toLowerCase() + ")");
@@ -95,7 +95,39 @@ function updateActionsState(data, carepathway, pid) {
 		actionLi.attr("data-cp-state", state.toLowerCase());
 		actionLi.find('dd.state').text(state);
 	});
-	console.log(carepathway.html());
+	//console.log(carepathway.html());
+}
+
+// Handle process table data, from getProcessState(0.
+function handleProcessState(data) {
+	console.log("@handleProcessState");
+	$('process_table', data).find("process").each(function() {
+		pid = $(this).attr("pid");
+		model = $(this).attr("model").replace(/[.][/]/,'').replace(/[.]pml/, '');
+		carepathway = $('#' + model);
+		console.log("@udpateProcessState: pid=" + pid + " model=" + model + " carepathway.length=" + carepathway.length);
+		if (carepathway.length) {
+		    updateActionsState(data, carepathway, pid);
+		}
+	});
+}
+
+// Get current process state for all processes from server.
+function updateProcessState() {
+    $.ajax({
+	async: false,
+	type: "GET",
+	url: "peos.cgi",
+	data: "",
+	processData: false,
+	success: function(data) {  
+		handleProcessState(data);
+	    },
+	error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+	    },
+	dataType: "xml"
+	});
 }
 
 function createElement(element, type, parent, pid) {	
@@ -142,7 +174,7 @@ function getModelsXML() {
 
 function openCarePathway(carepathway) {
 	var carepathwayName = carepathway.attr("name");
-	
+	console.log("@openCarePathway: name=" + carepathwayName);
 	if ($('#' + carepathwayName + ' ul.process').length) {
 		//alert(carepathway.html());
 		$('#' + carepathwayName + ' ul.process').toggle()
@@ -167,7 +199,7 @@ function openCarePathway(carepathway) {
 		//alert('created');	
 	}	
 	//console.log("openCarePathway html: \n");
-	console.log($('html').html());
+	//console.log($('html').html());
 }
 
 
@@ -237,7 +269,7 @@ function loadProcess(processXML, carepathway, pid) {
 			data: data,
 			processData: false,
 			success: function(data) {  
-				   updateActionsState(data, carepathway, pid);
+			    handleProcessState(data); // data has state of all processes, so update them all.
 				},
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
 					console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
@@ -250,12 +282,12 @@ function loadProcess(processXML, carepathway, pid) {
 	
 	//alert(process.html());
 	console.log("loadProcess html: \n");
-	console.log($('html').html());
+	//console.log($('html').html());
 }
 
 function deleteProcess(pid) {
-	//console.log('deleting');
-	//console.log("pid=" + pid+ "&event=delete");
+	console.log("@deleteProcess: deleting pid=" + pid+ "&event=delete");
+
 	$.ajax({
 			async: false,
 			type: "POST",

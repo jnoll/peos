@@ -87,6 +87,25 @@ void emit_xml(int pid) {
     printf("</peos>\n");
 }
 
+/* Update state of all active processes, so they can react to resource changes. */
+int update_state() {
+    int i=0;
+    peos_action_t *alist;
+    char **result = peos_list_instances();	
+	
+    while (i <= PEOS_MAX_PID) {
+        if (result[i] != NULL) {
+            int num_actions;	
+            if (alist = peos_list_actions(i, &num_actions)) {
+                if (peos_notify(i, "dummy_action", PEOS_EVENT_RESOURCE_CHANGE) == VM_INTERNAL_ERROR) {
+                    fprintf(stderr, "udpate_state: Error in notifying resource change event for pid=%d\n", i);
+                }
+            }
+        }
+        i++;
+    }
+    return 1;
+}
 
 int
 main (int argc, char **argv)
@@ -178,6 +197,7 @@ main (int argc, char **argv)
 	}
     }
 
+    update_state();
 
     /* GET method means just emit XML. */
     emit_xml(pid_num);
