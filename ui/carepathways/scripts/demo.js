@@ -55,21 +55,14 @@ function inputMenuAction(inputItem) {
 	if (action == "update_patient_record") {
 	    console.log("update_patient_record: updated");
 	} else {
-		if ($("#"+action).css('display') == 'none') {
-			$('#patientrecord').addClass("short");
-			$('#inputsarea div').hide();
-			$('#'+action).show();
-		} else {
-			resetPatientRecordDisplayArea();
-		}		
+	    $("#"+action).dialog("open");
 	}
 	updateProcessState();
 }
 
 // Handle submit from textareas opened by inputMenuActions.
-function inputDataAction(button) {
-        console.log("@inputDataAction");
-	var action = button.attr("data-cp-action");
+function inputDataAction(action) {
+        console.log("@inputDataAction: " + action);
 	var patientId =$("#patientrecord").attr("data-cp-patientid");
 	var data = "";
 	switch (action) {
@@ -94,7 +87,7 @@ function inputDataAction(button) {
 	} else {
 		$("#" + action + " input[type='text']").val('');
 	}
-	
+
 	resetPatientRecordDisplayArea();
 	updateProcessState();
 }
@@ -110,11 +103,38 @@ function demoAction(button) {
 		    // Respond to "Demo" menu "Get ... test" buttons
 			data = "testtype=" + button.attr("data-cp-testtype");;
 			break;
+    	        case "reset":
+		        deleteProcesses();
+		        break;
 	}
 	
  	updatePatientRecord(patientId, data, action);
 	resetPatientRecordDisplayArea();
 	updateProcessState();
+}
+
+
+function createInputDialog(action) {
+	    console.log("action=" + action + " i=" + i);
+	    $("#"+action).dialog({
+		autoOpen: false,
+		height: "auto",
+		width: 350,
+		modal: true,
+		buttons: {
+			"OK": function() { 
+			    console.log("OK: " + action);
+			    $("#"+action).dialog( "close" );
+			    inputDataAction(action);
+			},
+   		        Cancel: function() {
+			    $("#"+action).dialog( "close" );
+			}
+		    },
+		close: function() {
+			//$("#"+action).find("form").reset();
+		    }
+		}); 
 }
 
 // Wait for the DOM to be loaded. 
@@ -132,9 +152,16 @@ $(document).ready(function() {
 	$("#demomenu li").click(function(){
 	  demoAction($(this));
 	});
+
+	var actions = ["sbmt_symptoms", "req_bloodtest", "sbmt_diagnosis"];
+	for (i in actions) {
+	    var action = actions[i];
+	    createInputDialog(action);
+	}
 	
-	$("#inputsarea input[type='submit']").click(function(){
-	  inputDataAction($(this));
+	$("#inputsarea input[type='submit']").on("submit", function(e){
+	  e.preventDefault();
+	  inputDataAction($(this.attr("demo-cp-action")));
 	  //	  demoAction($(this));
 	});
 

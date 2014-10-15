@@ -1,9 +1,10 @@
 @charset "utf-8";
 /* Color scheme: http://www.w3schools.com/tags/ref_colormixer.asp?colorbottom=156eaa&colortop=FFFFFF */
 body, div, ul {
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 3px;
+	padding: 3px;
+	border: 3px;
+	border-color: red;
 	vertical-align: baseline;
 }
 
@@ -13,16 +14,21 @@ body {
 }
 
 div#container, div#header, div#footer {
-	width: 1200px;
+	/*width: 1200px;*/
+        width: 99%;
 	border: 3px groove;
+	border-color: green;
 	position: relative;
 	overflow: hidden;
 	background-color: #FFFFFF;
 }
 
 div#container {
-	margin-left: 20px;
-	margin-right: 20px;
+	/*margin-left: 20px;
+	margin-right: 20px;*/
+	margin-left: 1px;
+	margin-right: 0px;
+
 }
 
 
@@ -45,7 +51,8 @@ div#footer {
 }
 
 div#patientslist {
-	width: 160px;
+	/*width: 160px;*/
+        width: 13%;
 	height: 500px;
 	border: 3px groove;
 	float: left;
@@ -64,7 +71,9 @@ div#patientslist {
 
 div#main {
 	float: left;
-	overflow: hidden;
+	/*overflow: hidden;*/
+	border: 13px;
+	border-color: red;
 }
 
 ul.menu li {
@@ -74,19 +83,21 @@ ul.menu li {
 
 #patientrecord {
 	/*min-width: 200px;*/
-	/*width: 688px;*/
-	width: 994px;
-	height: 443px;
-	border-bottom: 3px groove;
+	/*width: 994px;*/
+	/*width: 95%;*/
+	height: 80%;
+	/*border: 3px groove;*/
+	/* border-color: red;*/
 	padding: 10px 20px 10px;
 	/*background-color: #EFE7F6;  */ 
-	overflow-y: scroll;
+	/*overflow-y: scroll;*/
 	position: relative;
 	display: none;
 }
 
 #patientrecord.narrow {
-	width: 688px;
+	/*width: 688px;*/
+    /*width: 95%;*/
 }
 
 #patientrecord.short {
@@ -102,7 +113,8 @@ ul.menu li {
 
 #patientrecord #patientinfo div {
 	display: inline-block;
-	width: 200px;
+	/*width: 200px;*/
+	/*width: 16%;*/
 }
 
 #patientrecord #patientdata {
@@ -116,7 +128,8 @@ ul.menu li {
 
 
 div#inputsarea {
-	width: 728px;
+	/*width: 728px;*/
+        /*width: 70%;*/
 	display: none;
 	/*background-color: green;*/
 }
@@ -124,6 +137,8 @@ div#inputsarea {
 
 #inputsarea ul#inputsmenu {
 	height: 40px;
+	border: 3px;
+	border-color: green;
 }
 
 #inputsarea input, #inputsarea textarea {
@@ -136,8 +151,8 @@ div#inputsarea {
 	border: 3px groove;
 	padding: 20px;
 	display: none;
-	
 }
+
 
 #inputsarea #inputsmenu li {
 	margin: 10px 0px 10px 20px;
@@ -151,7 +166,8 @@ div#inputsarea {
 
 #footer #demomenu li {
 	margin: 3px 10px;
-	width: 140px;
+	/*width: 140px;*/
+	width: 11%;
 	padding: 5px;
 	background-color: #5092BF;
 	border: 1px outset;
@@ -192,7 +208,8 @@ div#decisionsupport_btn.pressed {
 
 div#supportsystem {
 	resize: both;
-	width: 300px;
+	/*width: 300px;*/
+	width: 25%;
 	height: 500px;
 	border: 3px groove;
 	float: right;

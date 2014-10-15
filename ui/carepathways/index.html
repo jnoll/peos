@@ -4,7 +4,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Care pathways</title>
 <link rel="stylesheet" type="text/css" href="css/carepathways.css">
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+
 <script type="text/javascript" src="scripts/jquery.min.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
 <script type="text/javascript" src="scripts/jquery_cookie/jquery.cookie.js"></script>
 <script type="text/javascript" src="scripts/peos.js"></script>
 <script type="text/javascript" src="scripts/demo.js"></script>
@@ -57,27 +60,32 @@
 			</div>			
 		</div>
 		<div id="inputsarea">
-			<div id="sbmt_symptoms">
+			<div id="sbmt_symptoms" title="Symptoms">
+			  <form>
 				Enter patient symptoms:<br> 
 				<textarea rows="4" cols="80"></textarea><br>
-				<input data-cp-action="sbmt_symptoms" type="submit" value="Submit">
+				<input data-cp-action="sbmt_symptoms" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
+			  </form>
 			</div>
-			<div id="req_bloodtest">
-				<p><strong>Request blood test</strong></p>
+			<div id="req_bloodtest" title="Request blood test">
+			  <form>
 				Enter blood test type:<br> 
 				<input type="text" name="bloodtest"><br>
-				<input data-cp-action="req_bloodtest" type="submit" value="Submit">
+				<input data-cp-action="req_bloodtest" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
+			  </form>
 			</div>
-			<div id="sbmt_diagnosis">
+			<div id="sbmt_diagnosis" title="Diagnosis">
+			  <form>
 				Enter diagnosis:<br> 
 				<input type="text" name="diagnosis"><br>
-				<input data-cp-action="sbmt_diagnosis" type="submit" value="Submit">
+				<input data-cp-action="sbmt_diagnosis" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
+			  </form>
 			</div>
 			<ul id="inputsmenu" class="menu">
-				<li data-cp-action="sbmt_symptoms">Enter patient symptoms</li>
+				<li data-cp-action="sbmt_symptoms">Enter symptoms</li>
 				<li data-cp-action="req_bloodtest">Request blood test</li>
 				<li data-cp-action="sbmt_diagnosis">Enter diagnosis</li>
-				<li data-cp-action="update_patient_record">Update patient record</li>
+				<li data-cp-action="update_patient_record">+</li>
 			</ul>
 			
 		</div>
