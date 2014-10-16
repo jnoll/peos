@@ -28,7 +28,7 @@ function updatePatientRecord(patientId, data, action) {
 	console.log("updatePatientRecord: submitting "); // + postData);
 	$.ajax({
 		type: "POST",
-		url: "demo.php",
+	    	url: "demo.php",
 		data: postData,
 		processData: false,
 		success: function(data) {  
@@ -40,6 +40,8 @@ function updatePatientRecord(patientId, data, action) {
 			},
 		dataType: "text"
 	});
+
+	updateProcessState();
 }
 
 function resetPatientRecordDisplayArea() {
@@ -69,7 +71,7 @@ function slideButtonAction(inputItem) {
 
 // Handle submit from textareas opened by inputMenuActions.
 function inputDataAction(action) {
-        console.log("@inputDataAction: " + action);
+        console.log("@inputDataAction: action=" + action);
 	var patientId =$("#patientrecord").attr("data-cp-patientid");
 	var data = "";
 	switch (action) {
@@ -117,7 +119,6 @@ function demoAction(button) {
 	
  	updatePatientRecord(patientId, data, action);
 	resetPatientRecordDisplayArea();
-	updateProcessState();
 }
 
 

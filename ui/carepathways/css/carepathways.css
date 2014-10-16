@@ -11,8 +11,6 @@ div#container, div#header {
 	/*width: 1200px;*/
 	overflow: hidden;
 	background-color: #FFFFFF;
-	border: 1px;
-	border-color: red;
 }
 
 
@@ -43,7 +41,6 @@ div#patientslist {
 div#main {
 	/*overflow: hidden;*/
         border: 3px groove;
-	border-color: red;
     	height: 500px;
 }
 
@@ -55,8 +52,6 @@ ul.menu li {
 #patientrecord, #patientrecord.narrow  {
         height: 445px;
 	overflow-y: scroll;
-        border: 1px;
-	border-color: red;
 }
 
 #patientrecord.short {
@@ -94,7 +89,6 @@ div#inputsarea {
 #inputsarea ul#inputsmenu {
 /*	height: 40px;*/
 	border: 3px;
-	border-color: green;
 }
 
 #inputsarea input, #inputsarea textarea {
@@ -150,7 +144,7 @@ div#inputsarea {
 */
 	vertical-align: bottom;
 	float: right;
-	margin-right: 180px;
+	margin-right: 20px;
 	margin-top: 80px;
 }
 

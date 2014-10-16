@@ -4,7 +4,7 @@ INSTALL_DIR=$(HTML_DIR)/carepathways
 PML_DIR=../../pml
 KERNEL_DIR=../../os/kernel
 
-CGI=peos.cgi check.cgi demo.php
+CGI=peos.cgi check.cgi demo.php demo.cgi
 HTML=$(wildcard *.html)
 PMLCHECK=$(PML_DIR)/check/pmlcheck 
 JS=$(wildcard scripts/*.*)
@@ -39,8 +39,11 @@ SOURCES = $(OBJS:.o=.c)
 HEADERS = $(wildcard *.h)
 
 
-DIR_MODE  = ugo+rwX
-SCRIPT_MODE  = ug+rwx,o+rXw
+# These permissions are for per-user public_html installation.
+# For other situations it might be better not to give "others" 
+# write permission. 
+DIR_MODE  = ug+rwX,o+rwX
+SCRIPT_MODE  = ug+rwx,o+rwX
 FILE_MODE = ug+rw,o+rw
 WRITE_MODE = $(FILE_MODE)
 
@@ -50,7 +53,7 @@ $(PMLCHECK):
 	$(MAKE) -c $(PML_DIR)/check pmlcheck
 
 event.log: 
-	echo "" >> event.log
+	echo "" > $@
 
 proc_table.dat: proc_table.dat.in
 	cp $< $@
