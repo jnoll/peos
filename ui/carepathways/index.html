@@ -3,8 +3,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Care pathways</title>
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="css/carepathways.css">
- <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
 
 <script type="text/javascript" src="scripts/jquery.min.js"></script>
 <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
@@ -14,96 +15,165 @@
 </head>
 
 <body>
-<div id="container">
-	<div id="header">
-	<img src="images/arch.png">
-	<div id="decisionsupport_btn" title="Display Decision support">Decision support</div>
-	</div>
-	<div id="patientslist"> 
-		<h3>Patients</h3>
-		<ul>
-			<li data-cp-patientid="001671458" 
-				data-cp-dob="24-06-1975" 
-				data-cp-age="38"
-				data-cp-gender="M">Brown, Mark</li>
-			<li data-cp-patientid="001677980" 
-				data-cp-dob="19-02-1968" 
-				data-cp-age="45"
-				data-cp-gender="F">Curtis, Eva</li>
-			<li data-cp-patientid="001677693" 
-				data-cp-dob="07-12-2001" 
-				data-cp-age="11"
-				data-cp-gender="M">Hayes, Liam</li>
-			<li data-cp-patientid="001661972" 
-				data-cp-dob="12-09-1954" 
-				data-cp-age="60"
-				data-cp-gender="F">O'Connor, Jane</li>
-			<li data-cp-patientid="001671560" 
-				data-cp-dob="23-06-1998" 
-				data-cp-age="15"
-				data-cp-gender="F">Tieney, Judith</li>
-		</ul>
-	</div>
-	<div id="main">
-		<div id="patientrecord">
-			<h3>Patient record</h3>
-			<div id="patientname">
-			</div>
-			<div id="patientinfo">
-				<div id="dob"></div>
-				<div id="age"></div>
-				<div id="gender"></div>
-			</div>
-			<div id="patientdata">
-				<dl>
-				</dl> 
-			</div>			
-		</div>
-		<div id="inputsarea">
-			<div id="sbmt_symptoms" title="Symptoms">
-			  <form>
-				Enter patient symptoms:<br> 
-				<textarea rows="4" cols="80"></textarea><br>
-				<input data-cp-action="sbmt_symptoms" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
-			  </form>
-			</div>
-			<div id="req_bloodtest" title="Request blood test">
-			  <form>
-				Enter blood test type:<br> 
-				<input type="text" name="bloodtest"><br>
-				<input data-cp-action="req_bloodtest" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
-			  </form>
-			</div>
-			<div id="sbmt_diagnosis" title="Diagnosis">
-			  <form>
-				Enter diagnosis:<br> 
-				<input type="text" name="diagnosis"><br>
-				<input data-cp-action="sbmt_diagnosis" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
-			  </form>
-			</div>
-			<ul id="inputsmenu" class="menu">
-				<li data-cp-action="sbmt_symptoms">Enter symptoms</li>
-				<li data-cp-action="req_bloodtest">Request blood test</li>
-				<li data-cp-action="sbmt_diagnosis">Enter diagnosis</li>
-				<li data-cp-action="update_patient_record">+</li>
-			</ul>
-			
-		</div>
-	</div>
-	<div id="supportsystem">
-		<h3>Decision support</h3>
-		<ul id="carepathways">
-		</ul>
-	</div>
-	<div id="footer">
-		<h3>Demo</h3>
-		<ul id="demomenu" class="menu">
-			<li data-cp-action="reset">Reset patient record</li>
-			<li data-cp-action="get_testresult" data-cp-testtype="cholesterol">Get cholesterol test</li>
-			<li data-cp-action="get_testresult" data-cp-testtype="glucose">Get glucose test</li>
-		</ul>
-	</div>
-</div>
 
+  <div class="pure-g" id="container">
+    <div  class="pure-u-1" id="header">
+      <img src="images/arch.png">
+      <a id="decisionsupport_btn" class="pure-button" href="#" title="Display Decision support">Decision support</a>
+    </div>
+    <!--
+  </div>
+  <div class="pure-g">
+    -->
+    <div id="patientslist" class="pure-u-4-24"> 
+      <h3>Patients</h3>
+      <ul>
+	<li data-cp-patientid="001671458" 
+	    data-cp-dob="24-06-1975" 
+	    data-cp-age="38"
+	    data-cp-gender="M">Brown, Mark</li>
+	<li data-cp-patientid="001677980" 
+	    data-cp-dob="19-02-1968" 
+	    data-cp-age="45"
+	    data-cp-gender="F">Curtis, Eva</li>
+	<li data-cp-patientid="001677693" 
+	    data-cp-dob="07-12-2001" 
+	    data-cp-age="11"
+	    data-cp-gender="M">Hayes, Liam</li>
+	<li data-cp-patientid="001661972" 
+	    data-cp-dob="12-09-1954" 
+	    data-cp-age="60"
+	    data-cp-gender="F">O'Connor, Jane</li>
+	<li data-cp-patientid="001671560" 
+	    data-cp-dob="23-06-1998" 
+	    data-cp-age="15"
+	    data-cp-gender="F">Tierney, Judith</li>
+      </ul>
+    </div>
+    <div id="main" class="pure-u-19-24">
+      <div id="patientrecord">
+	<h3>Patient record</h3>
+	<div id="patientname">
+	</div>
+	<div id="patientinfo">
+	  <div id="dob"></div>
+	  <div id="age"></div>
+	  <div id="gender"></div>
+	</div>
+	<div id="patientdata">
+	  <dl>
+	  </dl> 
+	</div>			
+      </div>
+      <div id="inputsarea" class="pure-menu pure-menu-open pure-menu-horizontal">
+	<ul id="inputsmenu" >
+	  <li data-cp-action="sbmt_symptoms" class="pure-button" href="#">Enter symptoms</li>
+	  <li data-cp-action="req_bloodtest" class="pure-button" href="#">Request blood test</li>
+	  <li data-cp-action="sbmt_diagnosis" class="pure-button" href="#">Enter diagnosis</li>
+	  <li data-cp-action="update_patient_record" class="pure-button" href="#">+</li>
+	</ul>
+      </div>
+    </div>
+    <div id="supportsystem" class="pure-u-5-24">
+      <h3>Decision support</h3>
+      <ul id="carepathways">
+      </ul>
+    </div>
+    <!--
+  </div>
+  <div class="pure-g">
+    -->
+  </div>
+  <div id="footer" class="pure-g">
+    <div id="demolabel" class="pure-u-2-24">    
+      <h3>Demo</h3>
+    </div>
+    <div id="demomenu" class="pure-u-10-24">
+      <a class="pure-button" data-cp-action="reset" href="#">Reset patient record</a>
+      <a class="pure-button" data-cp-action="get_testresult" data-cp-testtype="cholesterol" href="#">Get cholesterol test</a>
+      <a class="pure-button" data-cp-action="get_testresult" data-cp-testtype="glucose" href="#">Get glucose test</a>
+
+    </div>
+
+    <div id="slides-div" class="pure-u-12-24">
+      <ul id="slides" class="pure-paginator">
+	<li><a class="pure-button" data-cp-slide="1" href="#">1</a>
+	<li><a class="pure-button" data-cp-slide="2" href="#">2</a>
+	<li><a class="pure-button" data-cp-slide="4" href="#">3</a>
+	<li><a class="pure-button" data-cp-slide="6" href="#">4</a>
+	<li><a class="pure-button" data-cp-slide="8" href="#">5</a>
+	<li><a class="pure-button" data-cp-slide="10" href="#">6</a>
+	<li><a class="pure-button" data-cp-slide="12" href="#">7</a>
+	<li><a class="pure-button" data-cp-slide="14" href="#">8</a>
+	<li><a class="pure-button" data-cp-slide="15" href="#">9</a>
+	<li><a class="pure-button" data-cp-slide="17" href="#">10</a>
+	<li><a class="pure-button" data-cp-slide="19" href="#">11</a>
+	<li><a class="pure-button" data-cp-slide="21" href="#">12</a>
+      </ul>
+    </div>
+  </div>
+
+
+  <div id="input-dialogs">
+    <div id="sbmt_symptoms" title="Symptoms">
+      <form>
+	Enter patient symptoms:<br> 
+	<textarea rows="4" cols="80"></textarea><br>
+	<input data-cp-action="sbmt_symptoms" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </form>
+    </div>
+    <div id="req_bloodtest" title="Request blood test">
+      <form>
+	Enter blood test type:<br> 
+	<input type="text" name="bloodtest"><br>
+	<input data-cp-action="req_bloodtest" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </form>
+    </div>
+    <div id="sbmt_diagnosis" title="Diagnosis">
+      <form>
+	Enter diagnosis:<br> 
+	<input type="text" name="diagnosis"><br>
+	<input data-cp-action="sbmt_diagnosis" type="submit" value="Submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </form>
+    </div>
+  </div>
+  <div id="slide-popups">
+    <div id="slide1" title="Introduction">
+      <img src="images/slide1.jpg">
+    </div>
+    <div id="slide2" title="Initial Encounter">
+      <img src="images/slide2.jpg">
+    </div>
+    <div id="slide4" title="Other Symptoms">
+      <img src="images/slide4.jpg">
+    </div>
+    <div id="slide6" title="Suspect Diabetes">
+      <img src="images/slide6.jpg">
+    </div>
+    <div id="slide8" title="Assess Diabetes">
+      <img src="images/slide8.jpg">
+    </div>
+    <div id="slide10" title="Initial Diagnosis">
+      <img src="images/slide10.jpg">
+    </div>
+    <div id="slide12" title="Initial Diagnosis">
+      <img src="images/slide12.jpg">
+    </div>
+    <div id="slide14" title="Blood draw">
+      <img src="images/slide14.jpg">
+    </div>
+    <div id="slide15" title="Cholesteroal tests">
+      <img src="images/slide15.jpg">
+    </div>
+    <div id="slide17" title="Glucose tests">
+      <img src="images/slide17.jpg">
+    </div>
+    <div id="slide19" title="Diagnosis">
+      <img src="images/slide19.jpg">
+    </div>
+    <div id="slide21" title="">
+      <img src="images/slide21.jpg">
+    </div>
+  </div>
 </body>
 </html>

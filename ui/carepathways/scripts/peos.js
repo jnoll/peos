@@ -98,7 +98,7 @@ function updateActionsState(data, carepathway, pid) {
 	//console.log(carepathway.html());
 }
 
-// Handle process table data, from getProcessState(0.
+// Handle process table data, from getProcessState().
 function handleProcessState(data) {
 	console.log("@handleProcessState");
 	$('process_table', data).find("process").each(function() {
@@ -285,6 +285,11 @@ function loadProcess(processXML, carepathway, pid) {
 	//console.log($('html').html());
 }
 
+// Delete all processes in current view.
+function deleteProcesses() {
+	console.log("@deleteProcesses: not implemented");
+}
+
 function deleteProcess(pid) {
 	console.log("@deleteProcess: deleting pid=" + pid+ "&event=delete");
 
@@ -303,12 +308,14 @@ function deleteProcess(pid) {
 
 function toggleDecisionSupport(button) {
 	if ($("#supportsystem").css('display') == 'none') {
-		$("#patientrecord").addClass("narrow");
+		$("#main").removeClass("pure-u-19-24");
+		$("#main").addClass("pure-u-14-24");
 		$("#supportsystem").css('display', 'block');
 		button.addClass('pressed');
 		button.attr('title', "Hide Decision support");
 	} else {
-		$("#patientrecord").removeClass("narrow");
+		$("#main").removeClass("pure-u-14-24");
+		$("#main").addClass("pure-u-19-24");
 		$("#supportsystem").css('display', 'none');
 		button.removeClass('pressed');
 		button.attr('title', "Display Decision support");

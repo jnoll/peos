@@ -13,6 +13,7 @@ PML=$(wildcard *.pml)
 TCL=$(wildcard *.tcl) 
 RES=$(wildcard *._res)
 HL7=$(wildcard *._hl7)
+SLIDES=$(wildcard slides/slide*.jpg)
 SUPPORT=event.log proc_table.dat proc_table.dat.xml log.txt
 CSS=$(wildcard css/*.css)
 IMAGES=$(wildcard images/*.*)
@@ -72,7 +73,7 @@ install: build
 	install -m $(FILE_MODE) $(HTML) $(PML) $(TCL) $(RES) $(HL7) $(INSTALL_DIR)
 	install -m $(FILE_MODE) $(JS) $(INSTALL_DIR)/scripts
 	install -m $(FILE_MODE) $(COOKIE_JS) $(INSTALL_DIR)/scripts/jquery_cookie
-	install -m $(FILE_MODE) $(IMAGES) $(INSTALL_DIR)/images
+	install -m $(FILE_MODE) $(IMAGES) $(SLIDES) $(INSTALL_DIR)/images
 	install -m $(FILE_MODE) $(CSS) $(INSTALL_DIR)/css
 	install -m $(FILE_MODE) ${KERNEL_DIR}/peos_init.tcl $(INSTALL_DIR)/kernel_init.tcl
 	install htaccess $(INSTALL_DIR)/.htaccess

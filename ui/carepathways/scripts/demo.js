@@ -18,7 +18,7 @@ function displayPatientRecord(patient) {
 
 
 function updatePatientRecord(patientId, data, action) {
-        console.log("@updatePatientRecord");
+        console.log("@updatePatientRecord: action=" + action + " data=" + data);
 	var postData = "patientid=" + patientId + "&action=" + action;
 	
 	if (data != "") {
@@ -58,6 +58,13 @@ function inputMenuAction(inputItem) {
 	    $("#"+action).dialog("open");
 	}
 	updateProcessState();
+}
+
+// Handle slide button press
+function slideButtonAction(inputItem) {
+        console.log("@inputMenuAction");
+	var slide = inputItem.attr("data-cp-slide");
+	$("#slide"+slide).dialog("open");
 }
 
 // Handle submit from textareas opened by inputMenuActions.
@@ -115,26 +122,40 @@ function demoAction(button) {
 
 
 function createInputDialog(action) {
-	    console.log("action=" + action + " i=" + i);
-	    $("#"+action).dialog({
-		autoOpen: false,
-		height: "auto",
-		width: 350,
-		modal: true,
-		buttons: {
-			"OK": function() { 
-			    console.log("OK: " + action);
-			    $("#"+action).dialog( "close" );
-			    inputDataAction(action);
-			},
-   		        Cancel: function() {
-			    $("#"+action).dialog( "close" );
-			}
-		    },
-		close: function() {
-			//$("#"+action).find("form").reset();
-		    }
-		}); 
+    console.log("action=" + action + " i=" + i);
+    $("#"+action).dialog({
+	autoOpen: false,
+	height: "auto",
+	width: 350,
+	modal: true,
+	buttons: {
+		"OK": function() { 
+		    console.log("OK: " + action);
+		    $("#"+action).dialog( "close" );
+		    inputDataAction(action);
+		},
+		    Cancel: function() {
+		    $("#"+action).dialog( "close" );
+		}
+	    },
+	close: function() {
+		//$("#"+action).find("form").reset();
+	    }
+	}); 
+}
+
+
+function createSlidePopup(image, ok) {
+    console.log("image=" + image + " i=" + i);
+    $("#slide"+image).dialog({
+	autoOpen: false,
+	height: "auto",
+	width: 650,
+	modal: true,
+	buttons: {
+	    Ok: ok
+	    }
+	}); 
 }
 
 // Wait for the DOM to be loaded. 
@@ -149,7 +170,7 @@ $(document).ready(function() {
 	  inputMenuAction($(this));
 	});
 	
-	$("#demomenu li").click(function(){
+	$("#demomenu a").click(function(){
 	  demoAction($(this));
 	});
 
@@ -158,11 +179,38 @@ $(document).ready(function() {
 	    var action = actions[i];
 	    createInputDialog(action);
 	}
-	
 	$("#inputsarea input[type='submit']").on("submit", function(e){
 	  e.preventDefault();
 	  inputDataAction($(this.attr("demo-cp-action")));
-	  //	  demoAction($(this));
+	});
+	
+	var images = ["1", "2", "4", "6", "8", "10", "12", "14", "15", "17", "19", "21"];
+	for (i in images) {
+	    var image = images[i];
+	    if (i == 8) {
+		createSlidePopup(image, function() {
+		    $( this ).dialog( "close" );
+		    var patientId =$("#patientrecord").attr("data-cp-patientid");
+		    var data = "testtype=cholesterol";
+		    updatePatientRecord(patientId, data, "get_testresult");
+		});
+	    } else if (i == 9) {
+		createSlidePopup(image, function() {
+		    $( this ).dialog( "close" );
+		    var patientId =$("#patientrecord").attr("data-cp-patientid");
+		    var data = "testtype=glucose";
+		    updatePatientRecord(patientId, data, "get_testresult");
+		});
+	    } else {
+		createSlidePopup(image, function() {
+		    $( this ).dialog( "close" );
+		});
+	    }
+	}
+
+	$("#slides a").click(function(){
+		var slide = $(this).attr("data-cp-slide");
+		$("#slide"+slide).dialog("open");
 	});
 
 	console.log("********* document ready ********");
