@@ -80,8 +80,9 @@ create_testtable: create_testtable.o
 %.cgi: %.o $(OBJECTS)
 	$(LD) -o $@ $(LDFLAGS) $< $(OBJECTS) $(KERNEL_OBJECTS) $(LIBS)
 
+
 clean: 
-	rm *.cgi
+	rm -f *.cgi peos_init.tcl create_testtable
 
 .depend: $(SOURCES)
 	$(CC) $(CFLAGS) -MM $^ > $@

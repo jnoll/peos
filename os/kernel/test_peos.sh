@@ -308,60 +308,50 @@ cp proc_table.dat.xml ./a
 
 if !(grep '<req_resource name=\"r1\" value=\"r1val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
-  echo
-  echo Failed resource 'file' binding.
-  echo
+  echo Failed resource file binding for 'r1'.
 fi
 
 if !(grep '<prov_resource name=\"r2\" value=\"r1val/r2val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
-  echo
-  echo Failed resource 'file' binding.
-  echo
+  echo Failed resource file binding for 'r2'.
 fi
 
 if !(grep '<prov_resource name=\"r3\" value=\"r1val/r2val/r3val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
-  echo
-  echo Failed resource 'file' binding.
-  echo
+  echo Failed resource file binding for 'r3'.
 fi
 
 echo "r2: \${r1}/r2val" > peos_test.res
 echo "r3: \${r2}/r3val" >> peos_test.res
 
 ./peos -c peos_test.pml > output
+cp proc_table.dat.xml ./b
 
 if !(grep '<prov_resource name=\"r2\" value=\"\${r1}/r2val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
-  echo
-  echo Failed resource 'file' binding.
-  echo
+  echo Failed 2nd resource file binding for 'r2'.
 fi
 
 if !(grep '<prov_resource name=\"r3\" value=\"\${r1}/r2val/r3val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
-  echo
-  echo Failed resource 'file' binding.
-  echo
+  echo Failed 2nd resource file binding for 'r3'.
 fi
 
 echo "r1:" > peos_test.res
 echo "r2: \${r1}/r2val" >> peos_test.res
 echo "r3: \${r2}/r3val" >> peos_test.res
 
+./peos -c peos_test.pml > output
+cp proc_table.dat.xml ./c
+
 if !(grep '<prov_resource name=\"r2\" value=\"\${r1}/r2val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
-  echo
-  echo Failed resource 'file' binding.
-  echo
+  echo Failed 3rd resource file binding for 'r2'.
 fi
 
 if !(grep '<prov_resource name=\"r3\" value=\"\${r1}/r2val/r3val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
-  echo
-  echo Failed resource 'file' binding.
-  echo
+  echo Failed 3rd resource file binding for 'r3'.
 fi
 
 rm peos_test.res

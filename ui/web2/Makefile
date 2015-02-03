@@ -31,3 +31,6 @@ install:
 		echo "You must set your HTML_DIR env. variable to the directory where the PEOS web UI is to be installed."; \
 	fi;	
 
+
+clean: 
+	$(MAKE) -C cgi-bin clean
