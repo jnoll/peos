@@ -304,7 +304,7 @@ echo "r2: \${r1}/r2val" >> peos_test.res
 echo "r3: \${r2}/r3val" >> peos_test.res
 
 ./peos -c peos_test.pml > output
-cp proc_table.dat.xml ./a
+cp proc_table.dat.xml ./a.dat.xml
 
 if !(grep '<req_resource name=\"r1\" value=\"r1val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
@@ -325,7 +325,7 @@ echo "r2: \${r1}/r2val" > peos_test.res
 echo "r3: \${r2}/r3val" >> peos_test.res
 
 ./peos -c peos_test.pml > output
-cp proc_table.dat.xml ./b
+cp proc_table.dat.xml ./b.dat.xml
 
 if !(grep '<prov_resource name=\"r2\" value=\"\${r1}/r2val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
@@ -342,7 +342,7 @@ echo "r2: \${r1}/r2val" >> peos_test.res
 echo "r3: \${r2}/r3val" >> peos_test.res
 
 ./peos -c peos_test.pml > output
-cp proc_table.dat.xml ./c
+cp proc_table.dat.xml ./c.dat.xml
 
 if !(grep '<prov_resource name=\"r2\" value=\"\${r1}/r2val\" qualifier=\"\">' proc_table.dat.xml > stdout)
 then
