@@ -15,106 +15,107 @@
 </head>
 
 <body>
-
   <div class="pure-g" id="container">
-    <div  class="pure-u-1" id="header">
-      <img src="images/arch.png">
-      <a id="decisionsupport_btn" class="pure-button" href="#" title="Display Decision support">Decision support</a>
-    </div>
-    <!--
-  </div>
-  <div class="pure-g">
-    -->
-    <div id="patientslist" class="pure-u-4-24"> 
-      <h3>Patients</h3>
-      <ul>
-	<li data-cp-patientid="001671458" 
-	    data-cp-dob="24-06-1975" 
-	    data-cp-age="38"
-	    data-cp-gender="M">Brown, Mark</li>
-	<li data-cp-patientid="001677980" 
-	    data-cp-dob="19-02-1968" 
-	    data-cp-age="45"
-	    data-cp-gender="F">Curtis, Eva</li>
-	<li data-cp-patientid="001677693" 
-	    data-cp-dob="07-12-2001" 
-	    data-cp-age="11"
-	    data-cp-gender="M">Hayes, Liam</li>
-	<li data-cp-patientid="001661972" 
-	    data-cp-dob="12-09-1954" 
-	    data-cp-age="60"
-	    data-cp-gender="F">O'Connor, Jane</li>
-	<li data-cp-patientid="001671560" 
-	    data-cp-dob="23-06-1998" 
-	    data-cp-age="15"
-	    data-cp-gender="F">Tierney, Judith</li>
-      </ul>
-    </div>
-    <div id="main" class="pure-u-19-24">
-      <div id="patientrecord">
-	<h3>Patient record</h3>
-	<div id="patientname">
-	</div>
-	<div id="patientinfo">
-	  <div id="dob"></div>
-	  <div id="age"></div>
-	  <div id="gender"></div>
-	</div>
-	<div id="patientdata">
-	  <dl>
-	  </dl> 
-	</div>			
+    <div  class="pure-u-1">
+      <div id="header">
+	<img src="images/arch.png">
+	<a id="decisionsupport_btn" class="pure-button" href="#" title="Display Decision support">Decision support</a>
       </div>
-      <div id="inputsarea" class="pure-menu pure-menu-open pure-menu-horizontal">
-	<ul id="inputsmenu" >
-	  <li data-cp-action="sbmt_symptoms" class="pure-button" href="#">Enter symptoms</li>
-	  <li data-cp-action="req_bloodtest" class="pure-button" href="#">Request blood test</li>
-	  <li data-cp-action="sbmt_diagnosis" class="pure-button" href="#">Enter diagnosis</li>
-	  <li data-cp-action="update_patient_record" class="pure-button" href="#">+</li>
+    </div>
+
+    <div class="pure-u-4-24"> 
+      <div id="patientslist">
+	<h3>Patients</h3>
+	<ul>
+	  <li data-cp-patientid="001671458" 
+	      data-cp-dob="24-06-1975" 
+	      data-cp-age="38"
+	      data-cp-gender="M">Brown, Mark</li>
+	  <li data-cp-patientid="001677980" 
+	      data-cp-dob="19-02-1968" 
+	      data-cp-age="45"
+	      data-cp-gender="F">Curtis, Eva</li>
+	  <li data-cp-patientid="001677693" 
+	      data-cp-dob="07-12-2001" 
+	      data-cp-age="11"
+	      data-cp-gender="M">Hayes, Liam</li>
+	  <li data-cp-patientid="001661972" 
+	      data-cp-dob="12-09-1954" 
+	      data-cp-age="60"
+	      data-cp-gender="F">O'Connor, Jane</li>
+	  <li data-cp-patientid="001671560" 
+	      data-cp-dob="23-06-1998" 
+	      data-cp-age="15"
+	      data-cp-gender="F">Tierney, Judith</li>
 	</ul>
       </div>
     </div>
-    <div id="supportsystem" class="pure-u-6-24">
-      <h3>Decision support</h3>
-      <ul id="carepathways">
-      </ul>
+    <div class="pure-u-14-24">
+      <div id="main">
+	<div id="patientrecord">
+	  <h3>Patient record</h3>
+	  <div id="patientname">
+	  </div>
+	  <div id="patientinfo">
+	    <div id="dob"></div>
+	    <div id="age"></div>
+	    <div id="gender"></div>
+	  </div>
+	  <div id="patientdata">
+	    <dl>
+	    </dl> 
+	  </div>			
+	</div>
+	<div id="inputsarea" class="pure-menu pure-menu-open pure-menu-horizontal">
+	  <ul id="inputsmenu" >
+	    <li data-cp-action="sbmt_symptoms" class="pure-button" href="#">Enter symptoms</li>
+	    <li data-cp-action="req_bloodtest" class="pure-button" href="#">Request blood test</li>
+	    <li data-cp-action="sbmt_diagnosis" class="pure-button" href="#">Enter diagnosis</li>
+	    <li data-cp-action="update_patient_record" class="pure-button" href="#">+</li>
+	  </ul>
+	</div>
+      </div>
     </div>
-    <!--
+    <div class="pure-u-6-24">
+      <div id="supportsystem">
+	<h3>Decision support</h3>
+	<ul id="carepathways">
+	</ul>
+      </div>
+    </div>
   </div>
   <div class="pure-g">
-    -->
+    <div id="footer">
+      <!--
+	  <div id="demolabel" class="pure-u-2-24">    
+	    <h3>Demo</h3>
+	  </div>
+	  -->
+      <div id="demomenu" class="pure-u-7-24">
+	<a class="pure-button" data-cp-action="reset" href="#">Reset PR</a>
+	<a class="pure-button" data-cp-action="get_testresult" data-cp-testtype="cholesterol" href="#">Chol. TR</a>
+	<a class="pure-button" data-cp-action="get_testresult" data-cp-testtype="glucose" href="#">Gluc. TR</a>
+
+      </div>
+
+      <div id="slides-div" class="pure-u-16-24">
+	<ul id="slides" class="pure-paginator">
+	  <li><a class="pure-button" data-cp-slide="1" href="#">1</a>
+	  <li><a class="pure-button" data-cp-slide="2" href="#">2</a>
+	  <li><a class="pure-button" data-cp-slide="4" href="#">3</a>
+	  <li><a class="pure-button" data-cp-slide="6" href="#">4</a>
+	  <li><a class="pure-button" data-cp-slide="8" href="#">5</a>
+	  <li><a class="pure-button" data-cp-slide="10" href="#">6</a>
+	  <li><a class="pure-button" data-cp-slide="12" href="#">7</a>
+	  <li><a class="pure-button" data-cp-slide="14" href="#">8</a>
+	  <li><a class="pure-button" data-cp-slide="15" href="#">9</a>
+	  <li><a class="pure-button" data-cp-slide="17" href="#">10</a>
+	  <li><a class="pure-button" data-cp-slide="19" href="#">11</a>
+	  <li><a class="pure-button" data-cp-slide="21" href="#">12</a>
+	</ul>
+      </div>
+    </div>
   </div>
-  <div id="footer" class="pure-g">
-<!--
-    <div id="demolabel" class="pure-u-2-24">    
-      <h3>Demo</h3>
-    </div>
--->
-    <div id="demomenu" class="pure-u-7-24">
-      <a class="pure-button" data-cp-action="reset" href="#">Reset PR</a>
-      <a class="pure-button" data-cp-action="get_testresult" data-cp-testtype="cholesterol" href="#">Chol. TR</a>
-      <a class="pure-button" data-cp-action="get_testresult" data-cp-testtype="glucose" href="#">Gluc. TR</a>
-
-    </div>
-
-    <div id="slides-div" class="pure-u-16-24">
-      <ul id="slides" class="pure-paginator">
-	<li><a class="pure-button" data-cp-slide="1" href="#">1</a>
-	<li><a class="pure-button" data-cp-slide="2" href="#">2</a>
-	<li><a class="pure-button" data-cp-slide="4" href="#">3</a>
-	<li><a class="pure-button" data-cp-slide="6" href="#">4</a>
-	<li><a class="pure-button" data-cp-slide="8" href="#">5</a>
-	<li><a class="pure-button" data-cp-slide="10" href="#">6</a>
-	<li><a class="pure-button" data-cp-slide="12" href="#">7</a>
-	<li><a class="pure-button" data-cp-slide="14" href="#">8</a>
-	<li><a class="pure-button" data-cp-slide="15" href="#">9</a>
-	<li><a class="pure-button" data-cp-slide="17" href="#">10</a>
-	<li><a class="pure-button" data-cp-slide="19" href="#">11</a>
-	<li><a class="pure-button" data-cp-slide="21" href="#">12</a>
-      </ul>
-    </div>
-  </div>
-
 
   <div id="input-dialogs">
     <div id="sbmt_symptoms" title="Symptoms">
