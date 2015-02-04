@@ -141,7 +141,15 @@ vm_exit_code peos_notify(int pid, char *action, peos_event event)
 
 	case(PEOS_EVENT_FINISH):
 		status = handle_action_change(pid, action, ACT_DONE);
+<<<<<<< HEAD
 		update_status = update_process_state(pid);
+=======
+		if (status != VM_DONE) {
+		    update_status = update_process_state(pid);
+		} else {
+		    update_status = status;
+		}
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 		break;
 
 	default:

@@ -20,7 +20,6 @@
 /* XXX This is a hack made possible by the fact that process_table_filename defined in process_table.c is not static. */
 extern char *process_table_filename;
 
-// Lucia: changed so it returns pid
 int create_process(char *model) {
     int pid;
     int num_resources;
@@ -48,13 +47,13 @@ int create_process(char *model) {
         peos_bind_resource_file(pid, res_file);
 
     fprintf(stderr, "created pid = %d\n", pid);
-    return pid;
+    return 1;
 }
 
 
 
-//Lucia: changed so it takes the pid and send it in xml file
-void emit_xml(int pid) {
+
+void emit_xml() {
     FILE *in;
     int c;
     char **p, **models, *xml_data_filename = (char *) calloc((strlen(process_table_filename) + strlen(".xml") + 1), sizeof(char));
@@ -70,11 +69,6 @@ void emit_xml(int pid) {
 	}
     }
     printf("</models>\n");
-	
-	//Lucia: pid is added to the emitted xml
-	if (pid >= 0) {
-		printf("<pid>%d</pid>\n", pid);
-	}
 
     if ((in = fopen(xml_data_filename, "r"))) {
 	while ((c = getc(in)) != EOF) {
@@ -87,65 +81,43 @@ void emit_xml(int pid) {
     printf("</peos>\n");
 }
 
-<<<<<<< HEAD
-=======
-/* Update state of all active processes, so they can react to resource changes. */
-int update_state() {
-    int i=0;
-    peos_action_t *alist;
-    char **result = peos_list_instances();	
-	
-    while (i <= PEOS_MAX_PID) {
-        if (result[i] != NULL) {
-            int num_actions;	
-            if (alist = peos_list_actions(i, &num_actions)) {
-                if (peos_notify(i, "dummy_action", PEOS_EVENT_RESOURCE_CHANGE) == VM_INTERNAL_ERROR) {
-                    fprintf(stderr, "udpate_state: Error in notifying resource change event for pid=%d\n", i);
-                }
-            }
-        }
-        i++;
-    }
-    return 1;
-}
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 
 int
-main (int argc, char **argv)
-{
+main (int argc, char **argv) {
     int status;
-	int pid_num = -1;
     char *pid;
     char *action;
-    char *model;
-    char *login = "proc_table"; /* default login name */
-    char *request_method= getenv("REQUEST_METHOD") ;
-    char *event, **cgivars = getcgivars();
+    char *patientId;
+	char *symptoms;
+	char *bloodtest;
+	
+    //char *login = "proc_table"; /* default login name */
+    //char *request_method= getenv("REQUEST_METHOD") ;
+    char **cgivars = getcgivars();
 
     setenv("COMPILER_DIR", ".", 1);
 
-    if (strcmp(request_method, "POST") == 0) {
-	set_login_name(login);
-	event = getvalue("event", cgivars);
+    //if (strcmp(request_method, "POST") == 0) {
+	//set_login_name(login);
+	action = getvalue("action", cgivars);
+	patientId = getvalue("patientid", cgivars);
 
+	if (strcmp(action, "sbmt_symptoms") == 0) {
+	    symptoms = getvalue("symptoms", cgivars);
 
-	if (strcmp(event, "create") == 0) {
-	    model = getvalue("model", cgivars);
-		
-		// Lucia: changed so it checks for "< 0" and not "!=1"
-	    if ((pid_num = create_process(model)) < 0) {
-		fprintf(stderr, "Could not Create Process\n");
-		exit(EXIT_FAILURE);
+	    if (add_symptoms(symptoms) != 1) {
+		fprintf(stderr, "Could not add symptoms\n");
+		return -1;
 	    }
-		
-	} else if (strcmp(event, "delete") == 0) {
-	    pid = getvalue("pid", cgivars);
+
+	} else if (strcmp(action, "req_bloodtest") == 0) {
+	    bloodtest = getvalue("bloodtest", cgivars);
 
 	    if (peos_delete_process_instance(atoi(pid)) < 0) {
 		fprintf(stderr, "Could not delete process instance\n");
-		exit(EXIT_FAILURE);
+		return -1;
 	    }
-	} else if (strcmp(event, "start") == 0) {
+	} else if (strcmp(action, "start") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
@@ -155,7 +127,7 @@ main (int argc, char **argv)
 		return -1;
 	    }
 
-	} else if (strcmp(event, "finish") == 0) {
+	} else if (strcmp(action, "finish") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
@@ -165,7 +137,7 @@ main (int argc, char **argv)
 		return -1;
 	    }
 
-	} else if (strcmp(event, "abort") == 0) {
+	} else if (strcmp(action, "abort") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
@@ -175,7 +147,7 @@ main (int argc, char **argv)
 		return -1;
 	    }
 
-	} else if (strcmp(event, "suspend") == 0) {
+	} else if (strcmp(action, "suspend") == 0) {
 	    pid = getvalue("pid", cgivars);
 	    action  = getvalue("action", cgivars);
 
@@ -184,33 +156,10 @@ main (int argc, char **argv)
 		fprintf(stderr, "process encountered an illegal event and has been terminated\n");
 		return -1;
 	    }
-	} else if (strcmp(event, "update") == 0) { // Lucia: code for updating actions status
-	    pid = getvalue("pid", cgivars);
-
-<<<<<<< HEAD
-	    if ((status = peos_notify(atoi(pid), action, PEOS_EVENT_RESOURCE_CHANGE)) == VM_ERROR 
-=======
-	    if ((status = update_process_state(atoi(pid))) == VM_ERROR 
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
-		|| status == VM_INTERNAL_ERROR) {
-		fprintf(stderr, "process update wasn't successful and has been terminated\n");
-		return -1;
-	    }
 	}
-	
-	// Lucia: trasnsforms the pid in int to pass to emit_xml
-	if (pid_num == -1) {
-		pid_num = atoi(pid);
-	}
-    }
+    //}
 
-<<<<<<< HEAD
-=======
-    update_state();
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
-
-    /* GET method means just emit XML. */
-    emit_xml(pid_num);
+    return_patient_record(patientId);
     return (0);
 }
 

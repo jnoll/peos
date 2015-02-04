@@ -7436,8 +7436,13 @@ else
 ##########################################################################
 
 #if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+<<<<<<< HEAD
   echo "configure:7694: checking for tgetent in -ltermcap""... $ac_c" 1>&5
   echo $ac_n "checking for tgetent in -ltermcap..." >&6
+=======
+  echo "configure:7694: checking for tgetent in -lncurses""... $ac_c" 1>&5
+  echo $ac_n "checking for tgetent in -lncurses..." >&6
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
   ac_lib_var=`echo termcap'_'tgetent | sed 'y%./+-%__p_%'`
   if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
     echo $ac_n " (cached) $ac_c" 1>&6

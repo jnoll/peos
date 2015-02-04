@@ -47,7 +47,11 @@ peos: peos.o $(CORE_OBJS)
 	${V}$(CC) $(OPT_DEBUG) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) 
 
 daemon: enactment_daemon.o $(CORE_OBJS)
+<<<<<<< HEAD
 	${V}$(CC) $(OPT_DEBUG) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
+=======
+	${V}$(CC) $(OPT_DEBUG) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -lreadline -lhistory -lncurses
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 
 # Make the kernel library.
 lib: $(LIBRARY)
@@ -59,7 +63,11 @@ $(LIBRARY): $(OBJS)
 
 # Compile the program
 shell: shell.o $(LIBRARY)
+<<<<<<< HEAD
 	${V}$(CC) $(OPT_DEBUG) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -ltermcap
+=======
+	${V}$(CC) $(OPT_DEBUG) $(LDFLAGS) -o $@ $< $(CORE_LIBS) $(LIBS) -lreadline -lhistory -lncurses
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 
 # Programming aids.
 xref:

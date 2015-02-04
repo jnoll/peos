@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*Loads a list of all the pathway (pml files) available on the server
 If not already started, it starts a process for aech pathway associated with the curent user*/
 function loadModels(modelsXML) { 
@@ -8,12 +9,20 @@ function loadModels(modelsXML) {
 	$("#carepathways").attr("data-cp-patientid", patientId);
 	target.empty();
 	//the xml returns a model for each pml file on the server
+=======
+
+function loadModels(modelsXML) { 
+
+    target = $("#carepathways");
+
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
     var models = $('models', modelsXML);
     models.children('model').each(function() {
 		var carepathway = $(this).text();
 		var carepathwayLi = $('<li></li>', {"class": "carepathway"});
 		carepathwayLi.attr("name", carepathway);
 		carepathwayLi.attr("id", carepathway);
+<<<<<<< HEAD
 		carepathwayLi.append($('<a></a>', {"class": "toggle"}).text(convertText(carepathway)));
 		carepathwayLi.addClass('loading');
 		//the corresponding pathway process for the current patient is loaded on the page
@@ -54,10 +63,33 @@ function createAction(action, parent, pid) {
 	//all the details about the action (required resource, provided resources, script) are 
 	//put in a div with class actiondetails. This div is normally hidden and is displayed
 	//when clicking on the action name (this behaviour is implemented in loadProcess)
+=======
+		carepathwayLi.append($('<a></a>', {"class": "toggle"}).text(carepathway.replace(/_/g," ")));
+		$('#carepathways').append(carepathwayLi, "\n");
+	});
+
+	$('#carepathways li.carepathway').children('a').click(function(){
+       openCarePathway($(this).parent());
+    });
+	//console.log($('html').html());
+}
+
+function createAction(action, parent, pid) {
+	var actionName = action.attr("name");
+	console.log("@createAction: " + actionName);
+	var actionLi = $('<li></li>', {"data-cp-action": actionName, "class": "action"});
+	actionLi.attr("data-cp-state", action.attr("state").toLowerCase());
+	//actionLi.text(action.attr("name") + " (" + action.attr("state").toLowerCase() + ")");
+	actionLi.append($('<a></a>', {"class": "toggle"}).text(actionName.replace(/_/g," ")));
+	//alert(action.attr("name"));
+	//actionLi.appendTo(parent);
+	parent.append("\n", actionLi);
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	var actionDetailsDiv = $('<div></div>', {"class": "actiondetails"});
 	actionLi.append("  \n", actionDetailsDiv);
 	var actionDetailsDl = $('<dl></dl>');
 	actionDetailsDiv.append("    \n", actionDetailsDl);
+<<<<<<< HEAD
 	
 	//gets and display all the required resources
 	if (action.children("req_resource").length > 0) {
@@ -68,6 +100,21 @@ function createAction(action, parent, pid) {
 		action.children("req_resource").each(function() {
 				//console.log($(this).attr("name"));
 				var text = convertText($(this).attr("name"));
+=======
+	actionDetailsDl.append("      \n", $('<dt></dt>').text("State: "));
+	actionDetailsDl.append($('<dd></dd>', {"class": "state"}).text(action.attr("state")));
+	
+	if (action.children("req_resource").length > 0) {
+		//console.log("req_resource");
+		actionDetailsDl.append("      \n", $('<dt></dt>').text("Required resources: "));
+		var reqResourcesUl = $('<ul></ul>');
+		actionDetailsDl.append($('<dd></dd>').append(reqResourcesUl));
+		action.children("req_resource").each(function() {
+				console.log($(this).attr("name"));
+				var text = $(this).attr("name");
+				text += " = ";
+				text += $(this).attr("value");
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 				if ($(this).attr("qualifier") != "") {
 					text += " (" + $(this).attr("qualifier") + ")";
 				}
@@ -75,6 +122,7 @@ function createAction(action, parent, pid) {
 			});	
 	}
 	
+<<<<<<< HEAD
 	//gets and display all the provided resources
 	if (action.children("prov_resource").length > 0) {
 		actionDetailsDl.append("      \n", $('<dt></dt>').text("Provides: "));
@@ -82,12 +130,23 @@ function createAction(action, parent, pid) {
 		actionDetailsDl.append($('<dd></dd>').append(reqResourcesUl));
 		action.children("prov_resource").each(function() {
 				var text = convertText($(this).attr("name"));
+=======
+	if (action.children("prov_resource").length > 0) {
+		actionDetailsDl.append("      \n", $('<dt></dt>').text("Provided resources: "));
+		var reqResourcesUl = $('<ul></ul>');
+		actionDetailsDl.append($('<dd></dd>').append(reqResourcesUl));
+		action.children("prov_resource").each(function() {
+				var text = $(this).attr("name");
+				text += " = ";
+				text += $(this).attr("value");
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 				if ($(this).attr("qualifier") != "") {
 					text += " (" + $(this).attr("qualifier") + ")";
 				}
 				reqResourcesUl.append("      \n", $('<li></li>').text(text)); 
 			});	
 	}
+<<<<<<< HEAD
 	
 	//display the script if present
 	if (action.children("script").text().search("null") < 0) {
@@ -105,11 +164,27 @@ function createAction(action, parent, pid) {
 	
 	for (i in buttons) {
 		actionButtonsDiv.append($('<input />', {"type": "button", "value": buttons[i], "data-cp-event": events[i]}));	
+=======
+	if (action.children("script").text().search("null") < 0) {
+		actionDetailsDl.append("      \n", $('<dt></dt>').text("Script: "));
+		var scriptText = action.children("script").text();
+		scriptText = scriptText.substring(2, scriptText.length-2)
+		actionDetailsDl.append($('<dd></dd>').html(scriptText));
+	}
+	
+	var actionButtonsDiv = $('<div></div>', {"class": "actionButtons"});
+	actionDetailsDiv.append("    \n", actionButtonsDiv);
+	var buttons = ["Start", "Suspend", "Finish", "Abort"];
+	
+	for (i in buttons) {
+		actionButtonsDiv.append($('<input />', {"type": "button", "value": buttons[i]}));	
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	}
 
 	return;
 }
 
+<<<<<<< HEAD
 /*Updates the state of all actions in a process*/
 function updateActionsState(data, carepathwayElement, pid) {
 	console.log("updateActionsState");
@@ -149,17 +224,71 @@ function createElement(element, type, parent, pid) {
 	elementLi.append($('<a></a>', {"class": "toggle"}).attr('title', title));
 	//elementLi.append($('<a></a>', {"class": "toggle"}).attr('title', element[0].nodeName));
 	elementLi.append($('<a></a>', {"class": "expand"}).attr('title', 'open'));
+=======
+function updateActionsState(data, carepathway, pid) {
+	console.log("@updateActionsState");
+	$('process_table', data).find("process[pid='" + pid + "']").find('action').each(function() {
+		var state = $(this).attr("state");
+		var actionName = $(this).attr("name");
+		console.log("state: " + state + " - action: " + actionName);
+		var actionLi = carepathway.find('.action[data-cp-action=' + actionName + ']');
+		actionLi.attr("data-cp-state", state.toLowerCase());
+		actionLi.find('dd.state').text(state);
+	});
+	//console.log(carepathway.html());
+}
+
+// Handle process table data, from getProcessState().
+function handleProcessState(data) {
+	console.log("@handleProcessState");
+	$('process_table', data).find("process").each(function() {
+		pid = $(this).attr("pid");
+		model = $(this).attr("model").replace(/[.][/]/,'').replace(/[.]pml/, '');
+		carepathway = $('#' + model);
+		console.log("@udpateProcessState: pid=" + pid + " model=" + model + " carepathway.length=" + carepathway.length);
+		if (carepathway.length) {
+		    updateActionsState(data, carepathway, pid);
+		}
+	});
+}
+
+// Get current process state for all processes from server.
+function updateProcessState() {
+    $.ajax({
+	async: false,
+	type: "GET",
+	url: "peos.cgi",
+	data: "",
+	processData: false,
+	success: function(data) {  
+		handleProcessState(data);
+	    },
+	error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+	    },
+	dataType: "xml"
+	});
+}
+
+function createElement(element, type, parent, pid) {	
+	var elementLi = $('<li></li>', {"class": type});
+	//elementLi.text(element.attr("name"));
+	elementLi.append($('<a></a>', {"class": "toggle"}).text(element[0].nodeName));
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	parent.append("\n", elementLi); 
 	var elementUl = $('<ul></ul>', {"class": "toggle"}).appendTo(elementLi);
 	processElements(element, elementUl, pid);
 	return;
 }
 
+<<<<<<< HEAD
 /*Evaluetes the node type (coming from the xml data) and redirects to the 
 apropriate function to create the html code.
 Note that a sequence node would be displayed on the page only if has more
 then one element inside, otherwise the inner element is diplayed directly;
 this is done to semplify the user interface*/
+=======
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 function processElements(node, parent, pid) {
 	node.children().each(function() {
 		var element = $(this);
@@ -179,6 +308,7 @@ function processElements(node, parent, pid) {
 	return;
 }
 
+<<<<<<< HEAD
 /*Display or hide the care pathway on the page i.e. all the details of a process.
 If the process if not already loaded in the page, it gets it from the server and loads it */
 function openCarePathway(carepathwayElement) {
@@ -327,10 +457,103 @@ function loadProcess(processXML, carepathway, patientId) {
 	
 	//bind all actions in the pathway so that they display or hide the action details
 	carepathwayElement.find('li.action a.toggle').click(function(){
+=======
+function getModelsXML() {
+    //alert("loadProcessTable");
+    $.ajax({
+	type: "GET",
+	url: "peos.cgi",
+	processData: false,
+	success: loadModels,
+	dataType: "xml",
+	})
+	.fail(function(e, status, msg) { console.log(":getModelsXML:error: " + status + " : " + msg + " : " + e); })
+    return false; 
+}
+
+function openCarePathway(carepathway) {
+	var carepathwayName = carepathway.attr("name");
+	console.log("@openCarePathway: name=" + carepathwayName);
+	if ($('#' + carepathwayName + ' ul.process').length) {
+		//alert(carepathway.html());
+		$('#' + carepathwayName + ' ul.process').toggle()
+	} else {
+		var pid = $.cookie(carepathwayName);
+		if  (pid == undefined ) {
+			pid=-1;
+		}
+		$.ajax({
+			type: "POST",
+			url: "peos.cgi",
+			data: "model=" +carepathwayName + "&event=create",
+			processData: false,
+			success: function(data) {  
+				   loadProcess(data, carepathway, pid);
+				},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+					console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+				},
+			dataType: "xml"
+		});
+		//alert('created');	
+	}	
+	//console.log("openCarePathway html: \n");
+	//console.log($('html').html());
+}
+
+
+function loadProcess(processXML, carepathway, pid) {
+	//console.log(processXML);
+	console.log("loadProcess pid: " + pid);
+	
+	var processUl;
+	if (carepathway.children('ul.process').length == 0) {
+		processUl = $('<ul></ul>', {"class": "process"}).appendTo(carepathway);
+	} else {
+		processUl = carepathway.children('ul.process');
+		processUl.empty();
+	}
+	var procTable = $('process_table', processXML);
+	//alert("pid: " +  pid);
+	if (pid < 0) {
+		//alert("pid<0");
+		procTable.children('process').each(function() {
+			//alert($(this).attr('model'));
+			//alert(process.attr("name") + ".pml");
+			
+				var processName = carepathway.attr("name");
+				if ($(this).attr('model').search(processName + ".pml")>=0) {
+					pid = $(this).attr("pid");
+					processElements($(this), processUl, pid);	
+					//alert(processName);
+					//alert($(this).attr("pid"));
+					$.cookie(processName, pid);
+					//alert("cookie: " + $.cookie(processName));
+				}
+			
+		});	
+	} else {
+		processElements(procTable.children("process[pid='" + pid + "']"), processUl, pid);	
+	}
+	
+	$('#carepathways ul.process li ul.toggle').hide();
+	
+	$('#carepathways li.action[data-cp-state=ready]').parents('ul.toggle').show();
+	//$('#carepathways li.action[data-cp-state=available]').parents('ul.toggle').show();
+		
+	carepathway.find('li a.toggle').click(function(){
+		$(this).parent().children('ul').toggle();
+	});
+	
+	carepathway.find('li.action div.actiondetails').hide();
+	
+	carepathway.find('li.action a.toggle').click(function(){
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 		//alert("action");
 		$(this).parent().children('div.actiondetails').toggle();
 	});
 	
+<<<<<<< HEAD
 	carepathwayElement.attr("data-cp-pid", pid);
 	
 	// Bind a function to the action buttons.
@@ -361,6 +584,17 @@ function loadProcess(processXML, carepathway, patientId) {
 function submitEvent(pid, action, event, carepathwayElement) {
 	var data = "pid=" + pid + "&event=" + event + "&action=" + action;
 		console.log("submitEvent querystring: " + data);
+=======
+	
+	// Bind a function to the action buttons.
+	carepathway.attr("data-cp-pid", pid);
+	carepathway.find('.actiondetails input').click(function(){
+		//alert("button");
+		var event = $(this).attr("value").toLowerCase();
+		var actionName = $(this).parents('.action').attr("data-cp-action");
+		var data = "pid=" + pid + "&action=" + actionName + "&event=" + event;
+		console.log("query string: " + data);
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 		$.ajax({
 			async: false,
 			type: "POST",
@@ -368,6 +602,7 @@ function submitEvent(pid, action, event, carepathwayElement) {
 			data: data,
 			processData: false,
 			success: function(data) {  
+<<<<<<< HEAD
 				   updateActionsState(data, carepathwayElement, pid);
 				   //finishActions(data, pid, carepathwayElement);
 				},
@@ -382,6 +617,32 @@ function submitEvent(pid, action, event, carepathwayElement) {
 function deleteProcess(pid) {
 	//console.log('deleting');
 	//console.log("pid=" + pid+ "&event=delete");
+=======
+			    handleProcessState(data); // data has state of all processes, so update them all.
+				},
+			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+					console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+				},
+			dataType: "xml"
+		});
+		console.log("@clicked action button");
+	});
+	
+	
+	//alert(process.html());
+	console.log("loadProcess html: \n");
+	//console.log($('html').html());
+}
+
+// Delete all processes in current view.
+function deleteProcesses() {
+	console.log("@deleteProcesses: not implemented");
+}
+
+function deleteProcess(pid) {
+	console.log("@deleteProcess: deleting pid=" + pid+ "&event=delete");
+
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	$.ajax({
 			async: false,
 			type: "POST",
@@ -389,12 +650,17 @@ function deleteProcess(pid) {
 			data: "pid=" + pid+ "&event=delete",
 			processData: false,
 			error: function(XMLHttpRequest, textStatus, errorThrown) { 
+<<<<<<< HEAD
 					alert("deleteProcess \nStatus: " + textStatus + "\nError: " + errorThrown);  
+=======
+					console.log("Status: " + textStatus); console.log("Error: " + errorThrown); 
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 				},
 		});
 		//alert('deleted');
 }
 
+<<<<<<< HEAD
 /*Display or hide the pathway support */
 function togglePathwaySupport(button) {
 	if ($("#supportsystem").css('display') == 'none') { //pathway support is not visible
@@ -421,10 +687,26 @@ function togglePathwaySupport(button) {
 		$("#supportsystem").css('display', 'none');
 		button.removeClass('pressed');
 		button.attr('title', "Display Pathway support");
+=======
+function toggleDecisionSupport(button) {
+	if ($("#supportsystem").css('display') == 'none') {
+		//$("#main").removeClass("pure-u-19-24");
+		//$("#main").addClass("pure-u-13-24");
+		$("#supportsystem").css('display', 'block');
+		button.addClass('pressed');
+		button.attr('title', "Hide Decision support");
+	} else {
+		//$("#main").removeClass("pure-u-19-24");
+		//$("#main").addClass("pure-u-13-24");
+		$("#supportsystem").css('display', 'none');
+		button.removeClass('pressed');
+		button.attr('title', "Display Decision support");
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	}
 		
 }
 
+<<<<<<< HEAD
 /*Sets the carepathway in a ready state (adds a ready class to it) if any of the action is ready*/
 function updateCarepathwaysStatus(carepathwayElement) {
 		//console.log("updateCarepathwaysStatus");
@@ -485,10 +767,13 @@ function convertText(text) {
 	return text.replace(/_/g," ")
 }
 
+=======
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 // Wait for the DOM to be loaded. 
 $(document).ready(function() { 
 	console.log("********* ready ********");
 	
+<<<<<<< HEAD
 	$("#pathwaysupport_btn").click(function(){
 		togglePathwaySupport($(this));
 	});
@@ -499,6 +784,14 @@ $(document).ready(function() {
 	}
 	
 	//All cookies and processes when the page in closed or reloaded
+=======
+	getModelsXML();
+	
+	$("#decisionsupport_btn").click(function(){
+	  toggleDecisionSupport($(this));
+	});
+	
+>>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	$(window).bind('beforeunload', function() {
 		for (cookieName in $.cookie()) {
 			if (cookieName != "") {
