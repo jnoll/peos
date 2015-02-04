@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE
+#include <unistd.h>
 #include <stdio.h>
 
 void print_header(char *title)
@@ -80,12 +82,17 @@ void print_action_name(char* action_name)
     free(display_action);       
 }
 
-void get_process_filename()
+char* get_process_filename()
 {
     int i;
     char *login_name, *enc_loginname, *result;
     login_name = (char *)getenv("REMOTE_USER");
-    enc_loginname = (char *)crypt(login_name, "df");
+    if ((enc_loginname = (char *)crypt(login_name, "df")) == NULL || strlen(enc_loginname) == 0) {
+	perror("Error encrypting login_name");
+	enc_loginname = login_name;
+    }
+
+
     for (i = 0; i < strlen(enc_loginname); i++) {
         if (enc_loginname[i] == '/' || enc_loginname[i] == '.')
             enc_loginname[i] = '_';
@@ -93,7 +100,9 @@ void get_process_filename()
     result = (char *)malloc((strlen(enc_loginname) + strlen(".dat") + 1) * sizeof(char));
     strcpy(result, enc_loginname);
     strcat(result, ".dat");
-    //free(enc_loginname);
-    //free(login_name);
+
+    fprintf(stderr, "login_name=%s, enc_loginname=%s, result=%s\n",
+        login_name, enc_loginname, result);
+
     return result;
 }

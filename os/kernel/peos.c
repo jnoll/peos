@@ -245,6 +245,7 @@ main (int argc, char **argv)
                         fprintf(stderr, "Usage: peos -l login_name -r pid resource_name resource_value\n");
                         exit(EXIT_FAILURE);
                     }
+
                     pid = atoi(argv[4]);
                     res_name = argv[5];
                     res_val = argv[6];
