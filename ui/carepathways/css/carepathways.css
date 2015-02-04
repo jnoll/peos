@@ -8,7 +8,6 @@ body {
 }
 
 div#container, div#header {
-	/*width: 1200px;*/
 	overflow: hidden;
 	background-color: #FFFFFF;
 }
@@ -28,6 +27,7 @@ div#patientslist {
 	border: 3px groove;
 	float: left;
 	height: 500px;
+	width: 100%;
 }
 
 
@@ -42,6 +42,7 @@ div#main {
 	/*overflow: hidden;*/
         border: 3px groove;
     	height: 500px;
+	width: 100%;
 }
 
 ul.menu li {
@@ -161,6 +162,7 @@ div#inputsarea {
 div#supportsystem {
 	resize: both;
 	height: 500px;
+	width: 98%;
 	border: 3px groove;
 	float: right;
 	background-color: #E8F0F6;

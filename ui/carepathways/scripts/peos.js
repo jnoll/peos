@@ -308,14 +308,14 @@ function deleteProcess(pid) {
 
 function toggleDecisionSupport(button) {
 	if ($("#supportsystem").css('display') == 'none') {
-		$("#main").removeClass("pure-u-19-24");
-		$("#main").addClass("pure-u-13-24");
+		//$("#main").removeClass("pure-u-19-24");
+		//$("#main").addClass("pure-u-13-24");
 		$("#supportsystem").css('display', 'block');
 		button.addClass('pressed');
 		button.attr('title', "Hide Decision support");
 	} else {
-		$("#main").removeClass("pure-u-13-24");
-		$("#main").addClass("pure-u-19-24");
+		//$("#main").removeClass("pure-u-19-24");
+		//$("#main").addClass("pure-u-13-24");
 		$("#supportsystem").css('display', 'none');
 		button.removeClass('pressed');
 		button.attr('title', "Display Decision support");

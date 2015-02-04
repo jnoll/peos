@@ -9,7 +9,7 @@ TREETOP= peos
 INSTALL_DIR=$(HTML_DIR)/PEOS
 TCLF_DIR=peos/src/os/kernel
 
-SUBDIRS = pml os/kernel ui/ajax-cgi ui/web2 
+SUBDIRS = pml os/kernel ui/carepathways ui/ajax-cgi ui/web2 
 
 V = @ 
 

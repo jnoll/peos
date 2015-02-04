@@ -1,4 +1,5 @@
 *.dat 
+*.dat.xml
 *.idx 
 *.o 
 *.tar
