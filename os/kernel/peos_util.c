@@ -18,6 +18,7 @@ char* find_file(char* file) {
     else {
         sprintf(result, "./%s", file);
     }
+
     if ((f = fopen(result, "r"))) {
         fclose(f);
         return strdup(result);

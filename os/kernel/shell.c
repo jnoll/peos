@@ -6,7 +6,7 @@
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
-* Modified:     Sun Nov 16 23:02:46 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Fri Feb 13 19:43:06 2015 (John Noll) john.noll@lero.ie
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -17,6 +17,7 @@
 */
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <fcntl.h>
@@ -38,6 +39,17 @@ typedef struct
     char *doc;
 } COMMAND;
 
+char *add_ext(char *file, char *ext) {
+    char *result, *e;
+    result = calloc(strlen(file) + strlen(ext) + 1, sizeof(char));
+    /* Add .pml extenstion to model name if necessary. */
+    if ((e = strstr(file, ext)) == NULL || strcmp(e, ext) != 0) {
+	strcpy(result, file);
+	strcat(result, ext);
+    }
+    return result;
+}
+
 void list_models()
 {
     int i;
@@ -51,7 +63,7 @@ void list_models()
 void list_instances()
 {
     int i;
-    char ** result = peos_list_instances(result);
+    char ** result = peos_list_instances();
     for (i = 0; i <= PEOS_MAX_PID; i++) {
 	printf("%d %s\n", i, result[i]);
     }
@@ -110,7 +122,7 @@ void list(int argc, char *argv[])
 void create_process(int argc, char *argv[])
 {
     int pid;
-    char *model;
+    char *model, *pml_file;
     int num_resources;
     peos_resource_t *resources;
 
@@ -120,26 +132,26 @@ void create_process(int argc, char *argv[])
     }
 
     model = argv[1];
+    pml_file = add_ext(model, ".pml");
 
-    /* This is new code I have inserted. */
-
-     resources = (peos_resource_t *) peos_get_resource_list(model,&num_resources);
-
+    printf("Getting resources for %s\n", pml_file);
+    resources = (peos_resource_t *) peos_get_resource_list(pml_file, &num_resources);
 
     if (resources == NULL) {
         printf("error getting resources\n");
+	free(pml_file);
 	return;
     }
     
-    printf("Executing %s:\n", model);
+    printf("Executing %s:\n", pml_file);
     
-    // note the change in interface of peos_run
-    if ((pid = peos_run(model,resources,num_resources)) < 0) {
+    if ((pid = peos_run(pml_file, resources, num_resources)) < 0) {
 	error_msg("couldn't create process");
     } 
     else {
 	printf("Created pid = %d\n", pid);
     }
+    free(pml_file);
 }
 
 void list_resource_binding(int argc, char *argv[])
@@ -187,8 +199,7 @@ void list_resource_binding(int argc, char *argv[])
 void list_resources(int argc, char *argv[])
 {
     int i;
-    char *model;
-    char *model_file;
+    char *model, *model_file, *pml_file;
     int num_resources;
     peos_resource_t *resources;
 
@@ -198,7 +209,9 @@ void list_resources(int argc, char *argv[])
     }
 
     model = argv[1];
-    model_file = (char *)find_file(model);
+    pml_file = add_ext(model, ".pml");
+    model_file = (char *)find_file(pml_file);
+    free(pml_file);
     if (model_file == NULL) {
         printf("error: model file %s not found\n", model);
         return;
@@ -238,8 +251,7 @@ void run_action(int argc, char *argv[])
     else {
 	script = (char *) peos_get_script(pid, action);
 	if (script) {
-	    printf(script);
-	    printf("\n");
+	    printf("%s\n", script);
 	} 
 	else {
 	    printf("Error : Script Not Found");	
