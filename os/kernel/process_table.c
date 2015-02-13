@@ -442,20 +442,12 @@ int load_proc_table(char *file)
     
     filedes = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (filedes < 0) {
-<<<<<<< HEAD
-        fprintf(stderr, "Cannot Get Process Table File Descriptor\n");
-=======
         fprintf(stderr, "Cannot get process table file descriptor for file %s\n", file);
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	exit(EXIT_FAILURE);
     }
     
     if(get_lock(filedes) < 0) {
-<<<<<<< HEAD
-        fprintf(stderr, "Cannot Obtain Process Table File Lock\n");
-=======
         fprintf(stderr, "Cannot obtain process table file lock for file %s\n", file);
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	exit(EXIT_FAILURE);
     }
     

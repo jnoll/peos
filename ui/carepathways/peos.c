@@ -87,8 +87,6 @@ void emit_xml(int pid) {
     printf("</peos>\n");
 }
 
-<<<<<<< HEAD
-=======
 /* Update state of all active processes, so they can react to resource changes. */
 int update_state() {
     int i=0;
@@ -108,7 +106,7 @@ int update_state() {
     }
     return 1;
 }
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
+
 
 int
 main (int argc, char **argv)
@@ -187,11 +185,7 @@ main (int argc, char **argv)
 	} else if (strcmp(event, "update") == 0) { // Lucia: code for updating actions status
 	    pid = getvalue("pid", cgivars);
 
-<<<<<<< HEAD
-	    if ((status = peos_notify(atoi(pid), action, PEOS_EVENT_RESOURCE_CHANGE)) == VM_ERROR 
-=======
 	    if ((status = update_process_state(atoi(pid))) == VM_ERROR 
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 		|| status == VM_INTERNAL_ERROR) {
 		fprintf(stderr, "process update wasn't successful and has been terminated\n");
 		return -1;
@@ -204,10 +198,7 @@ main (int argc, char **argv)
 	}
     }
 
-<<<<<<< HEAD
-=======
     update_state();
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 
     /* GET method means just emit XML. */
     emit_xml(pid_num);

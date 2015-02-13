@@ -4,10 +4,7 @@ LIBS    = ../pml/libpml.a
 OBJS    = link_parser.o lexer.o link.o
 SRCS    = link_parser.c lexer.c y.tab.h
 YFLAGS  = -d
-<<<<<<< HEAD
-=======
 LEX = flex
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 
 
 all:		$(SRCS) $(OBJS)		
@@ -20,11 +17,7 @@ link_parser.c:	link_parser.y
 		rm -f y.tab.c y.tab.h.temp
 
 lexer.c:	lexer.l
-<<<<<<< HEAD
-		lex -l  -t lexer.l | sed -f link.sed > lexer.c
-=======
-		flex -l  -t lexer.l | sed -f link.sed > lexer.c
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
+		$(LEX) -l  -t lexer.l | sed -f link.sed > lexer.c
 
 		rm -f lexer.h.temp
 
