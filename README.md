@@ -222,4 +222,4 @@ libraries for accessing repositories in addition to the filesystem,
 including [relational databases](http://wiki.tcl.tk/20343),
 [XML](http://wiki.tcl.tk/1950), and even
 [HL7](https://github.com/jamerfort/tclhl7) (see also
-[http://wiki.tcl.tk/8893]()).
+the [TCL wiki entry on HL7](http://wiki.tcl.tk/8893)).
