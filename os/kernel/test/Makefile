@@ -7,7 +7,7 @@ CFLAGS = -g -Wall -I. -I.. -I$(PML_DIR) -I/home/jnoll/include
 .KEEP_STATE:
 
 # lib
-LIBS =  -lpml -ltcl 
+LIBS =  -lpml -ltcl -lm -lrt -lpthread
 TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib -L$(PML_DIR)/pml/
 
