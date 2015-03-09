@@ -1,6 +1,6 @@
 # Overview
 
-This directory contains the component of PEOS - the Process Enactment
+This directory contains the implementation of PEOS - the Process Enactment
 Operating System - which is an enactment system for the PML process
 modeling language.  The source code is the result of a number of
 student projects carried out at the University of Colorado, Denver,
@@ -36,15 +36,17 @@ source code for this is found in the following sub-directories:
 To build and install these subsystems, follow these steps:
 
 1. Install library dependencies
-   - TCL (see http://www.activestate.com/activetcl).
-   - check (http://check.sourceforge.net/).  Check is only required to
+   - TCL (see http://www.activestate.com/activetcl; Ubuntu package _tcl_).
+   - check (http://check.sourceforge.net/; Ubuntu package _check_).  Check is only required to
    run the unit tests, but the kernel build will fail if check is not
    present. 
-   - libxml2 from (http://www.xmlsoft.org/)
+   - expect (http://expect.sourceforge.net/; Ubuntu package _expect_).  Required to run the
+     acceptance tests in _os/kernel/test/accept_tests_. 
+   - libxml2 from (http://www.xmlsoft.org/; Ubuntu package _libxml2_).
 
 2. If the header and libary files  are not installed in the normal 
-directory expected by the compiler on your platform (
-_/usr/include_ and _/usr/lib_ on Linux platforms),
+directory expected by the compiler on your platform 
+(_/usr/include_ and _/usr/lib_ on Linux platforms),
 edit the following Makefiles to set _CFLAGS_ and _LDFLAGS_ to point to
 the include and library directories.
 
@@ -53,8 +55,8 @@ the include and library directories.
    - ui/ajax-cgi/Makefile (TCL)
 
 
-3. Execute _make_ in the root directory (where this _README_ file is
-found).  This will invoke _make_ recursively in _pml_, _os/kernel_,
+3. Execute `make` in the root directory (where this _README_ file is
+found).  This will invoke `make` recursively in _pml_, _os/kernel_,
 _ui/web2_, and _ui/ajax-cgi_.  
 
 4. Edit _ui/web2/Makefile_ and/or _ui/ajax-cgi/Makefile_  to
@@ -223,3 +225,83 @@ including [relational databases](http://wiki.tcl.tk/20343),
 [XML](http://wiki.tcl.tk/1950), and even
 [HL7](https://github.com/jamerfort/tclhl7) (see also
 the [TCL wiki entry on HL7](http://wiki.tcl.tk/8893)).
+
+### Resource binding
+
+Resource names in a PML specification are like variables in a program:
+they are convenient ways to refer to values stored in some location or
+repository.  In the case of a program, the names refer to memory
+locations; in PML, the names refer to any object that can be stored in
+and retrieved from a repository, be it a database, Nosql store,
+filesystem, or the World Wide Web.
+
+By default, PEOS expects resources to be stored in the filesystem, but
+this is just the default implementation and not a constraint or
+requirement.
+
+Regardless of where resources are stored, for the PEOS kernel to be
+able to assess resource state, resource names must be *bound* to
+values.  This is achieved by calling *peos_set_resource_binding()*,
+which takes a process identifier, resource name, and value as
+arguments, and binds the resource name to the supplied value within
+the scope of the identified process.  The same can be achieved from
+the command line using the `peos` command:
+
+    peos -r pid resource_name value
+    
+As an example,  we'll expand the "test" action above into a small,
+complete PML specification:
+
+~~~~~
+    process build_test {
+        action compile {
+	  requires { code }
+	  provides { code.compiles == "true" }
+        }
+	action test {
+	  requires { code.compiles == "true" }
+	  provides { test_report }
+	}
+    }
+~~~~~
+
+To create an instance of this process, run 
+
+    > peos -c build_test.pml
+    Executing build_test.pml:
+    Created pid = 0
+    
+which will create a new instance of *build_test* and print its process
+id.
+
+The *compile* action will be immediately blocked because the _code_
+resource is unbound and therefore does not exist.  We need to bind it
+to a value; suppose the pid of our process is '1'; then
+
+    > peos -r 1 code peos.c
+    
+will bind _code_ to "peos.c", and 
+
+    > peos -r 1 test_report peos.tr
+
+will bind _test_report_ to "peos.tr".
+
+Now, if the file *peos.c* exists, the "compile" action will become
+"ready."  We can start the *compile* action:
+
+    > peos -n 1 compile start
+    Performing action compile
+    
+When we finish the compile action,
+
+    > peos -n 1 compile finish
+    Finishing action compile
+    
+If the *peos* executable exists, the *test* action will now be ready;
+if *peos* does not exist, the *test* action will be blocked.
+
+    
+
+
+
+
