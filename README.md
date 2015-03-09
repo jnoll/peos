@@ -265,7 +265,7 @@ complete PML specification:
     }
 ~~~~~
 
-To create an instance of this process, run 
+To create an instance of this process, run [^compiler_dir]
 
     > peos -c build_test.pml
     Executing build_test.pml:
@@ -305,3 +305,6 @@ if *peos* does not exist, the *test* action will be blocked.
 
 
 
+[^compiler_dir]: To run these examples, you must set the COMPILER_DIR
+environment variable to point to the directory where  your PML models
+are located, for instance _peos/models_.  
