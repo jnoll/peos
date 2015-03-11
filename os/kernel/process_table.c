@@ -6,7 +6,7 @@
 * Description:  process table manipulation and i/o.
 * Author:       John Noll, Santa Clara University
 * Created:      Sun Jun 29 13:41:31 2003
-* Modified:     Thu Dec  4 11:48:43 2003 (John Noll, SCU) jnoll@carbon.cudenver.edu
+* Modified:     Wed Mar 11 18:20:38 2015 (John Noll) john.noll@lero.ie
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -27,8 +27,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #endif
+#include "error.h"
 #include "graph.h"
-
 #include "process_table.h"
 #include "graph_engine.h"
 #include "resources.h"
@@ -69,17 +69,16 @@ int get_lock(int fd)
 
     while (fcntl(fd, F_SETLK, &lck) < 0) {
         if ((errno == EAGAIN) || (errno == EACCES)) {
-	    if(++num_attempts <= MAX_LOCK_ATTEMPTS) {
-		fprintf(stderr, "Attempting Process File Lock ...\n");     
+	    if (++num_attempts <= MAX_LOCK_ATTEMPTS) {
+		fprintf(stderr, "get_lock:attempting process file lock ...\n");     
 	        sleep(2);
 		continue;
 	    }
 	    
-	    fprintf(stderr, "File Lock Error: File Busy \n  Error Msg  : %s\n", strerror(errno));
+	    peos_error("get_lock:file lock error: file busy: %s", strerror(errno));
 	    return -1;
 	}
-	fprintf(stderr, "File Lock Error: Unknown Error\n");
-	fprintf(stderr, "System Error Message: %s\n", strerror(errno));
+	peos_error("get_lock: unknown error: %s", strerror(errno));
 	return -1;
     }
 
@@ -97,7 +96,7 @@ int release_lock(int fd)
     lck.l_start = 0L;
     lck.l_len = 0L; 
 
-    if(fcntl(fd, F_SETLK, &lck) < 0) 
+    if (fcntl(fd, F_SETLK, &lck) < 0) 
         return -1;
     else
         return 1;
@@ -106,7 +105,7 @@ int release_lock(int fd)
 
 void peos_set_process_table_file(char *file_name)
 {
-    if(file_name) {
+    if (file_name) {
         process_table_filename = file_name;
     }
 }
@@ -135,7 +134,7 @@ char *get_script(int pid, char *act_name)
     }
     else {
 #ifndef PALM
-        fprintf(stderr,"\n get_script error : context not found\n");
+        peos_error("get_script: context not found");
 #endif
 	return NULL;
     }
@@ -144,8 +143,8 @@ char *get_script(int pid, char *act_name)
 
 void peos_set_loginname(char *loginname)
 {
-    if(loginname) {
-	login_name = loginname;
+    if (loginname) {
+        login_name = loginname;
     }
 }
 
@@ -158,22 +157,26 @@ int set_resource_binding(int pid, char *resource_name, char *resource_value)
     peos_resource_t *resources;
     peos_context_t *context = peos_get_context(pid);
 
-    if(context == NULL)
+    if (context == NULL) {
         return -1;
+    }
 
     resources = context -> resources;
     num_resources = context -> num_resources;
 
-    if(resources == NULL)
+    if (resources == NULL) {
+        peos_error("set_resource_binding: resources for process %d are null", pid);
         return -1;
+    }
 
-    for(i = 0; i < num_resources; i++) {
-        if(strcmp(resources[i].name, resource_name) == 0) {
-            if(strlen(resource_value) < RESOURCE_FIELD_LENGTH) {
+    for (i = 0; i < num_resources; i++) {
+        if (strcmp(resources[i].name, resource_name) == 0) {
+            if (strlen(resource_value) < RESOURCE_FIELD_LENGTH) {
                 strcpy(resources[i].value, resource_value);
                 return 1;
             }
-            fprintf(stderr, "buffer overflow in set resource binding\n");
+            peos_error("set_resource_binding: buffer overflow: resource_value='%s' exceeds %d\n", 
+		       resource_value, RESOURCE_FIELD_LENGTH);
             return -1;
         }
     }
@@ -191,13 +194,13 @@ char *get_resource_binding(int pid, char *resource_name)
 
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *resources;
-    if(context == NULL) return NULL;
+    if (context == NULL) return NULL;
     resources = context -> resources;
     num_resources = context -> num_resources;
-    if(resources == NULL) return NULL;
+    if (resources == NULL) return NULL;
          
     for(i = 0; i < num_resources; i++) {
-        if(strcmp(resources[i].name,resource_name) == 0) {
+        if (strcmp(resources[i].name,resource_name) == 0) {
 	    return resources[i].value;
 	}
     }
@@ -214,13 +217,13 @@ char *get_resource_qualifier(int pid, char *resource_name)
 
     peos_context_t *context = peos_get_context(pid);
     peos_resource_t *resources;
-    if(context == NULL) return NULL;
+    if (context == NULL) return NULL;
     resources = context -> resources;
     num_resources = context -> num_resources;
-    if(resources == NULL) return NULL;
+    if (resources == NULL) return NULL;
 
     for(i = 0; i < num_resources; i++) {
-        if(strcmp(resources[i].name,resource_name) == 0) {
+        if (strcmp(resources[i].name,resource_name) == 0) {
 	    return resources[i].qualifier;
 	}
     }
@@ -236,54 +239,52 @@ int make_node_lists(Graph g, peos_action_t **actions, int *num_actions, peos_oth
     int num_nodes = 0;
     int asize = INST_ARRAY_INCR;
     int osize = INST_ARRAY_INCR;
-    peos_action_t *act_array = (peos_action_t *) calloc(asize, sizeof(peos_action_t));
-    
-    peos_other_node_t *node_array = (peos_other_node_t *) calloc(osize, sizeof(peos_other_node_t));
+    peos_action_t *act_array;
+    peos_other_node_t *node_array;
 
-    if (g != NULL) {
-        for(n = g -> source;n != NULL; n = n -> next) {
-	    if (n -> type == ACTION) {
-                if(num_act >= asize) {
-                    asize = asize + INST_ARRAY_INCR;
-                    if ((act_array = realloc(act_array,asize*sizeof(peos_action_t))) == NULL) {
-	                fprintf(stderr, "Too Many Actions\n");
-			free(act_array);
-	                return -1;
-	              }
-		}
-	        strcpy(act_array[num_act].name, n -> name);
-		act_array[num_act].state = STATE(n);
-		act_array[num_act].script = n -> script;
-	        num_act ++;
-	    }
-	    else {
-                if((n->type == SELECTION) || (n->type == BRANCH)) {
-		    if(num_nodes >= osize) {
-		        osize = osize + INST_ARRAY_INCR;
-			if((node_array = realloc(node_array,osize*sizeof(peos_other_node_t))) == NULL) {
-			    fprintf(stderr,"Too many nodes\n");
-			    free(node_array);
-			    return -1;
-			}
-		    }
-		    strcpy(node_array[num_nodes].name, n -> name);
-		    node_array[num_nodes].state = STATE(n);
-		    num_nodes ++;
-		}
-	    }
-	}
-	*actions = act_array;
-	*num_actions = num_act;
-	*other_nodes = node_array;
-	*num_other_nodes = num_nodes;
-	return 1;
-    }
-    else {
-        free(act_array);
-	free(node_array);
+    if (g == NULL) {
+	peos_error("make_node_lists: graph is null");
         return -1;
     }
-return 0;
+
+    act_array = (peos_action_t *) calloc(asize, sizeof(peos_action_t));
+    node_array = (peos_other_node_t *) calloc(osize, sizeof(peos_other_node_t));
+    for (n = g -> source;n != NULL; n = n -> next) {
+	if (n -> type == ACTION) {
+	    if (num_act >= asize) {
+		asize = asize + INST_ARRAY_INCR;
+		if ((act_array = realloc(act_array,asize*sizeof(peos_action_t))) == NULL) {
+		    peos_error("make_node_lists: too many actions");
+		    free(act_array);
+		    return -1;
+		}
+	    }
+	    strcpy(act_array[num_act].name, n -> name);
+	    act_array[num_act].state = STATE(n);
+	    act_array[num_act].script = n -> script;
+	    num_act ++;
+	}
+	else {
+	    if((n->type == SELECTION) || (n->type == BRANCH)) {
+		if(num_nodes >= osize) {
+		    osize = osize + INST_ARRAY_INCR;
+		    if((node_array = realloc(node_array,osize*sizeof(peos_other_node_t))) == NULL) {
+			peos_error("make_node_lists: too many nodes\n");
+			free(node_array);
+			return -1;
+		    }
+		}
+		strcpy(node_array[num_nodes].name, n -> name);
+		node_array[num_nodes].state = STATE(n);
+		num_nodes ++;
+	    }
+	}
+    }
+    *actions = act_array;
+    *num_actions = num_act;
+    *other_nodes = node_array;
+    *num_other_nodes = num_nodes;
+    return 1;
 }
 	    
 
@@ -299,7 +300,7 @@ int  annotate_graph(Graph g, peos_action_t *actions, int num_actions, peos_other
             STATE(node) = get_act_state(node -> name,actions,num_actions);
         }
         else {
-            if((node->type == SELECTION) || (node->type == BRANCH)) {
+            if ((node->type == SELECTION) || (node->type == BRANCH)) {
                 for(i=0;i < num_other_nodes; i++) {
                     if (strcmp(node->name,other_nodes[i].name)==0) {
                         STATE(node) = other_nodes[i].state;
@@ -319,12 +320,7 @@ int load_context(FILE *in, peos_context_t *context)
     int num_actions, num_other_nodes;
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
-    char* res_value = (char*)malloc(sizeof(char) * 258);
-    
-    if (!res_value) {
-        fprintf(stderr, "Error allocating memory: aborting!\n");
-        exit(255);
-    }
+    char res_value[BUFSIZ];
     
     if (fscanf(in, "pid: %d\n", &context->pid) != 1)
         return 0;
@@ -350,6 +346,7 @@ int load_context(FILE *in, peos_context_t *context)
 
     for (i = 0; i < num_actions; i++) {
         if (fscanf(in, "%s %d", actions[i].name,(int *)&actions[i].state) != 2) {
+	    peos_error("load_context: couldn't scan action\n");
             free(actions);
             return 0;
         }
@@ -364,14 +361,16 @@ int load_context(FILE *in, peos_context_t *context)
     if (fscanf(in, "%d ", &num_other_nodes) != 1)
         return 0;
 
-    other_nodes = (peos_other_node_t *)calloc(num_other_nodes, sizeof(peos_other_node_t));    
+    if (num_other_nodes > 0) {
+	other_nodes = (peos_other_node_t *)calloc(num_other_nodes, sizeof(peos_other_node_t));    
 
-    for (i = 0; i < num_other_nodes; i++) {
-        if (fscanf(in, "%s %d", other_nodes[i].name,(int *)&other_nodes[i].state) != 2) {
-            free(other_nodes);
-            return 0;
-        }
-        other_nodes[i].pid = context->pid;
+	for (i = 0; i < num_other_nodes; i++) {
+	    if (fscanf(in, "%s %d", other_nodes[i].name,(int *)&other_nodes[i].state) != 2) {
+		free(other_nodes);
+		return 0;
+	    }
+	    other_nodes[i].pid = context->pid;
+	}
     }
 
     fscanf(in, "\n");
@@ -385,36 +384,59 @@ int load_context(FILE *in, peos_context_t *context)
     context->resources = (peos_resource_t *)calloc(context->num_resources, sizeof(peos_resource_t));
 
     for (i = 0; i < context->num_resources; i++) {
-        if (fscanf(in, "%s %s", context->resources[i].name, res_value) != 2) {
+	int c, j = 0;;
+	/* quoted string, including quotes*/
+	if (fscanf(in, "%s ", context->resources[i].name) != 1) {
+	    peos_error("load_context: couldn't scan resource name\n");
+	    free(context->resources);
+	    return 0;
+	}
+
+	res_value[0] = '\0';
+	while ((c = fgetc(in)) != '\"');
+	if (c != '\"') {
+	    peos_error("load_context: open quote not found");
+	    peos_perror("load_context");
+	}
+	while ((c = fgetc(in)) != '\"') {
+	    res_value[j++] = c;
+	}	
+	res_value[j] = '\0';
+	if (c != '\"') {
+	    peos_error("load_context: close quote not found");
+	    peos_perror("load_context");
+	}
+	/* input should be at trailing whitespace now */
+
+	if (j >= RESOURCE_FIELD_LENGTH) {
+	    peos_error("load_context: resource value '%s' too long\n", res_value);
             free(context->resources);
-            return 0;
-        }
+            return 0; 
+	} else if (j >= 0) {
+	    strcpy(context->resources[i].value, res_value);
+	}
 
-        if (strlen(res_value) >= 258)
-            return 0;
-
-        if (res_value[0] != '\"' && res_value[strlen(res_value) - 1] != '\"')
-            return 0;
-
-        strncpy(context->resources[i].value, ++res_value, strlen(res_value) - 2);
-        --res_value;
         context->resources[i].pid = context->pid;
     }
 
-    if (fscanf(in, "\n\n") < 0)
+    if (fscanf(in, "\n\n") < 0) {
+	free(context->resources);
         return 0;
+    }
 
     if (context->status != PEOS_NONE && context->model[0]) {
-        if ((context->process_graph = makegraph(context->model)) == NULL)
+        if ((context->process_graph = makegraph(context->model)) == NULL) {
+            free(context->resources);
             return 0;
+	}
         initialize_graph(context->process_graph, context->pid);
     }
 
-    if (context->process_graph && (annotate_graph(context->process_graph, actions, num_actions, other_nodes, num_other_nodes) < 0))
+    if (context->process_graph && (annotate_graph(context->process_graph, actions, num_actions, other_nodes, num_other_nodes) < 0)) {
+	free(context->resources);
         return 0;
+    }
 
-    if (res_value)
-        free(res_value);
     if (num_actions)
         free(actions);
     if (num_other_nodes)
@@ -442,12 +464,14 @@ int load_proc_table(char *file)
     
     filedes = open(file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (filedes < 0) {
-        fprintf(stderr, "Cannot get process table file descriptor for file %s\n", file);
+        peos_error("cannot get process table file descriptor for file %s\n", file);
+	peos_perror("load_proc_table");
 	exit(EXIT_FAILURE);
     }
     
-    if(get_lock(filedes) < 0) {
-        fprintf(stderr, "Cannot obtain process table file lock for file %s\n", file);
+    if (get_lock(filedes) < 0) {
+        peos_error("cannot obtain process table file lock for file %s\n", file);
+	peos_perror("load_proc_table");
 	exit(EXIT_FAILURE);
     }
     
@@ -464,7 +488,8 @@ int load_proc_table(char *file)
 	/* XXX This is an issue here. If I close the file stream or the file descriptor, I loose the lock on the file. So right now this will result in some open file streams. */
     }
     else {
-	fprintf(stderr, "Error in getting file pointer for load process table");
+	peos_error("error getting file pointer for load process table");
+	peos_perror("load_proc_table");
         release_lock(filedes);
 	close(filedes);
     }
@@ -484,8 +509,9 @@ int save_context(int pid, peos_context_t *context, FILE *out)
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
 
-    make_node_lists(context->process_graph,&actions,&num_actions,&other_nodes,&num_other_nodes);
-
+    if (context->process_graph) { /* this might be an empty entry */
+	make_node_lists(context->process_graph,&actions,&num_actions,&other_nodes,&num_other_nodes);
+    }
     fprintf(out, "pid: %d\n", pid);
     fprintf(out, "model: %s\n", context->model[0] ? context->model : "none");
     fprintf(out, "status: %d\n", context->status);
@@ -530,7 +556,7 @@ save_proc_table(char *file)
 	close(filedes);
     }
     else {
-        fprintf(stderr, "File Pointer Error: %s \n", strerror(errno));
+        peos_error("file pointer error: %s", strerror(errno));
 	release_lock(filedes);
 	close(filedes);
 	return -1;
@@ -545,8 +571,9 @@ int load_process_table()
 
 int save_process_table()
 {
+    int status = save_proc_table(process_table_filename);
     save_proc_table_xml();	
-    return save_proc_table(process_table_filename);
+    return status;
 }
 #endif
 
@@ -554,7 +581,7 @@ void print_after_escaping(char *str, FILE *fp)
 {
 #ifndef PALM
     int i;
-    if(str!=NULL) {
+    if (str!=NULL) {
         for(i=0; i<strlen(str); i++) {
 	    switch(str[i]) {
 	        case '<' : fprintf(fp,"&lt;");
@@ -575,8 +602,8 @@ void print_after_escaping(char *str, FILE *fp)
 }
 
 
-void print_action_node(Node n, FILE *fp)
-{
+
+void print_action_node(Node n, FILE *fp){
 #ifndef PALM
     int num_req_resources;
     int num_prov_resources;
@@ -589,6 +616,7 @@ void print_action_node(Node n, FILE *fp)
     req_resources = get_resource_list_action_requires(PID(n), n->name, &num_req_resources);
     prov_resources = get_resource_list_action_provides(PID(n), n->name, &num_prov_resources);
     context = peos_get_context(PID(n));
+
     if (context && context->num_resources > 0) {
         proc_resources = (peos_resource_t *) calloc(context->num_resources, sizeof(peos_resource_t));
         for (i = 0; i < context->num_resources; i++) {
@@ -599,7 +627,7 @@ void print_action_node(Node n, FILE *fp)
         eval_resource_list(&proc_resources, context->num_resources);
         fill_resource_list_value(proc_resources, context->num_resources, &req_resources, num_req_resources);
         fill_resource_list_value(proc_resources, context->num_resources, &prov_resources, num_prov_resources);
-    }
+    } 
   
     fprintf(fp, "<action name=\"");
     print_after_escaping(n->name,fp);
@@ -642,48 +670,48 @@ void print_graph(Graph g, FILE *fp)
 	
         for(i = 0; i < ListSize(n->predecessors); i++) {
        	    parent = (Node) ListIndex(n->predecessors, i);
-	    if((parent->type == SELECTION) || (parent->type == BRANCH)) {
+	    if ((parent->type == SELECTION) || (parent->type == BRANCH)) {
 	        fprintf(fp, "<sequence>\n");
 	    }		
 	}
 
         for(i = 0; i < ListSize(n->predecessors); i++) {
        	    parent = (Node) ListIndex(n->predecessors, i);
-            if(ORDER(parent) >= ORDER(n)) {
+            if (ORDER(parent) >= ORDER(n)) {
 	        fprintf(fp, "<iteration>\n");
 	    }
         }
 
-        if(n->type == ACTION) {
+        if (n->type == ACTION) {
             print_action_node(n,fp);
         }
 
-        if(n->type == JOIN) {
+        if (n->type == JOIN) {
             fprintf(fp, "</selection>\n");
         }
 
-        if(n->type == RENDEZVOUS) {
+        if (n->type == RENDEZVOUS) {
             fprintf(fp, "</branch>\n");
         }
 
-        if(n->type == SELECTION) {
+        if (n->type == SELECTION) {
             fprintf(fp, "<selection>\n");
 	}
 
-	if(n->type == BRANCH) {
+	if (n->type == BRANCH) {
             fprintf(fp, "<branch>\n");	
 	}
 
         for(i = 0; i < ListSize(n->successors); i++) {
        	    child = (Node) ListIndex(n->successors, i);
-            if(ORDER(child) <= ORDER(n)) {
+            if (ORDER(child) <= ORDER(n)) {
 	        fprintf(fp, "</iteration>\n");
 	    }
 	}
 
         for(i = 0; i < ListSize(n->successors); i++) {
        	    child = (Node) ListIndex(n->successors, i);
-	    if((child->type == JOIN) || (child->type == RENDEZVOUS)) {
+	    if ((child->type == JOIN) || (child->type == RENDEZVOUS)) {
 	        fprintf(fp, "</sequence>\n");
 	    }		
         }
@@ -698,7 +726,8 @@ int save_proc_table_xml()
     int i;
     Graph g;
     FILE *fp;
-    char *xml_filename = (char *) malloc((strlen(process_table_filename)+strlen(".xml")+1) * sizeof(char));
+/*    char *xml_filename = (char *) malloc((strlen(process_table_filename)+strlen(".xml")+1) * sizeof(char));*/
+    char xml_filename[PATH_MAX];
     strcpy(xml_filename, process_table_filename);
     strcat(xml_filename, ".xml");
 
@@ -707,7 +736,7 @@ int save_proc_table_xml()
 
     for(i=0; i <= PEOS_MAX_PID; i++) {
         g = process_table[i].process_graph;
-	if(g != NULL) {
+	if (g != NULL) {
 	    fprintf(fp, "<process pid=\"%d\" model=\"%s\" status=\"%d\">\n", i, process_table[i].model, process_table[i].status);
 	    print_graph(g, fp);
 	    fprintf(fp, "</process>\n");
@@ -728,8 +757,8 @@ char **peos_list_instances()
     static char *result[PEOS_MAX_PID+1];
     int i;
 
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+        peos_perror("peos_list_instances");
 	exit(EXIT_FAILURE);
     }
     
@@ -738,8 +767,8 @@ char **peos_list_instances()
     }
     result[i] = NULL;
   
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+        peos_perror("peos_list_instances");
 	exit(EXIT_FAILURE);
     }
 
@@ -752,7 +781,7 @@ int delete_entry(int pid)
 
     if (pid >= 0 && pid <= PEOS_MAX_PID) {  
         context = &(process_table[pid]);
-	if(context -> process_graph != NULL) {
+	if (context -> process_graph != NULL) {
 	    context->model[0] = '\0';
 	    context->status = PEOS_NONE;
 	    GraphDestroy(context->process_graph);
@@ -771,7 +800,7 @@ int delete_entry(int pid)
 peos_context_t *find_free_entry()
 {
     int i;
-    for (i = 0; i < PEOS_MAX_PID + 1; i++) {
+    for (i = 0; i <= PEOS_MAX_PID; i++) {
         process_status_t status = process_table[i].status;
 	if (status & (PEOS_NONE|PEOS_DONE|PEOS_ERROR)) {
 	    return &(process_table[i]);	
@@ -787,15 +816,15 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
     peos_action_t *actions;
     peos_other_node_t *other_nodes;
 
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+        peos_perror("peos_list_actions");
 	exit(EXIT_FAILURE);
     }
     
     *num_actions = 0;
     if (process_table[pid].status & (PEOS_DONE | PEOS_NONE | PEOS_ERROR)) {
-        if(save_process_table() < 0) {
-            fprintf(stderr, "System Error: Cannot Save Process Table\n");
+        if (save_process_table() < 0) {
+	    peos_perror("peos_list_actions");
 	    exit(EXIT_FAILURE);
         }
         return NULL;
@@ -810,13 +839,13 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
      */ 
 
     if (update_process_state(pid) == VM_INTERNAL_ERROR) {
-        fprintf(stderr, "System Error: Cannot Update Process state \n");
+        peos_perror("peos_list_actions");
 	return NULL;
     }	
 	    
-    if(make_node_lists(process_table[pid].process_graph,&actions,&num_act,&other_nodes,&num_other_nodes) == -1) {
-        if(save_process_table() < 0) {
-            fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (make_node_lists(process_table[pid].process_graph,&actions,&num_act,&other_nodes,&num_other_nodes) == -1) {
+        if (save_process_table() < 0) {
+	    peos_perror("peos_list_actions");
 	    exit(EXIT_FAILURE);
         }
         return NULL;
@@ -832,8 +861,8 @@ peos_action_t *peos_list_actions(int pid, int *num_actions)
     
     *num_actions = num_act;  
 
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+        peos_perror("peos_list_actions");
 	exit(EXIT_FAILURE);
     }
     

@@ -49,7 +49,7 @@ long get_eval_result(char* tcl_procedure, char* resource, int* error) {
     if (Tcl_VarEval(interp, "set ", "dummyVar ", resource, NULL) == TCL_ERROR) {
 	/* 'resource' probably contains a string like $var or ${var},
 	   which means it's a non-value; clause is therefore false.*/ 
-	error_msg(Tcl_GetStringResult(interp));
+	peos_error("get_eval_result: 'set dummyVar %s' failed: %s\n", resource, Tcl_GetStringResult(interp));
 	Tcl_DeleteInterp(interp);
 	return 0;
     }
@@ -72,10 +72,10 @@ long get_eval_result(char* tcl_procedure, char* resource, int* error) {
     Tcl_EvalFile(interp, tcl_file);
     if (Tcl_Eval(interp, action) == TCL_ERROR) {
         *error = 1;
-	error_msg(Tcl_GetStringResult(interp));
+	peos_error("get_eval_result: '%s' failed: %s\n", action, Tcl_GetStringResult(interp));
         return 0;
     }
-    result = atol(interp->result);
+    result = atol(Tcl_GetStringResult(interp));
     Tcl_DeleteInterp(interp);
     free(action);
     return result;
@@ -292,38 +292,53 @@ int eval_predicate(peos_resource_t* resources, int num_resources, Tree t) {
 
     /* Ensure all resource variables are bound to values. */
     for (i = 0; i < num_resources; i++) {
-	buf_append("set ", &buf);
+
 	if (strcmp(resources[i].qualifier, "abstract") == 0) {
 	    /* Abstract resources are not actually bound to anything
 	     * real, but they need to be bound to something so they
 	     * can be dereferenced, so just use the resource name as value. */
-	    buf_append(resources[i].name, &buf);
-	    buf_append(" ", &buf);
-	    buf_append(resources[i].name, &buf);
+	    if (Tcl_SetVar(interp, resources[i].name, resources[i].name, TCL_LEAVE_ERR_MSG) == NULL) {
+		peos_error("eval_predicate: set %s to %s failed: %s\n", 
+			   resources[i].name, resources[i].name, Tcl_GetStringResult(interp));
+		result = -1;
+		break;
+	    } 
+	} else if (strlen(resources[i].value) == 0) {
+	    /* No value; set to empty value */
+	    if (Tcl_SetVar(interp, resources[i].name, "{}", TCL_LEAVE_ERR_MSG) == NULL) {
+		peos_error("eval_predicate: set %s to '{}' failed: %s\n", 
+			   resources[i].name, Tcl_GetStringResult(interp));
+		result = -1;
+		break;
+	    } 
 	} else {
+	    /* rhs could be an expression, so evaluate and bind resource to result */
+	    Tcl_DStringSetLength(&buf, 0);
+	    buf_append("set ", &buf);
 	    buf_append(resources[i].name, &buf);
 	    buf_append(" ", &buf);
 	    buf_append(resources[i].value, &buf);
+	    if (Tcl_Eval(interp, Tcl_DStringValue(&buf)) == TCL_ERROR) {
+		peos_error("eval_predicate: eval of '%s' failed: %s\n", Tcl_DStringValue(&buf), Tcl_GetStringResult(interp)); 
+		result = -1;
+		break;
+	    }
 	}
-	buf_append(";\n", &buf);
     }
 
-    
-    if (Tcl_Eval(interp, Tcl_DStringValue(&buf)) == TCL_ERROR) {
-	result = -1;
-	error_msg(Tcl_GetStringResult(interp));
-    } else {
-	Tcl_DStringFree(&buf);
-	Tcl_DStringInit(&buf);
+    if (i == num_resources) {
+	Tcl_DStringSetLength(&buf, 0);
 	cmd = gen_boolean_expr(t, &buf);
 	if (Tcl_ExprBoolean(interp, cmd, &result) == TCL_ERROR) {
+	    peos_error("eval_predicate: eval of boolean '%s' failed: %s\n", cmd, Tcl_GetStringResult(interp));
 	    result = -1;
-	    error_msg(cmd);
-	    error_msg(Tcl_GetStringResult(interp));
 	}
     }
+
+    Tcl_DStringFree(&buf);
     Tcl_DeleteInterp(interp);
     Tcl_DStringFree(&buf);
+
     return result;
 }
 
@@ -331,32 +346,31 @@ int eval_resource_list(peos_resource_t** resources, int num_resources) {
     int i;
     Tcl_Interp* interp;
     peos_resource_t* res = *resources;
-    char* buff = (char*)malloc(sizeof(char) * 255);
+    char buf[BUFSIZ];
     
-    if (!res || (num_resources == 0))
+    if (!resources || !res || (num_resources == 0))
         return 0;
     
     interp = Tcl_CreateInterp();
     for (i = 0; i < num_resources; i++) {
         if (strcmp(res[i].value, "") == 0) {
-            sprintf(res[i].value, "{}");
-            sprintf(buff, "set %s %s", res[i].name, "{}");
+            sprintf(res[i].value, "\"\\${%s}\"", res[i].name);
+            sprintf(buf, "set %s %s", res[i].name, res[i].value);
 	    /* ensure res[i].name is defined in case it's de-referenced later. */
-	    if (Tcl_Eval(interp, buff) == TCL_ERROR) {
-		error_msg(Tcl_GetStringResult(interp));
+	    if (Tcl_Eval(interp, buf) == TCL_ERROR) {
+		peos_error("eval_resource_list: '%s' failed: %s\n", buf, Tcl_GetStringResult(interp));
 		return 0;
 	    }
         } else {
-            sprintf(buff, "set %s %s", res[i].name, res[i].value);
-	    if (Tcl_Eval(interp, buff) == TCL_ERROR) {
-		error_msg(Tcl_GetStringResult(interp));
+            sprintf(buf, "set %s %s", res[i].name, res[i].value);
+	    if (Tcl_Eval(interp, buf) == TCL_ERROR) {
+		peos_error("eval_resource_list: '%s' failed: %s\n", buf, Tcl_GetStringResult(interp));
 		return 0;
 	    }
 	    strcpy(res[i].value, Tcl_GetStringResult(interp));
         }
     }
     Tcl_DeleteInterp(interp);
-    free(buff);
     return 1;
 }
 

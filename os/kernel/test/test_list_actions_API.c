@@ -67,7 +67,7 @@ main(int argc, char *argv[])
     unlink("proc_table.dat.xml");
 
 
-    system("more ./../peos_init.tcl > peos_init.tcl");
+    system("cat ./../peos_init.tcl > peos_init.tcl");
 
     /* Create a process */
 
@@ -97,6 +97,9 @@ main(int argc, char *argv[])
     fp1 = fopen("test_list_action_API_res1_val", "w");
     fp2 = fopen("test_list_action_API_res2_val", "w");
     fp3 = fopen("test_list_action_API_res3_val", "w");
+    fclose(fp1);
+    fclose(fp2);
+    fclose(fp3);
     
     /*
      *  now do list instances -- the process should be updated to make 
@@ -135,15 +138,14 @@ main(int argc, char *argv[])
 
     /* clean up */
 
-    fclose(fp1);
-    fclose(fp2);
-    fclose(fp3);
     unlink("test_list_action_API_res1_val");
     unlink("test_list_action_API_res2_val");
     unlink("test_list_action_API_res3_val");
     unlink("test_list_action_API.pml");
+
     unlink("proc_table.dat");
     unlink("proc_table.dat.xml");
+
     system("rm peos_init.tcl");
     
     fprintf(stderr, "done .. \n");

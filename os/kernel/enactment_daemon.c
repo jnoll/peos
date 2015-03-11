@@ -24,7 +24,7 @@ int resource_changed(char *resource_value)
 	    return 0;
 	}
 	else {
-	    fprintf(stderr, "Required Resource Detection Error for %s\n",resource_value);
+	    fprintf(stderr, "Required resource detection error for %s\n", resource_value);
 	    return 0;
 	}
     }
@@ -52,13 +52,13 @@ main()
                 if (resource_list) {
                     for (j = 0; j < num_resources; j++) {
 			if(resource_changed(resource_list[j].value)) {
-			    fprintf(stderr,"Detected Change in Resource %s \n",resource_list[j].name);      
+			    fprintf(stderr,"Detected change in resource %s \n",resource_list[j].name);      
 			    resource_change_flag = 1;
 			}
 		    }
 		    if (resource_change_flag == 1) {
 		        if(peos_notify(pid, "dummy_action", PEOS_EVENT_RESOURCE_CHANGE) == VM_INTERNAL_ERROR) {
-			    fprintf(stderr, "Error in notifying resource change event\n");
+			    peos_perror("Enactment daemon: Error in notifying resource change event");
 			    exit(EXIT_FAILURE);
 			}
 		    }

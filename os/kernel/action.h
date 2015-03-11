@@ -3,16 +3,18 @@
 #include <pml/features.h>
 #include <limits.h>
 
-
-#define INST_ARRAY_INCR (256)    
-
-#define RESOURCE_FIELD_LENGTH (256)
+#ifdef PALM
+#define INST_ARRAY_INCR (256)
+#else
+#define INST_ARRAY_INCR (16)
+#endif
 
 #ifdef PALM
-#define STRING_MAX 32
+#define STRING_MAX (32)
 #else
-#define STRING_MAX 256
+#define STRING_MAX (256)
 #endif
+#define RESOURCE_FIELD_LENGTH STRING_MAX
 
 typedef enum {
     VM_DONE = 0, VM_ERROR, VM_INTERNAL_ERROR, VM_SYSCALL, VM_CONTINUE

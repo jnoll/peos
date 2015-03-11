@@ -11,6 +11,7 @@
 #include <pml/scanner.h>	/* defines global 'filename' */
 #include <pml/parser.h>		/* defines global 'program' */
 #include <pml/tokens.h>		/* defines ACTION macro */
+#include "error.h"
 #include "graph_engine.h"
 #include "graph.h"
 
@@ -50,6 +51,7 @@ Node find_node(Graph g, char *node_name)
 	    }
 	}
     }
+    peos_error("find_node: node %s not found", node_name);
     return NULL;
 }
 

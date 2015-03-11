@@ -1,7 +1,7 @@
 model: netbeans_req_release.pml
 shell: ../../shell
 script:
-create_proc netbeans_req_release
+create_proc netbeans_req_release.pml
 act_state 0 ReviewNetBeans ready
 do 0 ReviewNetBeans
 act_state 0 ReviewNetBeans active

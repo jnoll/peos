@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <time.h>
 #endif
+#include "error.h"
 #include "process.h"
 #include "events.h"
 #include "graph.h"
@@ -62,6 +63,7 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
     peos_context_t *context;
 
     if ((context = find_free_entry()) == NULL) {
+	peos_error("peos_create_instance: no free entry in process table");
         return -1;
     }
 
@@ -74,7 +76,7 @@ int peos_create_instance(char *model_file,peos_resource_t *resources,int num_res
 	initialize_graph(context->process_graph, context->pid);
 	return (context->pid); 
     }
-    
+    peos_error("peos_create_instance: makegraph(%s) failed", model_file);
     return -1;
 }
 
@@ -94,12 +96,14 @@ void log_event(char *message)
 
     filedes = open("event.log", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (filedes < 0) {
-        fprintf(stderr, "Cannot Get Event Log File Descriptor\n");
+        peos_error("cannot get event log file descriptor\n");
+	peos_perror("log_event");
 	exit(EXIT_FAILURE);
     }
     
     if(get_lock(filedes) < 0) {
-        fprintf(stderr, "Cannot Obtain Event Log File Lock\n");
+        peos_error("cannot obtain event log file lock\n");
+	peos_perror("log_event");
 	exit(EXIT_FAILURE);
     }
     

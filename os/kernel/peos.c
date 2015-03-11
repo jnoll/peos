@@ -7,11 +7,13 @@
 #include <string.h>
 #include <stdio.h>
 #ifndef PALM
+#include <mcheck.h>
 #include <unistd.h>
 #else
 #include <PalmOS.h>
 #endif
 
+#include "error.h"
 #include "events.h"
 #include "process_table.h"
 #include "pmlheaders.h"
@@ -147,6 +149,9 @@ main (int argc, char **argv)
     int l = 0; /* l == 1 iff login option is passed */
     char *login = "proc_table"; /* default login name */
     char *res_file;
+
+    mtrace();			/* Enable malloc tracing. */
+
     opterr = 0;
     system ("echo '#######################################################################' >  pelog");
     system ("echo '###################   PREDICATE EVALUATOR DEBUG LOG    ################' >> pelog");
@@ -175,7 +180,7 @@ main (int argc, char **argv)
                 }
                 set_login_name(login);
                 if (create_process(model) != 1) {
-                    fprintf(stderr, "Could not Create Process\n");
+		    peos_perror("peos.c");
                     exit(EXIT_FAILURE);
                 }
                 return 1;
@@ -200,7 +205,7 @@ main (int argc, char **argv)
                 }
                 set_login_name(login);
                 if(notify(pid, act_name, event) < 0) {
-                    fprintf(stderr, "Could not %s action %s\n",event, act_name);
+                    fprintf(stderr, "Could not %s action %s:%s\n", event, act_name, peos_error_msg);
                     exit(EXIT_FAILURE);
                 }
                 return 1;
@@ -223,7 +228,7 @@ main (int argc, char **argv)
                     char ** result;
                     result = peos_list_instances(result);
                     if (result == NULL) {
-                        fprintf(stderr, "error getting instances\n");
+                        peos_perror("error getting instances");
                         exit(EXIT_FAILURE);
                     }
                     for (i = 0; i <= PEOS_MAX_PID; i++)
@@ -252,7 +257,7 @@ main (int argc, char **argv)
                 }
                 set_login_name(login);
                 if(peos_set_resource_binding(pid, res_name, res_val) < 0) {    //see events.c
-                    fprintf(stderr, "Could not bind resources");
+                    peos_perror("Could not bind resources");
                     exit(EXIT_FAILURE);
                 }
                 return 1;
@@ -293,7 +298,7 @@ main (int argc, char **argv)
                 }
                 set_login_name(login);
                 if(peos_delete_process_instance(pid) < 0) {
-                    fprintf(stderr, "Could not delete process instance\n");
+                    peos_perror("Could not delete process instance\n");
                     exit(EXIT_FAILURE);
                 }
                 return 1;
@@ -312,7 +317,7 @@ main (int argc, char **argv)
                 }
                 set_login_name(login);
                 if(update_state() < 0) {
-                    fprintf(stderr, "Could not update process state\n");
+                    peos_perror("Could not update process state\n");
                     exit(EXIT_FAILURE);
                 }
                 return 1;

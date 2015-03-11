@@ -220,7 +220,7 @@ parse_args $argv $argc
 puts -nonewline "$tc_name: "
 flush stdout
 read_tc $tc_name
-set shell "/home/jnoll/projects/peos/src/os/kernel/test/kernel_wrapper"
+set shell "../kernel_wrapper"
 
 if {$verbosity > 0} {
     puts stdout "shell: $shell"

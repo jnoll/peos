@@ -243,14 +243,16 @@ END_TEST
 
 START_TEST(test_eval_resource_list_error)
 {
-    peos_resource_t* resources;
-    fail_unless(eval_resource_list(&resources, 1) == 0, "eval_resource_list_error failed");
-    resources = (peos_resource_t*)calloc(1, sizeof(peos_resource_t));
+    peos_resource_t *resources = NULL;
+    fail_unless(eval_resource_list(&resources, 1) == 0, "eval_resource_list_error failed: null resource list");
+    resources = calloc(1, sizeof(peos_resource_t));
+    fail_unless(eval_resource_list(&resources, 0) == 0, "eval_resource_list_error failed: length = 0");
     strcpy(resources[0].name, "res0");
-    fail_unless(eval_resource_list(&resources, 1) == 1, "eval_resource_list_error failed");
-    fail_unless(eval_resource_list(&resources, 0) == 0, "eval_resource_list_error failed");
-    strcpy(resources[0].name, "");
-    fail_unless(eval_resource_list(&resources, 1) == 0, "eval_resource_list_error failed");
+    resources[0].value[0] = '\0';
+    fail_unless(eval_resource_list(&resources, 1) == 1, "eval_resource_list_error failed: no value");
+    resources[0].name[0] =  '\0';
+    fail_unless(eval_resource_list(&resources, 1) == 0, "eval_resource_list_error failed: empty name");
+    free(resources);
 }
 END_TEST
 
@@ -275,6 +277,8 @@ END_TEST
         
 START_TEST(test_eval_resource_list_unbound) {
     peos_resource_t* resources = (peos_resource_t *) calloc(3, sizeof(peos_resource_t));
+    char msg[BUFSIZ];
+
     strcpy(resources[0].name, "unbound");  //res0 is unbound
     strcpy(resources[1].name, "res1");
     strcpy(resources[1].value, "$unbound/val1");
@@ -283,9 +287,12 @@ START_TEST(test_eval_resource_list_unbound) {
     
     fail_unless(eval_resource_list(&resources, 3) == 1, "eval_resource_list_unbound 1 failed");
     
-    fail_unless(strcmp(resources[0].value, "{}") == 0, "eval_resource_list_unbound 2 failed");
-    fail_unless(strcmp(resources[1].value, "/val1") == 0, "eval_resource_list_unbound 3 failed");
-    fail_unless(strcmp(resources[2].value, "/val1/val2") == 0, "eval_resource_list_unbound 4 failed");
+    sprintf(msg, "eval_resource_list_unbound 2 failed: expected =\"\\${unbound}\", actual=%s", resources[0].value);
+    fail_unless(strcmp(resources[0].value, "\"\\${unbound}\"") == 0, msg); 
+    sprintf(msg, "eval_resource_list_unbound 2 failed: expected =\\${unbound}/val1, actual=%s", resources[1].value);
+    fail_unless(strcmp(resources[1].value, "\${unbound}/val1") == 0, msg);
+    sprintf(msg, "eval_resource_list_unbound 2 failed: expected =\\${unbound}/val1/val2, actual=%s", resources[2].value);
+    fail_unless(strcmp(resources[2].value, "\${unbound}/val1/val2") == 0, msg);
     free(resources);
 }
 END_TEST
@@ -296,11 +303,11 @@ START_TEST(test_eval_predicate_abstract)
     Tree t_res;
     
     resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-    strcpy(resources[0].name, "res");
+    strcpy(resources[0].name, "res_my_file");
     strcpy(resources[0].value, "my_file");
     strcpy(resources[0].qualifier, "abstract");
 
-    t_res = make_tree("res", 0, NULL, NULL);
+    t_res = make_tree("res_my_file", 0, NULL, NULL);
     
     fail_unless(eval_predicate(resources, 1, t_res) == 0, "eval_predicate_abstract_0 failed"); /* XXX ignores qualifier */
     free(resources);
@@ -318,25 +325,27 @@ START_TEST(test_eval_predicate_error)
 
     peos_resource_t* resources = NULL;
     Tree t_dot, t_op, t0, t1, t_true;
-    t0 = make_tree("res", 0, NULL, NULL);
-    //test resources == NULL
+    t0 = make_tree("res_no_exist", 0, NULL, NULL);
+    /* test resources == NULL */
     fail_unless(eval_predicate(resources, 0, t0) == -1, "null resource list failed");
-    //test num_resources == 0
+    /* test num_resources == 0 */
     resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
     fail_unless(eval_predicate(resources, 0, t0) == -1, "empty resource list failed");
-    //resource name not found
+    /* test resource name not found */
     t1 = make_tree("exists", 0, NULL, NULL);
     t_dot = make_tree(NULL, DOT, t0, t1);
     strcpy(resources[0].name, "res_not_in_tree");
     strcpy(resources[0].value, "res_not_in_tree");
     fail_unless(eval_predicate(resources, 1, t_dot) == -1, "unbound resource failed");
 
-    //test tcl attr procedure not exists
-    strcpy(resources[0].name, "res");
+    /* test tcl attr procedure not exists */
+    strcpy(resources[0].name, "res_x3");
     strcpy(resources[0].value, "val");
+    free(t0);
     free(t1);
     free(t_dot);
-    t1 = make_tree("not_exist_tcl_proc", 0, NULL, NULL);
+    t0 = make_tree("res_x3", 0, NULL, NULL);
+    t1 = make_tree("attr_lacking_tcl_proc", 0, NULL, NULL);
     t_dot = make_tree(NULL, DOT, t0, t1);
     fail_unless(eval_predicate(resources, 1, t_dot) == -1, "missing tcl attr procedure failed");
 
@@ -365,13 +374,9 @@ END_TEST
 
 START_TEST(test_eval_predicate_single_node)
 {
+    char *my_file_res = "my_file_res";
     peos_resource_t* resources;
     Tree t;
-    
-    resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-    strcpy(resources[0].name, "res");
-    strcpy(resources[0].value, "my_file");
-    
 
     t = make_tree("\"True\"", 0, NULL, NULL);
     fail_unless(eval_predicate(NULL, 0, t) == 1, "\"True\" failed");
@@ -397,7 +402,11 @@ START_TEST(test_eval_predicate_single_node)
     fail_unless(eval_predicate(NULL, 0, t) == 0, "\"0\" failed");
     free(t);
 
-    t = make_tree("res", 0, NULL, NULL);
+    resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
+    strcpy(resources[0].name, my_file_res);
+    strcpy(resources[0].value, "my_file");
+
+    t = make_tree(my_file_res, 0, NULL, NULL);
     system("touch my_file");
     fail_unless(eval_predicate(resources, 1, t) == 1, "[exists ${res}] (= my_file) failed");
     system("rm my_file");
@@ -410,14 +419,15 @@ END_TEST
 
 START_TEST(test_eval_predicate_dot)
 {
+    char *my_file_res = "my_file_res2";
     peos_resource_t* resources;
     Tree t_dot, t_res, t_exists;
     
     resources = (peos_resource_t *) calloc(1, sizeof(peos_resource_t));
-    strcpy(resources[0].name, "res");
+    strcpy(resources[0].name, my_file_res);
     strcpy(resources[0].value, "my_file");
 
-    t_res = make_tree("res", 0, NULL, NULL);
+    t_res = make_tree(my_file_res, 0, NULL, NULL);
     t_exists = make_tree("exists", 0, NULL, NULL);
     t_dot = make_tree(NULL, DOT, t_res, t_exists);
     
@@ -541,10 +551,11 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_gen_expr);
        
+/* XXX jn - get_eval_result is never used.
     tc = tcase_create("get_eval_result_error");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_get_eval_result_error);
-    
+
     tc = tcase_create("get_eval_result_exists");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_get_eval_result_exists);
@@ -564,7 +575,7 @@ main(int argc, char *argv[])
     tc = tcase_create("get_eval_result_misspellcount");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_get_eval_result_misspellcount);
-    
+*/      
     tc = tcase_create("eval_resource_list_error");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_eval_resource_list_error);

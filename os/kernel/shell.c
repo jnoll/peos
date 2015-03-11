@@ -6,7 +6,7 @@
 * Description:  Command line shell for kernel.
 * Author:       John Noll, Santa Clara University
 * Created:      Mon Mar  3 20:25:13 2003
-* Modified:     Fri Feb 13 19:43:06 2015 (John Noll) john.noll@lero.ie
+* Modified:     Mon Mar  2 23:18:53 2015 (John Noll) john.noll@lero.ie
 * Language:     C
 * Package:      N/A
 * Status:       $State: Exp $
@@ -32,6 +32,7 @@
 extern char *act_state_name(vm_act_state state);
 
 /* The following mechanism lifted from the GNU readline documentation. */
+typedef void VFunction ();
 typedef struct 
 {
     char *name;
@@ -146,7 +147,7 @@ void create_process(int argc, char *argv[])
     printf("Executing %s:\n", pml_file);
     
     if ((pid = peos_run(pml_file, resources, num_resources)) < 0) {
-	error_msg("couldn't create process");
+	peos_perror("couldn't create process");
     } 
     else {
 	printf("Created pid = %d\n", pid);

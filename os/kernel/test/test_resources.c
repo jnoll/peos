@@ -257,7 +257,7 @@ START_TEST(test_get_resource_list_action)
     t1 = make_tree(NULL, AND, t3, t4);
     t2 = make_tree("res2", 0, NULL, NULL);
     t0 = make_tree(NULL, EQ, t1, t2);
-    act1 ->requires = t0;  // requires { res0 && res1 && res2 }
+    act1 ->provides = t0;  // provides { (res0 && res1) == res2 }
 
     //source -> act0 -> act1 -> sink
 
@@ -281,12 +281,17 @@ START_TEST(test_get_resource_list_action)
     fail_unless(num_resources == 2, "test_get_resource_list_action");
     fail_unless(strcmp(resources[0].name, "res0") == 0, "test_get_resource_list_action");
     fail_unless(strcmp(resources[1].name, "res1") == 0, "test_get_resource_list_action");
-
+    mark_point();
     resources = get_resource_list_action(0, "act1", &num_resources);
+    mark_point();
     fail_unless(num_resources == 3, "test_get_resource_list_action");
+    mark_point();
     fail_unless(strcmp(resources[0].name, "res0") == 0, "test_get_resource_list_action");
+    mark_point();
     fail_unless(strcmp(resources[1].name, "res1") == 0, "test_get_resource_list_action");
+    mark_point();
     fail_unless(strcmp(resources[2].name, "res2") == 0, "test_get_resource_list_action");
+    mark_point();
 }
 END_TEST
 

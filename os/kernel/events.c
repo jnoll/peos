@@ -78,7 +78,7 @@ char **peos_list_models()
     }
     dir = opendir(COMP_DIR);
     if (dir == NULL) {
-        error_msg("COMPILER_DIR directory does not exist\n");
+        peos_error("peos_list_models: COMPILER_DIR not set or directory does not exist\n");
 	return NULL;
     }
 
@@ -110,7 +110,7 @@ vm_exit_code peos_notify(int pid, char *action, peos_event event)
      vm_exit_code update_status;
      
     if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+        peos_perror("peos_notify: cannot load process table\n");
 	exit(EXIT_FAILURE);
     }
     
@@ -149,17 +149,17 @@ vm_exit_code peos_notify(int pid, char *action, peos_event event)
 		break;
 
 	default:
-		fprintf(stderr, "peos_notify: Unknown Event\n");
+		fprintf(stderr, "peos_notify: unknown event\n");
 		return VM_INTERNAL_ERROR;
     }
 
 
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+        peos_perror("peos_notify:");
 	exit(EXIT_FAILURE);
     }
 
-    if(update_status == VM_INTERNAL_ERROR) {
+    if (update_status == VM_INTERNAL_ERROR) {
         return update_status;
     }
     
@@ -196,20 +196,20 @@ int peos_bind_resource_file(int pid, char* res_file) {
     FILE* f;
     char* res_name;
     char* res_value;
-    char line[600];
+    char line[BUFSIZ];
     vm_exit_code update_status;
     
     if (!(f = fopen(res_file, "r"))) {
-        fprintf(stderr, "resource file does not exist\n");
+        peos_error("peos_bind_resource_file: resource file %s does not exist or is unreadable", res_file);
         return 0;
     }
     
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+	peos_perror("peos_bind_resource_file");
         exit(EXIT_FAILURE);
     }
     
-    while (fgets(line, 600, f))
+    while (fgets(line, BUFSIZ, f))
     {
         if ((res_name = strtok(line, ":")) && (res_value = strtok(NULL, ":"))) {
             trim(res_name);
@@ -221,12 +221,11 @@ int peos_bind_resource_file(int pid, char* res_file) {
     
     update_status = update_process_state(pid);
     
-    if(save_process_table() < 0) {    //see process_table.c
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {    //see process_table.c
+        peos_perror("peos_bind_resource_file");
         exit(EXIT_FAILURE);
     }
-    if(update_status == VM_INTERNAL_ERROR){
-        fprintf(stderr, "could not update process state\n");
+    if (update_status == VM_INTERNAL_ERROR){
         return -1;
     }
     return 1;
@@ -237,21 +236,21 @@ int peos_set_resource_binding(int pid, char *resource_name, char *value)
     int status;	
     vm_exit_code update_status;
 
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+	peos_perror("peos_set_resource_binding");
 	exit(EXIT_FAILURE);
     }
     status = set_resource_binding(pid, resource_name, value);    //see process_table.c
     /* update the process state */
     update_status = update_process_state(pid);
 
-    if(save_process_table() < 0) {    //see process_table.c
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {    //see process_table.c
+	peos_perror("peos_set_resource_binding");
 	exit(EXIT_FAILURE);
     }
 
-    if(update_status == VM_INTERNAL_ERROR){
-	fprintf(stderr, "could not update process state\n");
+    if (update_status == VM_INTERNAL_ERROR){
+	peos_perror("peos_set_resource_binding");
         return -1;
     }
     return status;
@@ -281,8 +280,8 @@ peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resou
 {
     peos_resource_t *resources;
 
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+        peos_perror("peos_get_resource_list_action");
 	exit(EXIT_FAILURE);
     }
 
@@ -291,8 +290,8 @@ peos_resource_t *peos_get_resource_list_action(int pid,char *name,int *num_resou
     
     /* No need to update process state here */
 
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+        peos_perror("peos_get_resource_list_action");
 	exit(EXIT_FAILURE);
     }
     return resources;
@@ -303,8 +302,8 @@ peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *
 {
     peos_resource_t *resources;
 
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+	peos_perror("peos_get_resource_list_action_requires");
 	exit(EXIT_FAILURE);
     }
 
@@ -313,8 +312,8 @@ peos_resource_t *peos_get_resource_list_action_requires(int pid,char *name,int *
 
     /* No need to update process state here */
 
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+	peos_perror("peos_get_resource_list_action_requires");
 	exit(EXIT_FAILURE);
     }
 
@@ -326,8 +325,8 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *
 {
     peos_resource_t *resources;
     	
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+	peos_perror("peos_get_resource_list_action_provides");
 	exit(EXIT_FAILURE);
     }
 
@@ -336,8 +335,8 @@ peos_resource_t *peos_get_resource_list_action_provides(int pid,char *name,int *
 
     /* No need to update process state here */
 
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+	peos_perror("peos_get_resource_list_action_provides");
 	exit(EXIT_FAILURE);
     }
 
@@ -368,15 +367,15 @@ peos_resource_t *peos_get_resource_list_context(int pid, int *num_resources)
 
     peos_context_t *context;
     
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+       	peos_perror("peos_get_resource_list_action_context");
 	exit(EXIT_FAILURE);
     }
     
     context = peos_get_context(pid);
 
     if (context == NULL) {
-        fprintf(stderr, "peos_get_resource_list_context: context null\n");
+       	peos_perror("peos_get_resource_list_action_context");
 	exit(EXIT_FAILURE);
     }
     
@@ -385,8 +384,8 @@ peos_resource_t *peos_get_resource_list_context(int pid, int *num_resources)
 
     /* No need to update process state here */
 
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+	peos_perror("peos_get_resource_list_action_context");
 	exit(EXIT_FAILURE);
     }
     return resources;
@@ -396,16 +395,16 @@ peos_resource_t *peos_get_resource_list_context(int pid, int *num_resources)
 char *peos_get_script(int pid, char *act_name)
 {
     char *script;
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+	peos_perror("peos_get_script");
         exit(EXIT_FAILURE);
     }
     script = get_script(pid,act_name);
 
     /* No need to update process state here */
 
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+	peos_perror("peos_get_script");
         exit(EXIT_FAILURE);
     }
     return script;
@@ -416,8 +415,8 @@ int peos_delete_process_instance(int pid)
 
     int status;	
 
-    if(load_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Load Process Table\n");
+    if (load_process_table() < 0) {
+	peos_perror("peos_delete_process_instance");
 	exit(EXIT_FAILURE);
     }
     
@@ -425,8 +424,8 @@ int peos_delete_process_instance(int pid)
 
     /* No need to update process state here */
 
-    if(save_process_table() < 0) {
-        fprintf(stderr, "System Error: Cannot Save Process Table\n");
+    if (save_process_table() < 0) {
+	peos_perror("peos_delete_process_instance");
 	exit(EXIT_FAILURE);
     }
 
@@ -465,32 +464,27 @@ int peos_run(char *process, peos_resource_t *resources,int num_resources)
     model_file = find_file(process);
     
     if (model_file == NULL) {
-        fprintf(stderr, "peos_run: can't find model file for process %s\n",process);
 	return -1;
     }
 
     if (load_process_table() < 0) {
-        fprintf(stderr, "peos_run: cannot load process table\n");
+        peos_perror("peos_run");
 	exit(EXIT_FAILURE);
     }
     // this is the only change in peos_run
-    pid = peos_create_instance(model_file,resources,num_resources);
+    if ((pid = peos_create_instance(model_file,resources,num_resources)) < 0) {
+        return -1;
+    }
 
     sprintf(msg, " %s start %s %d",login_name, model_file, pid);
     log_event(msg);
-
-    if (pid < 0) {
-        fprintf(stderr, "peos_run: can't run process %s\n",process);
-        return -1;
-    }
     
     if ((update_status = update_process_state(pid)) == VM_INTERNAL_ERROR) {
-	fprintf(stderr, "peos_run: error updating process state\n");
         return -1;
     }
     
     if (save_process_table() < 0) {
-        fprintf(stderr, "peos_run: cannot save process table\n");
+        peos_perror("peos_run");
         exit(EXIT_FAILURE);
     }
     

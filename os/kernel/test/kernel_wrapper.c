@@ -10,8 +10,8 @@
 #include "events.h"
 
 extern char *act_state_name(vm_act_state state);
-
 /* The following mechanism lifted from the GNU readline documentation. */
+typedef int Function ();
 typedef struct {
     char *name;
     Function *impl;
@@ -86,7 +86,7 @@ int create_process(int argc, char *argv[])
     peos_resource_t *resources;
 
     if (argc < 2) {
-	printf("error: no model specified\n");
+	perror("error: no model specified\n");
 	return -1;
     }
 
@@ -96,12 +96,12 @@ int create_process(int argc, char *argv[])
 	peos_get_resource_list(model, &num_resources);
 
     if (resources == NULL) {
-	printf("error: retrieving resource names\n");
+	perror("error: retrieving resource names\n");
 	return -1;
     }
 
     if ((pid = peos_run(model, resources, num_resources)) < 0) {
-	error_msg("error: couldn't create process");
+	perror("error: couldn't create process");
 	return -1;
     } else {
 	printf("pid %d\n", pid);

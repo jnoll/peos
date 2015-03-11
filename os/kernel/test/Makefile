@@ -12,7 +12,7 @@ TEST_LIBS = -lcheck $(LIBS)
 LDFLAGS = -g -L/home/jnoll/lib -L$(PML_DIR)/pml/
 
 # objects
-CORE_OBJS = action.o error.o events.o graph.o graph_engine.o process.o process_table.o resources.o predicate_evaluator.o peos_util.o
+CORE_OBJS = action.o error.o events.o graph.o graph_engine.o process_table.o process.o resources.o predicate_evaluator.o peos_util.o
 CORE_SOURCES = $(addprefix ../, $(CORE_OBJS:.o=.c))
 TEST_OBJS = test_util.o action.o graph.o error.o
 
@@ -20,9 +20,9 @@ TEST_OBJS = test_util.o action.o graph.o error.o
 SOURCES = $(wildcard *.c) $(CORE_SOURCES)
 
 # These are in order of use.
-TESTS =  test_resources test_graph test_action test_events test_process test_process_table test_graph_engine test_assertions test_predicate_evaluator test_peos_util
+TESTS = test_process_table test_resources test_graph test_action test_events test_process test_graph_engine test_assertions test_predicate_evaluator test_peos_util
 
-all: test_list_actions_API test kernel_wrapper 
+all: test 
 test: unit_tests test_list_actions
 suite: unit_tests function accept
 
@@ -31,13 +31,13 @@ unit_tests:  $(TESTS)
 	@-for i in $^ ; do ./$$i -f -q; done
 	@echo "done."
 
-test_list_actions: 
+test_list_actions: test_list_actions_API
 	./test_list_actions_API
 
 function:
 	$(MAKE) -C function_tests 
 
-accept:
+accept: kernel_wrapper
 	$(MAKE) -C accept_tests 
 
 

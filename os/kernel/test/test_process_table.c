@@ -500,7 +500,7 @@ END_TEST
 START_TEST(test_load_context)
 {
     int i;
-    char res_value[257];
+    char res_value[257], msg[BUFSIZ];
     FILE* f;
     Node node;
     peos_context_t ctx;
@@ -519,25 +519,25 @@ START_TEST(test_load_context)
     fprintf(f, " \n");
     fclose(f);
     f = fopen("test_load_context.dat", "r");
-    fail_unless(load_context(f, context), "load_context failed");
+    fail_unless(load_context(f, context), "load_context failed: load");
     fclose(f);
-    fail_unless(context->pid == 0, "load_context failed");
-    fail_unless(strcmp(context->model, "test.pml") == 0, "load_context failed");
-    fail_unless(context->status == PEOS_RUNNING, "load_context failed");
-    fail_unless(context->process_graph, "load_context failed");
+    fail_unless(context->pid == 0, "load_context failed: pid");
+    fail_unless(strcmp(context->model, "test.pml") == 0, "load_context failed: model");
+    fail_unless(context->status == PEOS_RUNNING, "load_context failed: status");
+    fail_unless(context->process_graph, "load_context failed: graph");
     node = context->process_graph->source->next;
-    fail_unless(node, "load_context failed");
-    fail_unless(node->type == ACTION, "load_context failed");
-    fail_unless(strcmp(node->name, "act_0") == 0, "load_context failed");
+    fail_unless(node, "load_context failed: node");
+    fail_unless(node->type == ACTION, "load_context failed: node->type");
+    fail_unless(strcmp(node->name, "act_0") == 0, "load_context failed: node->name");
     node = node->next;
-    fail_unless(node, "load_context failed");
-    fail_unless(node->type == ACTION, "load_context failed");
-    fail_unless(strcmp(node->name, "act_1") == 0, "load_context failed");
-    fail_unless(context->num_resources == 2, "load_context failed");
-    fail_unless(strcmp(context->resources[0].name, "res0") == 0, "load_context failed");
-    fail_unless(strcmp(context->resources[0].value, "") == 0, "load_context failed");
-    fail_unless(strcmp(context->resources[1].name, "res1") == 0, "load_context failed");
-    fail_unless(strcmp(context->resources[1].value, "") == 0, "load_context failed");
+    fail_unless(node, "load_context failed: node2");
+    fail_unless(node->type == ACTION, "load_context failed: node2->type");
+    fail_unless(strcmp(node->name, "act_1") == 0, "load_context failed: node2->name");
+    fail_unless(context->num_resources == 2, "load_context failed: num_resource");
+    fail_unless(strcmp(context->resources[0].name, "res0") == 0, "load_context failed: res0 name");
+    fail_unless(strcmp(context->resources[0].value, "") == 0, "load_context failed: res0 value");
+    fail_unless(strcmp(context->resources[1].name, "res1") == 0, "load_context failed: res1 name");
+    fail_unless(strcmp(context->resources[1].value, "") == 0, "load_context failed: res1 value");
     
     //test for bounded resources with single character as their value
     f = fopen("test_load_context.dat", "w");
@@ -550,11 +550,15 @@ START_TEST(test_load_context)
     fprintf(f, " \n");
     fclose(f);
     f = fopen("test_load_context.dat", "r");
-    fail_unless(load_context(f, context), "load_context failed");
+    fail_unless(load_context(f, context), "load_context failed: load2");
     fclose(f);
-    fail_unless(strcmp(context->resources[0].value, "a") == 0, "load_context failed");
-    fail_unless(strcmp(context->resources[1].value, "b") == 0, "load_context failed");
-    
+    sprintf(msg, "load_context failed: res0 = '%s' s.b. 'a'", 
+	    context->resources[0].value);
+    fail_unless(strcmp(context->resources[0].value, "a") == 0, msg);
+    sprintf(msg, "load_context failed: res1 = '%s' s.b. 'b'",
+	    context->resources[1].value);
+    fail_unless(strcmp(context->resources[1].value, "b") == 0, msg);
+
     //test for bounded resources with their value equal maximum number of characters
     for (i = 0; i < 255; i++) {
         res_value[i] = 'a';
@@ -571,10 +575,10 @@ START_TEST(test_load_context)
     fprintf(f, " \n");
     fclose(f);
     f = fopen("test_load_context.dat", "r");
-    fail_unless(load_context(f, context), "load_context failed");
+    fail_unless(load_context(f, context), "load_context failed: load3");
     fclose(f);
-    fail_unless(strcmp(context->resources[0].value, res_value) == 0, "load_context failed");
-    fail_unless(strcmp(context->resources[1].value, res_value) == 0, "load_context failed");
+    fail_unless(strcmp(context->resources[0].value, res_value) == 0, "load_context failed: res0 value");
+    fail_unless(strcmp(context->resources[1].value, res_value) == 0, "load_context failed: res1 value");
     
     //test for bounded resources with their value beyond maximum number of characters
     for (i = 0; i < 256; i++) {
@@ -591,7 +595,7 @@ START_TEST(test_load_context)
     fprintf(f, " \n");
     fclose(f);
     f = fopen("test_load_context.dat", "r");
-    fail_unless(!load_context(f, context), "load_context failed");
+    fail_unless(!load_context(f, context), "load_context failed: load4");
     fclose(f);
     unlink("test_load_context.dat");
 }
@@ -674,9 +678,9 @@ START_TEST(test_save_proc_table)
 
     fail_unless (strcmp(actual, expected) == 0, "proc table contents differ");
  
-      unlink("proc_table1.dat");
-      unlink("expected_proc_table.dat");
-      unlink("proc_table.dat.xml");
+    unlink("proc_table1.dat");
+    unlink("expected_proc_table.dat");
+    unlink("proc_table.dat.xml");
 }
 END_TEST
 
@@ -858,40 +862,47 @@ START_TEST(test_print_action_node_0)
 {
     int abytes, nbytes;	
     FILE *expected, *actual;	
-    char expectedmem[BUFSIZ], actualmem[BUFSIZ];
+    char expectedmem[BUFSIZ], actualmem[BUFSIZ], msg[BUFSIZ];
     
     Node n = make_node("act_0", ACT_READY, ACTION, 3);
     PID(n) = 0;
+    /* Install resouces for the process */
+    process_table[0].num_resources = 2;
+    process_table[0].resources = (peos_resource_t*)calloc(2, sizeof(peos_resource_t));
 
-    expected = fopen("expected.xml", "w");
+    expected = fopen("expected_print_action.xml", "w");
     fprintf(expected, "<action name=\"act_0\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
-    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
+    /* dummy fill_resource_list_value appends "_eval" to resource values. */
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fclose(expected);
     mark_point();
 
-    expected = fopen("expected.xml", "r");
+    expected = fopen("expected_print_action.xml", "r");
     memset(expectedmem, 0, BUFSIZ);
     nbytes = fread(expectedmem, sizeof(char), BUFSIZ, expected);
     fclose(expected);
     mark_point();
  
-    actual = fopen("actual.xml", "w");
-
+    actual = fopen("actual_print_action.xml", "w");
     print_action_node(n, actual);
     fclose(actual);
 
     mark_point();
 
-    actual = fopen("actual.xml", "r");
     memset(actualmem, 0, BUFSIZ);
+
+    actual = fopen("actual_print_action.xml", "r");
     abytes = fread(actualmem, sizeof(char), BUFSIZ, actual);
-    fail_unless(abytes == nbytes, "file size");
     fclose(actual);
+
+    sprintf(msg, "file size: expected %d, actual %d", nbytes, abytes);
+    fail_unless(abytes == nbytes, msg);
+
     mark_point();
 
     fail_unless (strcmp(actualmem, expectedmem) == 0, "print_action:proc table contents differ");
@@ -934,7 +945,7 @@ START_TEST(test_print_after_escaping)
     int abytes, nbytes;	
     FILE *expected, *actual;	
     char expectedmem[BUFSIZ], actualmem[BUFSIZ];
-    char str[20]="<input type=\"&test\">";
+    char *str="<input type=\"&test\">";
 
     expected = fopen("expected.xml", "w");
     fprintf(expected, "&lt;input type=&quot;&amp;test&quot;&gt;");
@@ -966,7 +977,6 @@ START_TEST(test_print_after_escaping)
 
     unlink("expected.xml");
     unlink("actual.xml");
-
 }
 END_TEST
 
@@ -978,6 +988,9 @@ START_TEST(test_print_xml_iteration)
     
     Graph g = (Graph) malloc(sizeof(struct graph));
     Node source, sink, act_0;
+    /* Ensure there are resources to process */
+    process_table[0].num_resources = 2;
+    process_table[0].resources = (peos_resource_t*)calloc(2, sizeof(peos_resource_t));
 
     source = make_node("p", ACT_READY, PROCESS, 0);
     PID(source) = 0;
@@ -1005,10 +1018,10 @@ START_TEST(test_print_xml_iteration)
     fprintf(expected, "<iteration>\n");
     fprintf(expected, "<action name=\"act_0\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
-    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</iteration>\n");
     fclose(expected);
@@ -1037,7 +1050,7 @@ START_TEST(test_print_xml_iteration)
     fail_unless (strcmp(actualmem, expectedmem) == 0, "print_graph_iteration:proc table xml contents differ");
 
    unlink("expected.xml");
-  unlink("actual.xml");
+   unlink("actual.xml");
 }
 END_TEST
     
@@ -1138,10 +1151,10 @@ void print_expected_xml(FILE *expected)
     fprintf(expected, "<sequence>\n");
     fprintf(expected, "<action name=\"act_0\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
-    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</sequence>\n");
     
@@ -1150,19 +1163,19 @@ void print_expected_xml(FILE *expected)
     fprintf(expected, "<sequence>\n");
     fprintf(expected, "<action name=\"act_1\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
-    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</sequence>\n");
     fprintf(expected, "<sequence>\n");
     fprintf(expected, "<action name=\"act_2\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
-    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</sequence>\n");
     fprintf(expected, "</branch>\n");
@@ -1172,17 +1185,17 @@ void print_expected_xml(FILE *expected)
     fprintf(expected, "<iteration>\n");
     fprintf(expected, "<action name=\"act_3\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
-    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "<action name=\"act_4\" state=\"READY\">\n");
     fprintf(expected, "<script>\nscript\n</script>\n");
-    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></req_resource>\n");
-    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></req_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val\" qualifier=\"abstract\"></prov_resource>\n");
-    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val\" qualifier=\"\"></prov_resource>\n");
+    fprintf(expected, "<req_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></req_resource>\n");
+    fprintf(expected, "<req_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></req_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r1\" value=\"r1val_eval\" qualifier=\"abstract\"></prov_resource>\n");
+    fprintf(expected, "<prov_resource name=\"r2\" value=\"r2val_eval\" qualifier=\"\"></prov_resource>\n");
     fprintf(expected, "</action>\n");
     fprintf(expected, "</iteration>\n");
     fprintf(expected, "</sequence>\n");
@@ -1200,7 +1213,11 @@ START_TEST(test_print_graph)
     
     Graph g = (Graph) create_xml_test_graph();
 
-    expected = fopen("expected.xml", "w");
+    /* Ensure there are resources to print. */
+    process_table[0].num_resources = 2;
+    process_table[0].resources = (peos_resource_t*)calloc(2, sizeof(peos_resource_t));
+
+    expected = fopen("expected_test_print_graph.xml", "w");
 
     print_expected_xml(expected);
     
@@ -1208,20 +1225,20 @@ START_TEST(test_print_graph)
     fclose(expected);
     mark_point();
 
-    expected = fopen("expected.xml", "r");
+    expected = fopen("expected_test_print_graph.xml", "r");
     memset(expectedmem, 0, BUFSIZ);
     nbytes = fread(expectedmem, sizeof(char), BUFSIZ, expected);
     fclose(expected);
     mark_point();
  
-    actual = fopen("actual.xml", "w");
+    actual = fopen("actual_test_print_graph.xml", "w");
 
     print_graph(g, actual);
     fclose(actual);
 
     mark_point();
 
-    actual = fopen("actual.xml", "r");
+    actual = fopen("actual_test_print_graph.xml", "r");
     memset(actualmem, 0, BUFSIZ);
     abytes = fread(actualmem, sizeof(char), BUFSIZ, actual);
     fail_unless(abytes == nbytes, "file size");
@@ -1230,8 +1247,8 @@ START_TEST(test_print_graph)
 
     fail_unless (strcmp(actualmem, expectedmem) == 0, "print_graph:proc table xml contents differ");
 
-    unlink("expected.xml");
-    unlink("actual.xml");
+    unlink("expected_test_print_graph.xml");
+    unlink("actual_test_print_graph.xml");
 }
 END_TEST
     
@@ -1245,14 +1262,15 @@ START_TEST(test_save_proc_table_xml)
     peos_context_t *context;
     
     Graph g = (Graph) create_xml_test_graph();
+    /* Ensure there are resources to process */
+    process_table[0].num_resources = 2;
+    process_table[0].resources = (peos_resource_t*)calloc(2, sizeof(peos_resource_t));
 
     context = &(process_table[0]);
     context->process_graph = g;
     sprintf(context->model, "test.pml");
     context->status = PEOS_RUNNING;
-    for(i=1; i < PEOS_MAX_PID; i++) {
-      //  context = &(process_table[i]);
-      //  context -> process_graph = NULL;
+    for(i=1; i <= PEOS_MAX_PID; i++) {
 	  process_table[i].process_graph = NULL;
     }
     
@@ -1400,6 +1418,14 @@ main(int argc, char *argv[])
 
     parse_args(argc, argv);
 
+    tc = tcase_create("table io");
+    suite_add_tcase(s, tc);
+    tcase_add_test(tc, test_load_context);
+    tcase_add_test(tc, test_save_context);
+    tcase_add_test(tc, test_load_proc_table);
+    tcase_add_test(tc, test_save_proc_table);
+
+
     tc = tcase_create("get pid");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_get_pid);
@@ -1409,8 +1435,7 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_get_lock);
     tcase_add_test(tc,test_release_lock);
-	
-    
+
     tc = tcase_create("make node lists");
     suite_add_tcase(s, tc);
     tcase_add_test(tc, test_make_node_lists);
@@ -1418,13 +1443,6 @@ main(int argc, char *argv[])
     tc = tcase_create("annotate graph");
     suite_add_tcase(s,tc);
     tcase_add_test(tc,test_annotate_graph);
-
-    tc = tcase_create("table io");
-    suite_add_tcase(s, tc);
-    tcase_add_test(tc, test_load_context);
-    tcase_add_test(tc, test_save_context);
-    tcase_add_test(tc, test_load_proc_table);
-    tcase_add_test(tc, test_save_proc_table);
 
     tc = tcase_create("set/get resource binding/qualifier");
     suite_add_tcase(s, tc);
@@ -1451,12 +1469,16 @@ main(int argc, char *argv[])
     suite_add_tcase(s, tc);
     
     tcase_add_test(tc, test_print_action_node_0);
+
     tcase_add_test(tc, test_print_action_node_1);
     
     tcase_add_test(tc, test_print_after_escaping);
+
     tcase_add_test(tc, test_print_graph);
     tcase_add_test(tc, test_print_xml_iteration);
     tcase_add_test(tc, test_save_proc_table_xml);
+    if(0) {    
+    }
 
     sr = srunner_create(s);
 

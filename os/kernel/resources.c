@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "error.h"
 #include "pmlheaders.h"
 #include "action.h"
 #include "process_table.h"
@@ -21,8 +22,8 @@ void insert_resource(char *id, peos_resource_t **rlist, int *num_resources, int 
     while((i < *num_resources) && (strcmp(resource_list[i].name, id)) != 0) {
         i++;
     }
-    if (i == *num_resources)
-    {
+    if (i == *num_resources) {
+	/* id not already there - add to list */
         if(*num_resources == *rsize) {
 	    *rsize = *rsize + INST_ARRAY_INCR;
 	    resource_list = realloc(resource_list,(*rsize) * sizeof(peos_resource_t));
@@ -98,14 +99,13 @@ peos_resource_t *get_resource_list_action_requires(int pid, char *act_name, int 
     Graph g = context -> process_graph;
 
     if (g == NULL) {
-        fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
+        peos_error("get_resource_list_action_requires: graph is null");
         return NULL;
     }
 
     n = find_node(g, act_name);
 
-    if(n == NULL) {
-        fprintf(stderr,"get_resource_list_action :cannot find action\n");
+    if (n == NULL) {
         return NULL;
     }
 
@@ -124,14 +124,13 @@ peos_resource_t *get_resource_list_action_provides(int pid, char *act_name, int 
     Graph g = context -> process_graph;
 
     if (g == NULL) {
-        fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
+	peos_error("get_resource_list_action_provides: graph is null");
         return NULL;
     }
 
     n = find_node(g, act_name);
 
-    if(n == NULL) {
-        fprintf(stderr,"get_resource_list_action :cannot find action\n");
+    if (n == NULL) {
         return NULL;
     }
 
@@ -150,14 +149,13 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
     Graph g = context -> process_graph;
 
     if (g == NULL) {
-        fprintf(stderr, "System Error: Unable to find graph: get_resource_list_action_requires\n");
+	peos_error("get_resource_list_action: graph is null");
         return NULL;
     }
 
     n = find_node(g, act_name);
 
     if(n == NULL) {
-        fprintf(stderr,"get_resource_list_action :cannot find action\n");
         return NULL;
     }
 
@@ -174,11 +172,7 @@ peos_resource_t *get_resource_list_action(int pid, char *act_name, int *total_re
  */
 peos_resource_t *get_resource_list(char *model, int *total_resources)
 {
-#ifndef PALM
-    int rsize = 256;
-#else
-    int rsize=15;
-#endif
+    int rsize = INST_ARRAY_INCR;
 
     Graph g;
     Node n;
@@ -206,6 +200,7 @@ peos_resource_t *get_resource_list(char *model, int *total_resources)
 int fill_resource_list_value(peos_resource_t* source, int num_source, peos_resource_t** destination, int num_destination) {
     int i, j;
     peos_resource_t* des = *destination;
+
     for (i = 0; i < num_destination; i++) {
         for (j = 0; j < num_source; j++) {
             if (strcmp(des[i].name, source[j].name) == 0) {
