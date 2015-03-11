@@ -44,7 +44,7 @@ HEADERS = $(wildcard *.h)
 all: test shell lib peos shell_test
 
 peos: peos.o $(CORE_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -ltcl
+	$(CC) $(LDFLAGS) -o $@ $^ $(CORE_LIBS) $(LIBS) -ltcl -lmcheck
 
 palmpeos: peos.o $(PALM_CORE_OBJS)
 	$(CC) $(LDFLAGS) -dPALM -o $@ $^ $(LIBS) 
