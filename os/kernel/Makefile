@@ -93,6 +93,8 @@ clean:
 reallyclean: clean
 	rm -f proc_table.dat proc_table.dat.xml peos shell
 
+clobber: reallyclean
+
 dist: reallyclean
 	tar cvf kernel.tar --exclude-from exclude -C .. kernel
 

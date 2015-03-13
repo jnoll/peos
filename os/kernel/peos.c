@@ -1,5 +1,5 @@
 
-#define YYDEBUG
+#define YYDEBUG (0)
 
 #include <ctype.h>
 #include <stdio.h>

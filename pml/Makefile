@@ -7,4 +7,8 @@ clean:
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean; done
 	rm -f  core *~
 
+clobber: clean
+	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clobber; done
+
+
 dummy:

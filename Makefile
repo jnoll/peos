@@ -9,7 +9,7 @@ TREETOP= peos
 INSTALL_DIR=$(HTML_DIR)/PEOS
 TCLF_DIR=peos/src/os/kernel
 
-SUBDIRS = pml os/kernel ui/carepathways ui/ajax-cgi ui/web2 
+SUBDIRS = pml os/kernel #  ui/web2  ui/ajax-cgi  ui/carepathways
 
 V = @ 
 
@@ -21,6 +21,9 @@ build: dummy
 clean:
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clean; done
 	rm  -f core *~
+
+clobber: clean
+	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i clobber; done
 
 update:
 	cvs update $(SUBDIRS) Makefile

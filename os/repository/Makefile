@@ -34,6 +34,7 @@ $(OBJECTS): pml_state.h
 clean:
 	rm $(LIB) $(PEOSLIBDIR)/*.a *.o
 
+clobber: clean
 
 # Install Library
 install: $(LIB)

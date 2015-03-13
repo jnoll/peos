@@ -20,3 +20,5 @@ install: traverse
 
 clean:
 	rm -f $(OBJS)
+
+clobber: clean
