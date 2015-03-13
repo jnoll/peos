@@ -1,41 +1,17 @@
 @charset "utf-8";
 /* Color scheme: http://www.w3schools.com/tags/ref_colormixer.asp?colorbottom=156eaa&colortop=FFFFFF */
-<<<<<<< HEAD
-body, div, ul {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	vertical-align: baseline;
-}
-=======
 
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 
 body {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 14px;
 }
 
-<<<<<<< HEAD
-div#container, div#header, div#footer {
-	width: 1200px;
-	border: 3px groove;
-	position: relative;
-=======
 div#container, div#header {
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	overflow: hidden;
 	background-color: #FFFFFF;
 }
 
-<<<<<<< HEAD
-div#container {
-	margin-left: 20px;
-	margin-right: 20px;
-}
-
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 
 #container h3 {
 	margin: 10px;
@@ -43,23 +19,6 @@ div#container {
 	font-size: 18px;
 }
 
-<<<<<<< HEAD
-
-div#header{
-	width: 100%;
-	height: 100px;
-}
-
-
-div#patientslist {
-	width: 160px;
-	height: 500px;
-	border: 3px groove;
-	float: left;
-	/*background-color: #EFE7F6; */ 
-	/*overflow: scroll;*/
-	position: relative;
-=======
 div#footer {
 	background-color: #156eaa;
 }
@@ -69,31 +28,21 @@ div#patientslist {
 	float: left;
 	height: 500px;
 	width: 100%;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 
 #patientslist li {
 	cursor: pointer;
 	list-style-type:circle;
-<<<<<<< HEAD
-	margin: 10px 10px 10px 20px;
-=======
 	margin: 10px 10px 10px 0px;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	/*background-color: #EFE7F6;*/
 }
 
 div#main {
-<<<<<<< HEAD
-	float: left;
-	overflow: hidden;
-=======
 	/*overflow: hidden;*/
         border: 3px groove;
     	height: 500px;
 	width: 100%;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 ul.menu li {
@@ -101,33 +50,9 @@ ul.menu li {
 	list-style-type: none;
 }
 
-<<<<<<< HEAD
-#frontscreen {
-	width: 600px;
-	height: 400px;
-	background: url(../images/frontscreen.png) repeat;
-}
-
-#patientrecord {
-	/*min-width: 200px;*/
-	/*width: 688px;*/
-	width: 994px;
-	height: 443px;
-	border-bottom: 3px groove;
-	padding: 10px 20px 10px;
-	/*background-color: #EFE7F6;  */ 
-	overflow-y: scroll;
-	position: relative;
-	display: none;
-}
-
-#patientrecord.narrow {
-	width: 688px;
-=======
 #patientrecord, #patientrecord.narrow  {
         height: 445px;
 	overflow-y: scroll;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 #patientrecord.short {
@@ -137,59 +62,34 @@ ul.menu li {
 
 #patientrecord #patientname {
 	font-size: 21px;
-<<<<<<< HEAD
-	margin-left: 100px;
-=======
 	margin-left: 20px;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	margin-bottom: 30px;
 }
 
 #patientrecord #patientinfo div {
 	display: inline-block;
-<<<<<<< HEAD
-	width: 200px;
-=======
 	margin-left: 20px;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 #patientrecord #patientdata {
 	margin-top: 20px;
-<<<<<<< HEAD
-	margin-bottom: 20px;
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 #patientrecord dt {
 	margin-top: 10px;
-<<<<<<< HEAD
-=======
 	margin-left: 20px;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 
 
 div#inputsarea {
-<<<<<<< HEAD
-	width: 728px;
 	display: none;
-	/*background-color: green;*/
-=======
-	display: none;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 
 #inputsarea ul#inputsmenu {
-<<<<<<< HEAD
-	height: 40px;
-=======
 /*	height: 40px;*/
 	border: 3px;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 #inputsarea input, #inputsarea textarea {
@@ -200,151 +100,48 @@ div#inputsarea {
 	/*margin: 10px;*/
 	height: 160px;
 	border: 3px groove;
-<<<<<<< HEAD
-	padding: 20px;
-	display: none;
-	
-}
-
-=======
 	/*padding: 20px;*/
 	display: none;
 }
 
 
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 #inputsarea #inputsmenu li {
 	margin: 10px 0px 10px 20px;
 	display: inline-block;
 	text-decoration: underline;
 }
 
-<<<<<<< HEAD
-div#footer {
-	width: 100%;
-	height: 60px;
-	padding: 20px;
-	background-color: #156eaa;
-}
-
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 #footer h3 {
 	margin-bottom: 10px;
 }
 
 #footer #demomenu li {
 	margin: 3px 10px;
-<<<<<<< HEAD
-	width: 140px;
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	padding: 5px;
 	background-color: #5092BF;
 	border: 1px outset;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-<<<<<<< HEAD
-	display: inline-block;
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 #footer #demomenu li:hover {
 	background-color: #73A8CC;
 	border: 1px inset;
-<<<<<<< HEAD
-	position: relative;
-	top: 1px;
-}
-
-#slideshow {
-    position: absolute; 
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    background: url(../images/overlay-80.png) repeat;
-	display: none;
-}
-
-#slideshow .slide {
-    position: relative; 
-    top: 120px;
-    left: 200px;
-    width: 600px;
-    height: 400px;
-    padding: 10px;
-	background: #fff;
-	display: none;
-}
-
-#slideshow .slide div.hint {
-	position: absolute;
-	width: 300px;
-	bottom: 20px;
-	right: 20px;
-}
-
-#slideshow .slide div.hint p {
-	background: #fff;
-	padding: 10px;
-	width: 280px;
-	display: none;
-}
-
-#slideshow .slide div.hint button.hint {
-	position: relative;
-	left: 250px;
-}
-
-#navbuttons {
-    position: fixed; 
-    bottom: 0px;
-    right: 0px;
-    padding: 5px;
-	background: url(../images/overlay-80.png) repeat;;
-}
-
-#navbuttons #previousbtn {
-	margin-left: 20px;
-}
-
-
-
-div#pathwaysupport_btn {
-=======
 	top: 1px;
 }
 
 #decisionsupport_btn {
 /*
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	background: #156eaa;
 	color: #ffffff;
 	border: 3px outset;
 	cursor: pointer;
-<<<<<<< HEAD
-	float: right;
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	text-align: center;
 	border-radius:8px;
 	-moz-border-radius:8px;
 	-webkit-border-radius:8px;
 	padding: 5px;
-<<<<<<< HEAD
-	margin-right: 180px;
-	margin-top: 50px;
-}
-
-div#pathwaysupport_btn.pressed {
-	border: 3px inset;
-	background: #67A1C8;
-	position:relative;
-	top:3px;
-=======
 */
 	vertical-align: bottom;
 	float: right;
@@ -360,28 +157,16 @@ div#pathwaysupport_btn.pressed {
 	top:3px;
 */
 	color: #fqq;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 div#supportsystem {
 	resize: both;
-<<<<<<< HEAD
-	width: 300px;
-	height: 500px;
-	border: 3px groove;
-	float: right;
-	padding: 0px;
-	background-color: #E8F0F6;
-	overflow: scroll;
-	position: relative;
-=======
 	height: 500px;
 	width: 98%;
 	border: 3px groove;
 	float: right;
 	background-color: #E8F0F6;
 	overflow: scroll;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	display: none;
 }
 
@@ -393,13 +178,7 @@ div#supportsystem {
 
 #supportsystem #process-header {
 	background: #CCC;
-<<<<<<< HEAD
-	width: inherit;
 	margin: 0px;
-	padding: 0px;
-=======
-	margin: 0px;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	height: 50px;
 }
 
@@ -417,13 +196,6 @@ div#supportsystem {
 	margin-bottom: 10px;
 	min-width: 20px;
 }
-<<<<<<< HEAD
-
-#supportsystem li.loading a {
-	cursor: progress;
-}
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	
 #supportsystem li {
 	list-style: none;
@@ -433,26 +205,12 @@ div#supportsystem {
 }
 
 
-<<<<<<< HEAD
-
-/*li span {
-	height: 24px;
-	display: inline-block;
-	background-color: #09C;
-}*/
-
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 #supportsystem ul {
 	margin-top: 9px;
 }
 
 #supportsystem li ul {
 	padding-left: 40px;
-<<<<<<< HEAD
-	/*background-color: #09C;*/
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 #supportsystem ul.process {
@@ -472,34 +230,8 @@ div#supportsystem {
 	margin-right: 10px;
 }
 
-<<<<<<< HEAD
-/*#supportsystem li.carepathway {
-	list-style: url(../images/closed.png);
-	margin-left: 30px;
-}
-
-#supportsystem li.carepathway.opened {
-	list-style: url(../images/opened.png);
-}*/
-
-#supportsystem li.carepathway>a {
-	background: url(../images/closed.png) no-repeat;
-}
-
-#supportsystem li.carepathway.opened>a {
-	background: url(../images/opened.png) no-repeat;
-}
-
-#supportsystem li.carepathway.ready>a {
-	color: #007500;
-}
-
-#supportsystem li a.toggle {
-	text-transform:capitalize;
-=======
 #supportsystem li a.toggle {
 	padding-right: 20px;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 #supportsystem li.action a.toggle {
@@ -522,63 +254,6 @@ div#supportsystem {
 	background: url(../images/none.png) no-repeat;
 }
 
-<<<<<<< HEAD
-#supportsystem li.action[data-cp-state=done] a.toggle {
-	background: url(../images/done.png) no-repeat;
-}
-
-#supportsystem li.action[data-cp-state=satisfied] a.toggle {
-	background: url(../images/satisfied.png) no-repeat;
-}
-
-#supportsystem li.action[data-cp-state=run] a.toggle {
-	background: url(../images/run.png) no-repeat;
-}
-
-#supportsystem li.action[data-cp-state=pending] a.toggle {
-	background: url(../images/pending.png) no-repeat;
-}
-
-#supportsystem li.expand>a{
-	display: inline-block;
-	width: 0px;
-	height: 20px;
-	cursor: pointer;
-}
-
-#supportsystem li.expand>a.expand {
-	background: url(../images/closed.png) no-repeat;
-}
-
-#supportsystem li.expand>a.expand.opened {
-	background: url(../images/opened.png) no-repeat;
-}
-
-#supportsystem li.iteration>a.toggle {
-	background: url(../images/iteration.png) no-repeat;
-}
-
-
-#supportsystem li.branch>a.toggle {
-	background: url(../images/branch.png) no-repeat;
-}
-
-/*#supportsystem li.branch>ul>li {
-	list-style: url(../images/branch-item.png);
-}*/
-
-
-#supportsystem li.selection>a.toggle {
-	background: url(../images/selection.png) no-repeat;
-}
-
-/*#supportsystem li.selection>ul>li {
-	list-style: url(../images/selection-item.png);
-}*/
-
-#supportsystem li.sequence>a.toggle {
-	background: url(../images/sequence.png) no-repeat;
-=======
 #supportsystem li.action[data-cp-state=done] a.toggle, 
 #supportsystem li.action[data-cp-state=satisfied] a.toggle {
 	background: url(../images/done.png) no-repeat;
@@ -631,15 +306,10 @@ div#supportsystem {
 
 #supportsystem li.sequence>a.toggle {
 	background: url(../images/sequence-none.png) no-repeat right;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }
 
 #supportsystem li.action .actiondetails {
 	border: 1px dashed #666;
-<<<<<<< HEAD
-	/*width: 300px;*/
-=======
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 	background-color: #E8F0F6; 
 	padding: 10px;
 	margin-top: 10px;
@@ -655,27 +325,6 @@ div#supportsystem {
 	margin-top: 20px;
 }
 
-<<<<<<< HEAD
-#supportsystem #carepathways .actionButtons input {
-	background-color: #F3F8FB;
-}
-
-#supportsystem #carepathways ul.process li ul.toggle {
-	display: none;
-}
-
-#supportsystem #carepathways li.action div.actiondetails {
-	display: none;
-}
-
-#supportsystem #carepathways ul.process {
-	display: none;
-}
-
-#supportsystem dd {
-	text-transform:capitalize;
-=======
 #carepathways .actionButtons input {
 	background-color: #F3F8FB;
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
 }

@@ -4,7 +4,7 @@ INSTALL_DIR=$(HTML_DIR)/carepathways
 PML_DIR=../../pml
 KERNEL_DIR=../../os/kernel
 
-CGI=peos.cgi check.cgi demo.php demo.cgi
+CGI=peos.cgi check.cgi demo.php # demo.cgi
 HTML=$(wildcard *.html)
 PMLCHECK=$(PML_DIR)/check/pmlcheck 
 JS=$(wildcard scripts/*.*)
@@ -14,7 +14,7 @@ TCL=$(wildcard *.tcl)
 RES=$(wildcard *._res)
 HL7=$(wildcard *._hl7)
 SLIDES=$(wildcard slides/slide*.jpg)
-SUPPORT=event.log proc_table.dat proc_table.dat.xml log.txt
+SUPPORT=event.log proc_table.dat proc_table.dat.xml log.txt pelog
 CSS=$(wildcard css/*.css)
 IMAGES=$(wildcard images/*.*)
 
@@ -48,7 +48,7 @@ FILE_MODE = ug+rw,o+rw
 WRITE_MODE = $(FILE_MODE)
 
 all: build
-build: $(PML_DIR)/check/pmlcheck peos.cgi check.cgi $(SUPPORT)
+build: $(PML_DIR)/check/pmlcheck $(CGI) $(SUPPORT)
 $(PMLCHECK):
 	$(MAKE) -c $(PML_DIR)/check pmlcheck
 
