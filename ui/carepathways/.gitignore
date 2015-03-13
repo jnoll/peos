@@ -1,9 +1,4 @@
 .depend
 pelog
 *.cgi
-proc_table.dat*
-event.log
-<<<<<<< HEAD
-=======
-log.txt
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
+
