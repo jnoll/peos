@@ -49,18 +49,20 @@ WRITE_MODE = $(FILE_MODE)
 
 all: build
 build: $(PML_DIR)/check/pmlcheck $(CGI) $(SUPPORT)
+
 $(PMLCHECK):
 	$(MAKE) -c $(PML_DIR)/check pmlcheck
 
 event.log: 
 	echo "" > $@
 
+log.txt:
+	echo "" > $@
+
 proc_table.dat: proc_table.dat.in
 	cp $< $@
 proc_table.dat.xml: proc_table.dat.xml.in
 	cp $< $@
-log.txt:
-	echo "" > $@
 
 %.cgi: %.o $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS) -ltcl
