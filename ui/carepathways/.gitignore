@@ -1,4 +1,7 @@
+event.log
+log.txt
+proc_table.dat
+proc_table.dat.xml
 .depend
-pelog
 *.cgi
 
