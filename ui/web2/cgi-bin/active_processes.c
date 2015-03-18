@@ -93,11 +93,7 @@ void list_processes()
             printf("</a></td>\n");
 	} else {
 	    printf("      <td><a href=\"action_page.cgi?pid=%d&action_name=%s\">", plist->pid, plist->first_action_name);
-<<<<<<< HEAD
             print_action_name(plist->name);
-=======
-1            print_action_name(plist->name);
->>>>>>> 71f6a61cb06573d2dbf317e9ee585b978950aef8
             printf("</a></td>\n");
 	    printf("      <td>&nbsp;</td>\n");
 	}
