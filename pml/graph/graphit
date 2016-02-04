@@ -1,8 +1,8 @@
 #!/bin/sh
 # $Id: graphit,v 1.1 2005/05/27 01:58:57 jnoll Exp $
 # Convert a pml file into a graphiz 'dot' specification.
-USAGE="usage: $0 [-a (anonymous - no labels)] [-m action (mark specified node)] [-c (color graph)] [-g|v (view)]"
-while getopts acghm:v c ; do
+USAGE="usage: $0 [-a (anonymous - no labels)] [-l label links] [-n label nodes] [-m action (mark specified node)] [-c (color graph)] [-g|v (view)]"
+while getopts acghlnm:v c ; do
     case $c in
 	a)
 	ANON=-a
@@ -13,6 +13,12 @@ while getopts acghm:v c ; do
 	m)
 	MARK="$OPTARG";
 	;;
+	l)
+	    LABEL_FLAG="-l";
+	    ;;
+	n)
+	    LABEL_FLAG="-n";
+	    ;;
 	g|v)
 	GV=yes
 	;;
@@ -31,8 +37,8 @@ while [ $# -gt 0 ] ; do
     PML_FILE=${BASENAME}.pml
     DOT_FILE=${BASENAME}.dot
     ANA_FILE=${BASENAME}.analysis
-    PS_FILE=${BASENAME}.ps
-    traverse ${ANON} ${DOM_FLAG} ${FLOW_FLAG} ${MATCH_FLAG} $FILE > $DOT_FILE
+    PS_FILE=${BASENAME}.pdf
+    traverse ${ANON} ${DOM_FLAG} ${FLOW_FLAG} ${MATCH_FLAG} ${LABEL_FLAG} $FILE > $DOT_FILE
     if [ -n "$MARK" ] ; then
 	echo $MARK >/dev/stderr
 	sed "s/\(label=\"[^\"]*${MARK}[^a-zA-Z0-9][^\"]*\"\)/fontcolor=\"red\",\1/" $DOT_FILE > ${DOT_FILE}.tmp
@@ -53,7 +59,7 @@ while [ $# -gt 0 ] ; do
 	sed -f /tmp/color-${BASENAME}.sed $DOT_FILE > /tmp/${BASENAME}.colored.dot
 	mv /tmp/${BASENAME}.colored.dot $DOT_FILE
     fi
-    dot -Tps   $DOT_FILE > $PS_FILE
+    dot -Tpdf   $DOT_FILE > $PS_FILE
     [ -z "${GV}" ] || gv $PS_FILE
     shift
 done

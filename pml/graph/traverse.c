@@ -18,21 +18,24 @@
 # include <pml/parser.h>
 # include <pml/tokens.h>
 
-#define LABEL_LINKS 1
-
 typedef enum { FLOW = 0x1, XML=0x2, ANON=0x4} output_t;
 output_t graph_type = 0;
-
+typedef enum { NONE, NODES, LINKS } label_t;
+label_t label_type = NONE;
 typedef enum { GRAY, BLACK, WHITE } node_color_t;
 
 int node_num = 0;
 
 static String usage = "\
 usage: %s [options] [file ...]\n\
+    -l label links\n\
+    -n label nodes\n\
+    -x output graph as XML \n";
+/*
     -d  include dominator edges\n\
     -f  include control flow edges (default)\n\
     -m  include matching edges\n";
-
+*/
 
 /* Provide main with a prototype to eliminate compiler warnings. */
 extern int main (
@@ -63,12 +66,12 @@ char *node_shape(int type)
 {
     switch (type) {
     case (ACTION): return "box, style=rounded"; break;
-    case (ITERATION): return "diamond"; break; /* XXX Never happens. */
-    case (SELECTION): return "circle, fixedsize = true"; break;
-    case (JOIN): return "circle, fixedsize = true"; break;
+    case (ITERATION): return "diamond, style=filled"; break; /* XXX Never happens. */
+    case (SELECTION): return "diamond, style=filled"; break;
+    case (JOIN): return "diamond, style=filled"; break;
     case (BRANCH): return "circle, fixedsize = true, style=filled"; break;
     case (RENDEZVOUS): return "circle, fixedsize = true, style=filled"; break;
-    case (PROCESS): return "diamond"; break;
+    case (PROCESS): return "plain"; break;
 
     default: fprintf(stderr, "Help! %s is unknown!\n", node_type(type)); return "plaintext"; break;
 
@@ -122,12 +125,19 @@ void print_resources(Tree t)
 		    if (TREE_ID(t)[i] == '"') break;
 		    putchar(TREE_ID(t)[i]);
 		}
-		putchar(' ');
 	    } else {
-		printf("%s ", TREE_ID(t));
+		printf("%s", TREE_ID(t));
 	    }
-	} else {
+	} else if (IS_OP_TREE(t)) {
 	    print_resources(t->left);
+	    if (TREE_OP(t) == DOT) {
+		printf("%s", op_to_string(TREE_OP(t)));
+	    } else {
+		printf(" %s ", op_to_string(TREE_OP(t)));
+	    }
+	    print_resources(t->right);
+	} else {
+	    print_resources(t->right);
 	    print_resources(t->right);
 	}
     } else {
@@ -142,22 +152,23 @@ void print_link(Node from, Node to, int weight)
 	printf("%ld -> %ld [weight=%d, style=%s",
 	       (long)from, (long)to, weight, weight == 0 ? "invis" : "solid");
 
-#ifdef LABEL_LINKS
-	if (!(graph_type & ANON)) {
-	    if (from->type == ACTION) {
-		printf(", labelfloat=\"true\", labelfontcolor=\"black\", taillabel=\"p:");
-		print_resources((from->provides));
-		printf("\"");
+
+	if (label_type == LINKS) {
+	    if (!(graph_type & ANON)) {
+		if (from->type == ACTION) {
+		    printf(", labelfloat=\"true\", labelfontcolor=\"black\", taillabel=\"p:");
+		    print_resources((from->provides));
+		    printf("\"");
+		}
+	    }
+	    if (!(graph_type & ANON)) {
+		if (to->type == ACTION) {
+		    printf(", labelfloat=\"true\", fontcolor=\"BLACK\", label=\"r:");
+		    print_resources((to->requires));
+		    printf("\"") ;
+		}
 	    }
 	}
-	if (!(graph_type & ANON)) {
-	    if (to->type == ACTION) {
-		printf(", labelfloat=\"true\", fontcolor=\"BLACK\", label=\"r:");
-		print_resources((to->requires));
-		printf("\"") ;
-	    }
-	}
-#endif
 	printf("] ;\n") ;
 
     } else {
@@ -172,18 +183,18 @@ void name_node(Node n)
     char buf[512];
 
     if (strcmp(n->name, "(anonymous)") == 0) {
-	free(n->name);
+	/*XXX free(n->name);*/
 	sprintf(buf, "%s_%d", node_type(n->type), node_num++);
 	n->name = strdup(buf);
     }
 
     if (n->type == PROCESS) {
-	free(n->name);
+	/*XXX free(n->name);*/
 	n->name = strdup("start");
     }
     /* This hack detects sink. */
     if (n->next == NULL) {
-	free(n->name);
+	/*XXX free(n->name);*/
 	n->name = strdup("end");
     }
     if (graph_type != XML) {
@@ -191,16 +202,17 @@ void name_node(Node n)
 	if (n->type == PROCESS) {
 	    printf("label=\"%s\"]\n", n->name);
 	} else 	if (!(graph_type & ANON) && (n->type == ACTION)) {
-#ifndef LABEL_LINKS
-	    printf("label=");
-	    printf("\"[");
-	    print_resources(n->requires);
-	    printf("]\\n%s\\n[", n->name);
-	    print_resources(n->provides);
-	    printf("]\"];\n");
-#else 
-	    printf("label=\"%s\"];\n", n->name);
-#endif
+
+	    if (label_type == NODES) {
+		printf("label=");
+		printf("\"");
+		print_resources(n->requires);
+		printf(" ->\\n%s\\n-> ", n->name);
+		print_resources(n->provides);
+		printf("\"];\n");
+	    } else {
+		printf("label=\"%s\"];\n", n->name);
+	    }
 	} else {
 	    printf("label=\"\"];\n");
 	}
@@ -280,7 +292,7 @@ int main(argc, argv)
     filename = "-";
     status = EXIT_SUCCESS;
 
-    while ((c = getopt (argc, argv, "adfmxh?")) != EOF) {
+    while ((c = getopt (argc, argv, "adflnmxh?")) != EOF) {
 	switch (c) {
 	case 'a':
 	    graph_type |= ANON;
@@ -288,6 +300,14 @@ int main(argc, argv)
 
 	case 'f':
 	    graph_type |= FLOW;
+	    break;
+
+	case 'l':
+	    label_type = LINKS;
+	    break;
+
+	case 'n': 
+	    label_type = NODES;
 	    break;
 
 	case 'x':
