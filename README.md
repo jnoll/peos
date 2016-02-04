@@ -36,13 +36,13 @@ source code for this is found in the following sub-directories:
 To build and install these subsystems, follow these steps:
 
 1. Install library dependencies
-   - TCL (see http://www.activestate.com/activetcl; Ubuntu package _tcl_).
-   - check (http://check.sourceforge.net/; Ubuntu package _check_).  Check is only required to
+   - TCL (Ubuntu packages _tcl_ and _tcl-dev_; see also http://www.activestate.com/activetcl; ).
+   - check (Ubuntu package _check_; see also http://check.sourceforge.net/).  Check is only required to
    run the unit tests, but the kernel build will fail if check is not
    present. 
-   - expect (http://expect.sourceforge.net/; Ubuntu package _expect_).  Required to run the
+   - expect (Ubuntu package _expect_; see also http://expect.sourceforge.net/).  Required to run the
      acceptance tests in _os/kernel/test/accept_tests_. 
-   - libxml2 from (http://www.xmlsoft.org/; Ubuntu package _libxml2_).
+   - libxml2 (Ubuntu package _libxml2_; see also http://www.xmlsoft.org/).
 
 2. If the header and libary files  are not installed in the normal 
 directory expected by the compiler on your platform 
