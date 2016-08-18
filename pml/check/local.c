@@ -115,7 +115,7 @@ static void ContradictionCheck (tree1, tree2, node)
     case AND:
     case OR:
       ContradictionCheck(tree1 -> left,  tree2, node);
-      ContradictionCheck(tree2 -> right, tree2, node);
+      ContradictionCheck(tree1 -> right, tree2, node); /* XXXjn Fix recursion bug. 1st arg was tree2, but this seems wrong. */
       break;
     case EQ:
     case NE:
