@@ -39,13 +39,13 @@ To build and install these subsystems, follow these steps:
    - TCL (Ubuntu packages _tcl_ and _tcl-dev_; see also http://www.activestate.com/activetcl; ).
    - check (Ubuntu package _check_; see also http://check.sourceforge.net/).  Check is only required to
    run the unit tests, but the kernel build will fail if check is not
-   present. 
+   present. For OSX use homebrew
    - expect (Ubuntu package _expect_; see also http://expect.sourceforge.net/).  Required to run the
-     acceptance tests in _os/kernel/test/accept_tests_. 
+     acceptance tests in _os/kernel/test/accept_tests_.
    - libxml2 (Ubuntu package _libxml2_; see also http://www.xmlsoft.org/).
 
-2. If the header and libary files  are not installed in the normal 
-directory expected by the compiler on your platform 
+2. If the header and libary files  are not installed in the normal
+directory expected by the compiler on your platform
 (_/usr/include_ and _/usr/lib_ on Linux platforms),
 edit the following Makefiles to set _CFLAGS_ and _LDFLAGS_ to point to
 the include and library directories.
@@ -70,7 +70,28 @@ javascript, and other configuration files needed to run the PEOS web
 application.
 
 The build has been tested on Ubuntu 12.04 with TCL v. 8.5.  It may
-work on other systems as 
+work on other systems as
+
+# How to get the demo working:
+## Arch sample:
+1. Download the PEOS repository from `https://github.com/padraigoleary/PEOS/`
+2. Follow the installation guide in README.md
+3. Go to `${PEOS_FOLDER}/ui/carepathways`
+4. Change this line `HTML_DIR=/opt/lampp/htdocs`. Replace `/opt/lampp/htdocs` with the locations where the sample should be installed. For Xampp, it is always in the `htdocs` folder within the Xampp installation folder
+5. Run `make install`
+6. Restart Xampp
+7. Access `http://localhost/carepathways/` and check that everything is working
+
+## Editor
+1. Download the Attempy repository from `https://github.com/taylorconor/Attempy`
+2. Follow their installation guide
+How to play with these apps:
+You can use the Arch sample to show the concepts of pml.
+If you want to edit the files, then use the editor and open the file you want to edit (they are in the `${HTML_DIR}/carepathways`).
+When you are done editing, save the file. It will be saved to `${ATTEMPY_FOLDER}/uploads` with the same name as the original one.
+Copy it from this folder to `${HTML_DIR}/carepathways`.
+Refresh the Arch sample and the modifications should be loaded.
+
 
 # Concept of Operations
 
@@ -79,7 +100,7 @@ tasks that should be performed to achieve some objective.  Each action
 has two fields (_requires_ and _provides_) that specify the
 inputs or pre-conditions required for the action to  be performed, and
 the outputs or post-conditions that will be true when the action is
-completed. 
+completed.
 
 Actions go through a set of states in response to events:
 
@@ -105,7 +126,7 @@ digraph pml_states {
 ## Resource Handling
 
 The data or objects that represent inputs and outputs are
-called resources; the _requires_ and _provides_ fields can have 
+called resources; the _requires_ and _provides_ fields can have
 predicates that specify the state of resources necessary for the
 action to begin (for _requires_), and the new state of resources when
 the action completes.
@@ -146,7 +167,7 @@ are bound to filenames.  So, in the example above, if _test_report_ is
 bound to "peos.tr" then
 
     provides { test_report }
-    
+
 means, "check the filesystem for a file called 'peos.tr.'"
 
 If there is a predicate included, the kernel will evaluate this
@@ -154,7 +175,7 @@ predicate.  For example, if _code_ is bound to to "peos.c" in the
 example above, then
 
     requires { code.compiles == "true" }
-    
+
 means, "determine whether 'peos.c' compiles without error."
 
 To compute resource state, the kernel relies on a set of resource
@@ -173,7 +194,7 @@ resource exists and evaluate a predicate:
         # Check if file specified by 'path' exists.
         expr [file exists $path]
     }
-    
+
     # Test whether the value specified in 'v' represents "truth" in TCL terms.
     proc isTrue { v } {
       return [expr {![string is false ${v}]}]
@@ -185,10 +206,10 @@ resources stored in a database.
 
 ### Resource attributes and predicates
 
-A resource specification such as 
+A resource specification such as
 
     requires { code.compiles == "true" }
-    
+
 tells the kernel, "first verify that the resource bound to 'code'
 exists, then evaluate its 'compiles' attribute and compare it to the
 value 'true.'"  How does the kernel do this?
@@ -212,7 +233,7 @@ procedure:
 	# than source.
 	return [expr { [file exists $executable] && ([file mtime $executable] > [file mtime $path])}]
     }
-~~~~~ 
+~~~~~
 
 _Every_ attribute found in a PML specification must have a
 corresponding TCL procedure in order for the kernel to successfully
@@ -248,7 +269,7 @@ the scope of the identified process.  The same can be achieved from
 the command line using the `peos` command:
 
     peos -r pid resource_name value
-    
+
 As an example,  we'll expand the "test" action above into a small,
 complete PML specification:
 
@@ -270,7 +291,7 @@ To create an instance of this process, run [^compiler_dir]
     > peos -c build_test.pml
     Executing build_test.pml:
     Created pid = 0
-    
+
 which will create a new instance of *build_test* and print its process
 id.
 
@@ -279,8 +300,8 @@ resource is unbound and therefore does not exist.  We need to bind it
 to a value; suppose the pid of our process is '1'; then
 
     > peos -r 1 code peos.c
-    
-will bind _code_ to "peos.c", and 
+
+will bind _code_ to "peos.c", and
 
     > peos -r 1 test_report peos.tr
 
@@ -291,16 +312,16 @@ Now, if the file *peos.c* exists, the "compile" action will become
 
     > peos -n 1 compile start
     Performing action compile
-    
+
 When we finish the compile action,
 
     > peos -n 1 compile finish
     Finishing action compile
-    
+
 If the *peos* executable exists, the *test* action will now be ready;
 if *peos* does not exist, the *test* action will be blocked.
 
-    
+
 
 
 
