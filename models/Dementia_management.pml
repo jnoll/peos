@@ -1,10 +1,9 @@
-/* 
- * Dementia management pathway, from Pádraig O’Leary, John Noll, and Ita Richardson, 
+/*
+ * Dementia management pathway, from Padraig O'Leary, John Noll, and Ita Richardson, 
  * "A Resource Flow Approach to Modelling Care Pathways," FHEIS 2013, Macao.
  */
 
 process Dementia_management {
-
   action identify_causal_or_exacerbating_factors { 
     requires { Guidelines_For_Treatment_Of_Patients }
   }
